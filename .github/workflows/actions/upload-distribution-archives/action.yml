@@ -1,6 +1,6 @@
 name: 'Upload Distribution Archives'
 description: 'Create and upload ZIP archives of all publishable packages for sharing across workflow jobs'
-author: 'Baloise Design System'
+author: 'Helvetia Design System'
 runs:
   using: 'composite'
   steps:

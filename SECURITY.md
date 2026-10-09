@@ -100,7 +100,7 @@ This information is sufficient to assess impact and plan an upgrade without read
 
 ### For large consumers
 
-If your organisation integrates the Baloise Design System into a regulated product, consider enabling [Dependabot alerts](https://docs.github.com/en/code-security/dependabot) in your own repository. GitHub will automatically raise an alert in your project when a CVE is published for any version of `@helvetia-design/core` you depend on.
+If your organisation integrates the Helvetia Design System into a regulated product, consider enabling [Dependabot alerts](https://docs.github.com/en/code-security/dependabot) in your own repository. GitHub will automatically raise an alert in your project when a CVE is published for any version of `@helvetia-design/core` you depend on.
 
 ## Security Measures
 
@@ -223,7 +223,7 @@ When in doubt, report to both. Duplicate reports are explicitly allowed under th
 **What to include in each report:**
 
 ```
-Product:          Baloise Design System (@helvetia-design/core)
+Product:          Helvetia Design System (@helvetia-design/system)
 Affected version: <semver range>
 CVE ID:           CVE-YYYY-XXXXX (or "pending" if not yet assigned)
 CVSS score:       <score and vector>
@@ -249,7 +249,7 @@ Fix available:    Yes / No / In progress
 
 ### Security by Default
 
-The Baloise Design System is a client-side component library. Its attack surface and default security posture are as follows:
+The Helvetia Design System is a client-side component library. Its attack surface and default security posture are as follows:
 
 | Property                              | State                                                                                                           |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |

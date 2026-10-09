@@ -17,7 +17,7 @@ afterEach(() => {
 })
 
 function createScratchDir() {
-  scratch = mkdtempSync(join(tmpdir(), 'ds-skills-'))
+  scratch = mkdtempSync(join(tmpdir(), 'skills-'))
   return scratch
 }
 
@@ -33,7 +33,7 @@ function collectOutput() {
   }
 }
 
-describe('ds-skills add', () => {
+describe('skills add', () => {
   it('copies the skill payload into .claude/skills, creating the parent folders', async () => {
     const cwd = createScratchDir()
     const stdout = collectOutput()
@@ -85,7 +85,7 @@ describe('ds-skills add', () => {
     const code = await run([], { cwd, stdout, stderr })
 
     expect(code).toBe(1)
-    expect(stderr.text).toMatch(/Usage: ds-skills add/)
+    expect(stderr.text).toMatch(/Usage: skills add/)
   })
 
   it('prints usage and exits with 1 for an unknown command', async () => {
@@ -96,6 +96,6 @@ describe('ds-skills add', () => {
     const code = await run(['list'], { cwd, stdout, stderr })
 
     expect(code).toBe(1)
-    expect(stderr.text).toMatch(/Usage: ds-skills add/)
+    expect(stderr.text).toMatch(/Usage: skills add/)
   })
 })

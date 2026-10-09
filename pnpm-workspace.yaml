@@ -48,7 +48,7 @@ allowBuilds:
 # GHSA-vfj7-8cjw-p6xm (braces <=3.0.3, DoS via deeply nested patterns) has no
 # fixed release on npm yet (3.0.4 was never published) and micromatch pins
 # ^3.0.3. braces is only reached through build/dev tooling (fast-glob, shadcn).
-# Remove this entry once a patched version exists. Tracking: https://github.com/baloise/design-system/issues/2392
+# Remove this entry once a patched version exists.
 auditConfig:
   ignoreGhsas:
     - GHSA-vfj7-8cjw-p6xm

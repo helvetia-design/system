@@ -186,7 +186,7 @@ Icons are stored in two packages depending on their source and usage:
 
 ### Brand Icons
 
-**Source:** [Baloise Brand Portal](https://brand.baloise.com/) (all colors, all sizes)
+**Source:** TBD
 
 **Location:** `packages/brand-icons/src/assets`
 

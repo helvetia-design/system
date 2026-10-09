@@ -25,7 +25,7 @@ Keep generating every wrapper with the stock `@stencil/react-output-target` (no 
 
 - **`src/components/modal.tsx`**: `Modal` wraps the generated `DsModal` and adds `onOpenChange?: (open: boolean) => void`, fired `false` on `onDsDidDismiss`, so `<Modal open={isOpen} onOpenChange={setIsOpen}>` stays in sync.
 - **`src/hooks/use-toast.ts` / `src/hooks/use-snackbar.ts`**: thin hooks around `dsToastController` / `dsSnackbarController`, returning `[present, dismiss]`.
-- **`src/hooks/use-modal.ts`**: scaffolded `[present, dismiss]` hook that will pass a detached element as `ModalOptions.component` once that lands in core ([#2120](https://github.com/baloise/design-system/issues/2120)).
+- **`src/hooks/use-modal.ts`**: scaffolded `[present, dismiss]` hook that will pass a detached element as `ModalOptions.component` once that lands in core ([#2120](https://github.com/helvetia-design/system/issues/2120)).
 
 The generated `DsModal`, `DsToast`, `DsSnackbar`, and `DsAlertContainer`
 **values** stay re-exported from `@helvetia-design/react` via `src/wrappers.ts`,

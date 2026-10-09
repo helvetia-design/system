@@ -1,6 +1,6 @@
 # Design System Skills Guide
 
-This document provides an overview of all available AI skills for working with the Baloise Design System.
+This document provides an overview of all available AI skills for working with the Helvetia Design System.
 
 ## Project Skills (`.claude/skills/`)
 
@@ -184,17 +184,17 @@ Auto-generate all test files for a component.
 
 ---
 
-## Consumer Skills (`@helvetia/ds-skills`)
+## Consumer Skills (`@helvetia-design/skills`)
 
 These skills do not live in this repo's `.claude/skills/`. They ship as a standalone npm package and are copied into a **consuming application's** `.claude/skills/` with:
 
 ```bash
-npx @helvetia/ds-skills@next add
+npx @helvetia-design/skills@next add
 ```
 
 The package is published on the `next` dist-tag (same as the rest of this monorepo). `npx` without a tag resolves `latest`, which will not exist until a stable release.
 
-Package conventions (compiled CLI vs. self-contained payload, [how to add the next component's `migration.md`](../packages/ds-skills/CONTEXT.md#adding-the-next-component)) and [how to test the installer](../packages/ds-skills/CONTEXT.md#testing) are documented in [packages/ds-skills/CONTEXT.md](../packages/ds-skills/CONTEXT.md).
+Package conventions (compiled CLI vs. self-contained payload, [how to add the next component's `migration.md`](../packages/skills/CONTEXT.md#adding-the-next-component)) and [how to test the installer](../packages/skills/CONTEXT.md#testing) are documented in [packages/skills/CONTEXT.md](../packages/skills/CONTEXT.md).
 
 ### **ds-migrate-from-baloise**
 
@@ -203,7 +203,7 @@ Menu-driven migration from the Baloise Design System (`bal-*`) to the Helvetia D
 **Usage:**
 
 ```bash
-npx @helvetia/ds-skills@next add
+npx @helvetia-design/skills@next add
 /ds-migrate-from-baloise
 ```
 
@@ -386,17 +386,17 @@ Example: `--ds-button-primary-color-base-text`
 
 ## Key Commands Reference
 
-| Task                 | Command                                                             |
-| -------------------- | ------------------------------------------------------------------- |
-| Create component     | `/ds-create-component`                                              |
-| Create tokens        | `/ds-create-token <name>`                                           |
-| Generate tests       | `/ds-test-component <name>`                                         |
-| Generate docs        | `/ds-document-component <name>`                                     |
-| Lint component       | `/ds-lint-component <name> check`                                   |
-| Fix component        | `/ds-lint-component <name> fix`                                     |
-| Find tokens          | `/ds-find-token value <value>`                                      |
-| Find tokens by type  | `/ds-find-token type <type>`                                        |
-| Migrate from Baloise | `npx @helvetia/ds-skills@next add`, then `/ds-migrate-from-baloise` |
+| Task                 | Command                                                                 |
+| -------------------- | ----------------------------------------------------------------------- |
+| Create component     | `/ds-create-component`                                                  |
+| Create tokens        | `/ds-create-token <name>`                                               |
+| Generate tests       | `/ds-test-component <name>`                                             |
+| Generate docs        | `/ds-document-component <name>`                                         |
+| Lint component       | `/ds-lint-component <name> check`                                       |
+| Fix component        | `/ds-lint-component <name> fix`                                         |
+| Find tokens          | `/ds-find-token value <value>`                                          |
+| Find tokens by type  | `/ds-find-token type <type>`                                            |
+| Migrate from Baloise | `npx @helvetia-design/skills@next add`, then `/ds-migrate-from-baloise` |
 
 ## See Also
 

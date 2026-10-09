@@ -1,6 +1,6 @@
 # Plan: Angular toast & snackbar services
 
-GitHub issue: [#2320](https://github.com/baloise/design-system/issues/2320) (milestone `✏️ Angular Forms & Services` / #8)
+GitHub issue: [#2320](https://github.com/helvetia-design/system/issues/2320) (milestone `✏️ Angular Forms & Services` / #8)
 
 ## Context
 
@@ -8,7 +8,7 @@ GitHub issue: [#2320](https://github.com/baloise/design-system/issues/2320) (mil
 
 The old, deprecated `@baloise/ds-angular` had `BalToastService`/`BalSnackbarService` in `src/providers/`, each a thin wrapper around a per-type controller injected via an `InjectionToken` (`BalTokenToast`/`BalTokenSnackbar`), exposing `create(options): Components.BalToast` (**synchronous**, returned the element itself) and `dismissAll(): Promise<void>`.
 
-Unlike the modal work ([#2119](https://github.com/baloise/design-system/issues/2119)), this needs no component-overlay/`ComponentRef`/DI-scoped ref machinery — toast/snackbar only ever render fixed `heading`/`message`/`color`-style props, never an arbitrary mounted component. So there's no ADR here; this is a plain singleton-wrapping service, same category as the other hand-authored code already in `src/index.ts` per `packages/angular/CONTEXT.md`.
+Unlike the modal work ([#2119](https://github.com/helvetia-design/system/issues/2119)), this needs no component-overlay/`ComponentRef`/DI-scoped ref machinery — toast/snackbar only ever render fixed `heading`/`message`/`color`-style props, never an arbitrary mounted component. So there's no ADR here; this is a plain singleton-wrapping service, same category as the other hand-authored code already in `src/index.ts` per `packages/angular/CONTEXT.md`.
 
 ## Decisions
 

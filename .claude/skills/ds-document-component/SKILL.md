@@ -1,6 +1,6 @@
 ---
 name: ds-document-component
-description: Use when writing or generating Storybook documentation for a Baloise Design System component — creates stories.ts, doc-config.ts, and six MDX subpages (Overview, Usage, Variants, Styling, Accessibility, Testing) using reusable Storybook blocks (ComponentLead, ComponentPublicMethods, ComponentParts, CanvasTabs, ComponentPageObject) for dynamic data binding to components.json
+description: Use when writing or generating Storybook documentation for a Helvetia Design System component — creates stories.ts, doc-config.ts, and six MDX subpages (Overview, Usage, Variants, Styling, Accessibility, Testing) using reusable Storybook blocks (ComponentLead, ComponentPublicMethods, ComponentParts, CanvasTabs, ComponentPageObject) for dynamic data binding to components.json
 ---
 
 # Write Component Docs

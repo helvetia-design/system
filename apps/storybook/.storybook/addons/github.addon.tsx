@@ -15,7 +15,7 @@ export const registerGithub: React.FC = () => {
     <IconButton
       key="github-toolbar"
       title="View on GitHub"
-      onClick={() => window.open('https://github.com/baloise/design-system', '_blank', 'noopener,noreferrer')}
+      onClick={() => window.open('https://github.com/helvetia-design/system', '_blank', 'noopener,noreferrer')}
     >
       <SvgIcon html={GitHubSVG} />
       GitHub

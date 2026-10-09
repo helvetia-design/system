@@ -486,7 +486,9 @@ describe('resolveReadRef', () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse({ object: { sha: 'sha' } })) // branchExists
-      .mockResolvedValueOnce(jsonResponse([{ html_url: 'https://github.com/helvetia-design/system/pull/7', number: 7 }])) // findOpenPullRequest
+      .mockResolvedValueOnce(
+        jsonResponse([{ html_url: 'https://github.com/helvetia-design/system/pull/7', number: 7 }]),
+      ) // findOpenPullRequest
     vi.stubGlobal('fetch', fetchMock)
 
     const result = await resolveReadRef('next')

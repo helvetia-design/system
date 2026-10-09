@@ -1,7 +1,7 @@
 # Incident Response Runbook — Exploited Vulnerability
 
 **Audience:** On-call maintainer / security lead  
-**Trigger:** A vulnerability in a published version of the Baloise Design System is confirmed actively exploited in the wild  
+**Trigger:** A vulnerability in a published version of the Helvetia Design System is confirmed actively exploited in the wild  
 **Legal basis:** EU Cyber Resilience Act, Article 14 (active since September 2026)
 
 ---
@@ -68,7 +68,7 @@ File an early warning with both authorities if EU consumers are affected. Duplic
 3. Submit an early warning with the minimum required fields:
 
 ```
-Product name:     Baloise Design System
+Product name:     Helvetia Design System
 Package:          @helvetia-design/core (and affected packages)
 Affected version: <semver range>
 CVE ID:           <CVE-YYYY-XXXXX or "pending">
@@ -93,7 +93,7 @@ Fix available:    Yes / No / In progress
 Update both authority submissions (reference the ticket numbers from Step 3) with full details:
 
 ```
-Product:           Baloise Design System
+Product:           Helvetia Design System
 Package(s):        @helvetia-design/core <semver>
 CVE ID:            CVE-YYYY-XXXXX
 CVSS score:        <score> (<vector string>)

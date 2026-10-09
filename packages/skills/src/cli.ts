@@ -4,9 +4,9 @@ import { cp, mkdir, rm } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-const PACKAGE_NAME = '@helvetia/ds-skills'
+const PACKAGE_NAME = '@helvetia-design/skills'
 const SKILL_NAME = 'ds-migrate-from-baloise'
-const USAGE = 'Usage: ds-skills add\n'
+const USAGE = 'Usage: skills add\n'
 
 export type CliIo = {
   cwd: string
