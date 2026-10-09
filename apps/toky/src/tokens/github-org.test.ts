@@ -19,7 +19,7 @@ describe('isOrgMember', () => {
 
     await isOrgMember('octocat')
 
-    expect(fetchMock).toHaveBeenCalledWith('https://api.github.com/orgs/baloise/members/octocat', {
+    expect(fetchMock).toHaveBeenCalledWith('https://api.github.com/orgs/helvetia-design/members/octocat', {
       cache: 'no-store',
       headers: {
         Authorization: 'Bearer test-token',
@@ -61,6 +61,6 @@ describe('isOrgMember', () => {
     await isOrgMember('a b')
 
     const [url] = fetchMock.mock.calls[0] as [string]
-    expect(url).toBe('https://api.github.com/orgs/baloise/members/a%20b')
+    expect(url).toBe('https://api.github.com/orgs/helvetia-design/members/a%20b')
   })
 })
