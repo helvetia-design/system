@@ -3,7 +3,7 @@ name: 📦️ Prepare Release
 on:
   push:
     branches:
-      - next
+      - main
   workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
