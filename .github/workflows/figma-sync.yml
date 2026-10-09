@@ -3,7 +3,7 @@ name: 🔼 Figma Sync
 on:
   pull_request:
     types: [closed]
-    branches: [next]
+    branches: [main]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -23,7 +23,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v7
         with:
-          ref: next
+          ref: main
           fetch-depth: 1
           token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
 
@@ -41,9 +41,9 @@ jobs:
           FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
         run: node scripts/figma-sync/pull.mjs
 
-      # Direct commit to `next`, not a PR — the one deliberate exception to
+      # Direct commit to `main`, not a PR — the one deliberate exception to
       # this repo's PR-mediated writes (docs/adr/0017-direct-commit-variableid-backfill.md).
-      # Needs the bot token to have branch-protection bypass rights on `next`.
+      # Needs the bot token to have branch-protection bypass rights on `main`.
       - name: Write back new/removed variableIds + baseline (direct commit)
         if: steps.sync.outputs.new_ids_file != '' || steps.sync.outputs.removed_ids_file != ''
         shell: bash

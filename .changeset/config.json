@@ -1,12 +1,12 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
-  "changelog": ["./my-changelog-config.js", { "repo": "baloise/design-system" }],
+  "changelog": ["./my-changelog-config.js", { "repo": "helvetia-design/design-system" }],
   "commit": false,
   "fixed": [["@helvetia-design/*"]],
-  "ignore": ["libs-*", "storybook", "toky", "integration-react", "integration-angular", "integration-next"],
+  "ignore": ["libs-*", "storybook", "toky", "integration-react", "integration-angular", "integration-next", "integration-ssr"],
   "linked": [],
   "access": "public",
-  "baseBranch": "next",
+  "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
     "onlyUpdatePeerDependentsWhenOutOfRange": true

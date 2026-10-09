@@ -21,7 +21,7 @@ jobs:
     name: 🚀 Release
     if: |
       github.event_name == 'workflow_dispatch' ||
-      (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'changeset-release/next')
+      (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'changeset-release/main')
     runs-on: ubuntu-24.04
     permissions:
       id-token: write # Required for OIDC

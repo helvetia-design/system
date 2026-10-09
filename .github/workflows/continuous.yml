@@ -3,7 +3,7 @@ name: 👷 Continuous
 on:
   push:
     branches:
-      - next
+      - main
   pull_request:
 
 concurrency:
@@ -47,7 +47,7 @@ jobs:
       - name: Audit dependencies
         env:
           # Fail hard on release branches; tolerate registry flakiness elsewhere.
-          HARD_FAIL: ${{ github.head_ref == 'changeset-release/next' }}
+          HARD_FAIL: ${{ github.head_ref == 'changeset-release/main' }}
         run: |
           if [ "$HARD_FAIL" = "true" ]; then
             pnpm audit --audit-level high
