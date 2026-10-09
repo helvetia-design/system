@@ -106,7 +106,7 @@ beforeEach(() => {
   createBrandFile.mockResolvedValue(undefined)
   addBrandToIndex.mockResolvedValue(undefined)
   openPullRequest.mockResolvedValue({
-    url: 'https://github.com/baloise/design-system/pull/7',
+    url: 'https://github.com/helvetia-design/system/pull/7',
     number: 7,
     body: 'initial body',
   })
@@ -174,7 +174,7 @@ describe('POST /api/propose-change', () => {
     const response = await POST(makeRequest({ diff: cleanDiff, description: 'Lighten white slightly' }))
     expect(response.status).toBe(200)
     const json = await response.json()
-    expect(json).toEqual({ url: 'https://github.com/baloise/design-system/pull/7', number: 7 })
+    expect(json).toEqual({ url: 'https://github.com/helvetia-design/system/pull/7', number: 7 })
 
     expect(resolveReadRef).toHaveBeenCalledWith('next')
     expect(createBranch).toHaveBeenCalledTimes(1)
@@ -215,10 +215,10 @@ describe('POST /api/propose-change', () => {
   it('credits the signed-in user when appending to an already-open PR', async () => {
     resolveReadRef.mockResolvedValue({
       ref: 'toky/update-next',
-      status: { state: 'pending', prUrl: 'https://github.com/baloise/design-system/pull/7', prNumber: 7 },
+      status: { state: 'pending', prUrl: 'https://github.com/helvetia-design/system/pull/7', prNumber: 7 },
     })
     findOpenPullRequest.mockResolvedValue({
-      url: 'https://github.com/baloise/design-system/pull/7',
+      url: 'https://github.com/helvetia-design/system/pull/7',
       number: 7,
       body: 'initial body',
     })
@@ -337,13 +337,13 @@ describe('POST /api/propose-change', () => {
       ref: 'toky/update-next',
       status: {
         state: 'pending',
-        prUrl: 'https://github.com/baloise/design-system/pull/7',
+        prUrl: 'https://github.com/helvetia-design/system/pull/7',
         prNumber: 7,
       },
     })
     getBaseTokensFileMeta.mockResolvedValue({ sha: 'branch-file-sha', content: fixtureDoc })
     findOpenPullRequest.mockResolvedValue({
-      url: 'https://github.com/baloise/design-system/pull/7',
+      url: 'https://github.com/helvetia-design/system/pull/7',
       number: 7,
       body: 'Submitted via the Toky web app.\n\n**Updated:** old.path',
     })
@@ -351,7 +351,7 @@ describe('POST /api/propose-change', () => {
     const response = await POST(makeRequest({ diff: cleanDiff, description: 'Another round of edits' }))
     expect(response.status).toBe(200)
     const json = await response.json()
-    expect(json).toEqual({ url: 'https://github.com/baloise/design-system/pull/7', number: 7 })
+    expect(json).toEqual({ url: 'https://github.com/helvetia-design/system/pull/7', number: 7 })
 
     expect(createBranch).not.toHaveBeenCalled()
     expect(openPullRequest).not.toHaveBeenCalled()
@@ -380,7 +380,7 @@ describe('POST /api/propose-change', () => {
     getBaseTokensFileMeta.mockResolvedValue({ sha: 'branch-file-sha', content: fixtureDoc })
     findOpenPullRequest.mockResolvedValue(null)
     openPullRequest.mockResolvedValue({
-      url: 'https://github.com/baloise/design-system/pull/11',
+      url: 'https://github.com/helvetia-design/system/pull/11',
       number: 11,
       body: 'initial body',
     })
@@ -388,7 +388,7 @@ describe('POST /api/propose-change', () => {
     const response = await POST(makeRequest({ diff: cleanDiff, description: '' }))
     expect(response.status).toBe(200)
     const json = await response.json()
-    expect(json).toEqual({ url: 'https://github.com/baloise/design-system/pull/11', number: 11 })
+    expect(json).toEqual({ url: 'https://github.com/helvetia-design/system/pull/11', number: 11 })
 
     expect(createBranch).not.toHaveBeenCalled()
     expect(openPullRequest).toHaveBeenCalledTimes(1)
@@ -422,7 +422,7 @@ describe('POST /api/propose-change', () => {
     const response = await POST(makeRequest({ diff: [], description: '', newBrands: ['Acme'] }))
     expect(response.status).toBe(200)
     const json = await response.json()
-    expect(json).toEqual({ url: 'https://github.com/baloise/design-system/pull/7', number: 7 })
+    expect(json).toEqual({ url: 'https://github.com/helvetia-design/system/pull/7', number: 7 })
 
     expect(updateFileOnBranch).not.toHaveBeenCalled()
     expect(createBrandFile).toHaveBeenCalledWith('toky/update-next', 'Acme')

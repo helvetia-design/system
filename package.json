@@ -2,7 +2,7 @@
   "name": "design-system",
   "version": "0.0.0",
   "homepage": "https://helvetia-design.vercel.app",
-  "security": "https://github.com/baloise/design-system/security/advisories/new",
+  "security": "https://github.com/helvetia-design/system/security/advisories/new",
   "license": "Apache-2.0",
   "packageManager": "pnpm@11.15.1",
   "engines": {

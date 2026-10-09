@@ -34,8 +34,8 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). We are committ
 ### Setup
 
 ```bash
-git clone https://github.com/baloise/design-system.git
-cd design-system
+git clone https://github.com/helvetia-design/system.git
+cd system
 nvm use
 corepack enable
 pnpm install --frozen-lockfile
@@ -101,7 +101,7 @@ Post these as a PR comment to trigger automation:
 
 Start any contribution (bug fix or feature) by creating a GitHub issue:
 
-1. Go to [github.com/baloise/design-system/issues](https://github.com/baloise/design-system/issues)
+1. Go to [github.com/helvetia-design/system/issues](https://github.com/helvetia-design/system/issues)
 2. Click **New Issue**
 3. Choose **Bug Report** or **Feature Request**
 4. Provide a clear title and description

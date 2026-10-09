@@ -4,13 +4,13 @@
   "description": "UnoCSS utility preset and pre-built CSS bundle for the Helvetia Design System.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/baloise/design-system.git"
+    "url": "git+https://github.com/helvetia-design/system.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "homepage": "https://baloise-design-system.vercel.app",
-  "security": "https://github.com/baloise/design-system/security/advisories/new",
+  "security": "https://github.com/helvetia-design/system/security/advisories/new",
   "license": "Apache-2.0",
   "type": "module",
   "exports": {

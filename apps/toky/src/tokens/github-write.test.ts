@@ -47,7 +47,7 @@ describe('getBaseTokensFileMeta', () => {
     expect(result).toEqual({ sha: 'abc123', content: { foo: 'bar' } })
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
     expect(url).toBe(
-      'https://api.github.com/repos/baloise/design-system/contents/packages/tokens/tokens/Base.tokens.json?ref=next',
+      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Base.tokens.json?ref=next',
     )
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer test-token')
   })
@@ -69,7 +69,7 @@ describe('getBrandTokensFileMeta', () => {
     expect(result).toEqual({ sha: 'brand-sha', content: { '🌐 Global': {} } })
     const [url] = fetchMock.mock.calls[0] as [string]
     expect(url).toBe(
-      'https://api.github.com/repos/baloise/design-system/contents/packages/tokens/tokens/Zurich.tokens.json?ref=next',
+      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Zurich.tokens.json?ref=next',
     )
   })
 
@@ -90,7 +90,7 @@ describe('getFileMeta', () => {
     expect(result).toEqual({ sha: 'sha1', content: 'const brands = []' })
     const [url] = fetchMock.mock.calls[0] as [string]
     expect(url).toBe(
-      'https://api.github.com/repos/baloise/design-system/contents/packages/tokens/src/index.ts?ref=next',
+      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/src/index.ts?ref=next',
     )
   })
 
@@ -115,7 +115,7 @@ describe('listTokenBrandFiles', () => {
 
     await expect(listTokenBrandFiles('next')).resolves.toEqual(['Acme', 'Zurich'])
     const [url] = fetchMock.mock.calls[0] as [string]
-    expect(url).toBe('https://api.github.com/repos/baloise/design-system/contents/packages/tokens/tokens?ref=next')
+    expect(url).toBe('https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens?ref=next')
   })
 
   it('throws a descriptive error on a non-OK response', async () => {
@@ -131,7 +131,7 @@ describe('listBranches', () => {
 
     await expect(listBranches()).resolves.toEqual(['beta', 'main', 'next'])
     const [url] = fetchMock.mock.calls[0] as [string]
-    expect(url).toBe('https://api.github.com/repos/baloise/design-system/branches?per_page=100&page=1')
+    expect(url).toBe('https://api.github.com/repos/helvetia-design/system/branches?per_page=100&page=1')
   })
 
   it('pages through results until a page comes back short', async () => {
@@ -186,10 +186,10 @@ describe('createBranch', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2)
     const [refUrl] = fetchMock.mock.calls[0] as [string]
-    expect(refUrl).toBe('https://api.github.com/repos/baloise/design-system/git/ref/heads/next')
+    expect(refUrl).toBe('https://api.github.com/repos/helvetia-design/system/git/ref/heads/next')
 
     const [createUrl, createInit] = fetchMock.mock.calls[1] as [string, RequestInit]
-    expect(createUrl).toBe('https://api.github.com/repos/baloise/design-system/git/refs')
+    expect(createUrl).toBe('https://api.github.com/repos/helvetia-design/system/git/refs')
     expect(JSON.parse(createInit.body as string)).toEqual({ ref: 'refs/heads/toky/update-123', sha: 'base-sha' })
   })
 
@@ -213,7 +213,7 @@ describe('createBranch', () => {
     await createBranch('toky/update-123', 'release/2026-08')
 
     const [refUrl] = fetchMock.mock.calls[0] as [string]
-    expect(refUrl).toBe('https://api.github.com/repos/baloise/design-system/git/ref/heads/release/2026-08')
+    expect(refUrl).toBe('https://api.github.com/repos/helvetia-design/system/git/ref/heads/release/2026-08')
   })
 })
 
@@ -243,7 +243,7 @@ describe('updateFileOnBranch', () => {
 
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
     expect(url).toBe(
-      'https://api.github.com/repos/baloise/design-system/contents/packages/tokens/tokens/Base.tokens.json',
+      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Base.tokens.json',
     )
     expect(init.method).toBe('PUT')
     const body = JSON.parse(init.body as string)
@@ -267,7 +267,7 @@ describe('createFileOnBranch', () => {
     )
 
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
-    expect(url).toBe('https://api.github.com/repos/baloise/design-system/contents/.changeset/toky-update-123.md')
+    expect(url).toBe('https://api.github.com/repos/helvetia-design/system/contents/.changeset/toky-update-123.md')
     expect(init.method).toBe('PUT')
     const body = JSON.parse(init.body as string)
     expect(body.sha).toBeUndefined()
@@ -290,7 +290,7 @@ describe('updateFileAtPath', () => {
     await updateFileAtPath('toky/update-next', 'packages/tokens/src/index.ts', 'const brands = []', 'sha1', 'msg')
 
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
-    expect(url).toBe('https://api.github.com/repos/baloise/design-system/contents/packages/tokens/src/index.ts')
+    expect(url).toBe('https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/src/index.ts')
     expect(init.method).toBe('PUT')
     const body = JSON.parse(init.body as string)
     expect(body.sha).toBe('sha1')
@@ -308,7 +308,7 @@ describe('createBrandFile', () => {
 
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
     expect(url).toBe(
-      'https://api.github.com/repos/baloise/design-system/contents/packages/tokens/tokens/Acme.tokens.json',
+      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Acme.tokens.json',
     )
     const body = JSON.parse(init.body as string)
     expect(Buffer.from(body.content, 'base64').toString('utf-8')).toBe('{}\n')
@@ -365,7 +365,7 @@ describe('openPullRequest', () => {
   it('opens a PR against the base ref and returns its url/number/body', async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       jsonResponse({
-        html_url: 'https://github.com/baloise/design-system/pull/42',
+        html_url: 'https://github.com/helvetia-design/system/pull/42',
         number: 42,
         body: 'body text',
       }),
@@ -374,9 +374,9 @@ describe('openPullRequest', () => {
 
     const result = await openPullRequest('toky/update-123', 'Update tokens', 'body text')
 
-    expect(result).toEqual({ url: 'https://github.com/baloise/design-system/pull/42', number: 42, body: 'body text' })
+    expect(result).toEqual({ url: 'https://github.com/helvetia-design/system/pull/42', number: 42, body: 'body text' })
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
-    expect(url).toBe('https://api.github.com/repos/baloise/design-system/pulls')
+    expect(url).toBe('https://api.github.com/repos/helvetia-design/system/pulls')
     expect(JSON.parse(init.body as string)).toEqual({
       title: 'Update tokens',
       head: 'toky/update-123',
@@ -393,7 +393,7 @@ describe('openPullRequest', () => {
   it('opens the PR against a caller-supplied base instead of the default', async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       jsonResponse({
-        html_url: 'https://github.com/baloise/design-system/pull/42',
+        html_url: 'https://github.com/helvetia-design/system/pull/42',
         number: 42,
         body: 'body text',
       }),
@@ -418,7 +418,7 @@ describe('findOpenPullRequest', () => {
       .fn()
       .mockResolvedValue(
         jsonResponse([
-          { html_url: 'https://github.com/baloise/design-system/pull/7', number: 7, body: 'existing body' },
+          { html_url: 'https://github.com/helvetia-design/system/pull/7', number: 7, body: 'existing body' },
         ]),
       )
     vi.stubGlobal('fetch', fetchMock)
@@ -426,13 +426,13 @@ describe('findOpenPullRequest', () => {
     const result = await findOpenPullRequest('toky/update-next')
 
     expect(result).toEqual({
-      url: 'https://github.com/baloise/design-system/pull/7',
+      url: 'https://github.com/helvetia-design/system/pull/7',
       number: 7,
       body: 'existing body',
     })
     const [url] = fetchMock.mock.calls[0] as [string]
     expect(url).toBe(
-      'https://api.github.com/repos/baloise/design-system/pulls?head=baloise:toky/update-next&state=open',
+      'https://api.github.com/repos/helvetia-design/system/pulls?head=baloise:toky/update-next&state=open',
     )
   })
 
@@ -455,7 +455,7 @@ describe('updatePullRequestBody', () => {
     await updatePullRequestBody(42, 'new body')
 
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
-    expect(url).toBe('https://api.github.com/repos/baloise/design-system/pulls/42')
+    expect(url).toBe('https://api.github.com/repos/helvetia-design/system/pulls/42')
     expect(init.method).toBe('PATCH')
     expect(JSON.parse(init.body as string)).toEqual({ body: 'new body' })
   })
@@ -486,14 +486,14 @@ describe('resolveReadRef', () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse({ object: { sha: 'sha' } })) // branchExists
-      .mockResolvedValueOnce(jsonResponse([{ html_url: 'https://github.com/baloise/design-system/pull/7', number: 7 }])) // findOpenPullRequest
+      .mockResolvedValueOnce(jsonResponse([{ html_url: 'https://github.com/helvetia-design/system/pull/7', number: 7 }])) // findOpenPullRequest
     vi.stubGlobal('fetch', fetchMock)
 
     const result = await resolveReadRef('next')
 
     expect(result).toEqual({
       ref: 'toky/update-next',
-      status: { state: 'pending', prUrl: 'https://github.com/baloise/design-system/pull/7', prNumber: 7 },
+      status: { state: 'pending', prUrl: 'https://github.com/helvetia-design/system/pull/7', prNumber: 7 },
     })
   })
 

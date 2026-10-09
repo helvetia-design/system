@@ -31,8 +31,8 @@ This guide covers local development setup and common workflows for the Helvetia 
 
 ```bash
 # Clone the repository
-git clone https://github.com/baloise/design-system.git
-cd design-system
+git clone https://github.com/helvetia-design/system.git
+cd system
 
 # Switch to the Node.js version from .nvmrc
 nvm use
@@ -305,6 +305,6 @@ These are typically managed by package scripts and `stencil.config.ts`.
 - **Errors during setup?** Check the [troubleshooting section](#troubleshooting) above
 - **Architecture and design?** See [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Contributing guidelines?** See [CONTRIBUTING.md](../CONTRIBUTING.md)
-- **Issues or discussions?** Open an issue on [GitHub](https://github.com/baloise/design-system)
+- **Issues or discussions?** Open an issue on [GitHub](https://github.com/helvetia-design/system)
 
 Happy coding! 🚀

@@ -248,7 +248,7 @@ export const config: Config = {
       !IS_DS_DOCUMENTATION && {
         type: 'docs-vscode',
         file: 'docs/html.html-data.json',
-        sourceCodeBaseUrl: 'https://github.com/baloise/design-system',
+        sourceCodeBaseUrl: 'https://github.com/helvetia-design/system',
       },
     /**
      * Since Stencil v4.42, Stencil supports automatically generating a Custom Elements Manifest (CEM) file in your project.

@@ -5,7 +5,7 @@ export default create({
   ...themes.light,
   base: 'light',
   brandTitle: 'Helvetia Design System',
-  brandUrl: 'https://github.com/baloise/design-system',
+  brandUrl: 'https://github.com/helvetia-design/system',
   brandImage: Logo,
 
   fontBase: 'BaloiseCreateText, "Open Sans", Arial, sans-serif',

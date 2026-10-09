@@ -1,5 +1,5 @@
-export const REPO_OWNER = 'baloise'
-export const REPO_NAME = 'design-system'
+export const REPO_OWNER = 'helvetia-design'
+export const REPO_NAME = 'system'
 export const TOKENS_DIR = 'packages/tokens/tokens'
 export const TOKEN_FILE_PATH = `${TOKENS_DIR}/Base.tokens.json`
 export const BRANDS_INDEX_PATH = 'packages/tokens/src/index.ts'
