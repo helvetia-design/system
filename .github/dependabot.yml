@@ -37,6 +37,8 @@ updates:
     ## supply-chain check before Dependabot proposes them.
     cooldown:
       default-days: 7
+    labels:
+      - '⬆️ dependencies'
 
   - package-ecosystem: github-actions
     directory: /
@@ -45,3 +47,5 @@ updates:
       day: monday
       time: '06:00'
       timezone: Europe/Zurich
+    labels:
+      - '⬆️ dependencies'
