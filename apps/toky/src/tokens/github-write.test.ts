@@ -432,7 +432,7 @@ describe('findOpenPullRequest', () => {
     })
     const [url] = fetchMock.mock.calls[0] as [string]
     expect(url).toBe(
-      'https://api.github.com/repos/helvetia-design/system/pulls?head=baloise:toky/update-next&state=open',
+      'https://api.github.com/repos/helvetia-design/system/pulls?head=helvetia-design:toky/update-next&state=open',
     )
   })
 
