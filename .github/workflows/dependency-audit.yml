@@ -6,15 +6,10 @@ name: 🛡️ Daily Dependency Audit
 # to repo maintainers regardless of the repo's own visibility — see
 # docs/SECRETS.md for why this uses the Security Advisories API instead of
 # a plain issue.
-#
-# GitHub Actions `schedule:` only runs in UTC, so this fires twice (06:00
-# and 07:00 UTC) to cover both sides of Europe/Zurich's DST transition; the
-# first step skips the run that doesn't land on 8am local time.
 
 on:
   schedule:
     - cron: '0 6 * * *' # 08:00 Europe/Zurich during CEST (UTC+2)
-    - cron: '0 7 * * *' # 08:00 Europe/Zurich during CET (UTC+1)
   workflow_dispatch:
 
 jobs:
@@ -23,33 +18,19 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Skip unless it's 8am Europe/Zurich
-        if: github.event_name == 'schedule'
-        run: |
-          HOUR=$(TZ=Europe/Zurich date +%H)
-          if [ "$HOUR" != "08" ]; then
-            echo "Local time is ${HOUR}:00 in Europe/Zurich, not 08:00 — skipping (the other cron trigger covers this half of the year)."
-            echo "SKIP=true" >> "$GITHUB_ENV"
-          fi
-
       - name: Check out code
-        if: env.SKIP != 'true'
         uses: actions/checkout@v7
 
       - uses: ./.github/workflows/actions/setup-environment
-        if: env.SKIP != 'true'
 
       - name: Install dependencies
-        if: env.SKIP != 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Run pnpm audit
-        if: env.SKIP != 'true'
         shell: bash
         run: pnpm audit --audit-level high --json > audit-result.json || true
 
       - name: Create draft security advisory for any findings
-        if: env.SKIP != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
         run: node scripts/create-audit-advisory.mjs
