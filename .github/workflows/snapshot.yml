@@ -6,6 +6,8 @@ on:
   pull_request:
     types: [opened, closed]
 
+env:
+  DS_RELEASE: true
 jobs:
   snapshot:
     name: 🚚 Create Snapshot
@@ -80,9 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
 
       - name: Build
-        run: pnpm exec turbo run build --filter='./packages/*...'
-        env:
-          DS_RELEASE: true
+        run: pnpm exec turbo run build --filter='./packages/*'
 
       - name: Pre-Publish
         run: node scripts/pre-publish.mjs
