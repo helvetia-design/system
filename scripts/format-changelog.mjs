@@ -1,11 +1,16 @@
 /**
  * Format changelog — post-processes the top version block of packages/core/CHANGELOG.md
  * right after `changeset version` runs (root CHANGELOG.md is only populated later, by
- * scripts/pre-publish.mjs copying this file). Stamps the version heading with today's
- * date, renames the bump-level headers to their emoji equivalents, splits `**deps**:`-scoped
- * bullets out of Fixes into their own section, and appends a deduped Thank You list built
- * from `<!-- author:name -->` markers left by `.changeset/my-changelog-config.js` (which
- * are stripped from the final output).
+ * scripts/pre-publish.mjs copying this file). Renames the bump-level headers to their
+ * emoji equivalents, splits `**deps**:`-scoped bullets out of Fixes into their own section,
+ * and appends a deduped Thank You list built from `<!-- author:name -->` markers left by
+ * `.changeset/my-changelog-config.js` (which are stripped from the final output).
+ *
+ * The `## <version>` heading itself is left untouched (no date) — changesets/action reads
+ * this file right after this script runs to build the Release PR description, and its
+ * extraction does an exact `headingText === version` match. Stamping a date here would
+ * break that match and make it fall back to dumping the whole file. The date is added
+ * later by scripts/pre-publish.mjs, once changesets/action no longer needs the bare heading.
  */
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve, dirname } from 'node:path'
@@ -55,17 +60,8 @@ function parseSections(block) {
   return sections
 }
 
-/**
- * Stamps the `## <version>` heading with today's date, e.g. `## 1.4.0 (2026-10-06)`.
- * Leaves the heading untouched if it already has a date.
- */
-function stampDate(block) {
-  const today = new Date().toISOString().slice(0, 10)
-  return block.replace(/^## (\S+)\s*$/m, (line, version) => (line.includes('(') ? line : `## ${version} (${today})`))
-}
-
 function formatVersionBlock(block) {
-  let renamed = stampDate(block)
+  let renamed = block
   for (const [from, to] of HEADER_RENAMES) {
     renamed = renamed.replaceAll(from, to)
   }

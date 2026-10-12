@@ -59,19 +59,28 @@ for (const pkgPath of publishablePackages) {
   }
 }
 
-// Update root CHANGELOG.md from core package, preserving any hand-written preamble
-// (text between the "# Changelog" title and the first "## " version heading) so manual
-// notes in root CHANGELOG.md survive repeated publishes (non-failing)
+// Merge new version entries from packages/core/CHANGELOG.md into root CHANGELOG.md.
+// packages/core/CHANGELOG.md keeps bare "## <version>" headings (no date) so that
+// changesets/action's exact-match extraction can find the right entry for the Release PR
+// body. Here, at publish time, we stamp today's date onto any version not already present
+// in root and prepend it — existing (already-dated) entries and any hand-written preamble
+// in root CHANGELOG.md are left untouched (non-failing).
 try {
   const coreChangelog = path.join(rootDir, 'packages/core/CHANGELOG.md')
   const rootChangelog = path.join(rootDir, 'CHANGELOG.md')
 
   if (fs.existsSync(coreChangelog)) {
     const coreContent = fs.readFileSync(coreChangelog, 'utf-8')
-    const coreVersionsStart = coreContent.search(/^## /m)
-    const coreVersions = coreVersionsStart === -1 ? '' : coreContent.slice(coreVersionsStart)
+    const headingRe = /^## (\S+).*$/gm
+    const headings = [...coreContent.matchAll(headingRe)]
+    const coreBlocks = headings.map((m, i) => ({
+      version: m[1],
+      block: coreContent.slice(m.index, i + 1 < headings.length ? headings[i + 1].index : coreContent.length).trim(),
+    }))
 
-    let preamble = 'All notable changes to this project will be documented in this file.'
+    const defaultPreamble = 'All notable changes to this project will be documented in this file.'
+    let preamble = defaultPreamble
+    let existingVersions = ''
     if (fs.existsSync(rootChangelog)) {
       const rootContent = fs.readFileSync(rootChangelog, 'utf-8')
       const rootVersionsStart = rootContent.search(/^## /m)
@@ -79,11 +88,22 @@ try {
         .replace(/^# .*$/m, '')
         .trim()
       if (existingPreamble) preamble = existingPreamble
+      existingVersions = rootVersionsStart === -1 ? '' : rootContent.slice(rootVersionsStart)
     }
 
-    const updated = `# Changelog\n\n${preamble}\n\n${coreVersions}`
-    fs.writeFileSync(rootChangelog, updated)
-    console.log(`✅ Updated CHANGELOG.md from packages/core/CHANGELOG.md`)
+    const today = new Date().toISOString().slice(0, 10)
+    const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const newBlocks = coreBlocks
+      .filter(({ version }) => !new RegExp(`^## ${escapeRegExp(version)}(\\s|$)`, 'm').test(existingVersions))
+      .map(({ version, block }) => block.replace(/^## \S+/, `## ${version} (${today})`))
+
+    if (newBlocks.length > 0) {
+      const updated = `# Changelog\n\n${preamble}\n\n${newBlocks.join('\n\n')}\n\n${existingVersions}`.trimEnd() + '\n'
+      fs.writeFileSync(rootChangelog, updated)
+      console.log(`✅ Added ${newBlocks.length} new version(s) to CHANGELOG.md from packages/core/CHANGELOG.md`)
+    } else {
+      console.log(`ℹ️  CHANGELOG.md already up to date`)
+    }
   }
 } catch (error) {
   console.warn(`⚠️  Could not update CHANGELOG.md: ${error.message}`)
