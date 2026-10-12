@@ -3,11 +3,12 @@ name: 🚚 Snapshot
 on:
   issue_comment:
     types: [created]
-  pull_request:
-    types: [opened, closed]
+
+concurrency: snapshot-${{ github.event.issue.number }}
 
 env:
   DS_RELEASE: true
+
 jobs:
   snapshot:
     name: 🚚 Create Snapshot
@@ -20,9 +21,9 @@ jobs:
     steps:
       - name: Get Action URL
         id: action-url
-        run: echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
+        run: echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
 
-      - name: Create comment
+      - name: Notify in progress
         uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ github.event.comment.id }}
@@ -32,16 +33,21 @@ jobs:
 
             [Check out the release on GitHub ↗︎](${{ steps.action-url.outputs.url }})
 
-      - name: Get Branch Name
-        id: get-branch
-        # Use the event payload directly instead of calling the API with jq
+      # github.event.issue.pull_request only carries URLs, not head/base info,
+      # so the PR's branch and latest commit have to come from the API.
+      - name: Get PR info
+        id: pr
         run: |
-          echo "branch=${{ github.event.issue.pull_request.head.ref }}" >> $GITHUB_OUTPUT
+          PR_JSON=$(curl -s -H "Authorization: token ${{ secrets.DS_BOT_RELEASE_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
+          echo "branch=$(echo "$PR_JSON" | jq -r '.head.ref')" >> "$GITHUB_OUTPUT"
+          echo "sha=$(echo "$PR_JSON" | jq -r '.head.sha')" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v7
+      - name: Check out code
+        uses: actions/checkout@v7
         with:
-          ref: ${{ steps.get-branch.outputs.branch }}
-          fetch-depth: 0
+          ref: ${{ steps.pr.outputs.branch }}
+          fetch-depth: 2
 
       - uses: ./.github/workflows/actions/setup-environment
         with:
@@ -51,32 +57,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: get-npm-version
+      - name: Read current version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
         with:
           path: packages/core
 
-      - name: Get Last Commit SHA
-        id: last-commit
-        run: |
-          COMMITS_URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}/commits"
-          LAST_COMMIT_SHA=$(curl -s -H "Authorization: token ${{ secrets.DS_BOT_RELEASE_TOKEN }}" $COMMITS_URL | jq -r '.[-1].sha')
-          echo "sha=$LAST_COMMIT_SHA" >> $GITHUB_OUTPUT
-
-      - name: Shorten Commit Sha
-        id: short-sha
-        run: echo "value=$(git rev-parse --short ${{ steps.last-commit.outputs.sha }})" >> $GITHUB_OUTPUT
-
-      - name: Create version
+      - name: Determine snapshot version
         id: set-version
-        run: echo "version=${{ steps.package-version.outputs.current-version}}-snapshot.${{ github.event.issue.number }}-${{ steps.short-sha.outputs.value }}" >> $GITHUB_OUTPUT
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ steps.pr.outputs.sha }})
+          echo "version=${{ steps.package-version.outputs.current-version }}-snapshot.${{ github.event.issue.number }}-$SHORT_SHA" >> "$GITHUB_OUTPUT"
 
-      - name: Print version
-        run: echo "${{steps.set-version.outputs.version}}"
-
-      - name: Define version
-        run: node scripts/sync-workspace-versions.mjs ${{steps.set-version.outputs.version}}
+      # Bumps every workspace package's own version AND rewrites every internal
+      # dependency pin that references another workspace package to match, so
+      # pnpm's workspace link resolution (and turbo's build order) stay intact.
+      - name: Sync workspace versions
+        run: node scripts/sync-workspace-versions.mjs ${{ steps.set-version.outputs.version }}
 
       - name: Build
         run: pnpm exec turbo run build --filter='./packages/*...'
@@ -87,7 +84,7 @@ jobs:
       - name: Publish
         run: pnpm -r publish --no-git-checks --tag snapshot
 
-      - name: Create comment
+      - name: Notify success
         if: success()
         uses: peter-evans/create-or-update-comment@v5
         with:
@@ -100,7 +97,7 @@ jobs:
 
             [Check out the release on GitHub ↗︎](${{ steps.action-url.outputs.url }})
 
-      - name: Create comment
+      - name: Notify failure
         if: failure()
         uses: peter-evans/create-or-update-comment@v5
         with:
@@ -112,6 +109,3 @@ jobs:
             Version: `${{ steps.set-version.outputs.version }}`
 
             [Check out the release on GitHub ↗︎](${{ steps.action-url.outputs.url }})
-
-      - name: Git Reset
-        run: git reset --hard
