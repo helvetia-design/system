@@ -1,6 +1,6 @@
 {
   "name": "@helvetia-design/angular",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The Helvetia Design System is an open source project for styling awesome web applications that follow the Helvetia corporate styling guidelines.",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "rxjs": ">=7.8.0"
   },
   "dependencies": {
-    "@helvetia-design/core": "0.0.1",
+    "@helvetia-design/core": "0.0.2",
     "tslib": "catalog:"
   },
   "devDependencies": {
