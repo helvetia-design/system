@@ -1,3 +1,7 @@
 # Changelog
 
-> History prior to the @helvetia-design/system rename lives in [Baloise Design System](https://github.com/baloise/design-system/blob/main/CHANGELOG.md).
+## 0.0.4
+
+### Patch Changes
+
+- **core**: fix changelog creation ( [#65](https://github.com/helvetia-design/system/pull/65))<!-- author:hirsch88 -->
