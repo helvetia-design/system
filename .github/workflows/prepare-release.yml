@@ -40,8 +40,7 @@ jobs:
           github-token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
 
       - name: Filter Release PR description to core package only
-        if: steps.changesets.outputs.pullRequestNumber
-        run: node scripts/filter-release-pr-body.mjs ${{ steps.changesets.outputs.pullRequestNumber }}
+        run: node scripts/filter-release-pr-body.mjs
         env:
           GH_TOKEN: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
 

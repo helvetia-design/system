@@ -3,15 +3,24 @@
  * @helvetia-design/core section. All @helvetia-design/* packages are versioned together
  * (see .changeset/config.json "fixed"), and core's own CHANGELOG.md already carries the
  * complete, formatted set of changes for the release, so the other packages' "No changes
- * in this release." sections are pure noise. Run right after changesets/action, passing
- * its `pullRequestNumber` output. Requires `gh` with a token that can edit the PR.
+ * in this release." sections are pure noise. Run right after changesets/action. Accepts an
+ * optional PR number argument for manual use; otherwise looks up the open
+ * `changeset-release/main` PR itself, since changesets/action's own `pullRequestNumber`/
+ * `hasChangesets` outputs come back empty in this workflow (observed on every run,
+ * unrelated to this script). Requires `gh` with a token that can edit the PR.
  */
 import { execSync } from 'node:child_process'
 
-const prNumber = process.argv[2]
+let prNumber = process.argv[2]
 if (!prNumber) {
-  console.error('Usage: node scripts/filter-release-pr-body.mjs <pr-number>')
-  process.exit(1)
+  prNumber = execSync(`gh pr list --head changeset-release/main --state open --json number -q '.[0].number'`, {
+    encoding: 'utf-8',
+  }).trim()
+}
+
+if (!prNumber) {
+  console.log('ℹ️  No open Release PR found, nothing to filter')
+  process.exit(0)
 }
 
 const body = execSync(`gh pr view ${prNumber} --json body -q .body`, { encoding: 'utf-8' })
