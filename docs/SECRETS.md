@@ -18,7 +18,7 @@ Separate bot token used only in the release/snapshot flows.
 
 - **Used in:** `release.yml`, `snapshot.yml`
 - **Purpose:** release git identity, SBOM dependency-graph submission, release commits, GitHub API curl calls for commit SHA lookups
-- **Required permissions:** not documented anywhere today — **needs owner confirmation**. Likely needs the same Contents/Pull-requests write access as `DS_BOT_GITHUB_TOKEN` plus whatever scope the dependency-graph submission API requires, but this hasn't been verified against the actual token settings.
+- **Required permissions:** fine-grained PAT scoped to `helvetia-design/system` with **Contents: Read and write** (pushes the release commit/tag via `EndBug/add-and-commit` at `release.yml:84`, and submits the SBOM to GitHub's Dependency Submission API at `release.yml:127`, which also requires Contents write) and **Pull requests: Read** (`snapshot.yml:52` curls the PR-commits endpoint to resolve the last commit SHA). Unlike `DS_BOT_GITHUB_TOKEN`, this token never opens or comments on PRs, so Pull requests write isn't needed.
 
 ## `NPM_PUBLISH_TOKEN`
 
