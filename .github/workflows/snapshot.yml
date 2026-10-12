@@ -40,7 +40,11 @@ jobs:
         with:
           ref: ${{ steps.get-branch.outputs.branch }}
           fetch-depth: 0
-      - uses: ./.github/workflows/actions/setup
+
+      - uses: ./.github/workflows/actions/setup-environment
+        with:
+          token: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
+          npm-token: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: get-npm-version
         id: package-version
@@ -65,11 +69,6 @@ jobs:
 
       - name: Print version
         run: echo "${{steps.set-version.outputs.version}}"
-
-      - uses: ./.github/workflows/actions/release-setup
-        with:
-          token: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
-          npm-token: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: Define version
         run: |
