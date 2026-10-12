@@ -1,13 +1,13 @@
 <a href="https://helvetia-design.vercel.app" target="blank">
-    <img src="https://raw.githubusercontent.com/helvetia-design/system/next/apps/storybook/src/assets/images/banner.svg?sanitize=true" alt="Helvetia Design System" />
+    <img src="https://raw.githubusercontent.com/helvetia-design/system/main/apps/storybook/src/assets/images/banner.svg?sanitize=true" alt="Helvetia Design System" />
 </a>
 
 <p>
   <a href="https://github.com/helvetia-design/system/actions/workflows/continuous.yml">
-    <img src="https://github.com/helvetia-design/system/actions/workflows/continuous.yml/badge.svg?branch=next" alt="Continuous" />
+    <img src="https://github.com/helvetia-design/system/actions/workflows/continuous.yml/badge.svg?branch=main" alt="Continuous" />
   </a>
   <a href="https://github.com/helvetia-design/system/actions/workflows/security.yml">
-    <img src="https://github.com/helvetia-design/system/actions/workflows/security.yml/badge.svg?branch=next" alt="Security" />
+    <img src="https://github.com/helvetia-design/system/actions/workflows/security.yml/badge.svg?branch=main" alt="Security" />
   </a>
   <a href="https://www.npmjs.com/package/@helvetia-design/core">
     <img src="https://img.shields.io/npm/v/@helvetia-design/core" alt="NPM" />
@@ -15,7 +15,7 @@
   <a href="https://www.npmjs.com/package/@helvetia-design/core">
     <img src="https://img.shields.io/bundlephobia/min/@helvetia-design/core" alt="Bundle Size" />
   </a>
-  <a href="https://github.com/helvetia-design/system/blob/next/LICENSE">
+  <a href="https://github.com/helvetia-design/system/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/helvetia-design/system" alt="License" />
   </a>
 </p>
