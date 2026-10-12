@@ -45,7 +45,7 @@ jobs:
         run: pnpm audit --audit-level high
 
       - name: Build
-        run: pnpm exec turbo run build
+        run: pnpm exec turbo run build --filter='./packages/*'
 
       - name: Pre-Publish
         run: node scripts/pre-publish.mjs
