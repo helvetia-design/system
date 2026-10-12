@@ -60,6 +60,7 @@ For comprehensive technical information, see the dedicated documentation files:
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — Contribution workflow, PR process, component checklist, accessibility requirements
 - **[STYLE_GUIDE.md](docs/STYLE_GUIDE.md)** — Code standards, naming conventions, best practices
 - **[SECURITY.md](SECURITY.md)** — Security policy and guidelines
+- **[SECRETS.md](docs/SECRETS.md)** — GitHub Actions secrets inventory: purpose and required permissions
 - **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — Community standards
 
 ## Agent skills

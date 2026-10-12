@@ -143,16 +143,6 @@ jobs:
       - name: Run Playwright tests
         working-directory: packages/core
         run: pnpm exec playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-        # run: pnpm exec playwright test --update-snapshots
-
-      # - name: Commit snapshots
-      #   if: always()
-      #   uses: EndBug/add-and-commit@v9
-      #   with:
-      #     message: 'update snapshots'
-      #     add: '*.png'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.PRE_RELEASE_GITHUB_TOKEN }}
 
       - name: Upload Playwright blob report
         if: always()
