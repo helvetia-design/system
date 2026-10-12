@@ -59,16 +59,29 @@ for (const pkgPath of publishablePackages) {
   }
 }
 
-// Update root CHANGELOG.md from core package (non-failing)
+// Update root CHANGELOG.md from core package, preserving any hand-written preamble
+// (text between the "# Changelog" title and the first "## " version heading) so manual
+// notes in root CHANGELOG.md survive repeated publishes (non-failing)
 try {
   const coreChangelog = path.join(rootDir, 'packages/core/CHANGELOG.md')
   const rootChangelog = path.join(rootDir, 'CHANGELOG.md')
 
   if (fs.existsSync(coreChangelog)) {
-    const content = fs.readFileSync(coreChangelog, 'utf-8')
-    const lines = content.split('\n')
-    // Remove first line and prepend "# Changelog" header
-    const updated = ['# Changelog', ...lines.slice(1)].join('\n')
+    const coreContent = fs.readFileSync(coreChangelog, 'utf-8')
+    const coreVersionsStart = coreContent.search(/^## /m)
+    const coreVersions = coreVersionsStart === -1 ? '' : coreContent.slice(coreVersionsStart)
+
+    let preamble = 'All notable changes to this project will be documented in this file.'
+    if (fs.existsSync(rootChangelog)) {
+      const rootContent = fs.readFileSync(rootChangelog, 'utf-8')
+      const rootVersionsStart = rootContent.search(/^## /m)
+      const existingPreamble = (rootVersionsStart === -1 ? rootContent : rootContent.slice(0, rootVersionsStart))
+        .replace(/^# .*$/m, '')
+        .trim()
+      if (existingPreamble) preamble = existingPreamble
+    }
+
+    const updated = `# Changelog\n\n${preamble}\n\n${coreVersions}`
     fs.writeFileSync(rootChangelog, updated)
     console.log(`✅ Updated CHANGELOG.md from packages/core/CHANGELOG.md`)
   }
