@@ -1,0 +1,12 @@
+# @helvetia-design/core
+
+## 0.0.5 (2026-10-12)
+
+### 🩹 Fixes
+
+- **core**: update changelog format ( [#67](https://github.com/helvetia-design/system/pull/67))
+
+### ❤️ Thank You
+
+- [@hirsch88](https://github.com/hirsch88)
+
