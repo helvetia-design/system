@@ -1,9 +1,11 @@
 /**
- * Format changelog — post-processes the top version block of CHANGELOG.md right after
- * `changeset version` runs. Renames the bump-level headers to their emoji equivalents,
- * splits `**deps**:`-scoped bullets out of Fixes into their own section, and appends a
- * deduped Thank You list built from `<!-- author:name -->` markers left by
- * `.changeset/my-changelog-config.js` (which are stripped from the final output).
+ * Format changelog — post-processes the top version block of packages/core/CHANGELOG.md
+ * right after `changeset version` runs (root CHANGELOG.md is only populated later, by
+ * scripts/pre-publish.mjs copying this file). Stamps the version heading with today's
+ * date, renames the bump-level headers to their emoji equivalents, splits `**deps**:`-scoped
+ * bullets out of Fixes into their own section, and appends a deduped Thank You list built
+ * from `<!-- author:name -->` markers left by `.changeset/my-changelog-config.js` (which
+ * are stripped from the final output).
  */
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve, dirname } from 'node:path'
@@ -11,7 +13,7 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const workspaceRoot = resolve(__dirname, '..')
-const changelogPath = resolve(workspaceRoot, 'CHANGELOG.md')
+const changelogPath = resolve(workspaceRoot, 'packages/core/CHANGELOG.md')
 
 const HEADER_RENAMES = [
   ['### Major Changes', '### 💥 Breaking Change'],
@@ -53,8 +55,17 @@ function parseSections(block) {
   return sections
 }
 
+/**
+ * Stamps the `## <version>` heading with today's date, e.g. `## 1.4.0 (2026-10-06)`.
+ * Leaves the heading untouched if it already has a date.
+ */
+function stampDate(block) {
+  const today = new Date().toISOString().slice(0, 10)
+  return block.replace(/^## (\S+)\s*$/m, (line, version) => (line.includes('(') ? line : `## ${version} (${today})`))
+}
+
 function formatVersionBlock(block) {
-  let renamed = block
+  let renamed = stampDate(block)
   for (const [from, to] of HEADER_RENAMES) {
     renamed = renamed.replaceAll(from, to)
   }
@@ -82,7 +93,7 @@ function formatVersionBlock(block) {
 
   const stripMarkers = bullet => bullet.replace(AUTHOR_MARKER_RE, '').trimEnd()
 
-  const preamble = block.slice(0, block.search(/^### /m) === -1 ? block.length : block.search(/^### /m))
+  const preamble = renamed.slice(0, renamed.search(/^### /m) === -1 ? renamed.length : renamed.search(/^### /m))
   const parts = [preamble.trimEnd()]
 
   for (const heading of SECTION_ORDER) {
@@ -106,7 +117,7 @@ async function main() {
 
   const firstHeadingMatch = content.match(/^## .+$/m)
   if (!firstHeadingMatch) {
-    console.log('✔ No version block found in CHANGELOG.md, nothing to format')
+    console.log('✔ No version block found in packages/core/CHANGELOG.md, nothing to format')
     return
   }
 
@@ -119,7 +130,7 @@ async function main() {
 
   const updated = content.slice(0, blockStart) + formattedBlock + content.slice(blockEnd)
   await writeFile(changelogPath, updated, 'utf-8')
-  console.log('✔ Formatted CHANGELOG.md')
+  console.log('✔ Formatted packages/core/CHANGELOG.md')
 }
 
 await main()

@@ -1,7 +1,13 @@
 # Changelog
 
-## 0.0.4
+All notable changes to this project will be documented in this file.
 
-### Patch Changes
+## 0.0.4 (2026-10-12)
 
-- **core**: fix changelog creation ( [#65](https://github.com/helvetia-design/system/pull/65))<!-- author:hirsch88 -->
+### 🩹 Fixes
+
+- **core**: fix changelog creation ( [#65](https://github.com/helvetia-design/system/pull/65))
+
+### ❤️ Thank You
+
+- [@hirsch88](https://github.com/hirsch88)
