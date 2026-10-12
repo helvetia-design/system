@@ -1,5 +1,5 @@
 import { Description, Meta, Unstyled } from '@storybook/addon-docs/blocks'
-import { Banner, ButtonCard, Footer, InfoQuote, Lead, LinkCard, LinkCards } from '../.storybook/blocks'
+import { Banner, ButtonCard, Footer, InfoQuote, Lead, LinkCard, LinkCards, MaintainerCard } from '../.storybook/blocks'
 
 <Meta
   title="Support"
@@ -193,19 +193,63 @@ Maintainers are members of the community who are committed to the success of ind
 - Close and merge GitHub pull requests
 
 <Unstyled>
-  <div className="flex gap-base">
-    <ButtonCard color="green" label="Gery Hirschfeld" description="Technical lead" link="https://github.com/hirsch88">
-      <img src="https://avatars.githubusercontent.com/u/6384499?v=4" alt="hirsch88" width="88" />
-    </ButtonCard>
-    <ButtonCard color="green" label="Marlon Leu" description="Technical lead" link="https://github.com/MarlonLeu">
-      <img src="https://avatars.githubusercontent.com/u/22953634?v=4" alt="Marlon Leu" width="88" />
-    </ButtonCard>
-    <ButtonCard color="green" label="Andy" link="https://github.com/" description="UX Architect">
-      <img src="https://avatars.githubusercontent.com/u/62377419?v=4" alt="Andy" width="88" />
-    </ButtonCard>
-    <ButtonCard color="green" label="Andreas" link="https://github.com/clastzoo" description="UX Architect">
-      <img src="https://avatars.githubusercontent.com/u/62377419?v=4" alt="Andreas" width="88" />
-    </ButtonCard>
+  <div className="flex flex-direction-column gap-base">
+    <MaintainerCard
+      color="green"
+      label="The Pixel President"
+      name="Marlon Leuthardt"
+      description={
+        <>
+          <strong>Product Owner & Architecture Lead</strong> · Vision, priorities, architectural decisions, and
+          keeping the chaos organized.
+        </>
+      }
+      link="https://github.com/MarlonLeu"
+    >
+      <img className="radius" src="https://avatars.githubusercontent.com/u/22953634?v=4" alt="Marlon Leu" width="88" />
+    </MaintainerCard>
+    <MaintainerCard
+      color="green"
+      label="The Component Sorcerer"
+      name="Gery Hirschfeld"
+      description={
+        <>
+          <strong>Creator & Architecture Lead</strong> · Inventing components, casting TypeScript spells, and
+          fighting CSS demons.
+        </>
+      }
+      link="https://github.com/hirsch88"
+    >
+      <img className="radius" src="https://avatars.githubusercontent.com/u/6384499?v=4" alt="hirsch88" width="88" />
+    </MaintainerCard>
+    <MaintainerCard
+      color="green"
+      label="The Figma Magician"
+      name="Andreas Stebler"
+      description={
+        <>
+          <strong>UX Engineer</strong> · Mastering Figma, crafting design tokens, building websites, and making
+          pixels disappear and reappear.
+        </>
+      }
+      link="https://github.com/clastzoo"
+    >
+      <img className="radius" src="https://avatars.githubusercontent.com/u/62377419?v=4" alt="Andreas" width="88" />
+    </MaintainerCard>
+    <MaintainerCard
+      color="green"
+      label="The UXplorer"
+      name="Andy Binggeli"
+      description={
+        <>
+          <strong>UX Engineer</strong> · Exploring user journeys, shaping app experiences, and turning confusing
+          interfaces into smooth adventures.
+        </>
+      }
+      link="https://github.com/"
+    >
+      <img className="radius" src="https://avatars.githubusercontent.com/u/62377419?v=4" alt="Andy" width="88" />
+    </MaintainerCard>
   </div>
 </Unstyled>
 

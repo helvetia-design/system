@@ -58,8 +58,33 @@ export const ButtonCard = ({ children, target, color, icon, link, label, descrip
         {icon}
         {children}
       </span>
-      <span className="block ds-title text-md text-align-center mb-none">{label}</span>
+      <span className="block ds-title text-lg text-align-center mb-none">{label}</span>
       <span className="block ds-text text-sm text-align-center">{description}</span>
+    </Tag>
+  )
+}
+
+export const MaintainerCard = ({ children, target, color, link, label, name, description }) => {
+  let linkObj = {}
+  if (link) {
+    linkObj = { ...linkObj, href: link, target: target || '_blank' }
+  }
+
+  const Tag = link ? 'a' : 'button'
+  return (
+    <Tag
+      {...linkObj}
+      style={{ flex: 1 }}
+      className={`sb-unstyled ds-button mb-none flex flex-1 w-full flex-direction-row gap-lg ${
+        color ? (color === 'grey' ? 'is-tertiary' : `is-brand-${color}`) : 'is-secondary'
+      } p-base text-lg`}
+    >
+      <span className="w-fit flex justify-content-center text-2xl text-align-center">{children}</span>
+      <div className="flex-1 w-full flex flex-direction-column">
+        {name ? <span className="block ds-title text-xl text-align-left mb-none">{name}</span> : null}
+        <span className="block ds-subtitle text-xl text-align-left mb-none">{label}</span>
+        <span className="block ds-text text-sm text-align-left mt-xs">{description}</span>
+      </div>
     </Tag>
   )
 }
@@ -265,7 +290,7 @@ export const GridCard = ({ _children, color, pageTitle, svg, label, description 
             </div>
           ) : (
             <div className="flex-1 h-full text-align-left">
-              <h2 className="ds-title text-md mb-2xs">{label}</h2>
+              <h2 className="ds-title text-lg mb-2xs">{label}</h2>
               <small className="ds-text text-sm h-full">{description}</small>
             </div>
           )}
