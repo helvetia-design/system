@@ -46,6 +46,9 @@ jobs:
           token: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
           npm-token: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
@@ -72,12 +75,12 @@ jobs:
 
       - name: Define version
         run: |
-          npm version ${{steps.set-version.outputs.version}} --workspaces --allow-same-version --no-git-tag-version
+          pnpm -r exec -- npm version ${{steps.set-version.outputs.version}} --allow-same-version --no-git-tag-version
         env:
           GITHUB_TOKEN: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
 
       - name: Build
-        run: npx turbo run build
+        run: pnpm exec turbo run build --filter='./packages/*'
         env:
           DS_RELEASE: true
 
@@ -85,7 +88,7 @@ jobs:
         run: node scripts/pre-publish.mjs
 
       - name: Publish
-        run: npm publish --workspaces --tag=snapshot
+        run: pnpm -r publish --no-git-checks --tag snapshot
 
       - name: Create comment
         if: success()
