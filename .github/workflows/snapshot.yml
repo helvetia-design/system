@@ -75,6 +75,15 @@ jobs:
       - name: Sync workspace versions
         run: node scripts/sync-workspace-versions.mjs ${{ steps.set-version.outputs.version }}
 
+      # pnpm's verify-deps-before-run check (which `pnpm exec turbo` triggers)
+      # compares package.json specifiers against pnpm-lock.yaml and auto-runs
+      # "pnpm install" to reconcile them — but CI forces --frozen-lockfile, so
+      # that auto-install hard-fails on the versions we just bumped above.
+      # Refresh the lockfile's bookkeeping (no re-resolve/download) so it goes
+      # in already matching.
+      - name: Refresh lockfile versions
+        run: pnpm install --no-frozen-lockfile --lockfile-only
+
       - name: Build
         run: pnpm exec turbo run build --filter='./packages/*...'
 
