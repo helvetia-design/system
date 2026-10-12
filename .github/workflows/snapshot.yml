@@ -76,13 +76,10 @@ jobs:
         run: echo "${{steps.set-version.outputs.version}}"
 
       - name: Define version
-        run: |
-          pnpm -r exec -- npm version ${{steps.set-version.outputs.version}} --allow-same-version --no-git-tag-version
-        env:
-          GITHUB_TOKEN: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
+        run: node scripts/sync-workspace-versions.mjs ${{steps.set-version.outputs.version}}
 
       - name: Build
-        run: pnpm exec turbo run build --filter='./packages/*'
+        run: pnpm exec turbo run build --filter='./packages/*...'
 
       - name: Pre-Publish
         run: node scripts/pre-publish.mjs
