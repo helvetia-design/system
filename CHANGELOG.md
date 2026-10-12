@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+> Coming from the Baloise Design System? See the [migration guide](https://helvetia-design.vercel.app/?path=/docs/development-migrations-from-baloise--from-baloise).
+
 ## 0.0.5 (2026-10-12)
 
 ### 🩹 Fixes

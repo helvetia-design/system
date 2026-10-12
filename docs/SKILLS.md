@@ -189,10 +189,8 @@ Auto-generate all test files for a component.
 These skills do not live in this repo's `.claude/skills/`. They ship as a standalone npm package and are copied into a **consuming application's** `.claude/skills/` with:
 
 ```bash
-npx @helvetia-design/skills@next add
+npx @helvetia-design/skills add
 ```
-
-The package is published on the `next` dist-tag (same as the rest of this monorepo). `npx` without a tag resolves `latest`, which will not exist until a stable release.
 
 Package conventions (compiled CLI vs. self-contained payload, [how to add the next component's `migration.md`](../packages/skills/CONTEXT.md#adding-the-next-component)) and [how to test the installer](../packages/skills/CONTEXT.md#testing) are documented in [packages/skills/CONTEXT.md](../packages/skills/CONTEXT.md).
 
@@ -203,7 +201,7 @@ Menu-driven migration from the Baloise Design System (`bal-*`) to the Helvetia D
 **Usage:**
 
 ```bash
-npx @helvetia-design/skills@next add
+npx @helvetia-design/skills add
 /ds-migrate-from-baloise
 ```
 
@@ -386,17 +384,17 @@ Example: `--ds-button-primary-color-base-text`
 
 ## Key Commands Reference
 
-| Task                 | Command                                                                 |
-| -------------------- | ----------------------------------------------------------------------- |
-| Create component     | `/ds-create-component`                                                  |
-| Create tokens        | `/ds-create-token <name>`                                               |
-| Generate tests       | `/ds-test-component <name>`                                             |
-| Generate docs        | `/ds-document-component <name>`                                         |
-| Lint component       | `/ds-lint-component <name> check`                                       |
-| Fix component        | `/ds-lint-component <name> fix`                                         |
-| Find tokens          | `/ds-find-token value <value>`                                          |
-| Find tokens by type  | `/ds-find-token type <type>`                                            |
-| Migrate from Baloise | `npx @helvetia-design/skills@next add`, then `/ds-migrate-from-baloise` |
+| Task                 | Command                                                            |
+| -------------------- | ------------------------------------------------------------------ |
+| Create component     | `/ds-create-component`                                             |
+| Create tokens        | `/ds-create-token <name>`                                          |
+| Generate tests       | `/ds-test-component <name>`                                        |
+| Generate docs        | `/ds-document-component <name>`                                    |
+| Lint component       | `/ds-lint-component <name> check`                                  |
+| Fix component        | `/ds-lint-component <name> fix`                                    |
+| Find tokens          | `/ds-find-token value <value>`                                     |
+| Find tokens by type  | `/ds-find-token type <type>`                                       |
+| Migrate from Baloise | `npx @helvetia-design/skills add`, then `/ds-migrate-from-baloise` |
 
 ## See Also
 

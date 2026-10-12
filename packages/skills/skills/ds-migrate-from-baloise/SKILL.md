@@ -28,7 +28,7 @@ Scan `<project-root>`, the consumer project root that contains the app lockfile.
 node <this-skill-directory>/scripts/detect-baloise.mjs <project-root>
 ```
 
-The script prints one JSON object. It resolves the current `next` dist-tag with `npm view @helvetia-design/core dist-tags`. Use `version` and `aliases` from that JSON. Do not hardcode a version.
+The script prints one JSON object. It resolves the current `latest` dist-tag with `npm view @helvetia-design/core dist-tags`. Use `version` and `aliases` from that JSON. Do not hardcode a version.
 
 The walk skips `node_modules`, `dist`, `build`, `out`, `.next`, `.angular`, `.git`, `.claude`, and `coverage` at any depth.
 

@@ -32,7 +32,7 @@ function targetPackageName(short) {
   return `${TARGET_SCOPE}/${short}`
 }
 
-const MISSING_NEXT = `npm view ${targetPackageName('core')} dist-tags did not include a next tag`
+const MISSING_LATEST = `npm view ${targetPackageName('core')} dist-tags did not include a latest tag`
 
 const execFileAsync = promisify(execFile)
 const PACKAGE_RE = new RegExp(`${LEGACY_SCOPE}/ds-(?:${SHORT_NAMES.join('|')})\\b`)
@@ -53,9 +53,9 @@ export async function detectBaloise(rootDir, options = {}) {
 
   const readDistTags = options.readDistTags ?? readNpmDistTags
   const distTags = await readDistTags()
-  const version = typeof distTags?.next === 'string' ? distTags.next : ''
+  const version = typeof distTags?.latest === 'string' ? distTags.latest : ''
   if (!version) {
-    return { status: 'error', message: MISSING_NEXT }
+    return { status: 'error', message: MISSING_LATEST }
   }
 
   const framework = detectFramework(found.manifest)

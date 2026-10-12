@@ -26,7 +26,9 @@ function write(root: string, rel: string, contents: string) {
 }
 
 function distTags(version: string) {
-  return async () => ({ latest: '19.10.2', next: version })
+  // Includes an unrelated tag alongside `latest` to prove resolution reads
+  // `latest` specifically, not just the first key in the object.
+  return async () => ({ latest: version, snapshot: '0.0.5-snapshot.1-abc1234' })
 }
 
 describe('detectBaloise', () => {
@@ -137,7 +139,7 @@ describe('detectBaloise', () => {
     expect(result).toEqual({ status: 'nothing-to-migrate', message: NOTHING })
   })
 
-  it('detects a React app, pnpm, and aliases for the resolved next version', async () => {
+  it('detects a React app, pnpm, and aliases for the resolved latest version', async () => {
     const root = createScratchDir()
     write(root, 'pnpm-lock.yaml', 'lockfileVersion: 9\n')
     write(
@@ -158,7 +160,7 @@ describe('detectBaloise', () => {
       ["import '@baloise/ds-styles/css/design-system'", "import { BalButton } from '@baloise/ds-react'", ''].join('\n'),
     )
 
-    const result = await detectBaloise(root, { readDistTags: distTags('20.0.0-next.42') })
+    const result = await detectBaloise(root, { readDistTags: distTags('20.0.0') })
 
     expect(result).toEqual({
       status: 'ready',
@@ -181,15 +183,15 @@ describe('detectBaloise', () => {
           kind: 'reference',
         },
       ],
-      version: '20.0.0-next.42',
+      version: '20.0.0',
       aliases: {
-        '@helvetia-design/react': '20.0.0-next.42',
-        '@helvetia-design/styles': '20.0.0-next.42',
+        '@helvetia-design/react': '20.0.0',
+        '@helvetia-design/styles': '20.0.0',
       },
     })
   })
 
-  it('uses a later next tag instead of a hardcoded version', async () => {
+  it('uses the resolved latest tag instead of a hardcoded version', async () => {
     const root = createScratchDir()
     write(
       root,
@@ -198,14 +200,14 @@ describe('detectBaloise', () => {
     )
     write(root, 'src/styles.ts', "import '@baloise/ds-styles/css/design-system'\n")
 
-    const result = await detectBaloise(root, { readDistTags: distTags('20.0.0-next.99') })
+    const result = await detectBaloise(root, { readDistTags: distTags('20.1.0') })
 
     expect(result).toMatchObject({
       status: 'ready',
-      version: '20.0.0-next.99',
+      version: '20.1.0',
       aliases: {
-        '@helvetia-design/react': '20.0.0-next.99',
-        '@helvetia-design/styles': '20.0.0-next.99',
+        '@helvetia-design/react': '20.1.0',
+        '@helvetia-design/styles': '20.1.0',
       },
     })
   })
@@ -220,7 +222,7 @@ describe('detectBaloise', () => {
     )
     write(root, 'src/index.jsx', "import '@baloise/ds-styles/dist/css/design-system.css'\n")
 
-    const result = await detectBaloise(root, { readDistTags: distTags('20.0.0-next.9') })
+    const result = await detectBaloise(root, { readDistTags: distTags('20.0.1') })
 
     expect(result).toMatchObject({ packageManager: 'yarn', installCommand: 'yarn install' })
   })
@@ -235,7 +237,7 @@ describe('detectBaloise', () => {
       '<script type="module" src="node_modules/@baloise/ds-core/dist/design-system/design-system.esm.js"></script>\n',
     )
 
-    const locked = await detectBaloise(withLock, { readDistTags: distTags('20.0.0-next.9') })
+    const locked = await detectBaloise(withLock, { readDistTags: distTags('20.0.1') })
     expect(locked).toMatchObject({ packageManager: 'npm', installCommand: 'npm install', framework: 'html' })
 
     const bare = createScratchDir()
@@ -246,15 +248,15 @@ describe('detectBaloise', () => {
       '<link rel="stylesheet" href="node_modules/@baloise/ds-styles/dist/css/design-system.css" />\n',
     )
 
-    const unlocked = await detectBaloise(bare, { readDistTags: distTags('20.0.0-next.9') })
+    const unlocked = await detectBaloise(bare, { readDistTags: distTags('20.0.1') })
     expect(unlocked).toMatchObject({
       packageManager: 'npm',
       installCommand: 'npm install',
       framework: 'html',
       dependencies: ['@baloise/ds-styles'],
       aliases: {
-        '@helvetia-design/core': '20.0.0-next.9',
-        '@helvetia-design/styles': '20.0.0-next.9',
+        '@helvetia-design/core': '20.0.1',
+        '@helvetia-design/styles': '20.0.1',
       },
     })
   })
@@ -286,14 +288,14 @@ describe('detectBaloise', () => {
       }),
     )
 
-    const result = await detectBaloise(root, { readDistTags: distTags('20.0.0-next.9') })
+    const result = await detectBaloise(root, { readDistTags: distTags('20.0.1') })
 
     expect(result).toMatchObject({
       framework: 'angular',
       packageJsonPath: 'package.json',
       aliases: {
-        '@helvetia-design/angular': '20.0.0-next.9',
-        '@helvetia-design/styles': '20.0.0-next.9',
+        '@helvetia-design/angular': '20.0.1',
+        '@helvetia-design/styles': '20.0.1',
       },
       imports: [
         {
@@ -323,7 +325,7 @@ describe('detectBaloise', () => {
     )
     write(root, 'apps/web/src/styles.scss', "@import '@baloise/ds-styles/css/design-system';\n")
 
-    const result = await detectBaloise(root, { readDistTags: distTags('20.0.0-next.9') })
+    const result = await detectBaloise(root, { readDistTags: distTags('20.0.1') })
 
     expect(result).toMatchObject({
       packageManager: 'pnpm',
@@ -333,7 +335,7 @@ describe('detectBaloise', () => {
     })
   })
 
-  it('stops with an error when the next dist-tag is missing', async () => {
+  it('stops with an error when the latest dist-tag is missing', async () => {
     const root = createScratchDir()
     write(root, 'package.json', JSON.stringify({ dependencies: { '@baloise/ds-core': '19.10.2' } }))
     write(
@@ -342,11 +344,11 @@ describe('detectBaloise', () => {
       '<link rel="stylesheet" href="node_modules/@baloise/ds-styles/dist/css/design-system.css" />\n',
     )
 
-    const result = await detectBaloise(root, { readDistTags: async () => ({ latest: '19.10.2' }) })
+    const result = await detectBaloise(root, { readDistTags: async () => ({ snapshot: '0.0.5-snapshot.1-abc1234' }) })
 
     expect(result).toEqual({
       status: 'error',
-      message: 'npm view @helvetia-design/core dist-tags did not include a next tag',
+      message: 'npm view @helvetia-design/core dist-tags did not include a latest tag',
     })
   })
 
@@ -371,10 +373,10 @@ describe('readNpmDistTags', () => {
     const calls: unknown[][] = []
     const distTags = await readNpmDistTags(async (command: string, args: string[]) => {
       calls.push([command, args])
-      return { stdout: JSON.stringify({ latest: '19.10.2', next: '20.0.0-next.9' }) }
+      return { stdout: JSON.stringify({ latest: '19.10.2', snapshot: '0.0.5-snapshot.1-abc1234' }) }
     })
 
     expect(calls).toEqual([['npm', ['view', '@helvetia-design/core', 'dist-tags', '--json']]])
-    expect(distTags).toEqual({ latest: '19.10.2', next: '20.0.0-next.9' })
+    expect(distTags).toEqual({ latest: '19.10.2', snapshot: '0.0.5-snapshot.1-abc1234' })
   })
 })
