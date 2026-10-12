@@ -44,5 +44,12 @@ const coreSection = body.slice(sectionStart, sectionEnd).trim()
 
 const filteredBody = `${intro}\n\n# Releases\n\n${coreSection}\n`
 
-execSync(`gh pr edit ${prNumber} --body-file -`, { input: filteredBody, encoding: 'utf-8' })
+// `gh pr edit` also fetches the full PR object (incl. review requests) via GraphQL to print
+// a confirmation, which 403s when the token can't see a requested reviewer (e.g. a team) —
+// even though the edit itself would succeed. Use a plain REST PATCH instead to avoid that.
+const repo = execSync(`gh repo view --json nameWithOwner -q .nameWithOwner`, { encoding: 'utf-8' }).trim()
+execSync(`gh api repos/${repo}/pulls/${prNumber} --method PATCH --field body=@-`, {
+  input: filteredBody,
+  encoding: 'utf-8',
+})
 console.log(`✅ Filtered PR #${prNumber} body to only show @helvetia-design/core`)
