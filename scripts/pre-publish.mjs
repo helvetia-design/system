@@ -2,6 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { glob } from 'glob'
+import { load } from 'js-yaml'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(__dirname, '..')
@@ -9,18 +10,23 @@ const rootDir = path.resolve(__dirname, '..')
 // Files to copy from root to each package
 const FILES_TO_COPY = ['README.md', 'LICENSE']
 
-// Read root package.json to get workspaces
-const rootPkgJson = fs.readJsonSync(path.join(rootDir, 'package.json'))
-const workspacePatterns = rootPkgJson.workspaces || []
+// pnpm workspaces are declared in pnpm-workspace.yaml, not package.json "workspaces"
+const workspaceYaml = load(fs.readFileSync(path.join(rootDir, 'pnpm-workspace.yaml'), 'utf-8'))
+const workspacePatterns = workspaceYaml.packages || []
 
 console.log('🚀 Pre-Publish: Copying root files to publishable packages...\n')
 
 // Expand glob patterns to actual package paths
 const publishablePackages = []
 
-for (const pattern of workspacePatterns) {
+const includePatterns = workspacePatterns.filter(p => !p.startsWith('!'))
+const excludePatterns = workspacePatterns
+  .filter(p => p.startsWith('!'))
+  .map(p => path.join(rootDir, p.slice(1), 'package.json'))
+
+for (const pattern of includePatterns) {
   const globPattern = path.join(rootDir, pattern, 'package.json')
-  const matches = glob.sync(globPattern, { ignore: '**/node_modules/**' })
+  const matches = glob.sync(globPattern, { ignore: ['**/node_modules/**', ...excludePatterns] })
 
   for (const match of matches) {
     const pkgPath = path.dirname(match)
