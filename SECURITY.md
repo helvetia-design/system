@@ -302,5 +302,3 @@ For more information on secure development in this project:
 - **[ARCHITECTURE.md — CI/CD Pipeline](docs/ARCHITECTURE.md#cicd-pipeline)** — Security scanning workflows and automation
 - **[DEVELOPMENT.md](docs/DEVELOPMENT.md)** — Development setup and local testing
 - **[STYLE_GUIDE.md — Security](docs/STYLE_GUIDE.md#what-to-avoid)** — Code patterns that avoid common vulnerabilities
-
-gugus
