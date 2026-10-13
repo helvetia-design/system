@@ -39,6 +39,8 @@ updates:
       default-days: 7
     labels:
       - '⬆️ dependencies'
+    commit-message:
+      prefix: '⬆️ deps'
 
   - package-ecosystem: github-actions
     directory: /
@@ -49,3 +51,5 @@ updates:
       timezone: Europe/Zurich
     labels:
       - '⬆️ dependencies'
+    commit-message:
+      prefix: '⬆️ deps'
