@@ -1,0 +1,49 @@
+name: 🤖 Dependabot Changeset
+
+## Dependabot bumps both production and dev dependencies, but only production
+## `dependencies` of packages/*/package.json affect consumers of the design
+## system. This workflow diffs those against main and, if anything changed,
+## records it in a single accumulated changeset (.changeset/dependabot-updates.md)
+## targeting @helvetia-design/core under the `deps` scope — matching the same
+## convention `scripts/create-changeset.mjs` uses — so a run of weekly
+## Dependabot PRs produces at most one changeset per release instead of one
+## per PR. The commit is pushed straight back onto the PR branch, same as
+## dependabot-lockfile-fix.yml.
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  update-changeset:
+    if: github.actor == 'dependabot[bot]'
+    name: 📝 Sync dependency changeset
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          persist-credentials: true
+
+      - name: Fetch main
+        run: git fetch origin main --depth=1
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Sync dependency changeset
+        run: node scripts/dependabot-changeset.mjs
+
+      - name: Commit changeset if changed
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: 'chore: update dependency changeset'
+          file_pattern: .changeset/dependabot-updates.md
