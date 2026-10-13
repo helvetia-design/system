@@ -210,7 +210,7 @@ Run `add` in the consuming application, then invoke the skill there.
 **What it does:**
 
 - Copies the skill into the consumer's `.claude/skills/ds-migrate-from-baloise/`
-- **Init** — detects `@baloise/ds-*`, adds `@helvetia/*` npm aliases for the current `next` version, and inserts the new CSS/JS import next to the old one. Stops with "nothing to migrate" when no Baloise install is found
+- **Init** — detects `@baloise/ds-*`, adds `@helvetia/*` npm aliases for the current `latest` version, and inserts the new CSS/JS import next to the old one. Stops with "nothing to migrate" when no Baloise install is found
 - **Components** — offers a manual list of every migration or scans the app and suggests migrations for the `bal-*` components it uses. **spinner** finds `bal-spinner` usages and, after one confirmation, rewrites them to `ds-spinner`
 - **CSS utils** and **Assets** — report "coming soon" and stop
 - Edits files and leaves them unstaged. Never runs `git add` or `git commit`

@@ -4,6 +4,9 @@ This file guides AI assistants when working with code in this repository.
 
 ## Quick Reference
 
+You are an expert in TypeScript, Stencil, Web Components, design tokens, and scalable multi-framework (React/Angular) component library development.
+You write functional, maintainable, performant, and accessible code following TypeScript and Stencil best practices.
+
 ### General Rules
 
 - **Never commit changes** — always leave changes unstaged for the user to review and commit themselves.
