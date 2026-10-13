@@ -7,6 +7,12 @@
  * `@helvetia-design/*` cross-references are skipped — their versions are kept
  * in sync by the changesets release process itself.
  *
+ * One deliberate exception: @stencil/core. It's pinned via the pnpm catalog
+ * (not a literal package.json version) and is a devDependency, but it's the
+ * compiler that produces the actual hydrate/lazy runtime bundles shipped to
+ * consumers — a Stencil bump can change shipped behavior, so it's tracked
+ * explicitly against pnpm-workspace.yaml's catalog entry.
+ *
  * All dependency bumps are recorded under a single, fixed changeset file
  * (.changeset/dependabot-updates.md) targeting `@helvetia-design/core` with
  * the `deps` scope, matching the convention used by `create-changeset.mjs`
@@ -27,8 +33,10 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const workspaceRoot = resolve(__dirname, '..')
 const CHANGESET_PATH = join(workspaceRoot, '.changeset', 'dependabot-updates.md')
+const WORKSPACE_YAML_PATH = 'pnpm-workspace.yaml'
 const BASE_REF = 'origin/main'
 const BULLET_PATTERN = /^- (.+): (.+) → (.+)$/
+const STENCIL_CATALOG_PATTERN = /^\s*'?@stencil\/core'?:\s*(\S+)/m
 
 /**
  * Read and parse a package.json's "dependencies" block at a given git ref.
@@ -72,6 +80,45 @@ function diffPackageDependencies(relativePath) {
 }
 
 /**
+ * Resolve @stencil/core's pinned version from pnpm-workspace.yaml's catalog
+ * block, at a given git ref or from the working tree.
+ */
+function readStencilVersionAtRef(ref) {
+  try {
+    const raw = execFileSync('git', ['show', `${ref}:${WORKSPACE_YAML_PATH}`], {
+      cwd: workspaceRoot,
+      encoding: 'utf-8',
+    })
+    return raw.match(STENCIL_CATALOG_PATTERN)?.[1]
+  } catch {
+    return undefined
+  }
+}
+
+function readStencilVersionOnDisk() {
+  try {
+    const raw = readFileSync(join(workspaceRoot, WORKSPACE_YAML_PATH), 'utf-8')
+    return raw.match(STENCIL_CATALOG_PATTERN)?.[1]
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Diff @stencil/core's catalog-pinned version between the base ref and the
+ * working tree. See the module docstring for why this is tracked despite
+ * being a devDependency.
+ */
+function diffStencilVersion() {
+  const oldVersion = readStencilVersionAtRef(BASE_REF)
+  const newVersion = readStencilVersionOnDisk()
+  if (oldVersion && newVersion && oldVersion !== newVersion) {
+    return [{ name: '@stencil/core', oldVersion, newVersion }]
+  }
+  return []
+}
+
+/**
  * Parse the existing accumulated changeset's bullet list into a Map keyed by
  * dependency name, so a re-bump of the same dependency replaces its line
  * in-place instead of duplicating it.
@@ -107,7 +154,7 @@ ${lines.join('\n')}
 function main() {
   const packageJsonPaths = globSync('packages/*/package.json', { cwd: workspaceRoot })
 
-  const newChanges = packageJsonPaths.flatMap(diffPackageDependencies)
+  const newChanges = [...packageJsonPaths.flatMap(diffPackageDependencies), ...diffStencilVersion()]
   if (newChanges.length === 0) {
     console.log('No production dependency changes detected — nothing to do.')
     return
