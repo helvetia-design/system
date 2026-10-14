@@ -161,6 +161,31 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests checkbox when the project uses bal-checkbox and folds the group tag in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalCheckbox } from '@baloise/ds-react'", 'export const App = () => <BalCheckbox value="1" />'].join(
+        '\n',
+      ),
+    )
+    write(
+      root,
+      'index.html',
+      ['<bal-checkbox-group control>', '  <bal-checkbox value="1"></bal-checkbox>', '</bal-checkbox-group>', ''].join(
+        '\n',
+      ),
+    )
+
+    // bal-checkbox-group has no migration of its own; the checkbox migration covers
+    // it, so it counts towards checkbox rather than showing up as notYet.
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'checkbox', total: 6 }],
+      notYet: [],
+    })
+  })
+
   it('suggests toast when the project uses bal-toast', () => {
     const root = createScratchDir()
     write(
