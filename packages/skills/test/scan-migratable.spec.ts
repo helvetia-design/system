@@ -224,6 +224,21 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests close when the project uses bal-close', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalClose } from '@baloise/ds-react'", 'export const App = () => <BalClose size="small" />'].join('\n'),
+    )
+    write(root, 'index.html', '<bal-close inverted></bal-close>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'close', total: 4 }],
+      notYet: [],
+    })
+  })
+
   it('suggests icon when the project uses bal-icon', () => {
     const root = createScratchDir()
     write(
