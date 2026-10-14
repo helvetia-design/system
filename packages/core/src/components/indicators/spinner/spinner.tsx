@@ -189,7 +189,9 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
     if (this.animationItem && this.animationItem.destroy) {
       this.animationItem.destroy()
     }
-    this.innerEl!.innerHTML = ''
+    if (this.innerEl) {
+      this.innerEl.innerHTML = ''
+    }
   }
 
   private shouldAnimate = () => {

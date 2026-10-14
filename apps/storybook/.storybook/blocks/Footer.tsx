@@ -10,7 +10,7 @@ export const Footer = ({ children }) => {
       const storyId = params.get('id') || ''
 
       if (!storyId) {
-        return 'https://github.com/baloise/design-system'
+        return 'https://github.com/helvetia-design/system'
       }
 
       // Story IDs are "<kind-slug>--<story-slug>" — the kind slug itself may contain
@@ -23,13 +23,13 @@ export const Footer = ({ children }) => {
 
       if (!sourceFile) {
         console.warn(`[Footer] Story ID not found in mapping: ${cleanId}`)
-        return 'https://github.com/baloise/design-system'
+        return 'https://github.com/helvetia-design/system'
       }
 
-      return `https://github.com/baloise/design-system/blob/next/apps/storybook/src/${sourceFile}`
+      return `https://github.com/helvetia-design/system/blob/next/apps/storybook/src/${sourceFile}`
     } catch (err) {
       console.warn('[Footer] Error generating GitHub URL:', err.message)
-      return 'https://github.com/baloise/design-system'
+      return 'https://github.com/helvetia-design/system'
     }
   }, [])
   return (
@@ -71,7 +71,7 @@ export const Footer = ({ children }) => {
                 {/* <a
                   className="ds-button is-secondary"
                   target="_blank"
-                  href={'https://github.com/baloise/design-system/issues/new?template=bug_report.yml'}
+                  href={'https://github.com/helvetia-design/system/issues/new?template=bug_report.yml'}
                   style={{ width: 'auto' }}
                 >
                   Create Issue

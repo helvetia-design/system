@@ -2,7 +2,7 @@
 
 ## Overview
 
-Issues for the Helvetia Design System are tracked in **GitHub Issues** in the [baloise/design-system](https://github.com/baloise/design-system) repository.
+Issues for the Helvetia Design System are tracked in **GitHub Issues** in the [helvetia-design/system](https://github.com/helvetia-design/system) repository.
 
 ## Creating Issues
 
@@ -33,7 +33,7 @@ gh issue close <issue-number>           # Close an issue
 
 **Web:**
 
-- https://github.com/baloise/design-system/issues
+- https://github.com/helvetia-design/system/issues
 
 ## Pull Requests
 

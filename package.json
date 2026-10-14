@@ -2,7 +2,7 @@
   "name": "design-system",
   "version": "0.0.0",
   "homepage": "https://helvetia-design.vercel.app",
-  "security": "https://github.com/baloise/design-system/security/advisories/new",
+  "security": "https://github.com/helvetia-design/system/security/advisories/new",
   "license": "Apache-2.0",
   "packageManager": "pnpm@11.15.1",
   "engines": {
@@ -87,7 +87,7 @@
     "dotenv": "18.0.5",
     "eslint": "catalog:",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-playwright": "2.12.0",
+    "eslint-plugin-playwright": "2.12.1",
     "express": "catalog:",
     "fast-deep-equal": "catalog:",
     "fast-glob": "3.3.3",
@@ -95,7 +95,7 @@
     "glob": "13.0.6",
     "husky": "^9.1.7",
     "js-yaml": "5.4.2",
-    "jsdom": "30.1.1",
+    "jsdom": "30.1.2",
     "jsonc-eslint-parser": "3.3.0",
     "kill-port": "2.0.1",
     "lint-staged": "^17.6.0",
@@ -106,22 +106,22 @@
     "sass": "catalog:",
     "serve-index": "catalog:",
     "storybook": "catalog:",
-    "style-dictionary": "5.5.5",
+    "style-dictionary": "5.6.0",
     "svgo": "4.1.0",
     "tsx": "catalog:",
-    "turbo": "2.11.6",
+    "turbo": "2.11.7",
     "typescript": "catalog:",
     "typescript-eslint": "8.71.0",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
   "optionalDependencies": {
-    "@oxc-parser/binding-linux-arm64-gnu": "0.152.0",
-    "@oxc-parser/binding-linux-x64-gnu": "0.152.0"
+    "@oxc-parser/binding-linux-arm64-gnu": "0.153.0",
+    "@oxc-parser/binding-linux-x64-gnu": "0.153.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,json,md,mdx,scss,css,html,yml,yaml}": "prettier --write --end-of-line lf",
-    "packages/core/src/**/*.{ts,tsx}": "cspell --no-progress",
-    "apps/storybook/src/**/*.{md,mdx}": "cspell --no-progress"
+    "packages/core/src/**/*.{ts,tsx}": "cspell --no-progress --no-must-find-files",
+    "apps/storybook/src/**/*.{md,mdx}": "cspell --no-progress --no-must-find-files"
   }
 }

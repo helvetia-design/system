@@ -1,16 +1,16 @@
 {
   "name": "@helvetia-design/react",
-  "version": "0.0.0",
+  "version": "0.0.5",
   "description": "The Helvetia Design System is an open source project for styling awesome web applications that follow the Helvetia corporate styling guidelines.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/baloise/design-system.git"
+    "url": "git+https://github.com/helvetia-design/system.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "homepage": "https://helvetia-design.vercel.app",
-  "security": "https://github.com/baloise/design-system/security/advisories/new",
+  "security": "https://github.com/helvetia-design/system/security/advisories/new",
   "license": "Apache-2.0",
   "type": "module",
   "main": "dist/index.js",
@@ -40,7 +40,7 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@helvetia-design/core": "0.0.0",
+    "@helvetia-design/core": "0.0.5",
     "@stencil/react-output-target": "1.6.2"
   },
   "devDependencies": {
@@ -48,7 +48,7 @@
     "@types/react-dom": "19.3.0",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "7.1.1",
-    "jsdom": "30.1.1",
+    "jsdom": "30.1.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "typescript": "catalog:",

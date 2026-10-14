@@ -44,7 +44,7 @@ packages/
   tokens/             # Style-dictionary design tokens
   assets/             # Fonts, icons, images
   playwright/         # Custom Playwright matchers for component testing
-  ds-skills/          # Installer CLI + consumer Claude Code skills (`@helvetia/ds-skills`)
+  skills/             # Installer CLI + consumer Claude Code skills (`@helvetia-design/skills`)
 
 libs/
   output-target-angular/   # Stencil → Angular bindings generator
@@ -463,7 +463,7 @@ Post this comment in the PR to trigger `snapshot.yml`. The resulting version fol
    ↓
 6. release.yml publishes all packages to npm with GitHub provenance
    ↓
-7. Docs automatically redeploy to design.baloise.dev
+7. Docs automatically redeploy to helvetia-design.vercel.app
 ```
 
 For LTS (`main` branch), follow the same process with `lts-prepare-release.yml` and `lts-release.yml`.
@@ -596,7 +596,7 @@ The design system documentation site is automatically deployed to **Vercel** whe
 
 | Domain                                                                         | Branch                  | Purpose                                                                     |
 | ------------------------------------------------------------------------------ | ----------------------- | --------------------------------------------------------------------------- |
-| [design.baloise.dev](https://helvetia-design.vercel.app)                       | `next` (latest release) | Production domain serving the latest published version                      |
+| [helvetia-design.vercel.app](https://helvetia-design.vercel.app)               | `next` (latest release) | Production domain serving the latest published version                      |
 | [baloise-design-preview.vercel.app](https://baloise-design-preview.vercel.app) | `main`                  | LTS version of Baloise                                                      |
 | `design-system-*.vercel.app`                                                   | Every PR                | Each pull request gets a unique preview URL (linked in Vercel's PR comment) |
 
@@ -604,7 +604,7 @@ The design system documentation site is automatically deployed to **Vercel** whe
 
 Vercel watches the repository for changes and automatically rebuilds and deploys when:
 
-- Changes are pushed to `next` → rebuilds production docs at `design.baloise.dev`
+- Changes are pushed to `next` → rebuilds production docs at `helvetia-design.vercel.app`
 - Changes are pushed to `main` → rebuilds lts at `baloise-design-lts.vercel.app`
 - A pull request is opened or updated → builds a lts at a unique Vercel URL and comments with the link
 

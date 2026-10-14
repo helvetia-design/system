@@ -1,16 +1,16 @@
 {
   "name": "@helvetia-design/styles",
-  "version": "0.0.0",
+  "version": "0.0.5",
   "description": "UnoCSS utility preset and pre-built CSS bundle for the Helvetia Design System.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/baloise/design-system.git"
+    "url": "git+https://github.com/helvetia-design/system.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "homepage": "https://baloise-design-system.vercel.app",
-  "security": "https://github.com/baloise/design-system/security/advisories/new",
+  "security": "https://github.com/helvetia-design/system/security/advisories/new",
   "license": "Apache-2.0",
   "type": "module",
   "exports": {
@@ -35,14 +35,14 @@
     "build": "node --import tsx/esm src/build.ts"
   },
   "dependencies": {
-    "@helvetia-design/assets": "0.0.0",
-    "@helvetia-design/tokens": "0.0.0"
+    "@helvetia-design/assets": "0.0.5",
+    "@helvetia-design/tokens": "0.0.5"
   },
   "devDependencies": {
-    "@helvetia-design/tokens": "0.0.0",
+    "@helvetia-design/tokens": "0.0.5",
     "autoprefixer": "10.6.1",
-    "cssnano": "9.1.2",
-    "postcss": "8.5.28",
+    "cssnano": "9.3.1",
+    "postcss": "8.5.29",
     "sass": "catalog:",
     "tsx": "catalog:",
     "unocss": "66.10.5"

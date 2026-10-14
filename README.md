@@ -1,24 +1,6 @@
 <a href="https://helvetia-design.vercel.app" target="blank">
-    <img src="https://raw.githubusercontent.com/baloise/design-system/next/apps/storybook/src/assets/images/banner.svg?sanitize=true" alt="Helvetia Design System" />
+    <img src="https://raw.githubusercontent.com/helvetia-design/system/main/apps/storybook/src/assets/images/banner.svg?sanitize=true" alt="Helvetia Design System" />
 </a>
-
-<p>
-  <a href="https://github.com/baloise/design-system/actions/workflows/continuous.yml">
-    <img src="https://github.com/baloise/design-system/actions/workflows/continuous.yml/badge.svg?branch=next" alt="Continuous" />
-  </a>
-  <a href="https://github.com/baloise/design-system/actions/workflows/security.yml">
-    <img src="https://github.com/baloise/design-system/actions/workflows/security.yml/badge.svg?branch=next" alt="Security" />
-  </a>
-  <a href="https://www.npmjs.com/package/@helvetia-design/core">
-    <img src="https://img.shields.io/npm/v/@helvetia-design/core" alt="NPM" />
-  </a>
-  <a href="https://www.npmjs.com/package/@helvetia-design/core">
-    <img src="https://img.shields.io/bundlephobia/min/@helvetia-design/core" alt="Bundle Size" />
-  </a>
-  <a href="https://github.com/baloise/design-system/blob/next/LICENSE">
-    <img src="https://img.shields.io/github/license/baloise/design-system" alt="License" />
-  </a>
-</p>
 
 Built with accessibility and simplicity in mind, the Helvetia Design System provides UI components and a clearly defined visual style for building web applications.
 
@@ -64,7 +46,7 @@ Explore all available components, design tokens, and examples in the [component 
 
 ## Contributing
 
-We welcome contributions! Please read our [CONTRIBUTING.md](https://github.com/baloise/design-system/blob/next/CONTRIBUTING.md) guide to learn about:
+We welcome contributions! Please read our [CONTRIBUTING.md](https://github.com/helvetia-design/system/blob/next/CONTRIBUTING.md) guide to learn about:
 
 - Reporting bugs and requesting features
 - Development setup and workflow
@@ -72,21 +54,21 @@ We welcome contributions! Please read our [CONTRIBUTING.md](https://github.com/b
 - Testing and code quality standards
 - Semantic versioning and changesets
 
-Follow our [Code of Conduct](https://github.com/baloise/design-system/blob/next/CODE_OF_CONDUCT.md) for all interactions.
+Follow our [Code of Conduct](https://github.com/helvetia-design/system/blob/next/CODE_OF_CONDUCT.md) for all interactions.
 
 ## Learn More
 
 - **[Documentation](https://helvetia-design.vercel.app)** — Component library, design tokens, and interactive examples in Storybook
 - **[Quick Start](https://helvetia-design.vercel.app/?path=/docs/development-getting-started--documentation)** — Get started with the design system in your project
-- **[llms.txt](https://design.baloise.dev/llms.txt)** / **[llms-full.txt](https://design.baloise.dev/llms-full.txt)** — Machine-readable component API and usage docs for AI coding tools ([llmstxt.org](https://llmstxt.org))
-- **[CHANGELOG.md](https://github.com/baloise/design-system/blob/next/CHANGELOG.md)** — Release notes, version history, and changes for each version
-- **[ARCHITECTURE.md](https://github.com/baloise/design-system/blob/next/docs/ARCHITECTURE.md)** — System design, workspace structure, component lifecycle, web components patterns, CSS variables, testing strategy
-- **[DEVELOPMENT.md](https://github.com/baloise/design-system/blob/next/docs/DEVELOPMENT.md)** — Local setup, dev servers, building, testing, troubleshooting
-- **[CONTRIBUTING.md](https://github.com/baloise/design-system/blob/next/CONTRIBUTING.md)** — Contribution workflow, PR process, component checklist, accessibility requirements
-- **[STYLE_GUIDE.md](https://github.com/baloise/design-system/blob/next/docs/STYLE_GUIDE.md)** — Code standards, naming conventions, best practices
-- **[SECURITY.md](https://github.com/baloise/design-system/blob/next/SECURITY.md)** — Security policy, vulnerability reporting, and compliance guidelines
-- **[CODE_OF_CONDUCT.md](https://github.com/baloise/design-system/blob/next/CODE_OF_CONDUCT.md)** — Community standards and expectations
+- **[llms.txt](https://helvetia-design.vercel.app/llms.txt)** / **[llms-full.txt](https://helvetia-design.vercel.app/llms-full.txt)** — Machine-readable component API and usage docs for AI coding tools ([llmstxt.org](https://llmstxt.org))
+- **[CHANGELOG.md](https://github.com/helvetia-design/system/blob/next/CHANGELOG.md)** — Release notes, version history, and changes for each version
+- **[ARCHITECTURE.md](https://github.com/helvetia-design/system/blob/next/docs/ARCHITECTURE.md)** — System design, workspace structure, component lifecycle, web components patterns, CSS variables, testing strategy
+- **[DEVELOPMENT.md](https://github.com/helvetia-design/system/blob/next/docs/DEVELOPMENT.md)** — Local setup, dev servers, building, testing, troubleshooting
+- **[CONTRIBUTING.md](https://github.com/helvetia-design/system/blob/next/CONTRIBUTING.md)** — Contribution workflow, PR process, component checklist, accessibility requirements
+- **[STYLE_GUIDE.md](https://github.com/helvetia-design/system/blob/next/docs/STYLE_GUIDE.md)** — Code standards, naming conventions, best practices
+- **[SECURITY.md](https://github.com/helvetia-design/system/blob/next/SECURITY.md)** — Security policy, vulnerability reporting, and compliance guidelines
+- **[CODE_OF_CONDUCT.md](https://github.com/helvetia-design/system/blob/next/CODE_OF_CONDUCT.md)** — Community standards and expectations
 
 ## License
 
-This project is licensed under the Apache License 2.0. See [LICENSE](https://github.com/baloise/design-system/blob/next/LICENSE) for details.
+This project is licensed under the Apache License 2.0. See [LICENSE](https://github.com/helvetia-design/system/blob/next/LICENSE) for details.

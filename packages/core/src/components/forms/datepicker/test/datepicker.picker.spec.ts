@@ -50,7 +50,7 @@ describe('dsDate', () => {
       }
     }
 
-    // Bug: https://github.com/baloise/design-system/issues/2209
+    // Bug: https://github.com/helvetia-design/system/issues/2209
     test('selecting a date before June 1894 does not shift it by a day', async () => {
       const { getSelected, airDatepicker } = setup()
 
@@ -67,7 +67,7 @@ describe('dsDate', () => {
       expect(getSelected()).toBe('2024-01-15')
     })
 
-    // Bug: https://github.com/baloise/design-system/issues/2209
+    // Bug: https://github.com/helvetia-design/system/issues/2209
     test('syncFromValue navigates the calendar view to the new value, even across a year boundary', () => {
       const { airDatepicker } = setup('2024-01-01')
 

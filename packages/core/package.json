@@ -1,16 +1,16 @@
 {
   "name": "@helvetia-design/core",
-  "version": "0.0.0",
+  "version": "0.0.5",
   "description": "The Helvetia Design System is an open source project for styling awesome web applications that follow the Helvetia corporate styling guidelines.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/baloise/design-system.git"
+    "url": "git+https://github.com/helvetia-design/system.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "homepage": "https://helvetia-design.vercel.app",
-  "security": "https://github.com/baloise/design-system/security/advisories/new",
+  "security": "https://github.com/helvetia-design/system/security/advisories/new",
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -71,15 +71,15 @@
     "play:ci": "cross-env CI=1 pnpm exec playwright test"
   },
   "dependencies": {
-    "@helvetia-design/assets": "0.0.0",
-    "@helvetia-design/styles": "0.0.0",
-    "@helvetia-design/tokens": "0.0.0",
+    "@helvetia-design/assets": "0.0.5",
+    "@helvetia-design/styles": "0.0.5",
+    "@helvetia-design/tokens": "0.0.5",
     "@floating-ui/dom": "1.8.0",
     "@stencil/core": "catalog:",
     "air-datepicker": "3.6.0",
     "big.js": "^7.0.1",
     "dompurify": "3.4.16",
-    "focus-trap": "8.2.2",
+    "focus-trap": "8.2.3",
     "imask": "7.6.1",
     "libphonenumber-js": "^1.13.14",
     "lodash": "catalog:",
@@ -91,7 +91,7 @@
     "tslib": "catalog:"
   },
   "devDependencies": {
-    "@helvetia-design/playwright": "0.0.0",
+    "@helvetia-design/playwright": "0.0.5",
     "@stencil/angular-output-target": "1.5.0",
     "@stencil/react-output-target": "1.6.2",
     "@types/big.js": "^7.0.0",

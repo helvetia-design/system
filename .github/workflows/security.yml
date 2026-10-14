@@ -3,12 +3,12 @@ name: 🔒 CodeQL
 # Runs CodeQL static analysis to detect security vulnerabilities in TypeScript/JavaScript source code.
 # Required for EU Cyber Resilience Act (CRA) open source steward obligations.
 # Results appear in the GitHub Security tab under "Code scanning alerts".
-# Runs on every push to next, every pull request, and weekly to catch newly published vulnerability patterns.
+# Runs on every push to main, every pull request, and weekly to catch newly published vulnerability patterns.
 
 on:
   push:
     branches:
-      - next
+      - main
   pull_request:
   schedule:
     - cron: '0 6 * * 1'

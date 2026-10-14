@@ -7,10 +7,10 @@ import { registerLanguage } from './addons/language.addon'
 import { registerRegion } from './addons/region.addon'
 import { registerTheme } from './addons/theme.addon'
 import { registerVersion } from './addons/version.addon'
-import baloiseTheme from './bal.theme'
+import theme from './theme'
 
 addons.setConfig({
-  theme: baloiseTheme,
+  theme: theme,
   sidebar: {
     showRoots: true,
     collapsedRoots: ['foundation', 'css-utilities', 'components', 'tokens', 'development', 'contributing'],
