@@ -209,6 +209,24 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests file-upload when the project uses bal-file-upload', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      [
+        "import { BalFileUpload } from '@baloise/ds-react'",
+        'export const App = () => <BalFileUpload label="Drop" />',
+      ].join('\n'),
+    )
+    write(root, 'index.html', '<bal-file-upload label="Drop"></bal-file-upload>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'file-upload', total: 4 }],
+      notYet: [],
+    })
+  })
+
   it('suggests toast when the project uses bal-toast', () => {
     const root = createScratchDir()
     write(
