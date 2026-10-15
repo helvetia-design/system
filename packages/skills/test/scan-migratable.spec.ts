@@ -304,6 +304,33 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests data when the project uses bal-data and folds its child tags in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalData } from '@baloise/ds-react'", 'export const App = () => <BalData horizontal />'].join('\n'),
+    )
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-data>',
+        '  <bal-data-item>',
+        '    <bal-data-label>Name</bal-data-label>',
+        '    <bal-data-value>Ada</bal-data-value>',
+        '  </bal-data-item>',
+        '</bal-data>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'data', total: 10 }],
+      notYet: [],
+    })
+  })
+
   it('suggests icon when the project uses bal-icon', () => {
     const root = createScratchDir()
     write(

@@ -23,6 +23,9 @@ const CHILD_SLUGS = new Map([
   ['button-group', 'button'],
   ['carousel-item', 'carousel'],
   ['checkbox-group', 'checkbox'],
+  ['data-item', 'data'],
+  ['data-label', 'data'],
+  ['data-value', 'data'],
 ])
 
 export function componentNameToSlug(name) {
