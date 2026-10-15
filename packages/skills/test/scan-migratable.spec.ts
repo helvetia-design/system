@@ -368,6 +368,16 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests heading when the project uses bal-heading', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-heading level="h2"></bal-heading>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'heading', total: 2 }],
+      notYet: [],
+    })
+  })
+
   it('suggests icon when the project uses bal-icon', () => {
     const root = createScratchDir()
     write(
