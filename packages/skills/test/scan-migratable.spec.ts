@@ -209,6 +209,26 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests hint, folding the hint-title and hint-text children into it', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-hint>',
+        '  <bal-hint-title>Title</bal-hint-title>',
+        '  <bal-hint-text>Text</bal-hint-text>',
+        '</bal-hint>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'hint', total: 6 }],
+      notYet: [],
+    })
+  })
+
   it('suggests file-upload when the project uses bal-file-upload', () => {
     const root = createScratchDir()
     write(
