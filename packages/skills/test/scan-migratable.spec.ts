@@ -358,6 +358,16 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests footer when the project uses bal-footer', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-footer></bal-footer>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'footer', total: 2 }],
+      notYet: [],
+    })
+  })
+
   it('suggests icon when the project uses bal-icon', () => {
     const root = createScratchDir()
     write(
