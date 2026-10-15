@@ -30,14 +30,14 @@ describe('scanMigratable', () => {
       root,
       'App.tsx',
       [
-        "import { BalButton, BalSpinner } from '@baloise/ds-react'",
-        'export const App = () => <><BalSpinner /><BalButton /></>',
+        "import { BalModal, BalSpinner } from '@baloise/ds-react'",
+        'export const App = () => <><BalSpinner /><BalModal /></>',
       ].join('\n'),
     )
 
     expect(scanMigratable(root)).toEqual({
       suggested: [{ name: 'spinner', total: 2 }],
-      notYet: [{ name: 'button', total: 2 }],
+      notYet: [{ name: 'modal', total: 2 }],
     })
   })
 
@@ -161,6 +161,54 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests button when the project uses bal-button and folds the group tag in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalButton } from '@baloise/ds-react'", 'export const App = () => <BalButton color="primary" />'].join(
+        '\n',
+      ),
+    )
+    write(
+      root,
+      'index.html',
+      ['<bal-button-group position="right">', '  <bal-button>Save</bal-button>', '</bal-button-group>', ''].join('\n'),
+    )
+
+    // bal-button-group has no migration of its own; the button migration covers
+    // it, so it counts towards button rather than showing up as notYet.
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'button', total: 6 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests checkbox when the project uses bal-checkbox and folds the group tag in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalCheckbox } from '@baloise/ds-react'", 'export const App = () => <BalCheckbox value="1" />'].join(
+        '\n',
+      ),
+    )
+    write(
+      root,
+      'index.html',
+      ['<bal-checkbox-group control>', '  <bal-checkbox value="1"></bal-checkbox>', '</bal-checkbox-group>', ''].join(
+        '\n',
+      ),
+    )
+
+    // bal-checkbox-group has no migration of its own; the checkbox migration covers
+    // it, so it counts towards checkbox rather than showing up as notYet.
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'checkbox', total: 6 }],
+      notYet: [],
+    })
+  })
+
   it('suggests toast when the project uses bal-toast', () => {
     const root = createScratchDir()
     write(
@@ -273,11 +321,11 @@ describe('scanMigratable', () => {
 
   it('returns no suggestions when only unsupported components are used', () => {
     const root = createScratchDir()
-    write(root, 'index.html', '<bal-button></bal-button>\n')
+    write(root, 'index.html', '<bal-modal></bal-modal>\n')
 
     expect(scanMigratable(root)).toEqual({
       suggested: [],
-      notYet: [{ name: 'button', total: 2 }],
+      notYet: [{ name: 'modal', total: 2 }],
     })
   })
 
