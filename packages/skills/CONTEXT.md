@@ -77,7 +77,7 @@ pnpm --filter @helvetia-design/skills test
 pnpm --filter @helvetia-design/skills lint
 ```
 
-Done when the CLI specs, `test/detect-baloise.spec.ts`, `test/scan-bal-accordion.spec.ts`, `test/scan-bal-app.spec.ts`, `test/scan-bal-badge.spec.ts`, `test/scan-bal-card.spec.ts`, `test/scan-bal-carousel.spec.ts`, `test/scan-bal-close.spec.ts`, `test/scan-bal-spinner.spec.ts`, `test/scan-bal-icon.spec.ts`, `test/scan-bal-text.spec.ts`, `test/scan-bal-toast.spec.ts`, and `test/scan-bal-tooltip.spec.ts` pass and eslint exits 0.
+Done when the CLI specs, `test/detect-baloise.spec.ts`, `test/scan-bal-accordion.spec.ts`, `test/scan-bal-app.spec.ts`, `test/scan-bal-badge.spec.ts`, `test/scan-bal-card.spec.ts`, `test/scan-bal-carousel.spec.ts`, `test/scan-bal-close.spec.ts`, `test/scan-bal-content.spec.ts`, `test/scan-bal-spinner.spec.ts`, `test/scan-bal-icon.spec.ts`, `test/scan-bal-text.spec.ts`, `test/scan-bal-toast.spec.ts`, and `test/scan-bal-tooltip.spec.ts` pass and eslint exits 0.
 
 ### Scratch CLI
 
@@ -99,7 +99,7 @@ Done when:
 
 ### Menu (Claude)
 
-In the scratch directory, invoke `/ds-migrate-from-baloise`. Done when Init runs `scripts/detect-baloise.mjs`, Components offers **Manual** and **Detect**, Manual lists **accordion**, **app → root**, **badge**, **card**, **carousel**, **close**, **spinner**, **icon**, **text**, **toast**, and **tooltip** from the first headings of their `migration.md` files, Detect suggests a component only when the project uses it and that migration exists, and CSS utils / Assets report "coming soon" and stop.
+In the scratch directory, invoke `/ds-migrate-from-baloise`. Done when Init runs `scripts/detect-baloise.mjs`, Components offers **Manual** and **Detect**, Manual lists **accordion**, **app → root**, **badge**, **card**, **carousel**, **close**, **content**, **spinner**, **icon**, **text**, **toast**, and **tooltip** from the first headings of their `migration.md` files, Detect suggests a component only when the project uses it and that migration exists, and CSS utils / Assets report "coming soon" and stop.
 
 Against a project with no `@baloise/ds-*` dependency and no CSS/JS import, Init says "no Baloise Design System installation detected, nothing to migrate" and does not edit files. Against a project that has both, Init adds the `@helvetia-design/*` packages from the script JSON, runs that JSON's `installCommand`, inserts the new import beside the untouched `@baloise/*` import, and leaves the result unstaged.
 
@@ -112,6 +112,8 @@ App: `node <skill>/scripts/scan-bal-app.mjs <project>` prints the same JSON shap
 Badge: `node <skill>/scripts/scan-bal-badge.mjs <project>` prints the same JSON shape and does not edit files. After one yes, the agent rewrites from `components/badge/migration.md` and leaves the result unstaged.
 
 Close: `node <skill>/scripts/scan-bal-close.mjs <project>` prints the same JSON shape and does not edit files. There are no child tags, so `CHILD_SLUGS` has no entry. After one yes, the agent rewrites from `components/close/migration.md` (`size` `small`/`medium` to `sm`/`md`, dynamic `size` bindings flagged for manual review) and reports legacy `data-testid="bal-close"` and BEM-class selectors as lost, then leaves the result unstaged.
+
+Content: `node <skill>/scripts/scan-bal-content.mjs <project>` prints the same JSON shape and does not edit files. There are no child tags, so `CHILD_SLUGS` has no entry. After one yes, the agent rewrites from `components/content/migration.md` (`layout` to `direction`, `space` values to the short scale, dynamic `layout` and `space` bindings flagged for manual review) and reports the lost `text-align` of `align`, the vertical centering of `direction="row"`, and legacy BEM-class selectors, then leaves the result unstaged.
 
 Icon: `node <skill>/scripts/scan-bal-icon.mjs <project>` prints the same JSON shape and does not edit files. After one yes, the agent rewrites from `components/icon/migration.md` and leaves the result unstaged.
 
