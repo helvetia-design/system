@@ -341,6 +341,23 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests divider when the project uses bal-divider', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalDivider } from '@baloise/ds-react'", 'export const App = () => <BalDivider space="small" />'].join(
+        '\n',
+      ),
+    )
+    write(root, 'index.html', '<bal-divider color="white"></bal-divider>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'divider', total: 4 }],
+      notYet: [],
+    })
+  })
+
   it('suggests icon when the project uses bal-icon', () => {
     const root = createScratchDir()
     write(
