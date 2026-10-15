@@ -4,7 +4,7 @@ Migrate every `bal-input` usage to `ds-input`, and every `bal-input-date` usage 
 
 The legacy folder has one consumer child tag, `bal-input-date`. It is a text field with a date mask and no calendar. The closest new component is `ds-datepicker`, so the two tags map to different components. `ds-input` has no date mask and `type="date"` renders the native browser widget, so do not map `bal-input-date` to `ds-input`.
 
-Other legacy tags that start with `bal-input` are different components and are not part of this migration: `bal-input-group`, `bal-input-slider`, `bal-input-stepper`. `bal-number-input` is a separate component too. The scan does not list them.
+Other legacy tags that start with `bal-input` are different components and are not part of this migration: `bal-input-group`, `bal-input-slider` (see `components/input-slider/migration.md`), `bal-input-stepper`. `bal-number-input` is a separate component too. The scan does not list them.
 
 ## 1. Scan
 
