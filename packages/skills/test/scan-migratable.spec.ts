@@ -229,6 +229,25 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests input, folding bal-input-date into it and leaving sibling components in notYet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-input name="a"></bal-input>',
+        '<bal-input-date name="d"></bal-input-date>',
+        '<bal-input-group></bal-input-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'input', total: 4 }],
+      notYet: [{ name: 'input-group', total: 2 }],
+    })
+  })
+
   it('suggests file-upload when the project uses bal-file-upload', () => {
     const root = createScratchDir()
     write(
