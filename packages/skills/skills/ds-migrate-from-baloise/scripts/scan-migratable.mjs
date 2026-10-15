@@ -26,6 +26,8 @@ const CHILD_SLUGS = new Map([
   ['data-item', 'data'],
   ['data-label', 'data'],
   ['data-value', 'data'],
+  ['date-calendar', 'date'],
+  ['date-calendar-cell', 'date'],
 ])
 
 export function componentNameToSlug(name) {

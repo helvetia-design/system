@@ -331,6 +331,16 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests date when the project uses bal-date and folds its internal calendar tags in', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', ['<bal-date></bal-date>', '<bal-date-calendar></bal-date-calendar>', ''].join('\n'))
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'date', total: 4 }],
+      notYet: [],
+    })
+  })
+
   it('suggests icon when the project uses bal-icon', () => {
     const root = createScratchDir()
     write(
