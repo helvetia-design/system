@@ -77,7 +77,13 @@ pnpm --filter @helvetia-design/skills test
 pnpm --filter @helvetia-design/skills lint
 ```
 
-Done when the CLI specs, `test/detect-baloise.spec.ts`, `test/scan-bal-accordion.spec.ts`, `test/scan-bal-app.spec.ts`, `test/scan-bal-badge.spec.ts`, `test/scan-bal-card.spec.ts`, `test/scan-bal-carousel.spec.ts`, `test/scan-bal-file-upload.spec.ts`, `test/scan-bal-close.spec.ts`, `test/scan-bal-content.spec.ts`, `test/scan-bal-data.spec.ts`, `test/scan-bal-date.spec.ts`, `test/scan-bal-divider.spec.ts`, `test/scan-bal-footer.spec.ts`, `test/scan-bal-hint.spec.ts`, `test/scan-bal-input.spec.ts`, `test/scan-bal-input-slider.spec.ts`, `test/scan-bal-input-stepper.spec.ts`, `test/scan-bal-spinner.spec.ts`, `test/scan-bal-icon.spec.ts`, `test/scan-bal-text.spec.ts`, `test/scan-bal-toast.spec.ts`, `test/scan-bal-button.spec.ts` and `test/scan-bal-tooltip.spec.ts`, `test/scan-bal-checkbox.spec.ts`, `test/scan-bal-heading.spec.ts`, pass and eslint exits 0.
+Done when every spec under `test/` passes and eslint exits 0. That is the CLI specs,
+`test/detect-baloise.spec.ts`, `test/scan-migratable.spec.ts`, and one
+`test/scan-bal-<component>.spec.ts` per supported component.
+
+Adding a component adds its own spec file; it does not change this paragraph. Do not
+enumerate the spec files here — the list goes stale and every parallel migration branch
+collides on the same line.
 
 ### Scratch CLI
 
