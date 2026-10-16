@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, ElementRef, inject, Injector, OnDestroy, OnInit } from '@angular/core'
-import { ControlValueAccessor, NgControl, ValidationErrors } from '@angular/forms'
+import { ChangeDetectorRef, effect, ElementRef, inject, Injector, OnDestroy, OnInit } from '@angular/core'
+import { AbstractControl, ControlValueAccessor, NgControl, ValidationErrors } from '@angular/forms'
 import { Subscription } from 'rxjs'
 
 interface DsFormElement {
@@ -93,6 +93,18 @@ export class DsValueAccessor<
     this.cdr?.markForCheck()
   }
 
+  /**
+   * `true` when the bound control isn't a classic `AbstractControl` but the signal-forms `InteropNgControl`
+   * that `[formField]` provides as `NgControl` — recognized by it *not* being an `AbstractControl` (public,
+   * stable API) rather than by a missing `events` stream, which would flip silently if Angular ever added
+   * one to its internal interop object. Needs no import from `@angular/forms/signals`. Resolved lazily (and not cached while
+   * unresolved) because `[formField]` pushes inputs onto the wrapper before `init()` has run.
+   */
+  get isInteropControl(): boolean {
+    const control = (this.ngControl ??= this.injector.get(NgControl, null))?.control
+    return !!control && !(control instanceof AbstractControl)
+  }
+
   init(): void {
     this.destroyed = false
 
@@ -103,6 +115,13 @@ export class DsValueAccessor<
 
     this.element.addEventListener(this.config.changeEvent, this.handleChange)
     this.element.addEventListener(this.config.blurEvent, this.handleBlur)
+
+    if (this.isInteropControl) {
+      // Signal forms: the control exposes plain signal getters (`touched`/`invalid`/`errors`) instead of an
+      // `events` stream, so derive the invalid state reactively — the effect re-runs whenever one changes.
+      effect(() => this.updateInvalidState(), { injector: this.injector })
+      return
+    }
 
     // `NgControl.control` (e.g. `FormControlName.control`) is assigned by that directive's own
     // `ngOnChanges`, which may not have run yet at this point — sibling directives on the same
@@ -133,6 +152,10 @@ export class DsValueAccessor<
    * when the wrapper component itself is `OnPush` and not otherwise marked dirty.
    */
   private subscribeToControl(): void {
+    if (this.isInteropControl) {
+      return
+    }
+
     const control = this.ngControl?.control ?? null
     if (control === this.subscribedControl) {
       return
@@ -202,7 +225,16 @@ export class DsValueAccessor<
     if (key === undefined) {
       return ''
     }
-    return typeof value === 'string' ? value : key
+    if (typeof value === 'string') {
+      return value
+    }
+    // Signal-forms errors are objects (`{ kind, message, ... }`), not the validator's bare context.
+    // Only unwrap for signal-forms controls so reactive/template-driven forms keep their key fallback.
+    if (!this.isInteropControl) {
+      return key
+    }
+    const message = (value as { message?: unknown } | null)?.message
+    return typeof message === 'string' && message ? message : key
   }
 }
 
@@ -229,7 +261,7 @@ export function withValueAccessor<Element extends EventTarget & DsFormElement, K
   extractValue?: (event: Event, element: Element) => Element[K]
 }) {
   return function <TBase extends Constructor>(Base: TBase) {
-    return class extends Base implements ControlValueAccessor, OnInit, OnDestroy {
+    const Mixed = class extends Base implements ControlValueAccessor, OnInit, OnDestroy {
       // Public rather than private: a mixin's anonymous class type is part of this function's public return
       // type, and TS can't emit a `.d.ts` declaration for an exported type that has a private/protected member.
       readonly controlValueAccessor = new DsValueAccessor<Element, K>(
@@ -262,5 +294,39 @@ export function withValueAccessor<Element extends EventTarget & DsFormElement, K
         this.controlValueAccessor.setDisabledState(isDisabled)
       }
     }
+    guardSignalFormsInputs(Mixed.prototype, Base.prototype)
+    return Mixed
+  }
+}
+
+/**
+ * `[formField]` pushes its field state onto every directive input with a matching name (`invalid`, `pattern`,
+ * ...), bypassing `DsValueAccessor`. For two of them that's wrong: `invalid` would race the touched-gated
+ * derivation, and `pattern` arrives as a `RegExp[]` where the components expect a string. While the bound
+ * control is a signal-forms one, these two setters drop the pushed value; otherwise (no control, reactive
+ * forms) they behave exactly like the generated proxy accessors they wrap.
+ */
+function guardSignalFormsInputs(target: object, base: object): void {
+  for (const key of ['invalid', 'pattern']) {
+    let proto: object | null = base
+    let descriptor: PropertyDescriptor | undefined
+    while (proto && !(descriptor = Object.getOwnPropertyDescriptor(proto, key))) {
+      proto = Object.getPrototypeOf(proto)
+    }
+    if (!descriptor?.set || !descriptor.get) {
+      continue
+    }
+    const { get, set } = descriptor
+    Object.defineProperty(target, key, {
+      configurable: true,
+      get() {
+        return get.call(this)
+      },
+      set(value: unknown) {
+        if (!(this as { controlValueAccessor: DsValueAccessor<never, never> }).controlValueAccessor.isInteropControl) {
+          set.call(this, value)
+        }
+      },
+    })
   }
 }

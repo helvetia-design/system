@@ -14,6 +14,7 @@ import { TextareaDemo } from './textarea-demo/textarea-demo'
 import { RadioGroupDemo } from './radio-group-demo/radio-group-demo'
 import { SelectDemo } from './select-demo/select-demo'
 import { ToggleDemo } from './toggle-demo/toggle-demo'
+import { SignalFormsDemo } from './signal-forms-demo/signal-forms-demo'
 import { ModalDemo } from './modal-demo/modal-demo'
 import { AlertServicesDemo } from './services-demo/alert-services-demo'
 
@@ -37,6 +38,7 @@ import { AlertServicesDemo } from './services-demo/alert-services-demo'
     ToggleDemo,
     ModalDemo,
     AlertServicesDemo,
+    SignalFormsDemo,
   ],
   templateUrl: './app.html',
 })

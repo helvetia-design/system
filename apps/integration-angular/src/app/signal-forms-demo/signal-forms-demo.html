@@ -1,0 +1,85 @@
+<h2>Signal forms demo</h2>
+
+<ds-input data-testid="sf-input" name="sf-input" label="Name" [formField]="f.name" />
+<ds-toggle data-testid="sf-toggle" name="sf-toggle" [formField]="f.accepted">Accept terms</ds-toggle>
+<ds-select
+  data-testid="sf-select"
+  name="sf-select"
+  label="Country"
+  clearable
+  [options]="options"
+  [formField]="f.country"
+></ds-select>
+<ds-checkbox-group data-testid="sf-checkbox-group" control name="sf-fruits" label="Fruits" [formField]="f.fruits">
+  <ds-checkbox value="apple">Apple</ds-checkbox>
+  <ds-checkbox value="banana">Banana</ds-checkbox>
+</ds-checkbox-group>
+
+<ds-phone-input data-testid="sf-phone" name="sf-phone" label="Phone" [formField]="f.phone" />
+
+<ds-datepicker data-testid="sf-date" name="sf-date" label="Date" [formField]="f.date" />
+
+<ds-number-input data-testid="sf-number" name="sf-number" label="Amount" [formField]="f.amount" />
+
+<ds-slider data-testid="sf-slider" name="sf-slider" label="Slider" [formField]="f.slider" />
+<ds-counter data-testid="sf-counter" name="sf-counter" label="Counter" [formField]="f.counter" />
+<ds-textarea data-testid="sf-textarea" name="sf-textarea" label="Comment" [formField]="f.comment" />
+<ds-segment data-testid="sf-segment" name="sf-segment" label="Segment" allowEmptySelection [formField]="f.segment">
+  <ds-segment-item value="basic" label="Basic" />
+  <ds-segment-item value="premium" label="Premium" />
+</ds-segment>
+<ds-radio-group data-testid="sf-radio" name="sf-radio" label="Radio" allowEmptySelection [formField]="f.radio">
+  <ds-radio value="basic" label="Basic">Basic</ds-radio>
+  <ds-radio value="premium" label="Premium">Premium</ds-radio>
+</ds-radio-group>
+<ds-file-upload data-testid="sf-files" name="sf-files" label="Files" [formField]="f.files" />
+<p data-testid="sf-files-names">Files: {{ model().files.map(file => file.name).join(', ') }}</p>
+
+<p data-testid="sf-files-state">
+  files touched={{ f.files().touched() }} invalid={{ f.files().invalid() }} errors={{ f.files().errors().length }}
+</p>
+<ds-slider data-testid="sf-range-slider" name="sf-range-slider" label="Range slider" [formField]="f.rangeSlider" />
+<ds-counter data-testid="sf-range-counter" name="sf-range-counter" label="Range counter" [formField]="f.rangeCounter" />
+<ds-slider
+  data-testid="sf-collision"
+  name="sf-collision"
+  label="Explicit min/max next to formField"
+  [min]="20"
+  [max]="90"
+  [formField]="f.collision"
+/>
+<ds-input data-testid="sf-code" name="sf-code" label="Code" [formField]="f.code" />
+
+<p data-testid="sf-range-state">
+  rangeSlider invalid={{ f.rangeSlider().invalid() }} value={{ f.rangeSlider().value() }}; rangeCounter invalid={{
+  f.rangeCounter().invalid() }} value={{ f.rangeCounter().value() }}
+</p>
+<p data-testid="sf-model">Model: {{ model() | json }}</p>
+<p data-testid="sf-name-state">
+  name touched={{ f.name().touched() }} invalid={{ f.name().invalid() }} dirty={{ f.name().dirty() }}
+</p>
+
+<p data-testid="sf-country-state">
+  country touched={{ f.country().touched() }} invalid={{ f.country().invalid() }} errors={{ f.country().errors().length
+  }}
+</p>
+<button data-testid="sf-set-name" type="button" (click)="setName('Carol')">Set to Carol</button>
+<button data-testid="sf-set-phone" type="button" (click)="setPhone()">Set phone</button>
+<button data-testid="sf-set-date" type="button" (click)="setDate()">Set date</button>
+<button data-testid="sf-set-slider" type="button" (click)="setSlider()">Set slider</button>
+<button data-testid="sf-set-counter" type="button" (click)="setCounter()">Set counter</button>
+<button data-testid="sf-set-comment" type="button" (click)="setComment()">Set comment</button>
+<button data-testid="sf-set-segment" type="button" (click)="setSegment()">Set segment</button>
+<button data-testid="sf-set-radio" type="button" (click)="setRadio()">Set radio</button>
+<button data-testid="sf-set-files" type="button" (click)="setFiles()">Set files</button>
+<button data-testid="sf-clear-files" type="button" (click)="clearFiles()">Clear files</button>
+<button data-testid="sf-toggle-readonly" type="button" (click)="toggleReadonly()">Toggle readonly</button>
+<button data-testid="sf-set-code-lower" type="button" (click)="setCode('abc')">Set code abc</button>
+<button data-testid="sf-toggle-all-disabled" type="button" (click)="toggleAllDisabled()">Toggle all disabled</button>
+<button data-testid="sf-range-slider-out" type="button" (click)="setRangeSliderOutOfRange()">Range slider to 90</button>
+<button data-testid="sf-range-counter-out" type="button" (click)="setRangeCounterOutOfRange()">
+  Range counter to 9
+</button>
+<button data-testid="sf-toggle-disabled" type="button" (click)="toggleDisabled()">Toggle disabled</button>
+<button data-testid="sf-touch-all" type="button" (click)="touchAll()">Touch all</button>
+<button data-testid="sf-reset" type="button" (click)="reset()">Reset</button>
