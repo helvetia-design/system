@@ -40,6 +40,10 @@ const CHILD_SLUGS = new Map([
   ['list-item-accordion-body', 'list'],
   ['modal-header', 'modal'],
   ['modal-body', 'modal'],
+  ['navbar-brand', 'navbar'],
+  ['navbar-menu', 'navbar'],
+  ['navbar-menu-start', 'navbar'],
+  ['navbar-menu-end', 'navbar'],
 ])
 
 export function componentNameToSlug(name) {
