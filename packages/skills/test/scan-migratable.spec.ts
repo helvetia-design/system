@@ -30,14 +30,14 @@ describe('scanMigratable', () => {
       root,
       'App.tsx',
       [
-        "import { BalModal, BalSpinner } from '@baloise/ds-react'",
-        'export const App = () => <><BalSpinner /><BalModal /></>',
+        "import { BalFictional, BalSpinner } from '@baloise/ds-react'",
+        'export const App = () => <><BalSpinner /><BalFictional /></>',
       ].join('\n'),
     )
 
     expect(scanMigratable(root)).toEqual({
       suggested: [{ name: 'spinner', total: 2 }],
-      notYet: [{ name: 'modal', total: 2 }],
+      notYet: [{ name: 'fictional', total: 2 }],
     })
   })
 
@@ -452,11 +452,11 @@ describe('scanMigratable', () => {
 
   it('returns no suggestions when only unsupported components are used', () => {
     const root = createScratchDir()
-    write(root, 'index.html', '<bal-modal></bal-modal>\n')
+    write(root, 'index.html', '<bal-fictional></bal-fictional>\n')
 
     expect(scanMigratable(root)).toEqual({
       suggested: [],
-      notYet: [{ name: 'modal', total: 2 }],
+      notYet: [{ name: 'fictional', total: 2 }],
     })
   })
 

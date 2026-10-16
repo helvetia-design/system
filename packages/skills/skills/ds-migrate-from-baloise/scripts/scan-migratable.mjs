@@ -38,6 +38,8 @@ const CHILD_SLUGS = new Map([
   ['list-item-content', 'list'],
   ['list-item-accordion-head', 'list'],
   ['list-item-accordion-body', 'list'],
+  ['modal-header', 'modal'],
+  ['modal-body', 'modal'],
 ])
 
 export function componentNameToSlug(name) {
