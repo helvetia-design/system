@@ -14,12 +14,29 @@ export default async function DeniedPage() {
           <TriangleAlertIcon />
           <AlertTitle>Access denied</AlertTitle>
           <AlertDescription>
-            {login ? `${login} isn't` : "You aren't"} a member of the <code>baloise</code> GitHub organization, which
-            Toky requires for access.
+            {login ? `${login} isn't` : "You aren't"} a member of the{' '}
+            <a
+              href="https://github.com/orgs/helvetia-design/teams/toky"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              <code>toky</code> team
+            </a>
+            , which Toky requires for access.
           </AlertDescription>
         </Alert>
         <p className="text-sm text-muted-foreground">
-          If you believe this is a mistake, ask an org owner to add you to the <code>baloise</code> organization.
+          If you believe this is a mistake, ask a team maintainer to add you to the{' '}
+          <a
+            href="https://github.com/orgs/helvetia-design/teams/toky"
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+          >
+            <code>toky</code> team
+          </a>
+          .
         </p>
         {session && <SignOutButton />}
       </div>

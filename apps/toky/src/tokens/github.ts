@@ -1,5 +1,6 @@
 export const REPO_OWNER = 'helvetia-design'
 export const REPO_NAME = 'system'
+export const TEAM_SLUG = 'toky'
 export const TOKENS_DIR = 'packages/tokens/tokens'
 export const TOKEN_FILE_PATH = `${TOKENS_DIR}/Base.tokens.json`
 export const BRANDS_INDEX_PATH = 'packages/tokens/src/index.ts'
@@ -16,14 +17,14 @@ export function requireGithubToken(): string {
   return token
 }
 
-// Org-member reads use their own fine-grained PAT (narrower than
-// TOKY_GITHUB_TOKEN's repo write access — see docs/adr/0003) when set, and
+// Team-membership reads use their own fine-grained PAT (narrower than
+// TOKY_GITHUB_TOKEN's repo write access — see docs/adr/0004) when set, and
 // fall back to TOKY_GITHUB_TOKEN otherwise so a single-PAT setup still works.
 export function requireGithubOrgToken(): string {
   const token = process.env.TOKY_GITHUB_ORG_TOKEN ?? process.env.TOKY_GITHUB_TOKEN
   if (!token) {
     throw new Error(
-      'Neither TOKY_GITHUB_ORG_TOKEN nor TOKY_GITHUB_TOKEN is set — a GitHub token is required to check org membership.',
+      'Neither TOKY_GITHUB_ORG_TOKEN nor TOKY_GITHUB_TOKEN is set — a GitHub token is required to check team membership.',
     )
   }
   return token
