@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-> Coming from the Baloise Design System? See the [migration guide](https://helvetia-design.vercel.app/?path=/docs/development-migrations-from-baloise--from-baloise).
+> 👋 **Welcome to the Helvetia Design System!** Coming from the Baloise Design System? Have a look at our
+> [migration guide](https://helvetia-design.vercel.app/?path=/docs/development-migrations-from-baloise--from-baloise) to get started.
+>
+> See the [What's New](https://helvetia-design.vercel.app/?path=/docs/what-s-new--what-s-new&globals=framework:html) page for the full rundown — a new multi-brand
+> token architecture, Shadow DOM style isolation, SSR support, more CSS-only components, improved accessibility, and more.
 
 ## 0.0.5 (2026-10-12)
 
