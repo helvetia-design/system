@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@helvetia-design/core": "0.0.5",
-    "@stencil/react-output-target": "1.6.2"
+    "@stencil/react-output-target": "1.6.5"
   },
   "devDependencies": {
     "@types/react": "19.3.0",
