@@ -1,5 +1,5 @@
 import { Description, Meta, Unstyled } from '@storybook/addon-docs/blocks'
-import { Banner, ButtonCard, Footer, InfoQuote, Lead, LinkCard, LinkCards } from '../.storybook/blocks'
+import { Banner, ButtonCard, Footer, InfoQuote, Lead, LinkCard, LinkCards, MaintainerCard } from '../.storybook/blocks'
 
 <Meta
   title="Support"
@@ -25,21 +25,21 @@ All you need is a [public GitHub account](https://github.com/) to get started. M
       icon="💬"
       label="Ask a question"
       description="Usage question or discussion about the Helvetia Design System"
-      link="https://github.com/baloise/design-system/issues/new?assignees=&labels=💬+question&template=question_report.yml&title=%3Aspeech_balloon%3A+question%28component%29%3A+title"
+      link="https://github.com/helvetia-design/system/issues/new?assignees=&labels=💬+question&template=question_report.yml&title=%3Aspeech_balloon%3A+question%28component%29%3A+title"
     ></ButtonCard>
     <ButtonCard
       color="yellow"
       icon="🐛"
       label="Report a bug"
       description="Create a report to help us improve Get started"
-      link="https://github.com/baloise/design-system/issues/new?assignees=&labels=🐛+bug&template=bug_report.yml&title=%3Abug%3A+fix%28component%29%3A+title"
+      link="https://github.com/helvetia-design/system/issues/new?assignees=&labels=🐛+bug&template=bug_report.yml&title=%3Abug%3A+fix%28component%29%3A+title"
     ></ButtonCard>
     <ButtonCard
       color="yellow"
       icon="✨"
       label="Request a feature"
       description="Suggest an idea for this project"
-      link="https://github.com/baloise/design-system/issues/new?assignees=&labels=✨+feature&template=feature_report.yml&title=%3Asparkles%3A+feat%28component%29%3A+title"
+      link="https://github.com/helvetia-design/system/issues/new?assignees=&labels=✨+feature&template=feature_report.yml&title=%3Asparkles%3A+feat%28component%29%3A+title"
     ></ButtonCard>
   </div>
 </Unstyled>
@@ -193,19 +193,63 @@ Maintainers are members of the community who are committed to the success of ind
 - Close and merge GitHub pull requests
 
 <Unstyled>
-  <div className="flex gap-base">
-    <ButtonCard color="green" label="Gery Hirschfeld" description="Technical lead" link="https://github.com/hirsch88">
-      <img src="https://avatars.githubusercontent.com/u/6384499?v=4" alt="hirsch88" width="88" />
-    </ButtonCard>
-    <ButtonCard color="green" label="Marlon Leu" description="Technical lead" link="https://github.com/MarlonLeu">
-      <img src="https://avatars.githubusercontent.com/u/22953634?v=4" alt="Marlon Leu" width="88" />
-    </ButtonCard>
-    <ButtonCard color="green" label="Andy" link="https://github.com/" description="UX Architect">
-      <img src="https://avatars.githubusercontent.com/u/62377419?v=4" alt="Andy" width="88" />
-    </ButtonCard>
-    <ButtonCard color="green" label="Andreas" link="https://github.com/clastzoo" description="UX Architect">
-      <img src="https://avatars.githubusercontent.com/u/62377419?v=4" alt="Andreas" width="88" />
-    </ButtonCard>
+  <div className="flex flex-direction-column gap-base">
+    <MaintainerCard
+      color="green"
+      label="The Pixel President"
+      name="Marlon Leuthardt"
+      description={
+        <>
+          <strong>Product Owner & Architecture Lead</strong> · Vision, priorities, architectural decisions, and
+          keeping the chaos organized.
+        </>
+      }
+      link="https://github.com/MarlonLeu"
+    >
+      <img className="radius" src="https://avatars.githubusercontent.com/u/22953634?v=4" alt="Marlon Leu" width="88" />
+    </MaintainerCard>
+    <MaintainerCard
+      color="green"
+      label="The Component Sorcerer"
+      name="Gery Hirschfeld"
+      description={
+        <>
+          <strong>Creator & Architecture Lead</strong> · Inventing components, casting TypeScript spells, and
+          fighting CSS demons.
+        </>
+      }
+      link="https://github.com/hirsch88"
+    >
+      <img className="radius" src="https://avatars.githubusercontent.com/u/6384499?v=4" alt="hirsch88" width="88" />
+    </MaintainerCard>
+    <MaintainerCard
+      color="green"
+      label="The UXplorer"
+      name="Andy Binggeli"
+      description={
+        <>
+          <strong>Product Owner Design</strong> · Running the Figma machine, steering design decisions, and
+          exploring user journeys to shape app experiences.
+        </>
+      }
+      link="https://github.com/"
+    >
+      <img className="radius" src="https://avatars.githubusercontent.com/u/62377419?v=4" alt="Andy" width="88" />
+    </MaintainerCard>
+    <MaintainerCard
+      color="green"
+      label="The Figma Magician"
+      name="Andreas Stebler"
+      description={
+        <>
+          <strong>UX Engineer</strong> · Mastering Figma, crafting design tokens, building websites, and making
+          pixels disappear and reappear.
+        </>
+      }
+      link="https://github.com/clastzoo"
+    >
+      <img className="radius" src="https://avatars.githubusercontent.com/u/62377419?v=4" alt="Andreas" width="88" />
+    </MaintainerCard>
   </div>
 </Unstyled>
 
@@ -221,7 +265,7 @@ Please have a look at:
       icon="📖"
       label="CONTRIBUTING.md"
       description="Git workflow, reporting issues, fixing bugs, creating features, and PR process"
-      link="https://github.com/baloise/design-system/blob/next/CONTRIBUTING.md"
+      link="https://github.com/helvetia-design/system/blob/next/CONTRIBUTING.md"
     ></ButtonCard>
   </div>
 </Unstyled>

@@ -130,6 +130,7 @@ playwright.visual.config.mts
 .angular
 
 packages/**/CHANGELOG.md
+!packages/core/CHANGELOG.md
 libs/**/CHANGELOG.md
 apps/storybook/CHANGELOG.md
 

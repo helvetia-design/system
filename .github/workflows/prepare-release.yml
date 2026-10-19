@@ -3,7 +3,7 @@ name: 📦️ Prepare Release
 on:
   push:
     branches:
-      - next
+      - main
   workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
@@ -38,6 +38,11 @@ jobs:
           create-github-releases: false
           publish-script: echo "Publish"
           github-token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
+
+      - name: Filter Release PR description to core package only
+        run: node scripts/filter-release-pr-body.mjs
+        env:
+          GH_TOKEN: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
 
       - name: Echo Changeset output
         shell: bash

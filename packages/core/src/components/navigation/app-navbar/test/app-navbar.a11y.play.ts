@@ -1,7 +1,7 @@
 import { test } from '@helvetia-design/playwright'
 
 test('basic', async ({ page, a11y }) => {
-  test.skip(true, 'Contrast issue tracked in https://github.com/baloise/design-system/issues/2189')
+  test.skip(true, 'Contrast issue tracked in https://github.com/helvetia-design/system/issues/2189')
   await page.mount(`
     <ds-app-navbar>
       <a href="/" slot="brand">Logo</a>

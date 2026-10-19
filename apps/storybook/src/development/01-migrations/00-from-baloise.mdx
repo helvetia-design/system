@@ -1,0 +1,63 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Banner, Footer, Lead, LinkCard, LinkCards, WarningQuote } from '../../../.storybook/blocks'
+
+<Meta title="Development/Migrations/From Baloise" name="From Baloise" />
+
+<Banner label="From Baloise" section="Development/Migrations">
+  <Lead>
+    A Claude Code skill that migrates your app from the Baloise Design System to the Helvetia
+    Design System, one component at a time.
+  </Lead>
+</Banner>
+
+<br />
+
+<WarningQuote>
+**This skill never commits**
+
+It edits files and leaves every change unstaged for you to review, like any other change.
+</WarningQuote>
+
+## Requirements
+
+- [Claude Code](https://www.anthropic.com/claude-code)
+- An app that already has `@baloise/ds-*` installed
+
+## Install
+
+```bash
+npx @helvetia-design/skills add
+```
+
+Run this in your app's repository root. It copies the skill into
+`.claude/skills/ds-migrate-from-baloise/`. Re-run it any time to update to the latest version.
+
+## Use
+
+In a Claude Code session in that repository, run:
+
+```
+/ds-migrate-from-baloise
+```
+
+You'll get a menu:
+
+1. **Init** — adds the `@helvetia-design/*` packages next to your `@baloise/*` ones and inserts the
+   matching import next to each existing one. Nothing is removed, so your app keeps working with
+   both installed while you migrate.
+2. **Components** — migrates one `bal-*` component to `ds-*`. Pick a component yourself, or scan
+   the project and suggest the ones it finds in use. Either way, it shows you what it found and
+   asks for confirmation before changing anything.
+
+<Footer>
+  <LinkCards>
+    <LinkCard
+      pageTitle="Development/Getting Started"
+      description="Install the Helvetia Design System packages and wire up the root provider for your framework."
+    />
+    <LinkCard
+      pageTitle="Development/Configuration"
+      description="The global configuration object every component reads brand, region, and language from."
+    />
+  </LinkCards>
+</Footer>

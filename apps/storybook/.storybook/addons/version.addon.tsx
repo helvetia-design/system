@@ -11,7 +11,7 @@ const SvgIcon = ({ html, size = 14 }: { html: string; size?: number }) => (
   />
 )
 
-const links = [{ id: 'baloise', title: 'Baloise DS', href: 'https://design.baloise.dev/' }]
+const links = [{ id: 'baloise', title: 'Baloise DS', href: 'https://helvetia-design.vercel.app/' }]
 
 export const registerVersion: React.FC = () => {
   return (

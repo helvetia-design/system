@@ -12,7 +12,7 @@ This document captures domain language, architectural patterns, and key concepts
 - **Usage guides** — Best practices and patterns for consumers
 - **API references** — Component props, events, and methods
 
-The site is built with **Storybook + Vite** and deployed to `design.baloise.dev`.
+The site is built with **Storybook + Vite** and deployed to `helvetia-design.vercel.app`.
 
 ## Core Concepts
 

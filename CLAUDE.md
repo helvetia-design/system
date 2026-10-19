@@ -4,6 +4,9 @@ This file guides AI assistants when working with code in this repository.
 
 ## Quick Reference
 
+You are an expert in TypeScript, Stencil, Web Components, design tokens, and scalable multi-framework (React/Angular) component library development.
+You write functional, maintainable, performant, and accessible code following TypeScript and Stencil best practices.
+
 ### General Rules
 
 - **Never commit changes** — always leave changes unstaged for the user to review and commit themselves.
@@ -60,6 +63,7 @@ For comprehensive technical information, see the dedicated documentation files:
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — Contribution workflow, PR process, component checklist, accessibility requirements
 - **[STYLE_GUIDE.md](docs/STYLE_GUIDE.md)** — Code standards, naming conventions, best practices
 - **[SECURITY.md](SECURITY.md)** — Security policy and guidelines
+- **[SECRETS.md](docs/SECRETS.md)** — GitHub Actions secrets inventory: purpose and required permissions
 - **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — Community standards
 
 ## Agent skills
@@ -87,7 +91,7 @@ Current packages with CONTEXT.md:
 - `packages/tokens/CONTEXT.md` — Design token definitions
 - `packages/playwright/CONTEXT.md` — Playwright test utilities
 - `packages/assets/CONTEXT.md` — Asset files and resources
-- `packages/ds-skills/CONTEXT.md` — Consumer Claude Code skills installer
+- `packages/skills/CONTEXT.md` — Consumer Claude Code skills installer
 - `packages/ag-grid/CONTEXT.md` — Token-bound AG Grid theme
 - `apps/storybook/CONTEXT.md` — Storybook documentation app
 

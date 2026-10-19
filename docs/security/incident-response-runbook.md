@@ -1,7 +1,7 @@
 # Incident Response Runbook — Exploited Vulnerability
 
 **Audience:** On-call maintainer / security lead  
-**Trigger:** A vulnerability in a published version of the Baloise Design System is confirmed actively exploited in the wild  
+**Trigger:** A vulnerability in a published version of the Helvetia Design System is confirmed actively exploited in the wild  
 **Legal basis:** EU Cyber Resilience Act, Article 14 (active since September 2026)
 
 ---
@@ -46,7 +46,7 @@ If exploitation is not confirmed, follow the standard [CVD process](../../SECURI
 ## Step 2 — Notify Team and Open Private Advisory (T+1h)
 
 - [ ] Notify the security lead and one other maintainer immediately (do not handle alone)
-- [ ] Open a private [GitHub Security Advisory](https://github.com/baloise/design-system/security/advisories/new):
+- [ ] Open a private [GitHub Security Advisory](https://github.com/helvetia-design/system/security/advisories/new):
   - Title: `[CVE-YYYY-XXXXX] Short description`
   - Ecosystem: npm
   - Package name: `@helvetia-design/core` (and any other affected packages)
@@ -68,7 +68,7 @@ File an early warning with both authorities if EU consumers are affected. Duplic
 3. Submit an early warning with the minimum required fields:
 
 ```
-Product name:     Baloise Design System
+Product name:     Helvetia Design System
 Package:          @helvetia-design/core (and affected packages)
 Affected version: <semver range>
 CVE ID:           <CVE-YYYY-XXXXX or "pending">
@@ -93,7 +93,7 @@ Fix available:    Yes / No / In progress
 Update both authority submissions (reference the ticket numbers from Step 3) with full details:
 
 ```
-Product:           Baloise Design System
+Product:           Helvetia Design System
 Package(s):        @helvetia-design/core <semver>
 CVE ID:            CVE-YYYY-XXXXX
 CVSS score:        <score> (<vector string>)
@@ -130,7 +130,7 @@ Update both authority submissions with the final report:
 ```
 Fix released:      Yes — version <X.Y.Z>, released <ISO date>
 npm package:       https://www.npmjs.com/package/@helvetia-design/core/v/X.Y.Z
-GitHub release:    https://github.com/baloise/design-system/releases/tag/vX.Y.Z
+GitHub release:    https://github.com/helvetia-design/system/releases/tag/vX.Y.Z
 SBOM:              Bundled in npm package as sbom.cdx.json
 Provenance:        GitHub Actions provenance attestation (see npm package page)
 Root cause:        <1 paragraph>
@@ -185,7 +185,7 @@ For maintainer contact details, see [CONTRIBUTING.md](../../CONTRIBUTING.md).
 - [ENISA EUVDB reporting platform](https://euvdb.europa.eu)
 - [Swiss NCSC vulnerability report form](https://www.ncsc.admin.ch/ncsc/en/home/meldungen/meldung-ncsc.html)
 - [Request a CVE ID (MITRE)](https://cveform.mitre.org)
-- [GitHub Security Advisories — this repo](https://github.com/baloise/design-system/security/advisories)
+- [GitHub Security Advisories — this repo](https://github.com/helvetia-design/system/security/advisories)
 - [NVD — National Vulnerability Database](https://nvd.nist.gov)
 - [CRA Article 14 full text](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202402847#art_14)
 - [SECURITY.md](../../SECURITY.md)

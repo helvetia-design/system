@@ -2,7 +2,7 @@ name: 🔍 Figma Conflict Check
 
 on:
   pull_request:
-    branches: [next]
+    branches: [main]
     paths: ['packages/tokens/tokens/*.tokens.json']
 
 jobs:

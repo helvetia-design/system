@@ -1,6 +1,6 @@
 # 32. Coexist old and new DS packages via npm aliases
 
-Package: `packages/ds-skills`
+Package: `packages/skills`
 
 Date: 2026-09-23
 
