@@ -28,7 +28,7 @@ export default isAuthDisabledLocally({ vercel: process.env.VERCEL, disableAuth: 
         return NextResponse.redirect(signInUrl)
       }
 
-      if (!user.isOrgMember) {
+      if (!user.isTeamMember) {
         if (api) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         return NextResponse.redirect(new URL('/denied', request.nextUrl.origin))
       }

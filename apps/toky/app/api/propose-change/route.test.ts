@@ -94,7 +94,7 @@ const zurichFixtureDoc = {
 
 beforeEach(() => {
   vi.clearAllMocks()
-  auth.mockResolvedValue({ user: { login: 'octocat', isOrgMember: true } })
+  auth.mockResolvedValue({ user: { login: 'octocat', isTeamMember: true } })
   getBaseTokensFileMeta.mockResolvedValue({ sha: 'file-sha', content: fixtureDoc })
   getBrandTokensFileMeta.mockResolvedValue({ sha: 'zurich-sha', content: zurichFixtureDoc })
   listTokenBrandFiles.mockResolvedValue(['Zurich'])

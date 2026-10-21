@@ -26,7 +26,7 @@ export const Footer = ({ children }) => {
         return 'https://github.com/helvetia-design/system'
       }
 
-      return `https://github.com/helvetia-design/system/blob/next/apps/storybook/src/${sourceFile}`
+      return `https://github.com/helvetia-design/system/blob/main/apps/storybook/src/${sourceFile}`
     } catch (err) {
       console.warn('[Footer] Error generating GitHub URL:', err.message)
       return 'https://github.com/helvetia-design/system'
