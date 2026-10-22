@@ -30,14 +30,14 @@ describe('scanMigratable', () => {
       root,
       'App.tsx',
       [
-        "import { BalButton, BalSpinner } from '@baloise/ds-react'",
-        'export const App = () => <><BalSpinner /><BalButton /></>',
+        "import { BalFictional, BalSpinner } from '@baloise/ds-react'",
+        'export const App = () => <><BalSpinner /><BalFictional /></>',
       ].join('\n'),
     )
 
     expect(scanMigratable(root)).toEqual({
       suggested: [{ name: 'spinner', total: 2 }],
-      notYet: [{ name: 'button', total: 2 }],
+      notYet: [{ name: 'fictional', total: 2 }],
     })
   })
 
@@ -105,6 +105,89 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests steps when the project uses bal-steps and folds its child tag and option type in', () => {
+    const root = createScratchDir()
+    write(root, 'steps.ts', "import { BalStepOption } from '@baloise/ds-core'\nconst options: BalStepOption[] = []\n")
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-steps value="a">',
+        '  <bal-step-item value="a" label="One"></bal-step-item>',
+        '</bal-steps>',
+        '<bal-input-stepper></bal-input-stepper>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [
+        { name: 'input-stepper', total: 2 },
+        { name: 'steps', total: 6 },
+      ],
+      notYet: [],
+    })
+  })
+
+  it('suggests steps for a bare bal-step-item without a bal-steps parent', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-step-item value="a" label="One"></bal-step-item>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'steps', total: 2 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests tag when the project uses bal-tag and folds its group tag in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'index.html',
+      ['<bal-tag-group>', '  <bal-tag closable>Hi</bal-tag>', '</bal-tag-group>', '<bal-tab></bal-tab>', ''].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'tag', total: 4 }],
+      notYet: [{ name: 'tab', total: 2 }],
+    })
+  })
+
+  it('suggests tabs when the project uses bal-tabs and folds its child tag and option type in', () => {
+    const root = createScratchDir()
+    write(root, 'tabs.ts', "import { BalTabOption } from '@baloise/ds-core'\nconst options: BalTabOption[] = []\n")
+    write(
+      root,
+      'index.html',
+      ['<bal-tabs value="a">', '  <bal-tab-item value="a" label="One"></bal-tab-item>', '</bal-tabs>', ''].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'tabs', total: 6 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests tabs for a bare bal-tab-item without a bal-tabs parent', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-tab-item value="a" label="One"></bal-tab-item>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'tabs', total: 2 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests textarea when the project uses bal-textarea', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-textarea name="a"></bal-textarea>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'textarea', total: 2 }],
+      notYet: [],
+    })
+  })
+
   it('suggests card when the project uses bal-card and folds its child tags in', () => {
     const root = createScratchDir()
     write(
@@ -157,6 +240,111 @@ describe('scanMigratable', () => {
     // it, so it counts towards carousel rather than showing up as notYet.
     expect(scanMigratable(root)).toEqual({
       suggested: [{ name: 'carousel', total: 6 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests button when the project uses bal-button and folds the group tag in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalButton } from '@baloise/ds-react'", 'export const App = () => <BalButton color="primary" />'].join(
+        '\n',
+      ),
+    )
+    write(
+      root,
+      'index.html',
+      ['<bal-button-group position="right">', '  <bal-button>Save</bal-button>', '</bal-button-group>', ''].join('\n'),
+    )
+
+    // bal-button-group has no migration of its own; the button migration covers
+    // it, so it counts towards button rather than showing up as notYet.
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'button', total: 6 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests checkbox when the project uses bal-checkbox and folds the group tag in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalCheckbox } from '@baloise/ds-react'", 'export const App = () => <BalCheckbox value="1" />'].join(
+        '\n',
+      ),
+    )
+    write(
+      root,
+      'index.html',
+      ['<bal-checkbox-group control>', '  <bal-checkbox value="1"></bal-checkbox>', '</bal-checkbox-group>', ''].join(
+        '\n',
+      ),
+    )
+
+    // bal-checkbox-group has no migration of its own; the checkbox migration covers
+    // it, so it counts towards checkbox rather than showing up as notYet.
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'checkbox', total: 6 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests hint, folding the hint-title and hint-text children into it', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-hint>',
+        '  <bal-hint-title>Title</bal-hint-title>',
+        '  <bal-hint-text>Text</bal-hint-text>',
+        '</bal-hint>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'hint', total: 6 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests input, folding bal-input-date into it and leaving sibling components in notYet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-input name="a"></bal-input>',
+        '<bal-input-date name="d"></bal-input-date>',
+        '<bal-input-group></bal-input-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'input', total: 4 }],
+      notYet: [{ name: 'input-group', total: 2 }],
+    })
+  })
+
+  it('suggests file-upload when the project uses bal-file-upload', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      [
+        "import { BalFileUpload } from '@baloise/ds-react'",
+        'export const App = () => <BalFileUpload label="Drop" />',
+      ].join('\n'),
+    )
+    write(root, 'index.html', '<bal-file-upload label="Drop"></bal-file-upload>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'file-upload', total: 4 }],
       notYet: [],
     })
   })
@@ -224,6 +412,112 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests close when the project uses bal-close', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalClose } from '@baloise/ds-react'", 'export const App = () => <BalClose size="small" />'].join('\n'),
+    )
+    write(root, 'index.html', '<bal-close inverted></bal-close>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'close', total: 4 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests content when the project uses bal-content', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalContent } from '@baloise/ds-react'", 'export const App = () => <BalContent space="small" />'].join(
+        '\n',
+      ),
+    )
+    write(root, 'index.html', '<bal-content align="center"></bal-content>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'content', total: 4 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests data when the project uses bal-data and folds its child tags in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalData } from '@baloise/ds-react'", 'export const App = () => <BalData horizontal />'].join('\n'),
+    )
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-data>',
+        '  <bal-data-item>',
+        '    <bal-data-label>Name</bal-data-label>',
+        '    <bal-data-value>Ada</bal-data-value>',
+        '  </bal-data-item>',
+        '</bal-data>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'data', total: 10 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests date when the project uses bal-date and folds its internal calendar tags in', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', ['<bal-date></bal-date>', '<bal-date-calendar></bal-date-calendar>', ''].join('\n'))
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'date', total: 4 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests divider when the project uses bal-divider', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'App.tsx',
+      ["import { BalDivider } from '@baloise/ds-react'", 'export const App = () => <BalDivider space="small" />'].join(
+        '\n',
+      ),
+    )
+    write(root, 'index.html', '<bal-divider color="white"></bal-divider>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'divider', total: 4 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests footer when the project uses bal-footer', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-footer></bal-footer>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'footer', total: 2 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests heading when the project uses bal-heading', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-heading level="h2"></bal-heading>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'heading', total: 2 }],
+      notYet: [],
+    })
+  })
+
   it('suggests icon when the project uses bal-icon', () => {
     const root = createScratchDir()
     write(
@@ -241,11 +535,11 @@ describe('scanMigratable', () => {
 
   it('returns no suggestions when only unsupported components are used', () => {
     const root = createScratchDir()
-    write(root, 'index.html', '<bal-button></bal-button>\n')
+    write(root, 'index.html', '<bal-fictional></bal-fictional>\n')
 
     expect(scanMigratable(root)).toEqual({
       suggested: [],
-      notYet: [{ name: 'button', total: 2 }],
+      notYet: [{ name: 'fictional', total: 2 }],
     })
   })
 

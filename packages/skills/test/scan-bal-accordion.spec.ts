@@ -256,6 +256,106 @@ describe('scanBalAccordion', () => {
     })
   })
 
+  it('lists every tag of nested accordions, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-accordion active>',
+        '  <bal-accordion-summary>Outer</bal-accordion-summary>',
+        '  <bal-accordion-details>',
+        '    <bal-accordion>',
+        '      <bal-accordion-summary>Inner</bal-accordion-summary>',
+        '    </bal-accordion>',
+        '  </bal-accordion-details>',
+        '</bal-accordion>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalAccordion(root)).toEqual({
+      total: 10,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-accordion active>' },
+            { line: 2, snippet: '<bal-accordion-summary>' },
+            { line: 2, snippet: '</bal-accordion-summary>' },
+            { line: 3, snippet: '<bal-accordion-details>' },
+            { line: 4, snippet: '<bal-accordion>' },
+            { line: 5, snippet: '<bal-accordion-summary>' },
+            { line: 5, snippet: '</bal-accordion-summary>' },
+            { line: 6, snippet: '</bal-accordion>' },
+            { line: 7, snippet: '</bal-accordion-details>' },
+            { line: 8, snippet: '</bal-accordion>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-accordion-summary at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-accordion>',
+        '  <bal-accordion-summary',
+        '    class="summary"',
+        '    id="s1"',
+        '  >Title</bal-accordion-summary>',
+        '</bal-accordion>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalAccordion(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-accordion>' },
+            { line: 2, snippet: '<bal-accordion-summary class="summary" id="s1">' },
+            { line: 5, snippet: '</bal-accordion-summary>' },
+            { line: 6, snippet: '</bal-accordion>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [active] and :active bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-accordion [active]="open" [card]="isCard" (balChange)="onChange($event)"></bal-accordion>',
+        '<bal-accordion :active="open" :card="isCard"></bal-accordion>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalAccordion(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-accordion [active]="open" [card]="isCard" (balChange)="onChange($event)">' },
+            { line: 1, snippet: '</bal-accordion>' },
+            { line: 2, snippet: '<bal-accordion :active="open" :card="isCard">' },
+            { line: 2, snippet: '</bal-accordion>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-accordion active></bal-accordion>\n')

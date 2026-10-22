@@ -216,6 +216,37 @@ describe('scanBalToast', () => {
     })
   })
 
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-toast [message]="text" [color]="tone" [duration]="3000" (balClose)="onClose()"></bal-toast>',
+        '<bal-toast :message="text" :color="tone"></bal-toast>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalToast(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            {
+              line: 1,
+              snippet: '<bal-toast [message]="text" [color]="tone" [duration]="3000" (balClose)="onClose()">',
+            },
+            { line: 1, snippet: '</bal-toast>' },
+            { line: 2, snippet: '<bal-toast :message="text" :color="tone">' },
+            { line: 2, snippet: '</bal-toast>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('lists a controller that is not next to a tag', () => {
     const root = createScratchDir()
     write(

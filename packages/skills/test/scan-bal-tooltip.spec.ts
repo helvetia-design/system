@@ -219,6 +219,67 @@ describe('scanBalTooltip', () => {
     })
   })
 
+  it('lists every tag of a tooltip wrapping a trigger with placement, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-tooltip label="Outer">',
+        '  <bal-tooltip label="Inner"><button bal-tooltip-placement="top">Go</button></bal-tooltip>',
+        '</bal-tooltip>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTooltip(root)).toEqual({
+      total: 5,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-tooltip label="Outer">' },
+            { line: 2, snippet: '<bal-tooltip label="Inner">' },
+            {
+              line: 2,
+              snippet: '<bal-tooltip label="Inner"><button bal-tooltip-placement="top">Go</button></bal-tooltip>',
+            },
+            { line: 2, snippet: '</bal-tooltip>' },
+            { line: 3, snippet: '</bal-tooltip>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-tooltip [label]="hint" [placement]="side" (balChange)="onChange($event)">Hi</bal-tooltip>',
+        '<bal-tooltip :label="hint" :placement="side">Hi</bal-tooltip>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTooltip(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-tooltip [label]="hint" [placement]="side" (balChange)="onChange($event)">' },
+            { line: 1, snippet: '</bal-tooltip>' },
+            { line: 2, snippet: '<bal-tooltip :label="hint" :placement="side">' },
+            { line: 2, snippet: '</bal-tooltip>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-tooltip reference="save">Hi</bal-tooltip>\n')

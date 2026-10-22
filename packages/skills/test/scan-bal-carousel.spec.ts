@@ -208,6 +208,107 @@ describe('scanBalCarousel', () => {
     })
   })
 
+  it('lists every tag of a carousel nested in a carousel item, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-carousel>',
+        '  <bal-carousel-item>',
+        '    <bal-carousel>',
+        '      <bal-carousel-item>Inner</bal-carousel-item>',
+        '    </bal-carousel>',
+        '  </bal-carousel-item>',
+        '</bal-carousel>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCarousel(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-carousel>' },
+            { line: 2, snippet: '<bal-carousel-item>' },
+            { line: 3, snippet: '<bal-carousel>' },
+            { line: 4, snippet: '<bal-carousel-item>' },
+            { line: 4, snippet: '</bal-carousel-item>' },
+            { line: 5, snippet: '</bal-carousel>' },
+            { line: 6, snippet: '</bal-carousel-item>' },
+            { line: 7, snippet: '</bal-carousel>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-carousel-item at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-carousel>',
+        '  <bal-carousel-item',
+        '    class="slide"',
+        '    id="s1"',
+        '  >One</bal-carousel-item>',
+        '</bal-carousel>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCarousel(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-carousel>' },
+            { line: 2, snippet: '<bal-carousel-item class="slide" id="s1">' },
+            { line: 5, snippet: '</bal-carousel-item>' },
+            { line: 6, snippet: '</bal-carousel>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [controls] and :controls bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-carousel [controls]="controls" [steps]="2" (balChange)="onChange($event)">',
+        '  <bal-carousel-item *ngFor="let slide of slides">{{ slide }}</bal-carousel-item>',
+        '</bal-carousel>',
+        '<bal-carousel :controls="controls" :steps="2"></bal-carousel>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCarousel(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-carousel [controls]="controls" [steps]="2" (balChange)="onChange($event)">' },
+            { line: 2, snippet: '<bal-carousel-item *ngFor="let slide of slides">' },
+            { line: 2, snippet: '</bal-carousel-item>' },
+            { line: 3, snippet: '</bal-carousel>' },
+            { line: 4, snippet: '<bal-carousel :controls="controls" :steps="2">' },
+            { line: 4, snippet: '</bal-carousel>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-carousel controls="dots"></bal-carousel>\n')
