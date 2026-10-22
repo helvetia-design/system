@@ -5,17 +5,26 @@
 > the previous version**, after a second look: the 4-item top-level menu (Init / Components / CSS
 > utils / Assets, with "coming soon" stubs) and the npm-alias coexistence strategy — both were
 > initially dropped, then brought back.
+>
+> **2026-10 update:** the npm scope rename referenced throughout this plan as upcoming
+> (`@baloise/ds-*` → `@helvetia-design/*`) has since landed. `ds-migrate-from-baloise`'s Init
+> step was rewritten afterward to install the real `@helvetia-design/*` packages directly — the
+> npm-alias coexistence strategy described below (and in the embedded ADR draft) is no longer how
+> Init works. See `docs/adr/0032-ds-migrate-npm-alias-coexistence.md` (now marked Superseded) and
+> `packages/skills/skills/ds-migrate-from-baloise/scripts/detect-baloise.mjs` for current
+> behavior. The rest of this plan is kept as a historical record of the original design.
 
 ## Context
 
 The Helvetia Design System (this repo, `next` branch) is the successor to the Baloise Design
-System (`main` branch). Custom elements were renamed (`bal-*` → `ds-*`), but the npm packages
-have **not** been renamed yet — both still publish as `@baloise/ds-core`, `@baloise/ds-react`,
-`@baloise/ds-angular`, `@baloise/ds-styles` (old at `19.10.2`, new at `20.0.0-next.9`). The plan
-is for the new packages to eventually publish under the **`@helvetia-design` npm scope**
-(dropping the `ds-` infix per package, e.g. `@baloise/ds-core` → `@helvetia-design/core`) — see
-`docs/plans/npm-scope-rename-plan.md` for that rename's own plan. That rename hasn't landed yet
-and is an external prerequisite to this plan, not something it performs.
+System (`main` branch). Custom elements were renamed (`bal-*` → `ds-*`); at the time this plan
+was written, the npm packages had **not** been renamed yet — both still published as
+`@baloise/ds-core`, `@baloise/ds-react`, `@baloise/ds-angular`, `@baloise/ds-styles` (old at
+`19.10.2`, new at `20.0.0-next.9`). The plan was for the new packages to eventually publish under
+the **`@helvetia-design` npm scope** (dropping the `ds-` infix per package, e.g.
+`@baloise/ds-core` → `@helvetia-design/core`). That rename has since landed (see the update note
+above); the `docs/plans/npm-scope-rename-plan.md` that tracked it was deleted once executed, and
+this plan was an external prerequisite the rename didn't itself perform.
 
 There is no tooling today to help consuming React/Angular/HTML applications adopt the new DS
 component-by-component. This plan builds a Claude Code skill, `ds-migrate-from-baloise`,
