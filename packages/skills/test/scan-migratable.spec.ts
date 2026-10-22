@@ -178,6 +178,16 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests textarea when the project uses bal-textarea', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-textarea name="a"></bal-textarea>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'textarea', total: 2 }],
+      notYet: [],
+    })
+  })
+
   it('suggests card when the project uses bal-card and folds its child tags in', () => {
     const root = createScratchDir()
     write(
