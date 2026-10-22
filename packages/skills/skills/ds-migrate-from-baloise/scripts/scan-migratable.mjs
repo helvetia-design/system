@@ -48,6 +48,8 @@ const CHILD_SLUGS = new Map([
   ['radio-icon', 'radio'],
   ['segment-item', 'segment'],
   ['select-option', 'select'],
+  ['step-item', 'steps'],
+  ['step-option', 'steps'],
 ])
 
 export function componentNameToSlug(name) {
