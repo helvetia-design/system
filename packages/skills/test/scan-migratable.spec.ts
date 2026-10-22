@@ -105,6 +105,40 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests steps when the project uses bal-steps and folds its child tag and option type in', () => {
+    const root = createScratchDir()
+    write(root, 'steps.ts', "import { BalStepOption } from '@baloise/ds-core'\nconst options: BalStepOption[] = []\n")
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-steps value="a">',
+        '  <bal-step-item value="a" label="One"></bal-step-item>',
+        '</bal-steps>',
+        '<bal-input-stepper></bal-input-stepper>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [
+        { name: 'input-stepper', total: 2 },
+        { name: 'steps', total: 6 },
+      ],
+      notYet: [],
+    })
+  })
+
+  it('suggests steps for a bare bal-step-item without a bal-steps parent', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-step-item value="a" label="One"></bal-step-item>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'steps', total: 2 }],
+      notYet: [],
+    })
+  })
+
   it('suggests card when the project uses bal-card and folds its child tags in', () => {
     const root = createScratchDir()
     write(
