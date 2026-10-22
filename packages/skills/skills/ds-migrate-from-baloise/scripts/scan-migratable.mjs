@@ -47,6 +47,7 @@ const CHILD_SLUGS = new Map([
   ['radio-group', 'radio'],
   ['radio-icon', 'radio'],
   ['segment-item', 'segment'],
+  ['select-option', 'select'],
 ])
 
 export function componentNameToSlug(name) {
