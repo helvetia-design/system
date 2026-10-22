@@ -184,6 +184,113 @@ describe('scanBalTabs', () => {
     })
   })
 
+  it('lists every tag of nested tabs, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-tabs value="outer">',
+        '  <bal-tab-item value="a" label="A">',
+        '    <bal-tabs value="inner">',
+        '      <bal-tab-item value="x" label="X"></bal-tab-item>',
+        '    </bal-tabs>',
+        '  </bal-tab-item>',
+        '</bal-tabs>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTabs(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-tabs value="outer">' },
+            { line: 2, snippet: '<bal-tab-item value="a" label="A">' },
+            { line: 3, snippet: '<bal-tabs value="inner">' },
+            { line: 4, snippet: '<bal-tab-item value="x" label="X">' },
+            { line: 4, snippet: '</bal-tab-item>' },
+            { line: 5, snippet: '</bal-tabs>' },
+            { line: 6, snippet: '</bal-tab-item>' },
+            { line: 7, snippet: '</bal-tabs>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-tab-item at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<div>',
+        '  <bal-tab-item',
+        '    value="b"',
+        '    label="B"',
+        '    href="/b"',
+        '  ></bal-tab-item>',
+        '</div>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTabs(root)).toEqual({
+      total: 2,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 2, snippet: '<bal-tab-item value="b" label="B" href="/b">' },
+            { line: 6, snippet: '</bal-tab-item>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [value] and :value bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-tabs [value]="active" (balChange)="onChange($event)">',
+        '  <bal-tab-item [value]="tab.id" [label]="tab.label" *ngFor="let tab of tabs"></bal-tab-item>',
+        '</bal-tabs>',
+        '<bal-tabs :value="active">',
+        '  <bal-tab-item :value="tab.id" :label="tab.label"></bal-tab-item>',
+        '</bal-tabs>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTabs(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-tabs [value]="active" (balChange)="onChange($event)">' },
+            {
+              line: 2,
+              snippet: '<bal-tab-item [value]="tab.id" [label]="tab.label" *ngFor="let tab of tabs">',
+            },
+            { line: 2, snippet: '</bal-tab-item>' },
+            { line: 3, snippet: '</bal-tabs>' },
+            { line: 4, snippet: '<bal-tabs :value="active">' },
+            { line: 5, snippet: '<bal-tab-item :value="tab.id" :label="tab.label">' },
+            { line: 5, snippet: '</bal-tab-item>' },
+            { line: 6, snippet: '</bal-tabs>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('lists the option type that is not next to a tag', () => {
     const root = createScratchDir()
     write(

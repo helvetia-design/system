@@ -144,6 +144,106 @@ describe('scanBalData', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-data>' })
   })
 
+  it('lists every tag of bal-data with its items, labels and values, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-data>',
+        '  <bal-data-item>',
+        '    <bal-data-label>Name</bal-data-label>',
+        '    <bal-data-value>Jane</bal-data-value>',
+        '  </bal-data-item>',
+        '</bal-data>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalData(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-data>' },
+            { line: 2, snippet: '<bal-data-item>' },
+            { line: 3, snippet: '<bal-data-label>' },
+            { line: 3, snippet: '</bal-data-label>' },
+            { line: 4, snippet: '<bal-data-value>' },
+            { line: 4, snippet: '</bal-data-value>' },
+            { line: 5, snippet: '</bal-data-item>' },
+            { line: 6, snippet: '</bal-data>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-data-value at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-data>',
+        '  <bal-data-item>',
+        '    <bal-data-value',
+        '      editable="true"',
+        '      multiline="true"',
+        '    >Jane</bal-data-value>',
+        '  </bal-data-item>',
+        '</bal-data>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalData(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-data>' },
+            { line: 2, snippet: '<bal-data-item>' },
+            { line: 3, snippet: '<bal-data-value editable="true" multiline="true">' },
+            { line: 6, snippet: '</bal-data-value>' },
+            { line: 7, snippet: '</bal-data-item>' },
+            { line: 8, snippet: '</bal-data>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [editable] and :editable bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-data-value [editable]="canEdit" [multiline]="long">{{ value }}</bal-data-value>',
+        '<bal-data-value :editable="canEdit" :multiline="long">{{ value }}</bal-data-value>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalData(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-data-value [editable]="canEdit" [multiline]="long">' },
+            { line: 1, snippet: '</bal-data-value>' },
+            { line: 2, snippet: '<bal-data-value :editable="canEdit" :multiline="long">' },
+            { line: 2, snippet: '</bal-data-value>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-data></bal-data>\n')

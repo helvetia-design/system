@@ -135,6 +135,34 @@ describe('scanBalShape', () => {
     })
   })
 
+  it('lists tags that carry [variation] and :variation bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-shape [variation]="shape" [color]="tone"></bal-shape>',
+        '<bal-shape :variation="shape" :color="tone"></bal-shape>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalShape(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-shape [variation]="shape" [color]="tone">' },
+            { line: 1, snippet: '</bal-shape>' },
+            { line: 2, snippet: '<bal-shape :variation="shape" :color="tone">' },
+            { line: 2, snippet: '</bal-shape>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     for (const dir of ['node_modules', 'dist', 'build', 'out', '.next', '.angular', '.git', '.claude', 'coverage']) {

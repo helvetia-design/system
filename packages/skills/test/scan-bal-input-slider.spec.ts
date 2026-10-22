@@ -169,6 +169,34 @@ describe('scanBalInputSlider', () => {
     })
   })
 
+  it('lists tags that carry [min] and :min bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-input-slider [min]="min" [max]="max" [step]="step" [(ngModel)]="value"></bal-input-slider>',
+        '<bal-input-slider :min="min" :max="max" :step="step" :hasTicks="ticks"></bal-input-slider>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalInputSlider(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-input-slider [min]="min" [max]="max" [step]="step" [(ngModel)]="value">' },
+            { line: 1, snippet: '</bal-input-slider>' },
+            { line: 2, snippet: '<bal-input-slider :min="min" :max="max" :step="step" :hasTicks="ticks">' },
+            { line: 2, snippet: '</bal-input-slider>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-input-slider></bal-input-slider>\n')

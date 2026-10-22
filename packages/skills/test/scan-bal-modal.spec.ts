@@ -183,6 +183,106 @@ describe('scanBalModal', () => {
     })
   })
 
+  it('lists every tag of a modal nested in a modal body, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-modal>',
+        '  <bal-modal-header>Title</bal-modal-header>',
+        '  <bal-modal-body>',
+        '    <bal-modal>',
+        '      <bal-modal-body>Confirm</bal-modal-body>',
+        '    </bal-modal>',
+        '  </bal-modal-body>',
+        '</bal-modal>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalModal(root)).toEqual({
+      total: 10,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-modal>' },
+            { line: 2, snippet: '<bal-modal-header>' },
+            { line: 2, snippet: '</bal-modal-header>' },
+            { line: 3, snippet: '<bal-modal-body>' },
+            { line: 4, snippet: '<bal-modal>' },
+            { line: 5, snippet: '<bal-modal-body>' },
+            { line: 5, snippet: '</bal-modal-body>' },
+            { line: 6, snippet: '</bal-modal>' },
+            { line: 7, snippet: '</bal-modal-body>' },
+            { line: 8, snippet: '</bal-modal>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-modal-header at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-modal>',
+        '  <bal-modal-header',
+        '    id="header"',
+        '    class="custom"',
+        '  ></bal-modal-header>',
+        '</bal-modal>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalModal(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-modal>' },
+            { line: 2, snippet: '<bal-modal-header id="header" class="custom">' },
+            { line: 5, snippet: '</bal-modal-header>' },
+            { line: 6, snippet: '</bal-modal>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [isClosable] and :isClosable bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-modal [isClosable]="closable" [modalWidth]="width"></bal-modal>',
+        '<bal-modal :isClosable="closable" :modalWidth="width"></bal-modal>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalModal(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-modal [isClosable]="closable" [modalWidth]="width">' },
+            { line: 1, snippet: '</bal-modal>' },
+            { line: 2, snippet: '<bal-modal :isClosable="closable" :modalWidth="width">' },
+            { line: 2, snippet: '</bal-modal>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-modal></bal-modal>\n')

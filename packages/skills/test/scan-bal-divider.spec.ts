@@ -129,6 +129,34 @@ describe('scanBalDivider', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-divider>' })
   })
 
+  it('lists tags that carry [layout] and :layout bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-divider [layout]="layout" [space]="space"></bal-divider>',
+        '<bal-divider :layout="layout" :space="space"></bal-divider>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalDivider(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-divider [layout]="layout" [space]="space">' },
+            { line: 1, snippet: '</bal-divider>' },
+            { line: 2, snippet: '<bal-divider :layout="layout" :space="space">' },
+            { line: 2, snippet: '</bal-divider>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-divider></bal-divider>\n')

@@ -247,6 +247,71 @@ describe('scanBalHint', () => {
     })
   })
 
+  it('lists tags that carry [closeLabel] and :closeLabel bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-hint [closeLabel]="closeLabel" [small]="small"></bal-hint>',
+        '<bal-hint :closeLabel="closeLabel" :small="small"></bal-hint>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalHint(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-hint [closeLabel]="closeLabel" [small]="small">' },
+            { line: 1, snippet: '</bal-hint>' },
+            { line: 2, snippet: '<bal-hint :closeLabel="closeLabel" :small="small">' },
+            { line: 2, snippet: '</bal-hint>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-hint-title and bal-hint-text at their opening lines with single-line snippets', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-hint>',
+        '  <bal-hint-title',
+        '    class="title"',
+        '    id="hint-title"',
+        '  >Title</bal-hint-title>',
+        '  <bal-hint-text',
+        '    class="text"',
+        '  >Text</bal-hint-text>',
+        '</bal-hint>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalHint(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-hint>' },
+            { line: 2, snippet: '<bal-hint-title class="title" id="hint-title">' },
+            { line: 5, snippet: '</bal-hint-title>' },
+            { line: 6, snippet: '<bal-hint-text class="text">' },
+            { line: 8, snippet: '</bal-hint-text>' },
+            { line: 9, snippet: '</bal-hint>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-hint closeLabel="Close"></bal-hint>\n')

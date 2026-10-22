@@ -210,6 +210,32 @@ describe('scanBalIcon', () => {
     })
   })
 
+  it('lists tags that carry [name] and :name bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      ['<bal-icon [name]="icon" [size]="size"></bal-icon>', '<bal-icon :name="icon" :size="size"></bal-icon>', ''].join(
+        '\n',
+      ),
+    )
+
+    expect(scanBalIcon(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-icon [name]="icon" [size]="size">' },
+            { line: 1, snippet: '</bal-icon>' },
+            { line: 2, snippet: '<bal-icon :name="icon" :size="size">' },
+            { line: 2, snippet: '</bal-icon>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-icon name="plus"></bal-icon>\n')

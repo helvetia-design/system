@@ -148,6 +148,108 @@ describe('scanBalTag', () => {
     expect(readFileSync(join(root, 'index.html'), 'utf8')).toBe(source)
   })
 
+  it('lists every tag of tags nested in a tag group, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-tag-group>',
+        '  <bal-tag color="green">A</bal-tag>',
+        '  <bal-tag color="blue">',
+        '    <bal-tag size="small">B</bal-tag>',
+        '  </bal-tag>',
+        '</bal-tag-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTag(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-tag-group>' },
+            { line: 2, snippet: '<bal-tag color="green">' },
+            { line: 2, snippet: '</bal-tag>' },
+            { line: 3, snippet: '<bal-tag color="blue">' },
+            { line: 4, snippet: '<bal-tag size="small">' },
+            { line: 4, snippet: '</bal-tag>' },
+            { line: 5, snippet: '</bal-tag>' },
+            { line: 6, snippet: '</bal-tag-group>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-tag-group at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<div>',
+        '  <bal-tag-group',
+        '    class="tags"',
+        '    space="small"',
+        '  >',
+        '    <bal-tag>A</bal-tag>',
+        '  </bal-tag-group>',
+        '</div>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTag(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 2, snippet: '<bal-tag-group class="tags" space="small">' },
+            { line: 6, snippet: '<bal-tag>' },
+            { line: 6, snippet: '</bal-tag>' },
+            { line: 7, snippet: '</bal-tag-group>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-tag [color]="tone" [closable]="canClose" (balCloseClick)="remove(t)">{{ t }}</bal-tag>',
+        '<bal-tag :color="tone" :closable="canClose">{{ t }}</bal-tag>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTag(root)).toEqual({
+      total: 5,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-tag [color]="tone" [closable]="canClose" (balCloseClick)="remove(t)">' },
+            {
+              line: 1,
+              snippet: '<bal-tag [color]="tone" [closable]="canClose" (balCloseClick)="remove(t)">{{ t }}</bal-tag>',
+            },
+            { line: 1, snippet: '</bal-tag>' },
+            { line: 2, snippet: '<bal-tag :color="tone" :closable="canClose">' },
+            { line: 2, snippet: '</bal-tag>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-tag></bal-tag>\n')

@@ -138,6 +138,34 @@ describe('scanBalProgressBar', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-progress-bar>' })
   })
 
+  it('lists tags that carry [value] and :value bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-progress-bar [value]="progress" [color]="tone"></bal-progress-bar>',
+        '<bal-progress-bar :value="progress" :color="tone"></bal-progress-bar>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalProgressBar(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-progress-bar [value]="progress" [color]="tone">' },
+            { line: 1, snippet: '</bal-progress-bar>' },
+            { line: 2, snippet: '<bal-progress-bar :value="progress" :color="tone">' },
+            { line: 2, snippet: '</bal-progress-bar>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-progress-bar></bal-progress-bar>\n')

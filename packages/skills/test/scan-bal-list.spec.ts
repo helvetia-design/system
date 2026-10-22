@@ -182,6 +182,122 @@ describe('scanBalList', () => {
     expect(result.files[1].findings).toContainEqual({ line: 8, snippet: '<bal-list-item>' })
   })
 
+  it('lists every tag of nested lists, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-list>',
+        '  <bal-list-item>',
+        '    <bal-list>',
+        '      <bal-list-item><bal-list-item-title>Inner</bal-list-item-title></bal-list-item>',
+        '    </bal-list>',
+        '  </bal-list-item>',
+        '</bal-list>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalList(root)).toEqual({
+      total: 10,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-list>' },
+            { line: 2, snippet: '<bal-list-item>' },
+            { line: 3, snippet: '<bal-list>' },
+            { line: 4, snippet: '<bal-list-item>' },
+            { line: 4, snippet: '<bal-list-item-title>' },
+            { line: 4, snippet: '</bal-list-item-title>' },
+            { line: 4, snippet: '</bal-list-item>' },
+            { line: 5, snippet: '</bal-list>' },
+            { line: 6, snippet: '</bal-list-item>' },
+            { line: 7, snippet: '</bal-list>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-list-item-title at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-list>',
+        '  <bal-list-item',
+        '    clickable',
+        '    href="/policy"',
+        '  >',
+        '    <bal-list-item-title',
+        '      class="title"',
+        '    >Policy</bal-list-item-title>',
+        '  </bal-list-item>',
+        '</bal-list>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalList(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-list>' },
+            { line: 2, snippet: '<bal-list-item clickable href="/policy">' },
+            { line: 6, snippet: '<bal-list-item-title class="title">' },
+            { line: 8, snippet: '</bal-list-item-title>' },
+            { line: 9, snippet: '</bal-list-item>' },
+            { line: 10, snippet: '</bal-list>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [size] and :size bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-list [size]="size" [border]="border">',
+        '  <bal-list-item *ngFor="let row of rows" [clickable]="row.link" [disabled]="row.off"></bal-list-item>',
+        '</bal-list>',
+        '<bal-list :size="size" :border="border">',
+        '  <bal-list-item :clickable="row.link" :disabled="row.off"></bal-list-item>',
+        '</bal-list>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalList(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-list [size]="size" [border]="border">' },
+            {
+              line: 2,
+              snippet: '<bal-list-item *ngFor="let row of rows" [clickable]="row.link" [disabled]="row.off">',
+            },
+            { line: 2, snippet: '</bal-list-item>' },
+            { line: 3, snippet: '</bal-list>' },
+            { line: 4, snippet: '<bal-list :size="size" :border="border">' },
+            { line: 5, snippet: '<bal-list-item :clickable="row.link" :disabled="row.off">' },
+            { line: 5, snippet: '</bal-list-item>' },
+            { line: 6, snippet: '</bal-list>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-list></bal-list>\n')

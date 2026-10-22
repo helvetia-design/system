@@ -201,6 +201,37 @@ describe('scanBalFileUpload', () => {
     })
   })
 
+  it('lists tags that carry [label] and :label bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-file-upload [label]="label" [multiple]="multiple" (balChange)="onChange($event)"></bal-file-upload>',
+        '<bal-file-upload :label="label" :accept="accept" :multiple="multiple"></bal-file-upload>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalFileUpload(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            {
+              line: 1,
+              snippet: '<bal-file-upload [label]="label" [multiple]="multiple" (balChange)="onChange($event)">',
+            },
+            { line: 1, snippet: '</bal-file-upload>' },
+            { line: 2, snippet: '<bal-file-upload :label="label" :accept="accept" :multiple="multiple">' },
+            { line: 2, snippet: '</bal-file-upload>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-file-upload label="Drop"></bal-file-upload>\n')

@@ -162,6 +162,107 @@ describe('scanBalSelect', () => {
     })
   })
 
+  it('lists every tag of a select with its options, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-select placeholder="Pick">',
+        '  <bal-select-option value="a" label="A"></bal-select-option>',
+        '  <bal-select-option value="b" label="B"></bal-select-option>',
+        '</bal-select>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSelect(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-select placeholder="Pick">' },
+            { line: 2, snippet: '<bal-select-option value="a" label="A">' },
+            { line: 2, snippet: '</bal-select-option>' },
+            { line: 3, snippet: '<bal-select-option value="b" label="B">' },
+            { line: 3, snippet: '</bal-select-option>' },
+            { line: 4, snippet: '</bal-select>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-select-option at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-select>',
+        '  <bal-select-option',
+        '    value="b"',
+        '    label="B"',
+        '    disabled',
+        '  ></bal-select-option>',
+        '</bal-select>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSelect(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-select>' },
+            { line: 2, snippet: '<bal-select-option value="b" label="B" disabled>' },
+            { line: 6, snippet: '</bal-select-option>' },
+            { line: 7, snippet: '</bal-select>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [value] and :value bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-select [value]="current" [multiple]="many">',
+        '  <bal-select-option [value]="o.id" [label]="o.label" *ngFor="let o of options"></bal-select-option>',
+        '</bal-select>',
+        '<bal-select :value="current" :multiple="many">',
+        '  <bal-select-option :value="o.id" :label="o.label"></bal-select-option>',
+        '</bal-select>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSelect(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-select [value]="current" [multiple]="many">' },
+            { line: 2, snippet: '<bal-select-option [value]="o.id" [label]="o.label" *ngFor="let o of options">' },
+            { line: 2, snippet: '</bal-select-option>' },
+            { line: 3, snippet: '</bal-select>' },
+            { line: 4, snippet: '<bal-select :value="current" :multiple="many">' },
+            { line: 5, snippet: '<bal-select-option :value="o.id" :label="o.label">' },
+            { line: 5, snippet: '</bal-select-option>' },
+            { line: 6, snippet: '</bal-select>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     for (const dir of ['node_modules', 'dist', 'build', 'out', '.next', '.angular', '.git', '.claude', 'coverage']) {

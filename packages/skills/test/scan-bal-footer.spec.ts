@@ -139,6 +139,34 @@ describe('scanBalFooter', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-footer>' })
   })
 
+  it('lists tags that carry [hideLinks] and :hideLinks bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-footer [hideLinks]="hideLinks" [hideLanguageSelection]="hideLang"></bal-footer>',
+        '<bal-footer :hideLinks="hideLinks" :hideLanguageSelection="hideLang"></bal-footer>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalFooter(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-footer [hideLinks]="hideLinks" [hideLanguageSelection]="hideLang">' },
+            { line: 1, snippet: '</bal-footer>' },
+            { line: 2, snippet: '<bal-footer :hideLinks="hideLinks" :hideLanguageSelection="hideLang">' },
+            { line: 2, snippet: '</bal-footer>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-footer></bal-footer>\n')

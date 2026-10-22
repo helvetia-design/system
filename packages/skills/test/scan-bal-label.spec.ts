@@ -200,6 +200,66 @@ describe('scanBalLabel', () => {
     })
   })
 
+  it('lists tags that carry [htmlFor] and :htmlFor bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-label [htmlFor]="id" [required]="required"></bal-label>',
+        '<bal-label :htmlFor="id" :required="required"></bal-label>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalLabel(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-label [htmlFor]="id" [required]="required">' },
+            { line: 1, snippet: '</bal-label>' },
+            { line: 2, snippet: '<bal-label :htmlFor="id" :required="required">' },
+            { line: 2, snippet: '</bal-label>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists bal-label inside bal-field wrappers and ignores the bal-field-* tags', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-field>',
+        '  <bal-field-label>',
+        '    <bal-label htmlFor="name" required>Name</bal-label>',
+        '  </bal-field-label>',
+        '  <bal-field-control>',
+        '    <bal-input id="name"></bal-input>',
+        '  </bal-field-control>',
+        '</bal-field>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalLabel(root)).toEqual({
+      total: 2,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 3, snippet: '<bal-label htmlFor="name" required>' },
+            { line: 3, snippet: '</bal-label>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-label>Name</bal-label>\n')

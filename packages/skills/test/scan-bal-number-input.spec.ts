@@ -168,6 +168,34 @@ describe('scanBalNumberInput', () => {
     })
   })
 
+  it('lists tags that carry [decimal] and :decimal bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-number-input [decimal]="digits" [suffix]="unit"></bal-number-input>',
+        '<bal-number-input :decimal="digits" :suffix="unit"></bal-number-input>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalNumberInput(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-number-input [decimal]="digits" [suffix]="unit">' },
+            { line: 1, snippet: '</bal-number-input>' },
+            { line: 2, snippet: '<bal-number-input :decimal="digits" :suffix="unit">' },
+            { line: 2, snippet: '</bal-number-input>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-number-input></bal-number-input>\n')

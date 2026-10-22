@@ -129,6 +129,34 @@ describe('scanBalSpinner', () => {
     })
   })
 
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-spinner [small]="compact" [color]="tone" *ngIf="loading"></bal-spinner>',
+        '<bal-spinner :small="compact" :color="tone"></bal-spinner>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSpinner(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-spinner [small]="compact" [color]="tone" *ngIf="loading">' },
+            { line: 1, snippet: '</bal-spinner>' },
+            { line: 2, snippet: '<bal-spinner :small="compact" :color="tone">' },
+            { line: 2, snippet: '</bal-spinner>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-spinner small></bal-spinner>\n')

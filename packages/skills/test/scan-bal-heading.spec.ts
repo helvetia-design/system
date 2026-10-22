@@ -139,6 +139,34 @@ describe('scanBalHeading', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-heading>' })
   })
 
+  it('lists tags that carry [level] and :level bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-heading [level]="level" [visualLevel]="visual"></bal-heading>',
+        '<bal-heading :level="level" :visualLevel="visual"></bal-heading>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalHeading(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-heading [level]="level" [visualLevel]="visual">' },
+            { line: 1, snippet: '</bal-heading>' },
+            { line: 2, snippet: '<bal-heading :level="level" :visualLevel="visual">' },
+            { line: 2, snippet: '</bal-heading>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-heading></bal-heading>\n')

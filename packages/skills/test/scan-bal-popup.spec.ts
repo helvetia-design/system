@@ -177,6 +177,65 @@ describe('scanBalPopup', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-popup>' })
   })
 
+  it('lists every tag of a popup nested in a popup, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-popup id="outer">',
+        '  <bal-popup id="inner">',
+        '    <p>Hi</p>',
+        '  </bal-popup>',
+        '</bal-popup>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalPopup(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-popup id="outer">' },
+            { line: 2, snippet: '<bal-popup id="inner">' },
+            { line: 4, snippet: '</bal-popup>' },
+            { line: 5, snippet: '</bal-popup>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [closable] and :closable bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-popup [closable]="canClose" [placement]="side"></bal-popup>',
+        '<bal-popup :closable="canClose" :placement="side"></bal-popup>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalPopup(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-popup [closable]="canClose" [placement]="side">' },
+            { line: 1, snippet: '</bal-popup>' },
+            { line: 2, snippet: '<bal-popup :closable="canClose" :placement="side">' },
+            { line: 2, snippet: '</bal-popup>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-popup></bal-popup>\n')

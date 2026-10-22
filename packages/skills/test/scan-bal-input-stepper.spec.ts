@@ -169,6 +169,34 @@ describe('scanBalInputStepper', () => {
     })
   })
 
+  it('lists tags that carry [min] and :min bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-input-stepper [min]="min" [max]="max" [steps]="steps" [(ngModel)]="value"></bal-input-stepper>',
+        '<bal-input-stepper :min="min" :max="max" :steps="steps"></bal-input-stepper>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalInputStepper(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-input-stepper [min]="min" [max]="max" [steps]="steps" [(ngModel)]="value">' },
+            { line: 1, snippet: '</bal-input-stepper>' },
+            { line: 2, snippet: '<bal-input-stepper :min="min" :max="max" :steps="steps">' },
+            { line: 2, snippet: '</bal-input-stepper>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-input-stepper></bal-input-stepper>\n')

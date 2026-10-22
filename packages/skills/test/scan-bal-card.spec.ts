@@ -220,6 +220,106 @@ describe('scanBalCard', () => {
     })
   })
 
+  it('lists every tag of a card nested in a card, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-card>',
+        '  <bal-card-content>',
+        '    <bal-card-title>Outer</bal-card-title>',
+        '    <bal-card>',
+        '      <bal-card-content>Inner</bal-card-content>',
+        '    </bal-card>',
+        '  </bal-card-content>',
+        '</bal-card>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCard(root)).toEqual({
+      total: 10,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-card>' },
+            { line: 2, snippet: '<bal-card-content>' },
+            { line: 3, snippet: '<bal-card-title>' },
+            { line: 3, snippet: '</bal-card-title>' },
+            { line: 4, snippet: '<bal-card>' },
+            { line: 5, snippet: '<bal-card-content>' },
+            { line: 5, snippet: '</bal-card-content>' },
+            { line: 6, snippet: '</bal-card>' },
+            { line: 7, snippet: '</bal-card-content>' },
+            { line: 8, snippet: '</bal-card>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-card-title at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-card>',
+        '  <bal-card-title',
+        '    class="title"',
+        '    id="t1"',
+        '  >Title</bal-card-title>',
+        '</bal-card>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCard(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-card>' },
+            { line: 2, snippet: '<bal-card-title class="title" id="t1">' },
+            { line: 5, snippet: '</bal-card-title>' },
+            { line: 6, snippet: '</bal-card>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [flat] and :flat bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-card [flat]="isFlat" [inverted]="isInverted"></bal-card>',
+        '<bal-card :flat="isFlat" :inverted="isInverted"></bal-card>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCard(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-card [flat]="isFlat" [inverted]="isInverted">' },
+            { line: 1, snippet: '</bal-card>' },
+            { line: 2, snippet: '<bal-card :flat="isFlat" :inverted="isInverted">' },
+            { line: 2, snippet: '</bal-card>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-card flat></bal-card>\n')

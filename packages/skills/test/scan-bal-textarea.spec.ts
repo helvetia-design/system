@@ -179,6 +179,34 @@ describe('scanBalTextarea', () => {
     })
   })
 
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-textarea [value]="note" [rows]="3" (balChange)="onChange($event)"></bal-textarea>',
+        '<bal-textarea :value="note" :rows="3"></bal-textarea>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalTextarea(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-textarea [value]="note" [rows]="3" (balChange)="onChange($event)">' },
+            { line: 1, snippet: '</bal-textarea>' },
+            { line: 2, snippet: '<bal-textarea :value="note" :rows="3">' },
+            { line: 2, snippet: '</bal-textarea>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-textarea name="a"></bal-textarea>\n')

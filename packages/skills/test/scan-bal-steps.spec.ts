@@ -184,6 +184,109 @@ describe('scanBalSteps', () => {
     })
   })
 
+  it('lists every tag of steps with step items, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-steps [value]="current">',
+        '  <bal-step-item value="1" label="One"></bal-step-item>',
+        '  <bal-step-item value="2" label="Two">',
+        '    <span>Two</span>',
+        '  </bal-step-item>',
+        '</bal-steps>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSteps(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-steps [value]="current">' },
+            { line: 2, snippet: '<bal-step-item value="1" label="One">' },
+            { line: 2, snippet: '</bal-step-item>' },
+            { line: 3, snippet: '<bal-step-item value="2" label="Two">' },
+            { line: 5, snippet: '</bal-step-item>' },
+            { line: 6, snippet: '</bal-steps>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-step-item at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-steps>',
+        '  <bal-step-item',
+        '    value="1"',
+        '    label="One"',
+        '    done',
+        '  ></bal-step-item>',
+        '</bal-steps>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSteps(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-steps>' },
+            { line: 2, snippet: '<bal-step-item value="1" label="One" done>' },
+            { line: 6, snippet: '</bal-step-item>' },
+            { line: 7, snippet: '</bal-steps>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-steps [value]="current" (balChange)="onChange($event)">',
+        '  <bal-step-item [value]="s.id" [label]="s.label" [done]="s.done"></bal-step-item>',
+        '</bal-steps>',
+        '<bal-steps :value="current">',
+        '  <bal-step-item :value="s.id" :label="s.label"></bal-step-item>',
+        '</bal-steps>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSteps(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-steps [value]="current" (balChange)="onChange($event)">' },
+            { line: 2, snippet: '<bal-step-item [value]="s.id" [label]="s.label" [done]="s.done">' },
+            { line: 2, snippet: '</bal-step-item>' },
+            { line: 3, snippet: '</bal-steps>' },
+            { line: 4, snippet: '<bal-steps :value="current">' },
+            { line: 5, snippet: '<bal-step-item :value="s.id" :label="s.label">' },
+            { line: 5, snippet: '</bal-step-item>' },
+            { line: 6, snippet: '</bal-steps>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('lists the option type that is not next to a tag', () => {
     const root = createScratchDir()
     write(

@@ -214,6 +214,58 @@ describe('scanBalText', () => {
     })
   })
 
+  it('lists every tag of nested texts, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      ['<bal-text size="large">', '  Hello <bal-text bold>World</bal-text>', '</bal-text>', ''].join('\n'),
+    )
+
+    expect(scanBalText(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-text size="large">' },
+            { line: 2, snippet: '<bal-text bold>' },
+            { line: 2, snippet: '</bal-text>' },
+            { line: 3, snippet: '</bal-text>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-text [size]="size" [color]="tone" [bold]="strong">Hi</bal-text>',
+        '<bal-text :size="size" :color="tone">Hi</bal-text>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalText(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-text [size]="size" [color]="tone" [bold]="strong">' },
+            { line: 1, snippet: '</bal-text>' },
+            { line: 2, snippet: '<bal-text :size="size" :color="tone">' },
+            { line: 2, snippet: '</bal-text>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-text>Hi</bal-text>\n')

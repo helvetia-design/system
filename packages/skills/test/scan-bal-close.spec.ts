@@ -129,6 +129,34 @@ describe('scanBalClose', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-close>' })
   })
 
+  it('lists tags that carry [size] and :size bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-close [size]="size" [inverted]="dark"></bal-close>',
+        '<bal-close :size="size" :inverted="dark"></bal-close>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalClose(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-close [size]="size" [inverted]="dark">' },
+            { line: 1, snippet: '</bal-close>' },
+            { line: 2, snippet: '<bal-close :size="size" :inverted="dark">' },
+            { line: 2, snippet: '</bal-close>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-close></bal-close>\n')

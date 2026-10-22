@@ -204,6 +204,37 @@ describe('scanBalSnackbar', () => {
     })
   })
 
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-snackbar [subject]="title" [message]="text" [color]="tone" (balClose)="onClose()"></bal-snackbar>',
+        '<bal-snackbar :subject="title" :message="text" :color="tone"></bal-snackbar>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSnackbar(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            {
+              line: 1,
+              snippet: '<bal-snackbar [subject]="title" [message]="text" [color]="tone" (balClose)="onClose()">',
+            },
+            { line: 1, snippet: '</bal-snackbar>' },
+            { line: 2, snippet: '<bal-snackbar :subject="title" :message="text" :color="tone">' },
+            { line: 2, snippet: '</bal-snackbar>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('lists a controller that is not next to a tag', () => {
     const root = createScratchDir()
     write(

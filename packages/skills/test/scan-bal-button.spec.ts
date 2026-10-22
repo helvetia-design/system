@@ -182,6 +182,102 @@ describe('scanBalButton', () => {
     })
   })
 
+  it('lists every tag of a button group and the buttons inside it, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-button-group>',
+        '  <bal-button color="primary">Save</bal-button>',
+        '  <bal-button-group>',
+        '    <bal-button color="secondary">Cancel</bal-button>',
+        '  </bal-button-group>',
+        '</bal-button-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalButton(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-button-group>' },
+            { line: 2, snippet: '<bal-button color="primary">' },
+            { line: 2, snippet: '</bal-button>' },
+            { line: 3, snippet: '<bal-button-group>' },
+            { line: 4, snippet: '<bal-button color="secondary">' },
+            { line: 4, snippet: '</bal-button>' },
+            { line: 5, snippet: '</bal-button-group>' },
+            { line: 6, snippet: '</bal-button-group>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-button inside a group at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-button-group>',
+        '  <bal-button',
+        '    color="primary"',
+        '    href="/save"',
+        '  >Save</bal-button>',
+        '</bal-button-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalButton(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-button-group>' },
+            { line: 2, snippet: '<bal-button color="primary" href="/save">' },
+            { line: 5, snippet: '</bal-button>' },
+            { line: 6, snippet: '</bal-button-group>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [color] and :color bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-button [color]="color" [disabled]="busy" (click)="save()">Save</bal-button>',
+        '<bal-button :color="color" :loading="busy" @click="save">Save</bal-button>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalButton(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-button [color]="color" [disabled]="busy" (click)="save()">' },
+            { line: 1, snippet: '</bal-button>' },
+            { line: 2, snippet: '<bal-button :color="color" :loading="busy" @click="save">' },
+            { line: 2, snippet: '</bal-button>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     for (const dir of SKIP_DIRS) {

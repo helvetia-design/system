@@ -164,6 +164,34 @@ describe('scanBalLogo', () => {
     })
   })
 
+  it('lists tags that carry [color] and :color bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-logo [color]="theme" [animated]="isAnimated"></bal-logo>',
+        '<bal-logo :color="theme" :animated="isAnimated"></bal-logo>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalLogo(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-logo [color]="theme" [animated]="isAnimated">' },
+            { line: 1, snippet: '</bal-logo>' },
+            { line: 2, snippet: '<bal-logo :color="theme" :animated="isAnimated">' },
+            { line: 2, snippet: '</bal-logo>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-logo></bal-logo>\n')

@@ -147,6 +147,37 @@ describe('scanBalDate', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-date>' })
   })
 
+  it('lists tags that carry [value] and :value bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-date [value]="birthday" [min]="minDate" [max]="maxDate" (balChange)="onChange($event)"></bal-date>',
+        '<bal-date :value="birthday" :min="minDate" :max="maxDate"></bal-date>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalDate(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            {
+              line: 1,
+              snippet: '<bal-date [value]="birthday" [min]="minDate" [max]="maxDate" (balChange)="onChange($event)">',
+            },
+            { line: 1, snippet: '</bal-date>' },
+            { line: 2, snippet: '<bal-date :value="birthday" :min="minDate" :max="maxDate">' },
+            { line: 2, snippet: '</bal-date>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-date></bal-date>\n')

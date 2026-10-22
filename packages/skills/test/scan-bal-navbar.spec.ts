@@ -200,6 +200,117 @@ describe('scanBalNavbar', () => {
     })
   })
 
+  it('lists every tag of a navbar with brand and start/end menus, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-navbar>',
+        '  <bal-navbar-brand href="/"></bal-navbar-brand>',
+        '  <bal-navbar-menu>',
+        '    <bal-navbar-menu-start>',
+        '      <bal-button>Home</bal-button>',
+        '    </bal-navbar-menu-start>',
+        '    <bal-navbar-menu-end>',
+        '      <bal-button>Login</bal-button>',
+        '    </bal-navbar-menu-end>',
+        '  </bal-navbar-menu>',
+        '</bal-navbar>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalNavbar(root)).toEqual({
+      total: 10,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-navbar>' },
+            { line: 2, snippet: '<bal-navbar-brand href="/">' },
+            { line: 2, snippet: '</bal-navbar-brand>' },
+            { line: 3, snippet: '<bal-navbar-menu>' },
+            { line: 4, snippet: '<bal-navbar-menu-start>' },
+            { line: 6, snippet: '</bal-navbar-menu-start>' },
+            { line: 7, snippet: '<bal-navbar-menu-end>' },
+            { line: 9, snippet: '</bal-navbar-menu-end>' },
+            { line: 10, snippet: '</bal-navbar-menu>' },
+            { line: 11, snippet: '</bal-navbar>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-navbar-menu-start at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-navbar-menu>',
+        '  <bal-navbar-menu-start',
+        '    class="start"',
+        '    id="menu-start"',
+        '  ></bal-navbar-menu-start>',
+        '</bal-navbar-menu>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalNavbar(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-navbar-menu>' },
+            { line: 2, snippet: '<bal-navbar-menu-start class="start" id="menu-start">' },
+            { line: 5, snippet: '</bal-navbar-menu-start>' },
+            { line: 6, snippet: '</bal-navbar-menu>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [light] and :light bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-navbar [light]="isLight" [container]="layout">',
+        '  <bal-navbar-brand [href]="home"></bal-navbar-brand>',
+        '</bal-navbar>',
+        '<bal-navbar :light="isLight" :container="layout">',
+        '  <bal-navbar-brand :href="home"></bal-navbar-brand>',
+        '</bal-navbar>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalNavbar(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-navbar [light]="isLight" [container]="layout">' },
+            { line: 2, snippet: '<bal-navbar-brand [href]="home">' },
+            { line: 2, snippet: '</bal-navbar-brand>' },
+            { line: 3, snippet: '</bal-navbar>' },
+            { line: 4, snippet: '<bal-navbar :light="isLight" :container="layout">' },
+            { line: 5, snippet: '<bal-navbar-brand :href="home">' },
+            { line: 5, snippet: '</bal-navbar-brand>' },
+            { line: 6, snippet: '</bal-navbar>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-navbar></bal-navbar>\n')

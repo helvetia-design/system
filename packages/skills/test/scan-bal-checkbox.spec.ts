@@ -218,6 +218,106 @@ describe('scanBalCheckbox', () => {
     })
   })
 
+  it('lists every tag of a checkbox group and the checkboxes inside it, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-checkbox-group>',
+        '  <bal-checkbox value="a">A</bal-checkbox>',
+        '  <bal-checkbox-group>',
+        '    <bal-checkbox value="b">B</bal-checkbox>',
+        '  </bal-checkbox-group>',
+        '</bal-checkbox-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCheckbox(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-checkbox-group>' },
+            { line: 2, snippet: '<bal-checkbox value="a">' },
+            { line: 2, snippet: '</bal-checkbox>' },
+            { line: 3, snippet: '<bal-checkbox-group>' },
+            { line: 4, snippet: '<bal-checkbox value="b">' },
+            { line: 4, snippet: '</bal-checkbox>' },
+            { line: 5, snippet: '</bal-checkbox-group>' },
+            { line: 6, snippet: '</bal-checkbox-group>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-checkbox inside a group at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-checkbox-group>',
+        '  <bal-checkbox',
+        '    value="a"',
+        '    name="opt"',
+        '  >A</bal-checkbox>',
+        '</bal-checkbox-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCheckbox(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-checkbox-group>' },
+            { line: 2, snippet: '<bal-checkbox value="a" name="opt">' },
+            { line: 5, snippet: '</bal-checkbox>' },
+            { line: 6, snippet: '</bal-checkbox-group>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [checked] and :checked bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-checkbox-group [disabled]="locked" [vertical]="stacked">',
+        '  <bal-checkbox [value]="item.id" [checked]="item.on" *ngFor="let item of items"></bal-checkbox>',
+        '</bal-checkbox-group>',
+        '<bal-checkbox :value="item.id" :checked="item.on" :invalid="bad"></bal-checkbox>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalCheckbox(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-checkbox-group [disabled]="locked" [vertical]="stacked">' },
+            { line: 2, snippet: '<bal-checkbox [value]="item.id" [checked]="item.on" *ngFor="let item of items">' },
+            { line: 2, snippet: '</bal-checkbox>' },
+            { line: 3, snippet: '</bal-checkbox-group>' },
+            { line: 4, snippet: '<bal-checkbox :value="item.id" :checked="item.on" :invalid="bad">' },
+            { line: 4, snippet: '</bal-checkbox>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-checkbox value="1"></bal-checkbox>\n')

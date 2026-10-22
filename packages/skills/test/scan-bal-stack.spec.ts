@@ -135,6 +135,66 @@ describe('scanBalStack', () => {
     })
   })
 
+  it('lists every tag of nested stacks, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-stack layout="vertical">',
+        '  <bal-stack layout="horizontal" space="small">',
+        '    <span>A</span>',
+        '  </bal-stack>',
+        '</bal-stack>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalStack(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-stack layout="vertical">' },
+            { line: 2, snippet: '<bal-stack layout="horizontal" space="small">' },
+            { line: 4, snippet: '</bal-stack>' },
+            { line: 5, snippet: '</bal-stack>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-stack [layout]="direction" [space]="gap" (click)="go()">',
+        '  <bal-stack :layout="direction" :space="gap"></bal-stack>',
+        '</bal-stack>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalStack(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-stack [layout]="direction" [space]="gap" (click)="go()">' },
+            { line: 2, snippet: '<bal-stack :layout="direction" :space="gap">' },
+            { line: 2, snippet: '</bal-stack>' },
+            { line: 3, snippet: '</bal-stack>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     for (const dir of ['node_modules', 'dist', 'build', 'out', '.next', '.angular', '.git', '.claude', 'coverage']) {

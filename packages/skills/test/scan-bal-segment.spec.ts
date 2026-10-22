@@ -161,6 +161,107 @@ describe('scanBalSegment', () => {
     })
   })
 
+  it('lists every tag of a segment with its items, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-segment value="a">',
+        '  <bal-segment-item value="a" label="A"></bal-segment-item>',
+        '  <bal-segment-item value="b" label="B"></bal-segment-item>',
+        '</bal-segment>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSegment(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-segment value="a">' },
+            { line: 2, snippet: '<bal-segment-item value="a" label="A">' },
+            { line: 2, snippet: '</bal-segment-item>' },
+            { line: 3, snippet: '<bal-segment-item value="b" label="B">' },
+            { line: 3, snippet: '</bal-segment-item>' },
+            { line: 4, snippet: '</bal-segment>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-segment-item at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-segment>',
+        '  <bal-segment-item',
+        '    value="b"',
+        '    label="B"',
+        '    disabled',
+        '  ></bal-segment-item>',
+        '</bal-segment>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSegment(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-segment>' },
+            { line: 2, snippet: '<bal-segment-item value="b" label="B" disabled>' },
+            { line: 6, snippet: '</bal-segment-item>' },
+            { line: 7, snippet: '</bal-segment>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [value] and :value bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-segment [value]="active" [disabled]="locked">',
+        '  <bal-segment-item [value]="s.id" [label]="s.label" *ngFor="let s of segments"></bal-segment-item>',
+        '</bal-segment>',
+        '<bal-segment :value="active" :disabled="locked">',
+        '  <bal-segment-item :value="s.id" :label="s.label"></bal-segment-item>',
+        '</bal-segment>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSegment(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-segment [value]="active" [disabled]="locked">' },
+            { line: 2, snippet: '<bal-segment-item [value]="s.id" [label]="s.label" *ngFor="let s of segments">' },
+            { line: 2, snippet: '</bal-segment-item>' },
+            { line: 3, snippet: '</bal-segment>' },
+            { line: 4, snippet: '<bal-segment :value="active" :disabled="locked">' },
+            { line: 5, snippet: '<bal-segment-item :value="s.id" :label="s.label">' },
+            { line: 5, snippet: '</bal-segment-item>' },
+            { line: 6, snippet: '</bal-segment>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     for (const dir of ['node_modules', 'dist', 'build', '.angular', '.git']) {

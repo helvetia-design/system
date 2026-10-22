@@ -194,6 +194,108 @@ describe('scanBalRadio', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-radio>' })
   })
 
+  it('lists every tag of a radio with an icon inside a group, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-radio-group name="g">',
+        '  <bal-radio value="a">',
+        '    <bal-radio-icon name="car"></bal-radio-icon>',
+        '    A',
+        '  </bal-radio>',
+        '</bal-radio-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalRadio(root)).toEqual({
+      total: 6,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-radio-group name="g">' },
+            { line: 2, snippet: '<bal-radio value="a">' },
+            { line: 3, snippet: '<bal-radio-icon name="car">' },
+            { line: 3, snippet: '</bal-radio-icon>' },
+            { line: 5, snippet: '</bal-radio>' },
+            { line: 6, snippet: '</bal-radio-group>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-radio-icon at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-radio value="a">',
+        '  <bal-radio-icon',
+        '    name="car"',
+        '    size="small"',
+        '  ></bal-radio-icon>',
+        '</bal-radio>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalRadio(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 1, snippet: '<bal-radio value="a">' },
+            { line: 2, snippet: '<bal-radio-icon name="car" size="small">' },
+            { line: 5, snippet: '</bal-radio-icon>' },
+            { line: 6, snippet: '</bal-radio>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [value] and :value bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-radio-group [value]="selected" [disabled]="locked">',
+        '  <bal-radio [value]="o.value" *ngFor="let o of options"></bal-radio>',
+        '</bal-radio-group>',
+        '<bal-radio-group :value="selected" :disabled="locked">',
+        '  <bal-radio :value="o.value"></bal-radio>',
+        '</bal-radio-group>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalRadio(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-radio-group [value]="selected" [disabled]="locked">' },
+            { line: 2, snippet: '<bal-radio [value]="o.value" *ngFor="let o of options">' },
+            { line: 2, snippet: '</bal-radio>' },
+            { line: 3, snippet: '</bal-radio-group>' },
+            { line: 4, snippet: '<bal-radio-group :value="selected" :disabled="locked">' },
+            { line: 5, snippet: '<bal-radio :value="o.value">' },
+            { line: 5, snippet: '</bal-radio>' },
+            { line: 6, snippet: '</bal-radio-group>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-radio></bal-radio>\n')

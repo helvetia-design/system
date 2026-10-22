@@ -173,6 +173,34 @@ describe('scanBalPagination', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-pagination>' })
   })
 
+  it('lists tags that carry [totalPages] and :totalPages bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-pagination [value]="page" [totalPages]="total"></bal-pagination>',
+        '<bal-pagination :value="page" :totalPages="total"></bal-pagination>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalPagination(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-pagination [value]="page" [totalPages]="total">' },
+            { line: 1, snippet: '</bal-pagination>' },
+            { line: 2, snippet: '<bal-pagination :value="page" :totalPages="total">' },
+            { line: 2, snippet: '</bal-pagination>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-pagination></bal-pagination>\n')

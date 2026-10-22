@@ -223,6 +223,102 @@ describe('scanBalInput', () => {
     })
   })
 
+  it('lists bal-input and bal-input-date tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-input [type]="type" [placeholder]="placeholder" [(ngModel)]="value"></bal-input>',
+        '<bal-input :type="type" :placeholder="placeholder"></bal-input>',
+        '<bal-input-date [min]="min" [max]="max"></bal-input-date>',
+        '<bal-input-date :min="min" :max="max"></bal-input-date>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalInput(root)).toEqual({
+      total: 8,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-input [type]="type" [placeholder]="placeholder" [(ngModel)]="value">' },
+            { line: 1, snippet: '</bal-input>' },
+            { line: 2, snippet: '<bal-input :type="type" :placeholder="placeholder">' },
+            { line: 2, snippet: '</bal-input>' },
+            { line: 3, snippet: '<bal-input-date [min]="min" [max]="max">' },
+            { line: 3, snippet: '</bal-input-date>' },
+            { line: 4, snippet: '<bal-input-date :min="min" :max="max">' },
+            { line: 4, snippet: '</bal-input-date>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists bal-input inside bal-field wrappers and ignores the bal-field-* tags', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-field>',
+        '  <bal-field-control>',
+        '    <bal-input placeholder="Name"></bal-input>',
+        '  </bal-field-control>',
+        '  <bal-field-message color="danger">Required</bal-field-message>',
+        '</bal-field>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalInput(root)).toEqual({
+      total: 2,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 3, snippet: '<bal-input placeholder="Name">' },
+            { line: 3, snippet: '</bal-input>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists a multiline bal-input-date at its opening line with a single-line snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'multiline.html',
+      [
+        '<bal-field>',
+        '  <bal-field-control>',
+        '    <bal-input-date',
+        '      [(ngModel)]="date"',
+        '      placeholder="DD.MM.YYYY"',
+        '    ></bal-input-date>',
+        '  </bal-field-control>',
+        '</bal-field>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalInput(root)).toEqual({
+      total: 2,
+      files: [
+        {
+          file: 'multiline.html',
+          findings: [
+            { line: 3, snippet: '<bal-input-date [(ngModel)]="date" placeholder="DD.MM.YYYY">' },
+            { line: 6, snippet: '</bal-input-date>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-input name="a"></bal-input>\n')

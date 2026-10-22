@@ -135,6 +135,34 @@ describe('scanBalSheet', () => {
     })
   })
 
+  it('lists tags that carry [prop] and :prop bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-sheet [containerSize]="size" (click)="open()">Hi</bal-sheet>',
+        '<bal-sheet :container-size="size">Hi</bal-sheet>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalSheet(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-sheet [containerSize]="size" (click)="open()">' },
+            { line: 1, snippet: '</bal-sheet>' },
+            { line: 2, snippet: '<bal-sheet :container-size="size">' },
+            { line: 2, snippet: '</bal-sheet>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     for (const dir of ['node_modules', 'dist', 'build', 'out', '.next', '.angular', '.git', '.claude', 'coverage']) {

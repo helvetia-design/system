@@ -129,6 +129,65 @@ describe('scanBalContent', () => {
     expect(result.files[0].findings[1]).toEqual({ line: 4, snippet: '</bal-content>' })
   })
 
+  it('lists every tag of nested content, each on its own line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'nested.html',
+      [
+        '<bal-content layout="vertical">',
+        '  <bal-content layout="horizontal" space="small">',
+        '    <p>Inner</p>',
+        '  </bal-content>',
+        '</bal-content>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalContent(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'nested.html',
+          findings: [
+            { line: 1, snippet: '<bal-content layout="vertical">' },
+            { line: 2, snippet: '<bal-content layout="horizontal" space="small">' },
+            { line: 4, snippet: '</bal-content>' },
+            { line: 5, snippet: '</bal-content>' },
+          ],
+        },
+      ],
+    })
+  })
+
+  it('lists tags that carry [layout] and :layout bindings and keeps the binding in the snippet', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'bindings.html',
+      [
+        '<bal-content [layout]="layout" [align]="align" [space]="gap"></bal-content>',
+        '<bal-content :layout="layout" :align="align" :space="gap"></bal-content>',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanBalContent(root)).toEqual({
+      total: 4,
+      files: [
+        {
+          file: 'bindings.html',
+          findings: [
+            { line: 1, snippet: '<bal-content [layout]="layout" [align]="align" [space]="gap">' },
+            { line: 1, snippet: '</bal-content>' },
+            { line: 2, snippet: '<bal-content :layout="layout" :align="align" :space="gap">' },
+            { line: 2, snippet: '</bal-content>' },
+          ],
+        },
+      ],
+    })
+  })
+
   it('skips usages that live only under dependency or build directory names', () => {
     const root = createScratchDir()
     write(root, 'page.html', '<bal-content></bal-content>\n')
