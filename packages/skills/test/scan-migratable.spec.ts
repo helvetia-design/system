@@ -139,6 +139,20 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests tag when the project uses bal-tag and folds its group tag in', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'index.html',
+      ['<bal-tag-group>', '  <bal-tag closable>Hi</bal-tag>', '</bal-tag-group>', '<bal-tab></bal-tab>', ''].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'tag', total: 4 }],
+      notYet: [{ name: 'tab', total: 2 }],
+    })
+  })
+
   it('suggests card when the project uses bal-card and folds its child tags in', () => {
     const root = createScratchDir()
     write(
