@@ -153,6 +153,31 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('suggests tabs when the project uses bal-tabs and folds its child tag and option type in', () => {
+    const root = createScratchDir()
+    write(root, 'tabs.ts', "import { BalTabOption } from '@baloise/ds-core'\nconst options: BalTabOption[] = []\n")
+    write(
+      root,
+      'index.html',
+      ['<bal-tabs value="a">', '  <bal-tab-item value="a" label="One"></bal-tab-item>', '</bal-tabs>', ''].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'tabs', total: 6 }],
+      notYet: [],
+    })
+  })
+
+  it('suggests tabs for a bare bal-tab-item without a bal-tabs parent', () => {
+    const root = createScratchDir()
+    write(root, 'index.html', '<bal-tab-item value="a" label="One"></bal-tab-item>\n')
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [{ name: 'tabs', total: 2 }],
+      notYet: [],
+    })
+  })
+
   it('suggests card when the project uses bal-card and folds its child tags in', () => {
     const root = createScratchDir()
     write(

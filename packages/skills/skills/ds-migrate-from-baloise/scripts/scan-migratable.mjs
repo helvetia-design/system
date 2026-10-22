@@ -51,6 +51,8 @@ const CHILD_SLUGS = new Map([
   ['step-item', 'steps'],
   ['step-option', 'steps'],
   ['tag-group', 'tag'],
+  ['tab-item', 'tabs'],
+  ['tab-option', 'tabs'],
 ])
 
 export function componentNameToSlug(name) {
