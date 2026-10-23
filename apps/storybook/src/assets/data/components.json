@@ -16293,9 +16293,9 @@
     {
       "fileName": "card-subtitle.tsx",
       "tag": "ds-card-subtitle",
-      "overview": "Card subtitle renders a subtitle heading for cards with customizable color and styling.",
+      "overview": "Card subtitle renders a subtitle heading for cards with an optional inverted style.",
       "usage": {},
-      "docs": "Card subtitle renders a subtitle heading for cards with customizable color and styling.",
+      "docs": "Card subtitle renders a subtitle heading for cards with an optional inverted style.",
       "docsTags": [
         {
           "name": "slot",
@@ -16336,44 +16336,6 @@
             }
           ],
           "optional": false,
-          "required": false,
-          "getter": false,
-          "setter": false
-        },
-        {
-          "name": "color",
-          "type": "\"inverted\" | \"primary\" | undefined",
-          "complexType": {
-            "original": "HeadingColor",
-            "resolved": "\"inverted\" | \"primary\" | undefined",
-            "references": {
-              "HeadingColor": {
-                "location": "import",
-                "path": "../../heading/heading.interfaces",
-                "id": "src/components/structure/heading/heading.interfaces.ts::HeadingColor",
-                "referenceLocation": "HeadingColor"
-              }
-            }
-          },
-          "mutable": false,
-          "attr": "color",
-          "reflectToAttr": false,
-          "docs": "If `true` the card text color becomes white.",
-          "docsTags": [],
-          "values": [
-            {
-              "value": "inverted",
-              "type": "string"
-            },
-            {
-              "value": "primary",
-              "type": "string"
-            },
-            {
-              "type": "undefined"
-            }
-          ],
-          "optional": true,
           "required": false,
           "getter": false,
           "setter": false
@@ -24977,7 +24939,7 @@
           "mutable": false,
           "attr": "space",
           "reflectToAttr": false,
-          "docs": "Defines the space between the child elements.",
+          "docs": "Defines the space between the child elements. Default is none.",
           "docsTags": [
             {
               "name": "default",
@@ -28002,48 +27964,6 @@
             "lg",
             "md",
             "base"
-          ]
-        },
-        {
-          "name": "color",
-          "type": "\"inverted\" | \"primary\" | undefined",
-          "complexType": {
-            "original": "HeadingColor",
-            "resolved": "\"inverted\" | \"primary\" | undefined",
-            "references": {
-              "HeadingColor": {
-                "location": "import",
-                "path": "./heading.interfaces",
-                "id": "src/components/structure/heading/heading.interfaces.ts::HeadingColor",
-                "referenceLocation": "HeadingColor"
-              }
-            }
-          },
-          "mutable": false,
-          "attr": "color",
-          "reflectToAttr": true,
-          "docs": "The theme type of the toast.",
-          "docsTags": [],
-          "values": [
-            {
-              "value": "inverted",
-              "type": "string"
-            },
-            {
-              "value": "primary",
-              "type": "string"
-            },
-            {
-              "type": "undefined"
-            }
-          ],
-          "optional": true,
-          "required": false,
-          "getter": false,
-          "setter": false,
-          "oneOfValues": [
-            "primary",
-            "inverted"
           ]
         },
         {
@@ -55835,10 +55755,10 @@
         },
         {
           "name": "p",
-          "type": "\"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+          "type": "\"2xl\" | \"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
           "complexType": {
             "original": "StackPadding",
-            "resolved": "\"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+            "resolved": "\"2xl\" | \"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
             "references": {
               "StackPadding": {
                 "location": "import",
@@ -55855,6 +55775,10 @@
           "docsTags": [],
           "values": [
             {
+              "value": "2xl",
+              "type": "string"
+            },
+            {
               "value": "2xs",
               "type": "string"
             },
@@ -55887,10 +55811,6 @@
               "type": "string"
             },
             {
-              "value": "xxl",
-              "type": "string"
-            },
-            {
               "type": "undefined"
             }
           ],
@@ -55907,15 +55827,15 @@
             "md",
             "lg",
             "xl",
-            "xxl"
+            "2xl"
           ]
         },
         {
           "name": "px",
-          "type": "\"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+          "type": "\"2xl\" | \"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
           "complexType": {
             "original": "StackPadding",
-            "resolved": "\"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+            "resolved": "\"2xl\" | \"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
             "references": {
               "StackPadding": {
                 "location": "import",
@@ -55932,6 +55852,10 @@
           "docsTags": [],
           "values": [
             {
+              "value": "2xl",
+              "type": "string"
+            },
+            {
               "value": "2xs",
               "type": "string"
             },
@@ -55964,10 +55888,6 @@
               "type": "string"
             },
             {
-              "value": "xxl",
-              "type": "string"
-            },
-            {
               "type": "undefined"
             }
           ],
@@ -55984,15 +55904,15 @@
             "md",
             "lg",
             "xl",
-            "xxl"
+            "2xl"
           ]
         },
         {
           "name": "py",
-          "type": "\"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+          "type": "\"2xl\" | \"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
           "complexType": {
             "original": "StackPadding",
-            "resolved": "\"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+            "resolved": "\"2xl\" | \"2xs\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
             "references": {
               "StackPadding": {
                 "location": "import",
@@ -56009,6 +55929,10 @@
           "docsTags": [],
           "values": [
             {
+              "value": "2xl",
+              "type": "string"
+            },
+            {
               "value": "2xs",
               "type": "string"
             },
@@ -56041,10 +55965,6 @@
               "type": "string"
             },
             {
-              "value": "xxl",
-              "type": "string"
-            },
-            {
               "type": "undefined"
             }
           ],
@@ -56061,15 +55981,15 @@
             "md",
             "lg",
             "xl",
-            "xxl"
+            "2xl"
           ]
         },
         {
           "name": "space",
-          "type": "\"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\"",
+          "type": "\"2xl\" | \"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\"",
           "complexType": {
             "original": "StackSpace",
-            "resolved": "\"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\"",
+            "resolved": "\"2xl\" | \"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\"",
             "references": {
               "StackSpace": {
                 "location": "import",
@@ -56092,6 +56012,10 @@
           "default": "'base'",
           "values": [
             {
+              "value": "2xl",
+              "type": "string"
+            },
+            {
               "value": "2xs",
               "type": "string"
             },
@@ -56125,10 +56049,6 @@
             },
             {
               "value": "xs",
-              "type": "string"
-            },
-            {
-              "value": "xxl",
               "type": "string"
             }
           ],
@@ -56146,15 +56066,15 @@
             "md",
             "lg",
             "xl",
-            "xxl"
+            "2xl"
           ]
         },
         {
           "name": "spaceColumn",
-          "type": "\"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+          "type": "\"2xl\" | \"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
           "complexType": {
             "original": "StackSpace",
-            "resolved": "\"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+            "resolved": "\"2xl\" | \"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
             "references": {
               "StackSpace": {
                 "location": "import",
@@ -56171,6 +56091,10 @@
           "docsTags": [],
           "values": [
             {
+              "value": "2xl",
+              "type": "string"
+            },
+            {
               "value": "2xs",
               "type": "string"
             },
@@ -56207,10 +56131,6 @@
               "type": "string"
             },
             {
-              "value": "xxl",
-              "type": "string"
-            },
-            {
               "type": "undefined"
             }
           ],
@@ -56228,15 +56148,15 @@
             "md",
             "lg",
             "xl",
-            "xxl"
+            "2xl"
           ]
         },
         {
           "name": "spaceRow",
-          "type": "\"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+          "type": "\"2xl\" | \"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
           "complexType": {
             "original": "StackSpace",
-            "resolved": "\"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | \"xxl\" | undefined",
+            "resolved": "\"2xl\" | \"2xs\" | \"auto\" | \"base\" | \"lg\" | \"md\" | \"none\" | \"sm\" | \"xl\" | \"xs\" | undefined",
             "references": {
               "StackSpace": {
                 "location": "import",
@@ -56253,6 +56173,10 @@
           "docsTags": [],
           "values": [
             {
+              "value": "2xl",
+              "type": "string"
+            },
+            {
               "value": "2xs",
               "type": "string"
             },
@@ -56289,10 +56213,6 @@
               "type": "string"
             },
             {
-              "value": "xxl",
-              "type": "string"
-            },
-            {
               "type": "undefined"
             }
           ],
@@ -56310,7 +56230,7 @@
             "md",
             "lg",
             "xl",
-            "xxl"
+            "2xl"
           ]
         },
         {
@@ -68603,11 +68523,6 @@
       "docstring": "",
       "path": "src/components/structure/card/card.interfaces.ts"
     },
-    "src/components/structure/heading/heading.interfaces.ts::HeadingColor": {
-      "declaration": "\"primary\" | \"inverted\"",
-      "docstring": "",
-      "path": "src/components/structure/heading/heading.interfaces.ts"
-    },
     "src/components/structure/heading/heading.interfaces.ts::HeadingLevel": {
       "declaration": "\"h1\" | \"h2\" | \"h3\" | \"h4\" | \"h5\" | \"p\" | \"span\" | \"display\" | \"display-2\"",
       "docstring": "",
@@ -68739,12 +68654,12 @@
       "path": "src/global/index.ts"
     },
     "src/components/structure/stack/stack.interfaces.ts::StackPadding": {
-      "declaration": "\"none\" | \"sm\" | \"lg\" | \"xl\" | \"base\" | \"2xs\" | \"xs\" | \"md\" | \"xxl\"",
+      "declaration": "\"none\" | \"sm\" | \"lg\" | \"xl\" | \"base\" | \"2xs\" | \"xs\" | \"md\" | \"2xl\"",
       "docstring": "",
       "path": "src/components/structure/stack/stack.interfaces.ts"
     },
     "src/components/structure/stack/stack.interfaces.ts::StackSpace": {
-      "declaration": "\"none\" | \"sm\" | \"lg\" | \"xl\" | \"base\" | \"auto\" | \"2xs\" | \"xs\" | \"md\" | \"xxl\"",
+      "declaration": "\"none\" | \"sm\" | \"lg\" | \"xl\" | \"base\" | \"auto\" | \"2xs\" | \"xs\" | \"md\" | \"2xl\"",
       "docstring": "",
       "path": "src/components/structure/stack/stack.interfaces.ts"
     },

@@ -34,7 +34,6 @@ const meta: Meta<Args> = {
     return `
 <${htmlTag} ${cssClasses(
       {
-        ...css('color', (color: string) => `is-${color}`),
         ...css('level', (level: string) => `is-${level.startsWith('h') ? level.substring(1) : level}`),
         ...css('visualLevel', (level: string) => `is-${level.startsWith('h') ? level.substring(1) : level}`),
         subtitle: 'ds-subtitle',
@@ -97,10 +96,8 @@ Sizes.storyName = '🌍 Sizes'
 export const Colors = Story({
   ...withRender(
     () => `
-<h4 class="ds-title">Default / Primary</h4>
-<h4 class="ds-title is-success">Success</h4>
-<h4 class="ds-title is-warning">Warning</h4>
-<h4 class="ds-title is-danger">Danger</h4>`,
+<h4 class="ds-title">Default</h4>
+<div class="bg-primary p-base"><h4 class="ds-title is-inverted">Inverted</h4></div>`,
   ),
 })
 Colors.storyName = '🌍 Colors'
