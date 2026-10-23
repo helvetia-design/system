@@ -39,7 +39,8 @@ function TokenNode({ data }: NodeProps<Node<TokenNodeData>>) {
 
   return (
     <div
-      className="relative flex h-full w-full flex-col justify-between overflow-hidden rounded-md border-2 px-3 py-2"
+      title="Jump to this token in the table"
+      className="relative flex h-full w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md border-2 px-3 py-2 transition-[filter] hover:brightness-125"
       style={{
         borderColor,
         backgroundColor: data.isRoot ? ROOT_BACKGROUND_COLOR : NODE_BACKGROUND_COLOR,
@@ -105,6 +106,7 @@ export function TokenGraph({
   rootPaths,
   title,
   onClose,
+  onTokenClick,
 }: {
   tokens: FlatToken[]
   // Usually a single token; a group's "show graph" passes every token in it,
@@ -112,6 +114,11 @@ export function TokenGraph({
   rootPaths: string[]
   title: string
   onClose: () => void
+  // Called with a node's token path when clicked — the caller jumps the
+  // table view to it (expanding only the ancestor groups) and closes this
+  // dialog. Every node's id is a real token path (see graph.ts), so every
+  // node is clickable.
+  onTokenClick: (id: string) => void
 }) {
   const { nodes: graphNodes, edges: graphEdges } = useMemo(
     () => buildConsumerTreeForRoots(tokens, rootPaths),
@@ -161,7 +168,9 @@ export function TokenGraph({
     style: { stroke: '#ffffff', strokeWidth: 2.5, strokeDasharray: '6 4' },
   }))
 
-  const hasConnections = graphEdges.length > 0
+  // graphNodes always includes the root(s) themselves (see buildConsumerTree),
+  // so this is only false if a root path didn't resolve to a real token.
+  const hasNodes = graphNodes.length > 0
 
   return (
     <Dialog open onOpenChange={open => !open && onClose()}>
@@ -173,11 +182,9 @@ export function TokenGraph({
           <DialogTitle>Relations of {title}</DialogTitle>
         </DialogHeader>
 
-        {!hasConnections ? (
+        {!hasNodes ? (
           <p className="text-sm text-muted-foreground">
-            {rootPaths.length > 1
-              ? 'None of these tokens have any references — they neither point at another token nor are pointed at by one.'
-              : 'This token has no references — it neither points at another token nor is pointed at by one.'}
+            {rootPaths.length > 1 ? 'None of these tokens could be found.' : 'This token could not be found.'}
           </p>
         ) : (
           <div className="min-h-0 flex-1">
@@ -187,6 +194,7 @@ export function TokenGraph({
                 edges={flowEdges}
                 nodeTypes={NODE_TYPES}
                 nodesDraggable={false}
+                onNodeClick={(_event, node) => onTokenClick(node.id)}
                 fitView
                 colorMode="dark"
               >

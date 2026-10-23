@@ -7,3 +7,6 @@
 
 # Code owners for the entire repository
 *       @helvetia-design/maintainers
+
+# Design tokens are owned by the ux-engineer team
+/packages/tokens/ @helvetia-design/ux-engineer

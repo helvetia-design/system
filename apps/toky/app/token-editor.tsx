@@ -299,6 +299,21 @@ function groupKey(layer: TokenLayer, group: string): string {
   return `${layer}::${group}`
 }
 
+// Every collapsible header's key, at every level, for a given token set —
+// the layer key plus one group key per dot-segment but the last. Used both
+// to seed "everything collapsed" on first load and to derive "only the path
+// to one token expanded" (jumping to a token from the graph view).
+function allGroupKeysFor(tokens: FlatToken[]): Set<string> {
+  const keys = new Set<string>(LAYERS.map(layerKey))
+  for (const token of tokens) {
+    const segmentCount = token.name.split('.').length
+    for (let depth = 1; depth < segmentCount; depth++) {
+      keys.add(groupKey(token.layer, groupAtDepth(token.name, depth)))
+    }
+  }
+  return keys
+}
+
 // "White" -> "White copy", or "White copy 2", "White copy 3", ... if that's
 // already taken — keeps the duplicate in the same group as its source.
 function uniqueCopyName(layer: TokenLayer, name: string, working: WorkingToken[]): string {
@@ -2626,18 +2641,16 @@ const TokenRow = memo(function TokenRow({
           {!brandInfo && (
             <TableCell className="max-h-8 p-0 px-1 text-muted-foreground">
               <div className="flex items-center gap-1">
-                {usageCount > 0 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-auto gap-1 px-1.5 py-0.5"
-                    onClick={() => handlers.onShowGraph(id, toSlashPath(token.name))}
-                  >
-                    <NetworkIcon className="size-3.5" />
-                    {usageCount} {usageCount === 1 ? 'use' : 'uses'}
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto gap-1 px-1.5 py-0.5"
+                  onClick={() => handlers.onShowGraph(id, toSlashPath(token.name))}
+                >
+                  <NetworkIcon className="size-3.5" />
+                  {usageCount > 0 ? `${usageCount} ${usageCount === 1 ? 'use' : 'uses'}` : 'Graph'}
+                </Button>
                 {codeUsage && codeUsage.count > 0 && (
                   <Popover open={isCodeUsageOpen} onOpenChange={open => handlers.onCodeUsageOpenChange(id, open)}>
                     <PopoverTrigger
@@ -3336,10 +3349,11 @@ export function TokenEditor({
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null)
   // Which row's code-usage locations popover is open — independent of openPopoverId.
   const [openCodeUsageId, setOpenCodeUsageId] = useState<string | null>(null)
-  // Starts with every layer collapsed — a fresh table view of 1,900+ tokens
-  // is overwhelming otherwise; only the layer chevrons need seeding here
-  // since collapsing a layer hides everything nested under it.
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set(LAYERS.map(layerKey)))
+  // Starts with every layer AND every nested group collapsed — a fresh
+  // table view of 1,900+ tokens is overwhelming otherwise. Seeding only the
+  // layer keys isn't enough: expanding a layer would reveal its subgroups
+  // already expanded, since their keys wouldn't be in the set yet.
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => allGroupKeysFor(tokens))
   // The group currently being batch-renamed (via its header's edit icon), and the
   // text of the in-progress edit — kept separate from `group` so typing doesn't
   // affect which rows are matched as members of the group until it's committed.
@@ -3375,6 +3389,10 @@ export function TokenEditor({
   // submission — same 'success' state, different message rendering below.
   const [submitIsLocal, setSubmitIsLocal] = useState(false)
   const [graphRoot, setGraphRoot] = useState<{ paths: string[]; title: string } | null>(null)
+  // Set when a graph node is clicked — picked up by an effect once the
+  // target row has rendered (its ancestor groups were just expanded) so it
+  // can be scrolled into view and focused.
+  const [jumpTargetId, setJumpTargetId] = useState<string | null>(null)
   // Set right after Ctrl/Cmd+D inserts a duplicate row — picked up by an effect once
   // the new row has actually rendered (and its cellRef exists) so it can be focused.
   const [focusPendingId, setFocusPendingId] = useState<string | null>(null)
@@ -4683,6 +4701,37 @@ export function TokenEditor({
     input.select()
     setFocusPendingId(null)
   }, [focusPendingId, filteredWorking])
+
+  useEffect(() => {
+    if (!jumpTargetId) return
+    const row = filteredWorking.findIndex(w => w.id === jumpTargetId)
+    if (row === -1) return
+    const input = cellRefs.current.get(`${row}-0`)
+    if (!input) return
+    input.scrollIntoView({ block: 'center' })
+    input.focus()
+    setJumpTargetId(null)
+  }, [jumpTargetId, filteredWorking])
+
+  // Jump to a token from the graph view: close the graph, clear any active
+  // search (the target might be filtered out), and collapse every group
+  // except the chain of ancestors leading to it — same idea as "Collapse
+  // all" but with one path left open, so the table reads as "here's where
+  // this token lives" instead of dumping the whole tree open around it.
+  function jumpToToken(id: string) {
+    const token = tokens.find(t => t.path.join('.') === id)
+    if (!token) return
+    const expanded = allGroupKeysFor(tokens)
+    expanded.delete(layerKey(token.layer))
+    const segmentCount = token.name.split('.').length
+    for (let depth = 1; depth < segmentCount; depth++) {
+      expanded.delete(groupKey(token.layer, groupAtDepth(token.name, depth)))
+    }
+    setCollapsedGroups(expanded)
+    setSearchText('')
+    setGraphRoot(null)
+    setJumpTargetId(id)
+  }
 
   // Ctrl/Cmd+D duplicates whichever row currently has focus anywhere inside it
   // (a cell input, the graph button, the delete button, ...).
@@ -6792,24 +6841,22 @@ export function TokenEditor({
 
                       <div className="space-y-1.5">
                         <Label>References</Label>
-                        {usageCount > 0 ? (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setGraphRoot({
-                                paths: [editDraft.id],
-                                title: toSlashPath(originalToken?.name ?? editDraft.name),
-                              })
-                            }
-                          >
-                            <NetworkIcon />
-                            {usageCount} {usageCount === 1 ? 'reference' : 'references'}
-                          </Button>
-                        ) : (
-                          <p className="text-sm text-muted-foreground">Not referenced by other tokens.</p>
-                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setGraphRoot({
+                              paths: [editDraft.id],
+                              title: toSlashPath(originalToken?.name ?? editDraft.name),
+                            })
+                          }
+                        >
+                          <NetworkIcon />
+                          {usageCount > 0
+                            ? `${usageCount} ${usageCount === 1 ? 'reference' : 'references'}`
+                            : 'Show graph'}
+                        </Button>
                       </div>
 
                       <div className="space-y-1.5">
@@ -6971,6 +7018,7 @@ export function TokenEditor({
             rootPaths={graphRoot.paths}
             title={graphRoot.title}
             onClose={() => setGraphRoot(null)}
+            onTokenClick={jumpToToken}
           />
         )}
       </div>
