@@ -68,7 +68,7 @@ export class Content implements DsComponentInterface {
   readonly textAlign?: ContentTextAlignment
 
   /**
-   * Defines the space between the child elements. Default is xx-small.
+   * Defines the space between the child elements.
    */
   @Prop()
   @OneOf(CONTENT_SPACES)

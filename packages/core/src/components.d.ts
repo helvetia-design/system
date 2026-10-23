@@ -937,7 +937,7 @@ export namespace Components {
          */
         "layout"?: StackLayout;
         /**
-          * Defines the space between the child elements. Default is xx-small.
+          * Defines the space between the child elements.
          */
         "space"?: ContentSpace;
         /**
@@ -1247,7 +1247,7 @@ export namespace Components {
          */
         "layout": DividerLayout;
         /**
-          * Defines the space between the child elements. Default is xx-small.
+          * Defines the space between the child elements. Default is none.
           * @default 'none'
          */
         "space": DividerSpace;
@@ -6103,7 +6103,7 @@ declare namespace LocalJSX {
          */
         "layout"?: StackLayout;
         /**
-          * Defines the space between the child elements. Default is xx-small.
+          * Defines the space between the child elements.
          */
         "space"?: ContentSpace;
         /**
@@ -6446,7 +6446,7 @@ declare namespace LocalJSX {
          */
         "layout"?: DividerLayout;
         /**
-          * Defines the space between the child elements. Default is xx-small.
+          * Defines the space between the child elements. Default is none.
           * @default 'none'
          */
         "space"?: DividerSpace;

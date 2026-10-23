@@ -45,7 +45,7 @@ export class Divider implements DsComponentInterface {
   readonly layout: DividerLayout = 'horizontal'
 
   /**
-   * Defines the space between the child elements. Default is xx-small.
+   * Defines the space between the child elements. Default is none.
    */
   @Prop()
   @OneOf(DIVIDER_SPACES)
