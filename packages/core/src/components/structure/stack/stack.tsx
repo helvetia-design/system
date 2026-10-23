@@ -146,6 +146,8 @@ export class Stack implements DsComponentInterface {
           'ds-stack': true,
           'as-row': this.direction === 'row',
           'as-col': this.direction === 'column',
+          'as-row-reverse': this.direction === 'row-reverse',
+          'as-col-reverse': this.direction === 'column-reverse',
           'has-wrap': this.useWrap === true,
           'fit-content': this.fitContent === true,
           [`align-${alignValue}`]: align || alignment,
