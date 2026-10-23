@@ -64,7 +64,7 @@ The default changed. `bal-stack` lays out as a row when it has no `layout` and n
 | `xx-large`     | `2xl`                                              |
 | `auto`, `none` | same (`auto` is valid for the `space*` props only) |
 
-Rewrite static values only, in every quoting form. Map `xx-large` to `2xl` and `xx-small` to `2xs` yourself. `ds-stack` does map the old names at runtime with a deprecation warning, but for `xx-small` the mapping probably yields `3xs`, which `ds-stack` does not accept. `2xl` is the name the stack styles use. The prop validation of `ds-stack` currently lists `xxl` instead, a known core inconsistency that is expected to be fixed, so this mapping assumes the fix.
+Rewrite static values only, in every quoting form. Map `xx-large` to `2xl` and `xx-small` to `2xs` yourself. `ds-stack` does map the old names at runtime with a deprecation warning, but rewriting them avoids the warning.
 
 Dynamic bindings (`[space]="x"`, `space={x}`, `:space="x"`, and the same for the other props) stay unchanged and are listed for manual review.
 

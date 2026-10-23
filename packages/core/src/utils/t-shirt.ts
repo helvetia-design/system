@@ -41,14 +41,10 @@ export const normalizeDeprecatedTShirtSize = <T extends string | undefined | nul
   return size
 }
 
-/**
- * Returns the short t-shirt size (sm, base, md, ...) for a given verbose
- * value (small, normal, medium, ...). If no mapping exists the value is
- * returned unchanged.
- */
+// `3xs` shares its verbose value with `2xs` and is skipped, so that `xx-small` resolves to `2xs`.
 const verboseToShortEntries = Object.entries(TShirtSizesMapping).reduce<Record<string, string>>(
   (result, [short, verbose]) => {
-    if (!result[verbose]) {
+    if (short !== '3xs' && !result[verbose]) {
       result[verbose] = short
     }
     return result
@@ -56,6 +52,11 @@ const verboseToShortEntries = Object.entries(TShirtSizesMapping).reduce<Record<s
   {},
 )
 
+/**
+ * Returns the short t-shirt size (sm, base, md, ...) for a given verbose
+ * value (small, normal, medium, ...). If no mapping exists the value is
+ * returned unchanged.
+ */
 export const toShortTShirtSize = (size: string) => {
   return verboseToShortEntries[size] || size
 }

@@ -1,7 +1,7 @@
 {
   "compiler": {
     "name": "@stencil/core",
-    "version": "4.45.1",
+    "version": "4.45.2",
     "typescriptVersion": "5.8.3"
   },
   "components": [
@@ -20868,7 +20868,7 @@
           "mutable": false,
           "attr": "space",
           "reflectToAttr": false,
-          "docs": "Defines the space between the child elements. Default is xx-small.",
+          "docs": "Defines the space between the child elements.",
           "docsTags": [],
           "values": [
             {
@@ -24977,7 +24977,7 @@
           "mutable": false,
           "attr": "space",
           "reflectToAttr": false,
-          "docs": "Defines the space between the child elements. Default is xx-small.",
+          "docs": "Defines the space between the child elements.",
           "docsTags": [
             {
               "name": "default",

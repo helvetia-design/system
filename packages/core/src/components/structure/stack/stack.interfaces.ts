@@ -1,7 +1,7 @@
 export const STACK_LAYOUTS = ['horizontal', 'vertical', 'horizontal-reverse', 'vertical-reverse'] as const
 
-export const STACK_SPACES = ['auto', 'none', '2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', 'xxl'] as const
-export const STACK_PADDINGS = ['none', '2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', 'xxl'] as const
+export const STACK_SPACES = ['auto', 'none', '2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl'] as const
+export const STACK_PADDINGS = ['none', '2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl'] as const
 export const STACK_ALIGNMENTS = [
   'top start',
   'top center',
