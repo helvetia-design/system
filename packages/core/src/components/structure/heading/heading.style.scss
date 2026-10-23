@@ -149,7 +149,7 @@ $vars-selector: ('.ds-heading', '.ds-title');
 //
 // Colors
 // --------------------------------
-$colors: ('primary', 'inverted');
+$colors: ('inverted');
 
 @mixin color($color) {
   --mod-heading-color: var(--ds-heading-color-#{$color});

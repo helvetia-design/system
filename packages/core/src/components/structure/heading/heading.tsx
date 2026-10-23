@@ -2,23 +2,14 @@ import { Component, Element, h, Host, Prop, State, Watch } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { dsBrowser, Logger, type LogInstance, hasValue, OneOf, Type } from '@utils'
 import {
-  HEADING_COLORS,
   HEADING_LEVELS,
   HEADING_SPACES,
   HEADING_VISUAL_LEVELS,
-  HeadingColor,
   HeadingLevel,
   HeadingSpace,
   HeadingVisualLevel,
 } from './heading.interfaces'
-import {
-  HEADING_COLOR_MAP,
-  HEADING_TAG_MAP,
-  HEADING_ORDER,
-  HEADING_SIZES,
-  HeadingSize,
-  HeadingTag,
-} from './heading.const'
+import { HEADING_TAG_MAP, HEADING_ORDER, HEADING_SIZES, HeadingSize, HeadingTag } from './heading.const'
 import { DsComponentInterface } from '@global'
 
 /**
@@ -113,13 +104,6 @@ export class Heading implements DsComponentInterface {
   readonly space?: HeadingSpace
 
   /**
-   * The theme type of the toast.
-   */
-  @Prop({ reflect: true })
-  @OneOf(HEADING_COLORS)
-  readonly color?: HeadingColor
-
-  /**
    * If `true` the color gets inverted for dark backgrounds
    */
   @Prop({ reflect: true })
@@ -175,14 +159,6 @@ export class Heading implements DsComponentInterface {
     return 1
   }
 
-  private get fontColor(): HeadingColor | undefined {
-    if (this.inverted) {
-      return 'inverted'
-    }
-    const color = this.color
-    return color ? (HEADING_COLOR_MAP[color] as HeadingColor) : undefined
-  }
-
   private get fontSize(): HeadingSize {
     return HEADING_SIZES[this.visualLevel ? this.visualLevel : this.level]
   }
@@ -216,7 +192,7 @@ export class Heading implements DsComponentInterface {
       <Host
         class={{
           [`is-${this.autoFontSize}`]: this.autoFontSize !== undefined,
-          [`is-${this.fontColor}`]: hasValue(this.fontColor),
+          'is-inverted': this.inverted,
           'is-subtitle': this.subtitle,
           [`has-space-${this.space}`]: hasValue(this.space),
           'has-no-wrap': this.noWrap,

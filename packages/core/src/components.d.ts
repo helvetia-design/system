@@ -14,7 +14,7 @@ import { BadgeColor, BadgePosition, BadgeSize } from "./components/indicators/ba
 import { IconColor, IconSize } from "./components/media/brand-icon/brand-icon.interfaces";
 import { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, ButtonDidRenderDetail, ButtonElementType, ButtonFocusDetail, ButtonGroupAlignment, ButtonGroupDirection, ButtonNavigateDetail, ButtonSize, ButtonTarget } from "./components/actions/button/button.interfaces";
 import { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
-import { HeadingColor, HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
+import { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
 import { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
 import { CheckboxBlurDetail, CheckboxChangeDetail, CheckboxFocusDetail, CheckboxGroupBlurDetail, CheckboxGroupChangeDetail, CheckboxGroupColumns, CheckboxGroupFocusDetail, CheckboxLabelPosition, CheckboxTileColor } from "./components/forms/checkbox/checkbox.interfaces";
 import { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
@@ -62,7 +62,7 @@ export { BadgeColor, BadgePosition, BadgeSize } from "./components/indicators/ba
 export { IconColor, IconSize } from "./components/media/brand-icon/brand-icon.interfaces";
 export { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, ButtonDidRenderDetail, ButtonElementType, ButtonFocusDetail, ButtonGroupAlignment, ButtonGroupDirection, ButtonNavigateDetail, ButtonSize, ButtonTarget } from "./components/actions/button/button.interfaces";
 export { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
-export { HeadingColor, HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
+export { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
 export { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
 export { CheckboxBlurDetail, CheckboxChangeDetail, CheckboxFocusDetail, CheckboxGroupBlurDetail, CheckboxGroupChangeDetail, CheckboxGroupColumns, CheckboxGroupFocusDetail, CheckboxLabelPosition, CheckboxTileColor } from "./components/forms/checkbox/checkbox.interfaces";
 export { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
@@ -585,7 +585,7 @@ export namespace Components {
         "direction": CardHeaderDirection;
     }
     /**
-     * Card subtitle renders a subtitle heading for cards with customizable color and styling.
+     * Card subtitle renders a subtitle heading for cards with an optional inverted style.
      */
     interface DsCardSubtitle {
         /**
@@ -593,10 +593,6 @@ export namespace Components {
           * @default false
          */
         "bold": boolean;
-        /**
-          * If `true` the card text color becomes white.
-         */
-        "color"?: HeadingColor;
         /**
           * If `true` the card text color becomes white.
           * @default false
@@ -1407,10 +1403,6 @@ export namespace Components {
           * The actual heading level used in the HTML markup.
          */
         "autoLevel"?: HeadingVisualLevel;
-        /**
-          * The theme type of the toast.
-         */
-        "color"?: HeadingColor;
         /**
           * If `true` the color gets inverted for dark backgrounds
           * @default false
@@ -4081,7 +4073,7 @@ declare global {
         new (): HTMLDsCardHeaderElement;
     };
     /**
-     * Card subtitle renders a subtitle heading for cards with customizable color and styling.
+     * Card subtitle renders a subtitle heading for cards with an optional inverted style.
      */
     interface HTMLDsCardSubtitleElement extends Components.DsCardSubtitle, HTMLStencilElement {
     }
@@ -5714,7 +5706,7 @@ declare namespace LocalJSX {
         "direction"?: CardHeaderDirection;
     }
     /**
-     * Card subtitle renders a subtitle heading for cards with customizable color and styling.
+     * Card subtitle renders a subtitle heading for cards with an optional inverted style.
      */
     interface DsCardSubtitle {
         /**
@@ -5722,10 +5714,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "bold"?: boolean;
-        /**
-          * If `true` the card text color becomes white.
-         */
-        "color"?: HeadingColor;
         /**
           * If `true` the card text color becomes white.
           * @default false
@@ -6632,10 +6620,6 @@ declare namespace LocalJSX {
           * The actual heading level used in the HTML markup.
          */
         "autoLevel"?: HeadingVisualLevel;
-        /**
-          * The theme type of the toast.
-         */
-        "color"?: HeadingColor;
         /**
           * If `true` the color gets inverted for dark backgrounds
           * @default false
@@ -9306,7 +9290,6 @@ declare namespace LocalJSX {
     interface DsCardSubtitleAttributes {
         "inverted": boolean;
         "bold": boolean;
-        "color": HeadingColor;
     }
     interface DsCardTitleAttributes {
         "inverted": boolean;
@@ -9480,7 +9463,6 @@ declare namespace LocalJSX {
         "noWrap": boolean;
         "subtitle": boolean;
         "space": HeadingSpace;
-        "color": HeadingColor;
         "inverted": boolean;
         "shadow": boolean;
     }
@@ -10085,7 +10067,7 @@ declare module "@stencil/core" {
              */
             "ds-card-header": LocalJSX.IntrinsicElements["ds-card-header"] & JSXBase.HTMLAttributes<HTMLDsCardHeaderElement>;
             /**
-             * Card subtitle renders a subtitle heading for cards with customizable color and styling.
+             * Card subtitle renders a subtitle heading for cards with an optional inverted style.
              */
             "ds-card-subtitle": LocalJSX.IntrinsicElements["ds-card-subtitle"] & JSXBase.HTMLAttributes<HTMLDsCardSubtitleElement>;
             /**

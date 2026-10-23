@@ -1,11 +1,10 @@
 import { Component, Element, h, Host, Prop } from '@stencil/core'
-import { Logger, LogInstance, hasValue, OneOf, Type } from '@utils'
+import { Logger, LogInstance, Type } from '@utils'
 import { HTMLStencilElement } from '@stencil/core/internal'
-import { HEADING_COLORS, HeadingColor } from '../../heading/heading.interfaces'
 import { DsComponentInterface } from '@global'
 
 /**
- * Card subtitle renders a subtitle heading for cards with customizable color and styling.
+ * Card subtitle renders a subtitle heading for cards with an optional inverted style.
  *
  * @slot - The subtitle text.
  * @part card-subtitle - The card subtitle element.
@@ -45,13 +44,6 @@ export class CardSubtitle implements DsComponentInterface {
   readonly bold: boolean = false
 
   /**
-   * If `true` the card text color becomes white.
-   */
-  @Prop()
-  @OneOf(HEADING_COLORS)
-  readonly color?: HeadingColor
-
-  /**
    * RENDER
    * ─────────────────────────────────────────────────────
    */
@@ -67,7 +59,6 @@ export class CardSubtitle implements DsComponentInterface {
           class={{
             'ds-text': true,
             'is-bold': this.bold,
-            [`is-${this.color}`]: hasValue(this.color) && !this.inverted,
             'is-inverted': this.inverted,
           }}
         >

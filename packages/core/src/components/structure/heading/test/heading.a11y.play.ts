@@ -5,14 +5,9 @@ test('basic', async ({ page, a11y }) => {
   await a11y('ds-heading')
 })
 
-test.describe('colors', () => {
-  const COLORS = ['info', 'success', 'warning', 'danger', 'blue', 'white'] as const
-  COLORS.forEach(color => {
-    test(color, async ({ page, a11y }) => {
-      await page.mount(`<ds-heading color="${color}">Heading</ds-heading>`)
-      await a11y(`ds-heading`)
-    })
-  })
+test('inverted', async ({ page, a11y }) => {
+  await page.mount(`<div style="background: #333"><ds-heading inverted>Heading</ds-heading></div>`)
+  await a11y('ds-heading')
 })
 
 test.describe('sizes', () => {
