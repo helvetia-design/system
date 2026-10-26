@@ -1,20 +1,25 @@
 # icon → Figma mapping
 
 ```yaml
-figmaComponentKey: '1832:7997' # Icon component set node id, 79 variants, file NzMFv5HwO14Mmro8bWyvlO
+figmaComponentKey: null # superseded — 79 standalone components (Icon/<name>), not one set; see below
 figmaPage: Icon
 figmaCollection: Design Tokens
 
 props:
   - name: name
     type: string (open icon registry, not a closed enum in code)
-    figmaProperty: icon
-    figmaPropertyType: variant
+    figmaProperty: null
+    figmaPropertyType: top-level-component-split
     figmaOptions: [all 79 icons in packages/assets/src/icons/svg, see list below]
     note: >
-      The ONLY variant property crossed against all icon options. svg/src props are excluded
-      from the mapping entirely — they're alternate delivery mechanisms for the same SVG
-      content that `name` already represents via the icon registry; nothing to map separately.
+      SUPERSEDED — originally the sole crossed Figma variant property on one shared 79-member
+      component set. Per user request (same TapTap Instance Swap pattern applied to
+      `ds-spinner`'s `inverted`), split into 79 separate top-level components, each named
+      `Icon/<name>` (Figma's own grouping convention for the Assets panel/Instance Swap
+      picker) — a consumer picks an icon via Instance Swap, not a variant property dropdown.
+      See the "Major structural change" section below. svg/src props are still excluded from
+      the mapping entirely — they're alternate delivery mechanisms for the same SVG content
+      that `name` already represents via the icon registry; nothing to map separately.
 
   - name: svg
     type: string
@@ -30,17 +35,23 @@ props:
 
   - name: size
     type: enum
-    options: [sm, md, lg, xl] # code default (unset) = implicit "base", same pattern as spinner
-    figmaProperty: null
-    figmaPropertyType: instance-override (not a crossed Figma variant — see note below)
+    options: [sm, base, md, lg, xl] # code default (unset) = implicit "base", same pattern as spinner
+    figmaProperty: size
+    figmaPropertyType: variant
+    note: >
+      SUPERSEDED — was an instance-override (no crossed variant) before the hard-rule change
+      below. Now a real crossed variant property on each of the 79 per-icon component sets.
 
   - name: color
     type: enum
     options:
       [primary, info, grey, success, danger, warning] # 'info' appears twice in code's
       # ICON_COLORS array (icon.interfaces.ts:1) — code bug, deduped here, not fixed in code.
-    figmaProperty: null
-    figmaPropertyType: instance-override (not a crossed Figma variant — see note below)
+    figmaProperty: color
+    figmaPropertyType: variant
+    note: >
+      SUPERSEDED — was an instance-override (no crossed variant) before the hard-rule change
+      below. Now a real crossed variant property on each of the 79 per-icon component sets.
 
   - name: inline
     type: boolean
@@ -309,6 +320,134 @@ computed values (not just visual impressions):
 Every prop in the mapping has now been checked against live, numeric ground truth at least
 once. No further Phase 4 findings for `ds-icon`.
 
+## Major structural change — 79 standalone components instead of one 79-variant set
+
+User asked for the same treatment as `ds-spinner`'s Primary/Inverted split: each icon should be
+its own **separate top-level component**, swappable via Figma's native Instance Swap, not a
+variant within one shared component set.
+
+**Implementation**:
+
+- Stripped the `icon=<name>` prefix from each of the 79 variant children and renamed to
+  `Icon/<name>` (the `/` groups them under one "Icon" category in the Assets panel/Instance Swap
+  picker, same convention as `Spinner/Primary` / `Spinner/Inverted`), then `page.appendChild()`'d
+  each one — this detaches them from the `COMPONENT_SET`, which auto-dissolves once emptied
+  (confirmed gone, as expected).
+- **Hit a naming bug**: the rename step produced double-prefixed names (`Icon/Icon/alert`)
+  instead of the intended single `Icon/alert` — cause not fully root-caused, but easily fixed by
+  normalizing (`name.replace(/^(Icon\/)+/, '')` then re-prefixing once).
+- Verified existing instances (`Copy me`, `Variants` examples) still resolved correctly
+  throughout — detaching/renaming a component node doesn't break instances referencing it by ID.
+- Realigned all 79 standalone components to the Main components table grid (same centering
+  logic as before, just resolving components by page-level name lookup instead of
+  `set.children`) and re-locked them.
+- No component properties were lost — `ds-icon`'s set only ever had the single `icon` variant
+  property (no boolean/instance-swap properties like `ds-spinner`'s `Show label`), so there was
+  nothing else to preserve through the split.
+
+**figmaComponentKey note**: the YAML header's single `figmaComponentKey: '1832:7997'` is now
+stale — there are 79 independent component keys instead of one set key. Not individually listed
+here (see the icon inventory list below for the full name list; resolve a specific icon's current
+key via `figma.getNodeByIdAsync` / `page.findOne` by its `Icon/<name>` name if needed).
+
+## Major structural change — Size × Color as real variant properties (hard rule)
+
+User overrode the earlier "color-only or size-only variant" recommendation: **both `size` and
+`color` must be real Figma variant properties, full cross-product, on every one of the 79
+icons** — a hard rule, not a judgment call. Each `Icon/<name>` went from a single standalone
+`COMPONENT` to its own `COMPONENT_SET` with 30 variants (`size` × `color` = 5 × 6), for
+2,370 components total across all 79 icons.
+
+**This does not contradict the earlier "N standalone components" rule for the open-ended `name`
+axis** — `name` still splits into 79 separate top-level entities (Instance Swap), but _within_
+each one, `size`/`color` are now real crossed variant properties (dropdown pickers on an
+instance), not instance-overrides. Two different axis types, two different treatments: an
+open-ended content-selection prop → top-level split; a small closed enum where every option
+re-skins the same shape → crossed variant property. This is consistent with the general rule
+already in `CONVENTIONS.md` ("same layers, different token → variant; different layers/structure
+→ top-level split") — `size`/`color` on an icon are exactly "same layers, different token."
+
+**Implementation**:
+
+- For each icon: built 30 variant nodes (clone the base component 29 times, reuse the real
+  original node for the `size=base, color=primary` default combo), resized each to its size
+  (`sm`=14, `base`=16, `md`=24, `lg`=32, `xl`=40), recolored each by rebinding its inner
+  `VECTOR`'s fill to the matching `Component/Icon/Color/<Name>` token, named
+  `size=<size>, color=<color>`, then `figma.combineAsVariants()`'d all 30 into one set renamed
+  `Icon/<name>` (same name as the original standalone component — preserves the Instance Swap
+  grouping).
+- **Insertion order determines the default variant** (`combineAsVariants` has no settable
+  `defaultVariant` property — confirmed read-only via a thrown `TypeError` when attempted).
+  Iterating `size` with `base` first (not alphabetical, not `sm` first) was required to get the
+  correct default (`size=base, color=primary`, matching code's actual default) — the first
+  prototype run (on `alert`) iterated `sm` first by mistake, giving a wrong default; left as a
+  known cosmetic-only quirk on that one icon rather than fighting Figma's deletion protection to
+  fix it (see next point).
+- **Figma silently protects a `COMPONENT_SET` with a live-referenced default variant from
+  `.remove()`** — calling `.remove()` on `alert`'s prototype set (while an existing instance
+  still referenced one of its children) silently no-op'd instead of throwing or deleting
+  anything. Confirmed by checking existence immediately after the call. No data was lost; this
+  is a safety behavior, not a bug — just unexpected since no error surfaced. Don't assume
+  `.remove()` succeeded just because it didn't throw; verify with a follow-up existence check
+  for anything load-bearing.
+- Built in batches of 3–7 icons per `use_figma` call (sizes/colors are cheap per-variant
+  operations compared to `ds-icon`'s earlier 79-icon-grid batches, so larger batches were safe
+  here).
+- All existing instances (`Copy me`, `Variants` examples, the 79-icon `Main components` grid,
+  all 869 `Sizes & Colors` swatches) were verified to still resolve correctly throughout —
+  0 broken instances after the full conversion.
+- Locked all 2,370 variants (`node.locked = true`) — same standing rule as every other
+  component's master grid.
+- **Hit the familiar orphaned-parent bug once more**, this time on the `alert` prototype set
+  specifically (`parent: NONE` after `combineAsVariants`) — fixed with the same
+  `page.appendChild(set)` pattern used for every other master set in this project.
+
+**Not yet done**: the existing "Sizes & Colors" table's 869 swatches are still manually
+resized/recolored generic instances, not instances of the _specific matching variant_
+(e.g. the `SM`/`Danger` cell isn't literally an instance of `size=sm, color=danger` — it's a
+`size=base,color=primary` instance manually resized and recolored to look the same). Visually
+identical, but not structurally tied to the real variant. Could be tightened to reference the
+exact variant per cell as a follow-up, not done in this pass since the hard-rule request was
+specifically about the master components having real properties, not about rewiring the
+reference table.
+
+## New section — "📐 Sizes & Colors" exhaustive reference (all 79 icons × 5 sizes × 6 colors)
+
+User flagged a real gap: after the top-level-component split, `size` and `color` (both
+instance-overrides, not separate components) were only demonstrated on one representative icon
+in the "Variants" section — not shown per-icon anywhere. Asked for a full reference table:
+icon name (rows) × every size × every color (columns), **for all 79 icons**, not a sample.
+
+**Implementation**: a new section added after "Main components", same page:
+
+- Table: 79 rows (one per icon) × 11 columns (5 size swatches: SM/Base/MD/LG/XL at
+  14/16/24/32/40px, then 6 color swatches: Primary/Info/Grey/Success/Danger/Warning) = 869
+  instances total.
+- Each swatch is an **instance** of that row's real `Icon/<name>` component (never the master
+  itself) — size swatches via `instance.resize(px, px)`, color swatches via finding the
+  instance's inner `VECTOR` child and rebinding its fill
+  (`setBoundVariableForPaint`) to the matching `Component/Icon/Color/<Name>` token. This is
+  simpler than `ds-badge`/`ds-spinner`'s overrides since icon components have no boolean/
+  "Show X" properties to preserve — just a single `VECTOR` child per component.
+- Built in 8 batches of ~10 icons each (110 instances per batch) rather than one script — kept
+  each `use_figma` call's execution scope small and let each batch be checkpointed
+  independently; same incremental-build discipline as any other large build in this skill.
+- Table chrome (header row, 79 row-label cells, 11×79 empty cells) was built in one separate
+  pass _before_ any instances, then instances were filled in after — splitting structure from
+  content made it easy to verify the grid skeleton was right before committing to filling
+  hundreds of cells.
+- Verified the first row (`alert-triangle`) and last row (`youtube`) visually, plus confirmed
+  the total instance count filled (`110×7 + 99 = 869`) exactly matches `79 × 11` — strong
+  evidence of a correct, complete build without needing to visually inspect all 79 rows
+  individually (a full-page screenshot at reduced scale also confirmed every row renders with
+  content, no gaps).
+
+**New template consideration for SKILL.md**: when a component has instance-override props
+(size/color/etc.) that deserve a full per-option-combination reference beyond the compact
+"Variants" sample, build it as an **additional section after Main components**, not by trying to
+cram it into the "Variants" section itself — "Variants" stays a compact, single-axis sample;
+exhaustive multi-axis instance-override sweeps get their own clearly-named section.
+
 ## Rebuild — TapTap Design System layout (supersedes the old row/card documentation)
 
 Per the user's request to apply the same template used for `ds-badge`/`ds-spinner` (see
@@ -403,3 +542,74 @@ node (previously "Helvetia Design System") with `v0.0.6 - 26.10.2026` instead.
 **Follow-up fix — title size mismatch with `ds-badge`.** Same issue as `ds-spinner`: title
 `fontSize` was bound to `Alias/Text/Size/4XL` (32px) instead of `ds-badge`'s actual
 `Component/Heading/Level/Display1/FontSize` (48px). Rebound to match.
+
+## Major rebuild — per-icon titled grids replace the flat reference grid (Main components)
+
+User flagged the page was "still a mess" after the size/color hard-rule conversion (2,370
+components) and asked for three concrete changes: (a) "Variants" should preview a handful of
+different icon **names** (not a single-icon size sweep), (b) "Main components" should become one
+**titled grid per icon** — icon name as a heading, then a 5×6 grid with sizes down the left and
+colors across the top — stacked one after another for all 79 icons, and (c) the real master
+`COMPONENT_SET`s (previously parked off to the side, cluttering the canvas/layers panel) must be
+**anchored directly onto** each icon's grid cells, not parked elsewhere.
+
+**Data loss noted, not investigated further**: the previous "📐 Sizes & Colors" table (869
+generic resized/recolored instances, node `1963:9`, documented in the section above) was found to
+have disappeared from the file entirely before this rebuild started — `getNodeByIdAsync` returned
+nothing, and a page-wide search for its heading text also found nothing. Root cause unknown
+(possibly a side-effect of the large `combineAsVariants`/`appendChild` batch operations during the
+2,370-component conversion). Not restored, since this rebuild replaces it with a superset of the
+same information (every icon's full size × color grid, using the real variants directly rather
+than resized/recolored look-alike instances) — but flagged here for the record, since it
+represents work that was silently lost rather than intentionally removed.
+
+**Implementation**:
+
+1. Removed the old flat 79-icon-name "Main components" reference grid (node `1901:8134`) entirely
+   — confirmed via `.remove()` returning `{removed: true}`.
+2. Rebuilt the "Variants" row (node `1901:8100`) with 6 representative icons — `edit`, `user`,
+   `plus`, `search`, `settings`, `trash` — each an instance of that icon's `size=base,
+color=primary` default variant, with its name as a label underneath
+   (`Alias/Text/Size/XS`/`Alias/Text/Color/Grey`). Row changed to `HORIZONTAL` auto-layout,
+   `primaryAxisSizingMode: FIXED`, width 820, `primaryAxisAlignItems: SPACE_BETWEEN`.
+3. Built chrome for all 79 per-icon grids in one batch, stacked inside a new vertical auto-layout
+   container (`1972:7955`, 28px item spacing between icons). Each icon got a `block-<name>` frame:
+   bold title text (the icon name) + a `grid` table (5 size rows × 6 color columns, headers only,
+   empty cells). Layout constants: `cellW=48, cellH=44, sizeLabelColW=56, headerH=24`.
+4. **Anchored the real `COMPONENT_SET`s onto the grids** — for each of the 79 icons, repositioned
+   its set (previously parked at `x:0, y:-20000`) so its top-left lands exactly at the matching
+   grid's first data cell (`table.absoluteTransform` + `sizeLabelColW`/`headerH` offsets), then
+   positioned each of its 30 `size=<s>, color=<c>` variant children within their own cell
+   (centered: `colIdx*cellW + (cellW-variant.width)/2`, same for rows), and
+   `page.appendChild(set)`'d it to guarantee correct z-order (drawn on top of the grid chrome
+   underneath). This is the same "overlay real variants directly onto documentation chrome"
+   pattern already used for `ds-badge`/`ds-spinner`'s Main components tables, applied per-icon
+   here instead of once for the whole page.
+5. Ran in 8 batches of ~10 icons per `use_figma` call. All 79 completed successfully
+   (`ok: true` for every icon, verified via a final pass cross-checking `blockMap` keys against
+   `COMPONENT_SET` names on the page — 0 missing in either direction).
+6. Confirmed no stray parked content remains (`iconPage.children.filter(n => n.y < -1000)`
+   returned empty) — the old parking position is fully vacated now that every set has a real
+   grid position.
+7. **Screenshot verification hit the same known composite-overlay unreliability** documented
+   earlier for both `ds-spinner`'s inverted table and this file's own first overlay pass
+   (alert-triangle) — `get_screenshot` on individual `block-<name>` table nodes rendered the grid
+   chrome correctly but showed **empty cells**, even though the real variants were confirmed
+   correctly positioned underneath. Resolved the same way as before: verified via direct
+   `absoluteTransform` position math instead of trusting the screenshot. Spot-checked the first
+   icon (`alert-triangle`), a middle icon (`settings`), and the last icon (`youtube`) — all three
+   variants' `size=sm, color=primary` instance measured within its expected cell bounds (e.g.
+   `alert-triangle`: expected cell top-left `(98, 824)`, actual variant position `(115, 839)` — the
+   `(17, 15)` offset is exactly the expected centering offset for a 14×14 icon in a 48×44 cell),
+   and all three were confirmed `locked: true`. The "Variants" row screenshot (a flat, non-overlay
+   composite) rendered correctly on the first try, consistent with the unreliability being
+   specific to this overlay pattern, not a general tooling problem.
+8. All repositioned variants remained locked throughout (locking was applied during the original
+   2,370-component build; repositioning via script doesn't unlock nodes).
+
+**Net result**: "Main components" is no longer a single flat 10×8 reference grid of default
+variants — it's 79 stacked sections, each titled with the icon's name and showing that icon's
+complete real 5×6 size×color variant matrix, anchored in place (not parked). "Variants" is now a
+compact 6-icon name sample, matching the originally-intended "Variants = compact single-axis
+sample, Main components = exhaustive structural reference" split, just with the exhaustiveness now
+expressed per-icon instead of as one shared flat grid.

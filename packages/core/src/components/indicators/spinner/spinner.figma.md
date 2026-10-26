@@ -1,7 +1,10 @@
 # spinner → Figma mapping
 
 ```yaml
-figmaComponentKey: '1808:77' # Spinner component set node id, 16 variants, file NzMFv5HwO14Mmro8bWyvlO
+figmaComponentKey: null # superseded — see figmaComponentKeys below (split into two top-level sets)
+figmaComponentKeys:
+  primary: '1951:20' # Spinner/Primary component set node id, 8 variants (variation x size x labelPosition)
+  inverted: '1951:21' # Spinner/Inverted component set node id, 8 variants, same axes
 figmaPage: Spinner
 figmaCollection: Design Tokens # VariableCollectionId:135:77, modes: Base, Tcs — brand-agnostic binding (Q13)
 
@@ -50,8 +53,15 @@ props:
   - name: inverted
     type: boolean
     default: false
-    figmaProperty: inverted
-    figmaPropertyType: boolean
+    figmaProperty: null
+    figmaPropertyType: top-level-component-split
+    note: >
+      SUPERSEDED — originally a boolean variant property on one shared component set. Per user
+      request (TapTap Button Instance Swap pattern), removed as a variant axis entirely and
+      replaced by two separate top-level component sets, `Spinner/Primary` and
+      `Spinner/Inverted` — a consumer picks between them via Figma's native Instance Swap, not
+      a property toggle. See the "Major structural change" section below for the full rationale
+      and migration.
 
   - name: deactivated
     type: boolean
@@ -375,6 +385,76 @@ low contrast on navy) is now `Alias/Text/Color/White` with a 2px underline
 (`setRangeTextDecoration(... , 'UNDERLINE')` + `setRangeTextDecorationThickness(..., {value: 2,
 unit: 'PIXELS'})`). The Normal frame's link is unchanged (still literal link-blue, no underline
 — good contrast on white).
+
+## Major structural change — split into two top-level components (TapTap Instance Swap pattern)
+
+User referenced the TapTap Design System's Button component (Primary/Ghost/Link/Outline are
+**separate top-level components**, swapped via Figma's native "Swap instance" picker, not one
+component set with a "style" variant property) and asked for the same structure: `inverted`
+removed as a variant property entirely, replaced by **two separate top-level component sets** —
+"Spinner/Primary" and "Spinner/Inverted" — each still varying by `variation`/`size`/
+`labelPosition` internally. Confirmed via explicit question before proceeding, since this
+changes the real master component's structure, not just documentation (`figmaComponentKey` in
+this file's YAML is now stale — see below).
+
+**Implementation**:
+
+- Split the original 16-variant set's children into two groups of 8 by their `inverted` value,
+  renamed each child to drop `inverted=...` from its name (leaving just `variation=X, size=Y,
+labelPosition=Z`), then recombined each group via `figma.combineAsVariants()` into its own set.
+- **Hit the same known round-trip naming bug again** (see `CONVENTIONS.md`): recombining left
+  children as unparsed `=logo, =base, =right`-style names with no real variant properties
+  (`variantProperties: null`). Fixed by renaming each child back to proper `key=value` format —
+  this restored `variation`/`size`/`labelPosition` as real variant axes and confirmed `Show
+label` survived (new property ID, same behavior).
+- Named the two sets **`Spinner/Primary`** and **`Spinner/Inverted`** — the `/` is Figma's own
+  naming convention for grouping in the Assets panel and the instance-swap picker (confirmed
+  against the TapTap reference, where `Button/Primary`, `Button/Ghost`, etc. group under one
+  "Button" category).
+- Swapped every instance across both documentation frames (`Copy me`, both `Variants` examples)
+  to reference the correct new set via `instance.swapComponent(...)` — Normal frame →
+  `Spinner/Primary`'s children, Inverted frame → `Spinner/Inverted`'s children.
+- Realigned the Main components overlay in both frames against the correct new set's children
+  (each table now shows a `variation` × `size` grid sourced from its own dedicated component
+  set, at `labelPosition=right`; the `labelPosition=bottom` variants are parked off-grid in each
+  set, same as before).
+- Re-locked the 8 `labelPosition=right` overlay variants across both sets (4 each).
+- The **old shared 16-variant set (`1808:77`) no longer exists** — confirmed removed, as
+  expected, once all its children were reassigned to the two new sets.
+
+**New template rule (added to SKILL.md)**: this supersedes the "two frames sharing one
+component set, filtered by `inverted`" approach from the previous follow-up — any component with
+a true `inverted`/dark-context axis should have `inverted` **removed as a variant property** and
+split into two separate top-level components instead, named `<Component>/Primary` and
+`<Component>/Inverted`, to support Figma's native Instance Swap workflow the way TapTap's Button
+does.
+
+`figmaComponentKey` note: the YAML header above still lists the old single key — this file needs
+a follow-up pass to record both new keys (`1951:20` for Primary, `1951:21` for Inverted) instead
+of one.
+
+## Follow-up — Inverted table's data cells were white, not dark
+
+User flagged the "Main components" grid in the Inverted frame as still having white data-cell
+backgrounds, clashing with the dark theme. Root cause: the table's own frame fill _was_ already
+correctly dark (`🌐 Global/🌈 Color/Primary/6`), but the two row wrapper frames
+(`row-logo`/`row-circle`) inside it still had Figma's default white fill — the classic
+`createAutoLayout()` white-fill gotcha (see CONVENTIONS.md), missed on this specific table during
+the original build since the header row's cells all had explicit dark fills covering it, and the
+data cells' own transparency let the row's white show through underneath. Fixed: cleared
+`fills = []` on both row frames. Table background is now uniformly dark, matching the rest of
+the frame, with the white overlay glyphs clearly visible throughout.
+
+## Follow-up — unused variants cluttering the page below the frames
+
+User flagged that the unused `labelPosition=bottom` variants (parked below the visible frames
+after the component split) were still visible as loose debris in the page viewport, inflating
+the page's bounding box southward. **Fixed**: moved them to a large _negative_ `y` (`-10000`,
+with a 2000px `x` offset between the two sets so they don't overlap each other) — consistent
+with the established convention of parking unused/off-grid elements in the negative direction,
+same as every other component's off-canvas master-set parking, rather than positive `y` which
+just extends the page's visible bounding box downward. Confirmed via a fresh page-level
+screenshot: `original_height` dropped back to match just the two frames, no stray content.
 
 ## Follow-up — Inverted frame didn't actually show inverted examples (real bug)
 

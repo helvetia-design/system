@@ -16,6 +16,41 @@ it came from.
   separate booleans.
 - **Enum props (`@OneOf([...])`) map 1:1** to a Figma variant property of the same name with the
   same options — no renaming or collapsing unless a later rule below says otherwise.
+- **An enum prop only maps to a variant property when its options share the same layer
+  structure — same shape, different token.** If the options instead require different
+  layers/structure (e.g. a button `color`/`type` prop where `primary` is a solid fill, `ghost` is
+  a transparent fill + border, `link` is text-only with an underline — not just a different fill
+  token on the same shape), it is **not** a variant property. Split it into separate top-level
+  components instead, swapped via Figma's native Instance Swap — the same treatment already used
+  for the `inverted` axis and for open-ended content-selection props like icon `name`. Confirmed
+  against the TapTap Design System's own Button, which models `Primary`/`Ghost`/`Link`/`Outline`
+  this way, never as a crossed "style" variant. **The test is never the prop's name or whether
+  it's an enum — it's: same layers, different token → variant; different layers/structure →
+  top-level split via instance swap.** (From: user clarification referencing TapTap's Button,
+  generalizing the existing `inverted` rule to cover any structural axis, including `color`.)
+  - **Confirmed hard rule, not just a preference**: for `ds-icon`, after splitting `name` into
+    79 top-level components (open-ended content-selection → top-level split, per the other
+    rule), the user explicitly required `size` and `color` to be real crossed variant
+    _properties_ on each of those 79 — not instance-overrides, even though an
+    instance-override would have been simpler and smaller (474–869 components vs. 2,370). Both
+    axes genuinely satisfy "same layers, different token" (resize/recolor the same vector), so
+    this isn't a contradiction of the rule above — it's confirmation that the rule applies
+    unconditionally once that test is met, regardless of how large the resulting cross-product
+    gets. Don't assume a large option count is reason enough to downgrade a same-layers axis to
+    an instance-override — ask first if genuinely unsure, but default to building the real
+    variant structure. (From: `ds-icon`'s `size`/`color`, confirmed as a hard rule after an
+    initial recommendation to simplify was explicitly rejected.)
+
+- **No visual attribute is ever assumed — every value on every Figma node needs an explicit,
+  resolved design token, even if the component's own SCSS never sets that attribute at all.** A
+  CSS-var binding is the common case, not the only case that counts: an attribute a component
+  inherits (e.g. `color`/`font-size` on a text part that relies on Shadow DOM inheritance, like
+  `ds-spinner`'s label) still needs a token bound to it in Figma — there's no shadow-DOM
+  inheritance there to fall back on, only Figma's own stale/leftover default. Treat a missing
+  token for _any_ attribute (inherited, hardcoded in `.tsx`, or CSS-var-bound) as the same hard
+  stop: ask the user to pick an existing token or explicitly accept a one-off hardcode, never
+  silently build with an assumed value. Check this via Phase 1's completeness checklist
+  (every node × every attribute it needs) before Phase 2, not discovered piecemeal in Phase 3.
 
 ## Learned rules
 
@@ -70,16 +105,23 @@ it came from.
   components), not just `ds-icon`. (From: `ds-icon`'s 79-icon rebuild, caught by the user
   spotting inconsistent visual weight across the grid.)
 
-- **An open-ended content-selection prop referencing an external registry (e.g. `ds-icon`'s
-  `name`, backed by 79+ SVGs with no closed `@OneOf([...])`) becomes the sole crossed Figma
-  variant property, with every other prop treated as an instance-level override rather than a
-  crossed variant axis.** Figma variant sets are a true cross-product — crossing a large
-  content set against even a few other properties (size × color × state, etc.) produces tens of
-  thousands of unbuildable physical components. This mirrors how real large Figma icon
-  libraries (e.g. Material Symbols) are structured: one variant property for content/name,
-  recolor/resize/rotate left as bound-but-overridable instance properties. A content-selection
-  prop with only a handful of options (not 79+) doesn't need this escape hatch — use judgment
-  on where "too large to cross" starts. (From: `ds-icon`'s `name`.)
+- **SUPERSEDED — An open-ended content-selection prop referencing an external registry (e.g.
+  `ds-icon`'s `name`, backed by 79+ SVGs with no closed `@OneOf([...])`) does NOT become a
+  crossed Figma variant property at all — it becomes N separate top-level components, one per
+  option, named `<Component>/<option>`.** Originally this skill made `name` the sole crossed
+  variant property on one shared 79-member set (reasoning preserved below for context). Per user
+  direction (same TapTap Instance Swap pattern used for `ds-spinner`'s `inverted` split), this is
+  now wrong — every open-ended content-selection prop, however many options it has, gets the
+  top-level-component-split treatment, exactly like a true `inverted`/dark-context axis. A
+  consumer picks an option via Figma's native Instance Swap, not a variant property dropdown.
+  (From: `ds-icon`'s `name`, re-split after `ds-spinner`'s `inverted` established the pattern.)
+  - Original reasoning, still correct as the _reason a variant-property cross-product doesn't
+    work_ here even though the conclusion changed: Figma variant sets are a true cross-product —
+    crossing a large content set against even a few other properties (size × color × state,
+    etc.) produces tens of thousands of unbuildable physical components. The fix is no longer
+    "one variant property, everything else an instance-override" — it's "N standalone
+    components, everything else an instance-override," which sidesteps the cross-product problem
+    entirely rather than just minimizing it to one axis.
 
 - **Never assume a size token's value is the visible size of what it's bound to — verify
   against the real rendered output, especially for animated (Lottie/CSS keyframe) or composite
@@ -203,6 +245,14 @@ layoutPositioning = ABSOLUTE if the parent node has layoutMode !== NONE` even wh
     realignment still works fine via script — `locked` only blocks UI
     selection/dragging, not plugin API property writes. No need to unlock first.
 
+- **Park unused/off-grid variants in the _negative_ x/y direction, never positive.** A positive
+  offset just extends the page's visible bounding box past the documentation frames, so the
+  "parked" content still shows up as loose debris below/beside everything in a page-level
+  screenshot — exactly what parking was supposed to avoid. Use a large negative coordinate
+  (e.g. `y: -10000`), consistent with how every master component set itself is already parked
+  relative to its documentation frame. (From: `ds-spinner`'s unused `labelPosition=bottom`
+  variants, first parked at a positive offset that still cluttered the page.)
+
 - **`get_screenshot` targeting a nested frame/table node (not the page itself) unreliably
   composites cross-branch overlapping content — prefer the page's own `nodeId` for any
   multi-subtree overlay checkpoint.** Confirmed by querying the identical node repeatedly and
@@ -214,6 +264,20 @@ layoutPositioning = ABSOLUTE if the parent node has layoutMode !== NONE` even wh
   render) — if a screenshot shows unexpectedly missing content after exhaustive position/data
   verification, suspect the tool before assuming a real file defect, but note the caveat in
   `<name>.figma.md` rather than silently trusting either outcome. (From: `ds-spinner`'s rebuild.)
+
+- **When an open-ended content-selection prop (top-level-split into N components, per the rule
+  above) also has its own crossed same-layers variant properties (e.g. `size`/`color` on each
+  `ds-icon` entity), "Main components" stops being one shared flat reference grid and becomes N
+  separate titled sub-sections, one per split entity — entity name as a heading, then that
+  entity's own full variant cross-product grid (rows/columns = its variant properties), stacked
+  one after another.** The real per-entity `COMPONENT_SET` is anchored directly onto its own grid
+  (same "overlay real variants onto table chrome" technique as `ds-badge`/`ds-spinner`'s single
+  shared table, just repeated once per entity instead of once per page) rather than parked
+  elsewhere. "Variants" stays a compact single-axis sample across a handful of representative
+  entities (not all N, not every option) — the exhaustiveness lives entirely in "Main components"
+  now. (From: `ds-icon`'s rebuild — initially built as one flat 79-icon default-variant grid, the
+  user asked for this per-icon-titled-grid structure instead once `size`/`color` became real
+  variants on each of the 79 split entities.)
 
 - **`figma.createAutoLayout()` defaults every new frame to a solid white fill — clear it
   explicitly (`fills = []`) on every purely-structural wrapper frame in the Phase 3b

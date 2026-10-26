@@ -42,16 +42,22 @@ reusing existing components, since the same discipline applies here.
    `:hover`, `:focus`, `:active`, `:disabled`, `:read-only`, and any loading-related
    class/attribute selector. These don't show up as props but still need a Figma
    representation (see Phase 2, rule 3).
-   - Also scan for **text-bearing parts with no explicit `color`/`font-size`** (e.g. a
-     `::part(label)` that only sets `font-family`/`line-height`, as in `ds-spinner`). Shadow DOM
-     inherits `color`/`font-size` from the light-DOM ancestor in real usage, so a component's own
-     SCSS not setting them is expected, not a gap — but it means the Figma text node has nothing
-     to naturally fall back to either, and will otherwise render with Figma's own stale/leftover
-     default styling (observed: black, 12px) instead of anything representative. Note every such
-     part in `<name>.figma.md`'s tokens list as bound to this system's default text treatment —
-     `🔗 Alias/🔤 Text/Color/Primary` for color, `📱 Device/🔤 Text/Size/Base/Device` for size
-     (from the `Design Responsive Tokens` collection, mode-based) — flagged as inherited-context
-     bindings, not literal bindings to something the component's own code sets.
+   - Also scan **every text-bearing part for every attribute a Figma text node needs**: font
+     family, font size, font weight, line-height, letter-spacing, color, text-decoration. A
+     component's own SCSS commonly sets only some of these explicitly (e.g. a `::part(label)`
+     that sets `font-family`/`line-height` but not `color`/`font-size`, as in `ds-spinner`) and
+     relies on Shadow DOM inheritance from the light-DOM ancestor for the rest in real usage —
+     that's expected, not a gap, in the component's own code. But it means the Figma text node
+     has nothing to naturally fall back to, and will otherwise render with Figma's own
+     stale/leftover default styling (observed: black, 12px) instead of anything representative.
+     **Every one of these attributes still needs an explicit resolved token in `<name>.figma.md`'s
+     tokens list — treat a missing one exactly like a missing CSS-var token in step 4, not as an
+     exemption.** For attributes inherited from this system's own default text treatment (not set
+     by the component's own code), bind to the matching system-default token — e.g.
+     `🔗 Alias/🔤 Text/Color/Primary` for color, `📱 Device/🔤 Text/Size/Base/Device` for size (from
+     the `Design Responsive Tokens` collection, mode-based) — and flag these as inherited-context
+     bindings, not literal bindings to something the component's own code sets. Never leave an
+     attribute unbound/assumed because the component's SCSS doesn't mention it.
 3. Identify any **nested DS component** usage (e.g. `<ds-icon>` inside `ds-button`'s render). For
    each one, read its `<child>.figma.md` and pull the recorded Figma component key. If missing,
    stop per Prerequisites above.
@@ -91,11 +97,24 @@ reusing existing components, since the same discipline applies here.
      not guess, do not push a hardcoded value, do not invent a new token. Ask the user whether
      to use a different existing token or explicitly accept a one-off hardcoded value for this
      specific case. Resolve this now, before Phase 2, not mid-build in Phase 3.
-   - A value with no CSS-var binding at all (e.g. a hardcoded literal in the component's `.tsx`,
-     not its SCSS) is outside this step's scan, but if a matching Figma variable happens to
-     exist anyway (as found for `spinner.tsx`'s `getColor()` fallback), note it in
-     `<name>.figma.md` as informational — bind to it for the Figma visual, and flag the
-     code-side drift as a separate follow-up rather than fixing it here.
+   - A value with no CSS-var binding in the component's own SCSS (e.g. a hardcoded literal in
+     the component's `.tsx`, or an attribute the component's code never sets at all and instead
+     inherits — see step 2's text-attribute scan) is **not exempt from token resolution — it
+     still needs an explicit decision, same hard-stop rule as above.** If a matching Figma
+     variable exists anyway (as found for `spinner.tsx`'s `getColor()` fallback, or for an
+     inherited text attribute per step 2), bind to it for the Figma visual and note it in
+     `<name>.figma.md` (flagging any code-side drift as a separate follow-up, not fixed here). If
+     no matching variable exists, treat it exactly like a missing CSS-var token: stop, report it,
+     and ask the user to pick an existing token or explicitly accept a one-off hardcoded value —
+     never silently build it with an assumed or Figma-default value.
+     4b. Before writing the draft file, build an explicit **completeness checklist**: list every node
+     the Figma build will need (every text-bearing part, every filled/stroked shape, every spacing
+     gap) and, for each one, every visual attribute it needs (text: family, size, weight,
+     line-height, letter-spacing, color, decoration; shape: fill, stroke color/width, corner
+     radius, dimensions, spacing). Cross-check each attribute against the tokens resolved in steps
+     2 and 4 — any attribute with no corresponding entry is a gap, not an assumption to fill in
+     during Phase 3. Surface every gap now, as a batch, using the same hard-stop flow as step 4,
+     rather than discovering missing tokens one at a time mid-build.
 5. Write all of the above into `<name>.figma.md` (create it if it doesn't exist) as a draft, per
    the schema in [Mapping file format](#mapping-file-format) below.
 
@@ -103,7 +122,19 @@ reusing existing components, since the same discipline applies here.
 
 1. Read `CONVENTIONS.md` in this skill's folder for heuristics learned from prior components.
 2. Draft how the analyzed props/states collapse into Figma variant properties:
-   - An enum prop (`@OneOf([...])`) → one Figma variant property, same name, same options.
+   - An enum prop (`@OneOf([...])`) → one Figma variant property, same name, same options — but
+     only when every option re-skins the **same layers** (a different token value on an
+     otherwise identical shape, e.g. `size: sm/base` scaling the same shape, or a badge `color`
+     swapping a fill token on the same pill). If the options instead require **different
+     layers/structure** — e.g. a button `color`/`type` prop where `primary` is a solid fill,
+     `ghost` is a transparent fill + border, `link` is text-only with an underline — don't force
+     it into one variant set. Split it into separate top-level components instead, swapped via
+     Figma's native Instance Swap, same treatment as the `inverted` axis (Phase 3b) and an
+     open-ended content-selection prop like icon `name`. Confirmed against the TapTap Design
+     System's own Button, which models exactly this (`Button/Primary`, `Button/Ghost`,
+     `Button/Link`, `Button/Outline` as separate top-level components, never a shared "style"
+     variant). **The test is never the prop's name or whether it's an enum — it's: same layers,
+     different token → variant; different layers/structure → top-level split via instance swap.**
    - A plain boolean prop with no state/interaction meaning → one boolean Figma property.
    - A free-text prop (e.g. `label`) → never a variant property; it maps to an instance text
      override. **Check the component's `render()` for a conditional guard around it** (e.g.
@@ -174,174 +205,15 @@ The raw component set (Phase 3) is not the deliverable on its own — every comp
 readable documentation layout on its Figma page, built from instances of the finished component
 set. Build this after Phase 3 confirms the variant matrix looks right, before Phase 4's review.
 
-**This is a fixed template, not a per-component judgment call.** As of `ds-badge`, this template
-follows the TapTap Design System's Figma community file structure (reference provided by the
-user: TapTap Design System, `Button–Primary` page) — this **replaces** the earlier
-row/card/column layout used for `ds-spinner`/`ds-icon`'s first pass. Deviating from it is wrong —
-adapt _content_ to the component's own props, never the _structure_. `ds-spinner` and `ds-icon`
-have both been rebuilt to match (see their `.figma.md` files' "Rebuild — TapTap Design System
-layout" sections) — this template now applies to every component on this Figma file.
-
-**A component with only one crossed variant property** (e.g. `ds-icon`'s 79-option `name`, with
-every other prop an instance-override) **has no second axis for a "Main components" table.** In
-that case, "Main components" becomes the exhaustive reference grid of all real master variants
-(same centering/grid-line technique, just one axis instead of two) instead of a true table. Pick
-whichever remaining prop best fits the compact "Variants" section (for `ds-icon`, `size`).
-
-**Page background**: set the Figma page's own `backgrounds` to a literal solid `#e8e8e8`
-(`page.backgrounds = [{ type: 'SOLID', color: { r: 232/255, g: 232/255, b: 232/255 } }]`) — not
-a design token, no page-background token exists in this system.
-
-**One bordered outer frame**, white fill, **2px** `Alias/Border/Color/GreyLight` stroke, 8px
-corner radius, ~40px padding, vertical auto-layout. No label above the frame (an earlier draft
-of this template had one; removed on request — don't add it back).
-
-**Every border/divider/grid-line in this template is 2px, always** — not 1px (an earlier draft
-used 1px throughout; corrected on request across all three existing pages). This applies to: the
-outer frame's own stroke, every divider rule between sections, the Variants panel's border, the
-Main components table's border, and every internal grid-line rectangle. When building a divider
-or grid line as a rectangle, give it a 2px dimension on its thickness axis
-(`resize(width, 2)` for a horizontal divider, `resize(2, height)` for a vertical grid line); when
-it's a frame stroke, set `strokeWeight: 2`.
-
-Inside the frame, four sections in order, each separated by a 2px `Alias/Border/Color/GreyLight`
-divider rule:
-
-1. **Header**:
-   - A top bar: small grey **breadcrumb** kicker (left) reading `⏳ Core / <Category> /
-<Component>` (e.g. `⏳ Core / Indicator / Badge`, `⏳ Core / Media / Icon`) — set on **both**
-     the Figma page's own name and the in-page `kicker` text node, identically. The `⏳`
-     (hourglass) marks the page as AI-generated/changed and pending human review; a human
-     manually swaps it to `✅` once reviewed and approved. **This skill must never set it to
-     `✅`** — every build or edit this skill makes should (re-)set it to `⏳`, never claim
-     approval on a human's behalf.
-   - On the right of that same top bar, a
-     `wordmark` text node reading `v<core package version> - <DD.MM.YYYY>` (e.g.
-     `v0.0.6 - 26.10.2026`) — **not** "Helvetia Design System" text (an earlier draft used that;
-     replaced on request). Version from `packages/core/package.json`'s `version` field at build
-     time, date from the actual current date — records which core package version the Figma push
-     was generated from. `Alias/Text/Size/XS`, `Alias/Text/Color/Grey`, same as the kicker.
-   - Title: the component name, bold, `Component/Heading/Level/Display1/FontSize` (48px — not
-     `Alias/Text/Size/4XL`/32px, which was a mismatch caught across all three existing pages),
-     `Alias/Text/Color/Primary`.
-   - Lead paragraph: sourced **verbatim from the component's own JSDoc comment** in its `.tsx`
-     file — code is the source of truth for documentation copy, never write new descriptive
-     copy. Color `Alias/Text/Color/Primary` (not `Grey` — an earlier draft used Grey, corrected
-     on request across all three existing pages).
-   - A "View in Storybook ↗" link, `Alias/Text/Size/XS`, literal link-blue
-     (`{r: 0, g: 94/255, b: 1}` — no "link color" alias token exists in this system today), with
-     a **real Figma hyperlink** via `textNode.setRangeHyperlink(0, length, {type: 'URL', value:
-url})`. Find the real Storybook story ID from the component's own
-     `apps/storybook/src/components/<category>/<name>/<name>.doc-config.ts` (the `Overview` tab's
-     `storyId`) — never guess a path from scratch, and don't rely on an older sibling
-     component's URL pattern (confirmed these are NOT derivable by a fixed category/name
-     formula — `ds-spinner` and `ds-icon`'s URL shapes differ from each other).
-     Each of the three section headings below ("👉 Copy me", "🛠 Variants", "🔒 Main components") is
-     bold, `Component/Heading/Level/1/FontSize` (28px — not `Alias/Text/Size/SM`, which was a
-     mismatch caught and fixed across `ds-spinner`/`ds-icon`), `Alias/Text/Color/Primary`.
-
-2. **"👉 Copy me"**: one real, representative **instance** (the default/base combination) in a
-   centered box with a soft shaded background (`{0.976, 0.976, 0.976}`, no border) — the single
-   "drag this into your design" example.
-3. **"🛠 Variants"**: a compact, single-axis reference — not a full cross-product. Pick the one
-   variant property that most defines the component's _scale/shape_ (e.g. `size`). Left side: a
-   shaded sidebar with a bold axis-name label (e.g. "Size") and the option names as stacked
-   pill/tag chips. Right side: one representative instance per option, side by side, in a
-   bordered white panel.
-4. **"🔒 Main components"**: the exhaustive, full cross-product reference — every remaining
-   variant property crossed together — as a single dense bordered table (shaded header row for
-   one axis' options across the top, shaded header column for the other axis' options down the
-   left, one instance per cell). This is the _locked, source-of-truth_ grid — the 🔒 emoji signals
-   "generated from the real component, don't edit cells directly."
-
-**A component with a true `inverted`/dark-context variant property crossed into the Main
-components grid gets two entirely separate top-level frames side by side on the page** — one
-light-themed ("<Component>"), one fully dark-themed ("Inverted <Component>") — not a single
-frame with a two-table split (an earlier draft tried that for `ds-spinner`; replaced on
-request). Build the light frame first as the normal template, then `outer.clone()` it as the
-base for the dark frame (keeps both structurally identical), remove the non-matching
-Normal/Inverted half of the Main components table from each, and re-theme the clone: frame fill
-→ `🌐 Global/🌈 Color/Primary/5` (a real token — not `Alias/Text/Color/Primary` reused
-presentationally, which an earlier draft used before being corrected on request; also confirm
-the exact Global step number with the user rather than guessing — `5` vs `6` is a real
-difference and both exist as separate tokens), title/lead/headings/dividers → white,
-kicker/wordmark → a dimmer literal light grey (`{0.8, 0.8, 0.85}`), and the "View in Storybook ↗"
-link → white with a 2px underline (`setRangeTextDecoration(..., 'UNDERLINE')` +
-`setRangeTextDecorationThickness(..., {value: 2, unit: 'PIXELS'})` — the Normal frame's link
-stays the default literal link-blue, no underline).
-
-**The "Copy me" box and "Variants" panel inside the dark frame must use real `inverted=true`
-instances** (`instance.swapComponent(...)` from the default `inverted=false` variant to the
-matching `inverted=true` one — preserves existing overrides like a "Show X" boolean or
-placeholder text, no need to reapply them) — an earlier draft left them on the normal variant,
-which is wrong: a dark-themed documentation frame exists specifically to demonstrate the
-inverted appearance. Once swapped, **the box/panel fill must also go dark**
-(`🌐 Global/🌈 Color/Primary/6`, one step darker than the frame's own background for subtle
-definition) — leaving them light makes the now-white inverted glyph/text nearly invisible. This
-also surfaces a real bug to check for: **does the master component's own `inverted=true`
-variant actually have every text element recolored for dark-context contrast?** On `ds-spinner`,
-the `Label` text inside every `inverted=true` variant was still the normal navy color — never
-fixed at the component level, only ever patched via one-off instance overrides in an earlier,
-now-superseded documentation layout, so the real defect went unnoticed until something finally
-used the true master variant directly. Fix any such gap **in the master component**, not with
-another per-instance override — it must propagate to every real use of that variant, not just
-the documentation page.
-
-Position the clone to the right of the original (`x: outer.x + outer.width + 40`). Always
-re-run the real master overlay alignment against both tables' new positions afterward —
-cloning/restructuring shifts both.
-
-**Every cell/example everywhere in this layout is a Figma `INSTANCE`**
-(`variant.createInstance()`) of the finished component-set variant — never the variant node
-itself. If the component has any boolean "Show X" property (per Phase 2's conditional-render
-rule), override it to `true` on documentation instances for readability, while the component
-set's own default stays whatever matches code. Fixing the main component later automatically
-propagates to every documentation instance; editing documentation instances directly does not.
-
-**The real master component set is never shown as a visible section of the documentation.** It
-must still exist (Phase 3's output), fully intact with all variant properties and component
-properties, but parked off-canvas (e.g. `y: -3000` on the same page) so it never visually
-overlaps or duplicates the documentation layout above. Confirm this explicitly if the first
-build accidentally leaves the master set at a colliding position (e.g. `x:0, y:0` overlapping
-the header) — checked via a page-level screenshot, not just the header's own node screenshot
-(which won't reveal an overlap from a sibling node).
-
-**Lock every real master variant placed in a Main components grid** (`node.locked = true`)
-once its overlay alignment is confirmed correct — prevents a human from accidentally dragging
-it out of alignment in the Figma UI. Locking doesn't block this skill's own scripted
-repositioning, only UI selection/dragging — if a later layout change requires realigning a
-locked overlay (per the "shifted table" rule below), unlock, reposition, then re-lock.
-
-**Critical pitfall — never move a variant out of its `COMPONENT_SET`.** A `COMPONENT` that is a
-variant can only be a direct child of its own `COMPONENT_SET` — moving it into any other frame
-(e.g. trying to place the "real" variant directly into a documentation table cell) silently
-dissolves the set once it's emptied (Figma auto-removes an empty `COMPONENT_SET`), stripping the
-variant-property grouping from every remaining child. Nothing is actually deleted (existing
-instances keep resolving correctly, property definitions survive on each now-standalone
-component with new IDs) but the set's `color`/`size`-style variant axes are gone until manually
-restored: recombine via `figma.combineAsVariants()`, then **manually rename each child back to
-`key=value, key2=value2` format** — the round-trip can leave children as bare `Name/x/y`-style
-names with no parsed variant properties, which silently produces empty-string property keys
-(`"=default, =base"`) if left as-is. Always use `variant.createInstance()` for placement anywhere
-outside the set, never the variant node directly, even when the explicit goal is "show the real
-component."
-
-**Known pitfall — `figma.createAutoLayout()` defaults to a solid white fill.** Clear it
-explicitly (`fills = []`) on every purely-structural wrapper frame — only intentionally-chromed
-frames (e.g. the "Main components" table, the "Copy me" box) should keep a fill. A blanket
-fill-clear across a frame's children can also hit sibling **text** layers that need their own
-color kept intact (e.g. row/column header labels) — clear wrapper frames specifically, not every
-child indiscriminately.
-
-**Known pitfall — awaited promises**: text-fill fixes on instance children (e.g. recoloring a
-label) must be `await`ed in a loop, never fire-and-forget (`promise.then(...)` without awaiting
-it before the script returns or before `screenshot()` is called) — it may or may not land in
-time, non-deterministically. Confirmed by observing this fail silently on one build and succeed
-by luck on another with the exact same fire-and-forget pattern.
-
-Iterate on the layout with the user before considering this phase done — the exact structure is
-something to confirm visually (screenshot checkpoints), same as the variant matrix itself in
-Phase 3.
+**This is a fixed template, not a per-component judgment call — full spec in
+[`DOCUMENTATION-TEMPLATE.md`](DOCUMENTATION-TEMPLATE.md), read it before starting Phase 3b.**
+That file also names the canonical live reference frames (`ds-spinner`'s documentation page) to
+inspect via `get_metadata` before building — don't rebuild the structure from prose alone each
+time; mirror the real, already-correct nodes. Summary of what it covers: page background, outer
+frame chrome, the four-section layout (Header / Copy me / Variants / Main components), the
+light+dark two-frame split for an `inverted` axis, instance-vs-master-set rules, and every
+known pitfall (fill-clearing, awaited promises, locked-overlay realignment, variant-set
+dissolution, cell-label centering).
 
 ### Phase 4 — Review against visual regression screenshots
 
@@ -440,6 +312,8 @@ here as prose, below the YAML block.
 - [`code-to-figma.md`](../../../code-to-figma.md) — the full plan and the reasoning behind every
   scope decision in this skill.
 - [`CONVENTIONS.md`](CONVENTIONS.md) — accumulated mapping heuristics across components.
+- [`DOCUMENTATION-TEMPLATE.md`](DOCUMENTATION-TEMPLATE.md) — full Phase 3b documentation-page
+  spec, plus the canonical live Figma reference to inspect before building.
 - [`packages/tokens/CONTEXT.md`](../../../packages/tokens/CONTEXT.md) — token layers and naming.
 - [`packages/core/CONTEXT.md`](../../../packages/core/CONTEXT.md) — component categories and
   structure.
