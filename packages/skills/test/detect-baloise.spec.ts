@@ -335,6 +335,38 @@ describe('detectBaloise', () => {
     })
   })
 
+  it('classifies the split utilities bundle (css/utilities/all) as bootstrap', async () => {
+    const root = createScratchDir()
+    write(root, 'package.json', JSON.stringify({ dependencies: { '@baloise/ds-styles': '19.11.0' } }))
+    write(root, 'src/styles.scss', "@use '@baloise/ds-styles/css/utilities/all';\n")
+
+    const result = await detectBaloise(root, { readDistTags: distTags('20.0.0') })
+
+    expect(result.status).toBe('ready')
+    expect(result.imports).toContainEqual({
+      file: 'src/styles.scss',
+      line: 1,
+      snippet: "@use '@baloise/ds-styles/css/utilities/all';",
+      kind: 'bootstrap',
+    })
+  })
+
+  it('classifies the all-in-one bundle (css/all) as bootstrap', async () => {
+    const root = createScratchDir()
+    write(root, 'package.json', JSON.stringify({ dependencies: { '@baloise/ds-styles': '19.11.0' } }))
+    write(root, 'src/styles.scss', "@import '@baloise/ds-styles/css/all';\n")
+
+    const result = await detectBaloise(root, { readDistTags: distTags('20.0.0') })
+
+    expect(result.status).toBe('ready')
+    expect(result.imports).toContainEqual({
+      file: 'src/styles.scss',
+      line: 1,
+      snippet: "@import '@baloise/ds-styles/css/all';",
+      kind: 'bootstrap',
+    })
+  })
+
   it('stops with an error when the latest dist-tag is missing', async () => {
     const root = createScratchDir()
     write(root, 'package.json', JSON.stringify({ dependencies: { '@baloise/ds-core': '19.10.2' } }))

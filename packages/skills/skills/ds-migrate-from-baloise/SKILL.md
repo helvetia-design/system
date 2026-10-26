@@ -41,16 +41,28 @@ If `status` is `ready`, show the detected framework, package manager, version, a
 1. Add each entry in `aliases` to the `dependencies` object of `packageJsonPath` (relative to `<project-root>`). Create `dependencies` if it is missing. Do not change or remove existing keys. If an `@helvetia-design/*` key is already present, leave its value unchanged and report both the existing value and the value from the JSON.
 2. From `<project-root>`, run `installCommand` exactly (`pnpm install`, `yarn install`, or `npm install`). Do not add extra package arguments.
 3. Insert the new CSS/JS import next to the existing `@baloise/*` one:
-   - First handle `@baloise/ds-styles/css/*.css` partial imports (`normalize.css`, `font.css`, `structure.css`, `core.css`, `utilities.css`), per the rules below. Then apply the generic bootstrap rule to every remaining `bootstrap` import.
-   - `normalize.css`: comment out the original line in place (wrap it as `/* @import '@baloise/ds-styles/css/normalize.css'; */`, or the equivalent for its syntax). Immediately below the commented line, insert both:
+   - When inserting or replacing a SCSS line, match the at-rule of the line it sits beside or replaces (`@import` or `@use`) — never hardcode `@import` for a project wired with `@use`.
+   - First handle these `@baloise/ds-styles/css/*` forms (with or without the `.css` extension), per the rules below. Then apply the generic bootstrap rule to every remaining `bootstrap` import. The real top-level files in the v19 line are `normalize`, `font`, `structure`, `core`, `basic`, `mixins`, `baloise-design-system`, and `all` — there is no top-level `utilities` file.
+     - `normalize`
+     - `font`, `structure`, `core`
+     - The Baloise **utilities** line, in any of its real forms: `css/utilities/all`, one of the nine category files under `css/utilities/` (`background`, `border`, `elevation`, `flex`, `grid`, `interaction`, `layout`, `sizing`, `spacing`, `typography`), or the bundled `css/all` (see below)
+   - `normalize`: comment out the original line in place (wrap it as `/* @import '@baloise/ds-styles/css/normalize.css'; */`, or the equivalent for its syntax). Immediately below the commented line, insert both, using the matching at-rule:
 
      ```scss
      @import '@helvetia-design/tokens/css/base';
      @import '@helvetia-design/styles/css/design-system';
      ```
 
-   - `font.css`, `structure.css`, `core.css`: leave these three lines unchanged and keep them. Immediately above the first of the three (or, if `normalize.css` was on the line directly above, immediately below the two new imports), insert one comment noting they must be removed manually once the migration is verified, e.g. `/* TODO: remove these legacy Baloise imports once the Helvetia migration is verified */`. Insert that comment once, not once per line.
-   - `utilities.css`: do not duplicate this line. Replace it in place with `@import '@helvetia-design/styles/css/utilities';` (or the equivalent local form for the project's `framework`). This avoids both utility stylesheets being loaded and clashing.
+   - `font`, `structure`, `core`: leave these three lines unchanged and keep them. Immediately above the first of the three (or, if `normalize` was on the line directly above, immediately below the two new imports), insert one comment noting they must be removed manually once the migration is verified, e.g. `/* TODO: remove these legacy Baloise imports once the Helvetia migration is verified */`. Insert that comment once, not once per line.
+   - Baloise **utilities** line (`css/utilities/all`, any of the nine category files, or `css/utilities/<name>`): do not duplicate this line. Replace it in place with the `@helvetia-design/styles/css/utilities` equivalent, using the matching at-rule or the equivalent local form for the project's `framework`. This avoids both utility stylesheets being loaded and clashing.
+   - Bundled `css/all`: this one file already contains normalize + font + structure + core + utilities together, so — unlike `font`/`structure`/`core` — it cannot be left in place: that would duplicate the utility classes too. Treat it like `normalize`: comment out the original line in place, and immediately below it insert all three, using the matching at-rule:
+
+     ```scss
+     @import '@helvetia-design/tokens/css/base';
+     @import '@helvetia-design/styles/css/design-system';
+     @import '@helvetia-design/styles/css/utilities';
+     ```
+
    - For every other `imports` entry with `kind` `bootstrap`, add the `@helvetia-design` equivalent immediately below that line. Leave the original line unchanged.
    - When the line is HTML, CSS, or a side-effect import, duplicate the line. In the duplicate only, apply this package map: `@baloise/ds-core` → `@helvetia-design/core`, `@baloise/ds-react` → `@helvetia-design/react`, `@baloise/ds-angular` → `@helvetia-design/angular`, and `@baloise/ds-styles` → `@helvetia-design/styles`.
    - When the line is JSON, such as an `angular.json` styles entry, insert a sibling string with that same package replacement. Keep the file valid JSON. Do not copy surrounding keys, and do not duplicate the whole file when the match is only one string.
@@ -65,11 +77,13 @@ If `status` is `ready`, show the detected framework, package manager, version, a
      <script type="module" src="node_modules/@helvetia-design/core/dist/design-system/design-system.esm.js"></script>
      ```
 
-   - Local form when `framework` is `react` or `angular`:
+   - Local form when `framework` is `react` or `angular`, inserted into a `.ts`/`.tsx`/`.js`/`.jsx` file:
 
      ```ts
      import '@helvetia-design/styles/css/design-system'
      ```
+
+   - Local form when the target file is `.scss`/`.sass` instead (regardless of `framework`): use `@import '@helvetia-design/styles/css/design-system';`, or `@use` if that is the at-rule already used by Baloise lines in that same file.
 
 4. Report the resolved `version`, the aliases written, the install command, and every file touched.
 5. Stop. Do not run `git add` or `git commit`. Leave every change unstaged for the consumer to review.
