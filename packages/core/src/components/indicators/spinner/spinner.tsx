@@ -239,7 +239,7 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
     }
 
     // Fallback to component props
-    return this.inverted ? '#ffffff' : '#151f6d'
+    return this.inverted ? '#ffffff' : '#000d6e'
   }
 
   /**

@@ -1551,7 +1551,7 @@ export namespace Components {
          */
         "svg": string;
         /**
-          * If `true` the icon is rotated 180deg
+          * If `true`, rotates the icon — the angle depends on `name`: 225deg for `plus` (turns it into an "×"), 180deg for `caret-down`/`caret-up`. Has no visual effect for any other icon name.
           * @default false
          */
         "turn": boolean;
@@ -6762,7 +6762,7 @@ declare namespace LocalJSX {
          */
         "svg"?: string;
         /**
-          * If `true` the icon is rotated 180deg
+          * If `true`, rotates the icon — the angle depends on `name`: 225deg for `plus` (turns it into an "×"), 180deg for `caret-down`/`caret-up`. Has no visual effect for any other icon name.
           * @default false
          */
         "turn"?: boolean;

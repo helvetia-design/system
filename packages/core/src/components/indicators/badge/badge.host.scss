@@ -84,6 +84,12 @@
   }
 }
 
+#badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_badge-gap);
+}
+
 /**
   * Variants and States
   * --------------------------------

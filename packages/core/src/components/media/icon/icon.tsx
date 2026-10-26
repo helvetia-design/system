@@ -96,7 +96,8 @@ export class Icon implements DsComponentInterface, DsConfigObserver {
   readonly inverted: boolean = false
 
   /**
-   * If `true` the icon is rotated 180deg
+   * If `true`, rotates the icon — the angle depends on `name`: 225deg for `plus` (turns it into
+   * an "×"), 180deg for `caret-down`/`caret-up`. Has no visual effect for any other icon name.
    */
   @Prop()
   @Type('boolean')
