@@ -20,6 +20,69 @@ Load `figma-use` alongside this skill before any `use_figma` call (mandatory per
 rule). Load `figma-generate-library` for its guidance on binding values to Figma variables and
 reusing existing components, since the same discipline applies here.
 
+## Workflow at a glance
+
+```mermaid
+flowchart TD
+    classDef code fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef figma fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
+    classDef human fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef phase fill:#f8fafc,stroke:#64748b,color:#0f172a,font-weight:bold
+
+    Start(["Start: user names a component"]):::phase --> P1G
+
+    subgraph P1G["Phase 1 — Analyze"]
+        direction LR
+        P1a["Read component code<br/>.tsx / .host.scss"]:::code --> P1b["Resolve design tokens<br/>(read-only Figma variables)"]:::figma
+        P1b --> P1c["Write draft<br/>name.figma.md"]:::code
+    end
+
+    P1G --> P2G
+
+    subgraph P2G["Phase 2 — Propose grouping"]
+        direction LR
+        P2a["Read CONVENTIONS.md"]:::code --> P2b["Draft variant grid sketch<br/>in name.figma.md"]:::code
+        P2b --> P2c{{"User confirms<br/>the mapping"}}:::human
+        P2c -->|approved| P2d["Optional: append a new<br/>rule to CONVENTIONS.md"]:::code
+    end
+
+    P2G --> P3G
+
+    subgraph P3G["Phase 3 — Build"]
+        direction LR
+        P3a["Create Figma page<br/>+ session"]:::figma --> P3b["Build ONE variant<br/>combination"]:::figma
+        P3b --> P3c{{"User reviews<br/>screenshot checkpoint"}}:::human
+        P3c -->|approved| P3d["Fan out the full<br/>variant matrix"]:::figma
+        P3d --> P3e["Write the component key<br/>back to name.figma.md"]:::code
+    end
+
+    P3G --> P3bG
+
+    subgraph P3bG["Phase 3b — Documentation page"]
+        direction LR
+        P3ba["Read DOCUMENTATION-TEMPLATE.md<br/>+ inspect the canonical live page"]:::code --> P3bb["Build Header / Copy me /<br/>Variants / Main components"]:::figma
+    end
+
+    P3bG --> P4G
+
+    subgraph P4G["Phase 4 — Review"]
+        direction LR
+        P4a["Capture Figma<br/>screenshots"]:::figma --> P4b["Compare against real<br/>*.visual.play.ts-snapshots PNGs"]:::code
+        P4b --> P4c{{"User judges<br/>the findings"}}:::human
+        P4c -->|real bug found| P4d["Fix code / code docs"]:::code
+    end
+
+    P4G --> Done(["Done: component live in Figma"]):::phase
+```
+
+🔵 **code** — reads or writes a file in this repo (`.tsx`/`.scss`, `name.figma.md`, `CONVENTIONS.md`, test snapshots).
+🟣 **figma** — a `use_figma`/`get_screenshot` call against the live Figma file.
+🟡 **human** — a required stop-and-wait checkpoint; never assume approval and keep going.
+
+The two human checkpoints (Phase 2's mapping confirmation, Phase 3's first-variant screenshot) are
+the only places this skill pauses for a decision — everything else is read/write work it does on
+its own between them.
+
 ## Prerequisites
 
 - `figma.config.json` at the repo root must have a real `componentLibraryFileKey` (not the
@@ -151,10 +214,72 @@ reusing existing components, since the same discipline applies here.
      booleans.
    - Anything ambiguous (doesn't fit the rules above cleanly) is flagged explicitly rather than
      guessed.
-3. Write the proposed grouping into `<name>.figma.md` and present it to the user for review.
-4. **Stop and wait for the user to confirm or edit** the mapping directly in the file before
+3. **Sketch the resulting variant grid itself, not just the property list** — how many axes
+   there are determines the Figma layout, and the user should be able to picture the actual grid
+   before Phase 3 builds anything. Include this sketch (plain ASCII, in the same draft) alongside
+   the proposed grouping:
+   - **2 axes (the normal case)**: one simple grid — one axis across the header row, the other
+     down the header column, e.g. `state` (rows: default/hover/active/disabled/...) × a
+     same-layers prop like `size` (columns: sm/base). One cell per combination, same shape as
+     Phase 3b's "Main components" table:
+     ```
+                sm        base
+     default  [cell]    [cell]
+     hover    [cell]    [cell]
+     active   [cell]    [cell]
+     ```
+   - **3 axes**: don't try to flatten three axes into one table. Pick the two axes with the most
+     "shape" similarity (state × size is the common pair) as the one grid's rows/columns, and let
+     the third same-layers axis (e.g. `color`) repeat the whole grid once per option — one 2-axis
+     grid per color, each stacked on the same frame under its own title label naming that option:
+     ```
+     Primary
+                sm        base
+     default  [cell]    [cell]
+     hover    [cell]    [cell]
+
+     Secondary
+                sm        base
+     default  [cell]    [cell]
+     hover    [cell]    [cell]
+     ```
+   - **4+ axes, or any axis that is structural rather than same-layer** (different layers/shape
+     per option, not just a different token on an identical shape — same test as the enum-prop
+     rule above, and the same treatment `inverted` already gets in Phase 3b): stop stacking grids.
+     That axis is a top-level split signal, not another grid dimension — split it into separate
+     top-level components (Instance Swap), and sketch each split component's own grid separately,
+     each with its own frame/title, same as `inverted`'s light/dark two-frame layout.
+   - State which case applies to this component (2-axis / repeated-grid / top-level-split) before
+     moving to step 4's approval ask, so the user is confirming an actual layout, not just a
+     property list.
+   - **Worked example — `ds-spinner`'s real, confirmed layout** (see `spinner.figma.md`'s "Major
+     rebuild — Main components split into two titled grids" section): it has 4 axes —
+     `variation` (logo/circle), `size` (sm/base), `labelPosition` (right/bottom), `inverted`
+     (false/true). `inverted` is structural (case 3) → split into two top-level component sets,
+     `Spinner/Primary` and `Spinner/Inverted`, each on its own full frame. Within each frame, 3
+     axes remain → `variation` is the repeated-grid axis (case 2): one titled grid per
+     `variation` value, each grid being a 2-axis table (case 1) of `labelPosition` (rows:
+     Bottom/Right) × `size` (columns: Base/SM):
+     ```
+     Spinner/Primary                        Spinner/Inverted
+     Logo                                   Logo
+                Base      SM                           Base      SM
+     Bottom   [cell]    [cell]              Bottom   [cell]    [cell]
+     Right    [cell]    [cell]              Right    [cell]    [cell]
+
+     Circle                                 Circle
+                Base      SM                           Base      SM
+     Bottom   [cell]    [cell]              Bottom   [cell]    [cell]
+     Right    [cell]    [cell]              Right    [cell]    [cell]
+     ```
+     This is the end state after several rebuild iterations on the real component — sketching it
+     this way up front in Phase 2 is what lets the user catch "2 titled grids, not 1 table" before
+     Phase 3 builds anything, rather than discovering it only after a build-review-rebuild cycle.
+4. Write the proposed grouping (and grid sketch) into `<name>.figma.md` and present it to the
+   user for review.
+5. **Stop and wait for the user to confirm or edit** the mapping directly in the file before
    proceeding to Phase 3. Do not proceed on an assumed approval.
-5. Once confirmed, propose any new heuristic worth keeping (e.g. a grouping decision that didn't
+6. Once confirmed, propose any new heuristic worth keeping (e.g. a grouping decision that didn't
    fit an existing `CONVENTIONS.md` rule) as an addition to `CONVENTIONS.md`. Show the user the
    exact diff and get approval before writing it — never auto-append.
 
@@ -207,13 +332,14 @@ set. Build this after Phase 3 confirms the variant matrix looks right, before Ph
 
 **This is a fixed template, not a per-component judgment call — full spec in
 [`DOCUMENTATION-TEMPLATE.md`](DOCUMENTATION-TEMPLATE.md), read it before starting Phase 3b.**
-That file also names the canonical live reference frames (`ds-spinner`'s documentation page) to
-inspect via `get_metadata` before building — don't rebuild the structure from prose alone each
-time; mirror the real, already-correct nodes. Summary of what it covers: page background, outer
-frame chrome, the four-section layout (Header / Copy me / Variants / Main components), the
-light+dark two-frame split for an `inverted` axis, instance-vs-master-set rules, and every
-known pitfall (fill-clearing, awaited promises, locked-overlay realignment, variant-set
-dissolution, cell-label centering).
+That file names `ds-close`'s documentation pages as the canonical live reference frames to inspect
+via `get_metadata` before building — don't rebuild the structure from prose alone each time;
+mirror the real, already-correct nodes. Summary of what it covers: page background, outer frame
+chrome, the four-section layout (Header / Copy me / Variants / Main components), the light+dark
+two-frame split for an `inverted` axis, the N-split-components pattern for open-ended
+content-selection props, instance-vs-master-set rules (including the `ABSOLUTE`-auto-layout-child
+mechanism for placing the real master set on the Main components grid), and every known pitfall,
+folded inline into the section each one belongs to.
 
 ### Phase 4 — Review against visual regression screenshots
 

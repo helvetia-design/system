@@ -1,25 +1,37 @@
 # icon → Figma mapping
 
 ```yaml
-figmaComponentKey: null # superseded — 79 standalone components (Icon/<name>), not one set; see below
+figmaComponentKey:
+  '2029:8391' # SUPERSEDED AGAIN — single "Icon" wrapper COMPONENT_SET (size x
+  # color, 30 variants), each variant containing a nested instance bound to an INSTANCE_SWAP
+  # component property "Icon#2029:0" for picking which of the 79 glyphs to show. See the
+  # "Major rebuild — single wrapper + Instance Swap glyph library" section below. This replaces
+  # BOTH earlier structures (the original single 79-variant set, AND the 79-top-level-sets-of-30
+  # hard-rule structure) — third and current architecture for this component.
+figmaGlyphLibrary:
+  Icon/<name> # 79 standalone, single-vector COMPONENTs (not sets), parked
+  # off-canvas, used only as Instance Swap targets for the wrapper's "Icon" property — see below.
 figmaPage: Icon
 figmaCollection: Design Tokens
 
 props:
   - name: name
     type: string (open icon registry, not a closed enum in code)
-    figmaProperty: null
-    figmaPropertyType: top-level-component-split
+    figmaProperty: 'Icon#2029:0'
+    figmaPropertyType: instance-swap-property
     figmaOptions: [all 79 icons in packages/assets/src/icons/svg, see list below]
     note: >
-      SUPERSEDED — originally the sole crossed Figma variant property on one shared 79-member
-      component set. Per user request (same TapTap Instance Swap pattern applied to
-      `ds-spinner`'s `inverted`), split into 79 separate top-level components, each named
-      `Icon/<name>` (Figma's own grouping convention for the Assets panel/Instance Swap
-      picker) — a consumer picks an icon via Instance Swap, not a variant property dropdown.
-      See the "Major structural change" section below. svg/src props are still excluded from
-      the mapping entirely — they're alternate delivery mechanisms for the same SVG content
-      that `name` already represents via the icon registry; nothing to map separately.
+      SUPERSEDED TWICE. (1) Originally the sole crossed Figma variant property on one shared
+      79-member component set. (2) Per user request (TapTap Instance Swap pattern), split into
+      79 separate top-level components, each itself a 30-variant COMPONENT_SET (size x color) —
+      2,370 components total, unmaintainable. (3) CURRENT: collapsed back to a single wrapper
+      COMPONENT_SET (`figmaComponentKey` above) with `name` now an `INSTANCE_SWAP` component
+      property on that one set, pointing at a lightweight library of 79 single-vector
+      `Icon/<name>` components (not sets). The wrapper's `size`/`color` variants control a
+      nested instance of the chosen glyph; swapping the glyph preserves the wrapper's
+      resize/recolor overrides (Figma's standard override-preservation-on-swap behavior,
+      confirmed working via direct testing). See the "Major rebuild" section below for the full
+      rationale, implementation, and a real edge-case bug found and fixed along the way.
 
   - name: svg
     type: string
@@ -39,8 +51,9 @@ props:
     figmaProperty: size
     figmaPropertyType: variant
     note: >
-      SUPERSEDED — was an instance-override (no crossed variant) before the hard-rule change
-      below. Now a real crossed variant property on each of the 79 per-icon component sets.
+      Still a real crossed variant property — unaffected in kind by the wrapper rebuild, just
+      relocated from 79 duplicated copies (one per icon's own set) down to a single shared
+      definition on the one "Icon" wrapper set.
 
   - name: color
     type: enum
@@ -50,8 +63,8 @@ props:
     figmaProperty: color
     figmaPropertyType: variant
     note: >
-      SUPERSEDED — was an instance-override (no crossed variant) before the hard-rule change
-      below. Now a real crossed variant property on each of the 79 per-icon component sets.
+      Still a real crossed variant property — same note as `size` above, now a single shared
+      definition instead of 79 duplicates.
 
   - name: inline
     type: boolean
@@ -613,3 +626,285 @@ complete real 5×6 size×color variant matrix, anchored in place (not parked). "
 compact 6-icon name sample, matching the originally-intended "Variants = compact single-axis
 sample, Main components = exhaustive structural reference" split, just with the exhaustiveness now
 expressed per-icon instead of as one shared flat grid.
+
+### Follow-up fix — component set frame too narrow, clipping Danger/Warning columns
+
+User flagged the Danger and Warning columns were missing/cut off in every icon's grid. Root
+cause: each `Icon/<name>` `COMPONENT_SET`'s own frame (`clipsContent: true`) had kept its stale
+pre-overlay size from an earlier internal layout (observed values varied wildly per icon, e.g.
+`alert-triangle` was `184×1780`, `answer` was `40×1780`) — the earlier overlay step repositioned
+each variant child's `x`/`y` correctly, but never resized the set's own frame to match, so
+anything past the old (too-narrow) width or outside the old (unrelated) height got silently
+clipped by the frame's `clipsContent`.
+
+**Fix**: resized every one of the 79 sets' frames to `288×220` (`6 columns × 48px` ×
+`5 rows × 44px` — the exact grid dimensions used by the overlay/alignment step) via
+`set.resize(288, 220)`, in one batch across all 79. Verified with a bounds check (`max(child.x +
+child.width)` / `max(child.y + child.height)` against the new frame size, `min(child.x/y) >= 0`)
+across all 79 sets — zero overflow/clipping remaining. `get_screenshot` on individual table nodes
+still showed empty cells post-fix, consistent with the already-documented composite-overlay
+screenshot unreliability for this exact pattern (same cause, not a regression) — verified
+correctness via the bounds check instead, not a screenshot.
+
+### Follow-up — "Variants" expanded from 6 sample icons to all 79
+
+User asked for every icon name to appear in the "Variants" section (not just the 6-icon sample
+from the earlier rebuild) — one instance + name label per icon, same visual pattern as the
+existing 6 examples (`edit`, `user`, `plus`, `search`, `settings`, `trash`), just covering the
+full icon set.
+
+**Implementation**:
+
+- Converted "Variants row" (`1901:8100`) from a single fixed-width `HORIZONTAL` row (which only
+  fit ~6 items before running out of its 820px width) to a **wrapping** auto-layout:
+  `layoutWrap: 'WRAP'`, `primaryAxisSizingMode: 'FIXED'` (width stays 820, matching the rest of
+  the page's content width), `counterAxisSizingMode: 'AUTO'` (height hugs to however many rows
+  the wrap produces), `itemSpacing: 16`, `counterAxisSpacing: 16`.
+- For each of the 73 icons not already present, built the identical structure used by the
+  existing 6 examples: a `VERTICAL` auto-layout frame (`example-<name>`, hug/hug, 6px item
+  spacing, centered both axes) containing an `INSTANCE` of that icon's `size=base, color=primary`
+  default variant (resized to 16×16) plus a `label` text node (`Baloise Create Text` Regular,
+  12px, reusing the existing label's own fill object — a grey bound to the same Figma variable as
+  the other 6 — rather than rebuilding the token binding from scratch).
+- Built in 5 batches of 13–15 icons per `use_figma` call. Final count check
+  (`variantsRow.children.length`) confirmed exactly 79 after the last batch.
+- Verified via `get_screenshot` on the row itself (not a nested overlay node, so the known
+  composite-overlay screenshot unreliability doesn't apply here) — rendered correctly as 7 wrapped
+  rows of up to 12 icons each, every icon showing its correct glyph and name label, no missing or
+  duplicate entries.
+
+### Follow-up fix — Main components grids misaligned after Variants row grew
+
+Expanding "Variants" from 6 to 79 icons grew that row's height substantially (43px → 373px,
+wrapping into 7 lines), which — same root cause already documented above ("a real master variant
+overlaid on a table/grid ... does not move if anything above it in the same auto-layout stack
+changes size") — pushed every "Main components" per-icon block further down the page without
+moving the already-overlaid real `COMPONENT_SET`s, which stayed at their old absolute
+coordinates. Result: every icon's real variants rendered offset from (and overlapping into) the
+wrong block's grid/title.
+
+**Fix**: re-ran the same `alignOne` overlay routine from the original build (recomputing each
+block's current `table.absoluteTransform`, not reusing any cached position) across all 79 icons
+in one pass. Verified via position math (not screenshot, same known tooling limitation for this
+overlay pattern) — `size=sm, color=primary` variant position checked against its grid's current
+cell bounds for `alert-triangle`, `alert`, `answer`, and `youtube` (first few and last), all
+within bounds. Also checked each block's title-to-table gap (consistently 6px across sampled
+blocks) to confirm no residual visual collision from the old misalignment.
+
+**Generalizes the existing "recompute overlay after layout change" rule**: this wasn't a heading
+font-size change (the prior trigger) but the same underlying cause — any edit to content that
+sits _above_ an overlaid table in the page's auto-layout stack requires re-running the overlay
+alignment afterward, not just heading-size edits specifically.
+
+### Follow-up — made overlaid sets "sticky" by reparenting into their own table frame
+
+After the second manual realignment pass, user asked whether the real master `COMPONENT_SET`s
+could be made to auto-follow their grid instead of needing a manual re-align every time something
+above them in the page's auto-layout stack changes height (as happened twice: once for a heading
+font-size change, once for the Variants row growing from 6 to 79 icons).
+
+**Root cause of the fragility**: every overlaid set was a **page-level sibling**, positioned with
+one-time page-absolute `x`/`y` coordinates computed from its table's `absoluteTransform` at build
+time. Nothing tied it structurally to the table it was visually sitting on — if the table moved
+(because content above it in the page's vertical auto-layout stack changed height), the set simply
+stayed where it was, requiring a full recompute-and-reapply pass.
+
+**Fix — reparent each set as a real child of its own table frame**, instead of a page-level
+sibling positioned to merely _look_ aligned:
+
+- `table.appendChild(set)` — moves the whole `COMPONENT_SET` (not a variant child — reparenting
+  the entire set is safe; the existing "never move a variant child out of its set" rule is about
+  detaching one variant from its set, not relocating the set itself) into the table frame (a
+  `VERTICAL` auto-layout frame with children `header-row`, `row-SM`...`row-XL`).
+- `set.layoutPositioning = 'ABSOLUTE'` — opts it out of the table's auto-layout flow so it can
+  still use free `x`/`y`, now **relative to the table**, not the page.
+- `set.x = 56` (`sizeLabelColW`), `set.y = 24` (`headerH`) — same offset values used throughout
+  this build, just now interpreted as local coordinates instead of a page-absolute calculation.
+  The 30 variant children's own `x`/`y` (relative to the set) needed no changes at all — only the
+  set's own position relative to its new parent.
+- No change needed to z-order logic beyond confirming the set is still the table's _last_ child
+  (same requirement as the old page-level z-order rule, just scoped to the table instead of the
+  page) — `table.appendChild(set)` already guarantees last-child placement.
+- Ran in 4 batches across all 79 icons. Final verification pass checked, per icon: the set is
+  found as a child inside its table (not still at page level), `layoutPositioning === 'ABSOLUTE'`,
+  is the table's last child, its `size=sm, color=primary` variant's absolute position falls within
+  the expected first-cell bounds, and it's still locked — **zero problems across all 79**.
+
+**Added benefit, not the original goal**: this also fixed the long-standing composite-overlay
+`get_screenshot` unreliability documented throughout this file and `CONVENTIONS.md` (`ds-spinner`
+and this file's own earlier passes) — screenshots of individual table nodes, which previously
+showed empty cells for a page-level sibling overlay, now render completely and correctly, because
+the overlaid content is a genuine descendant of the screenshotted subtree rather than a
+cross-branch composite. Spot-checked `settings` and `youtube` post-reparent — both rendered fully
+on the first screenshot attempt.
+
+**This generalizes beyond icon**: for any future component whose documentation overlays a real
+master variant/set onto external table chrome (the `ds-badge`/`ds-spinner`/`ds-icon` "Main
+components" pattern), prefer reparenting the master directly into the table frame as an
+absolute-positioned child from the start, rather than positioning it as a page-level sibling with
+page-absolute coordinates — captured as a new rule in `CONVENTIONS.md`.
+
+### Follow-up — Variants rebuilt as a fixed 8-column grid with equal-width cells
+
+The 79-icon "Variants" sample (previous section) used `layoutWrap: 'WRAP'` with each column
+hugging its own label width — this produced a ragged, unevenly-wrapping layout (varying items per
+row depending on label length) rather than a clean grid. User asked for a fixed 8-per-row grid
+with every column the same width, plus top/bottom padding on the card (it only had left/right
+padding before).
+
+**Implementation**:
+
+- Computed a fixed column width from the card's existing content area: card width `820`, existing
+  `24px` left/right padding → `772px` content width; `8` columns with `12px` gaps between →
+  `colW = (772 - 12×7) / 8 = 86px`.
+- Converted "Variants row" (`1901:8100`, which is itself the bordered/rounded card — confirmed via
+  its own `strokes`/`cornerRadius`, not a separate wrapper frame) from `HORIZONTAL` + `WRAP` to
+  `VERTICAL`, `layoutWrap: 'NO_WRAP'`, added `paddingTop`/`paddingBottom: 24` (matching the
+  existing `24px` side padding), `itemSpacing: 24` between grid rows.
+- Created 10 new `variant-row-<n>` sub-frames (`HORIZONTAL` auto-layout, transparent fill,
+  `12px` item spacing, 8 per row except the last with the 7 leftover icons), then moved each of
+  the 79 existing `example-<name>` frames into its correct sub-row (`Math.floor(index / 8)`).
+- Resized every `example-<name>` frame to a **fixed** `86px` width
+  (`layoutSizingHorizontal: 'FIXED'`) instead of hugging its label, and set its `label` text node
+  to `textAutoResize: 'HEIGHT'` + fixed `86px` width + `textAlignHorizontal: 'CENTER'` — this lets
+  long labels (`help-customer-support`, `table-cell-merge`) wrap onto two centered lines within
+  their column instead of overflowing it, which is what makes a true fixed-width grid possible
+  despite highly variable label lengths across the 79 icons.
+- Built in 2 batches (40 + 39 icons) to keep each `use_figma` call's scope manageable.
+- **Pitfall hit**: setting `counterAxisSizingMode: 'FIXED'` on the now-`VERTICAL` row/card and
+  calling `.resize(variantsRow.width, variantsRow.height)` _before_ the new row children existed
+  (0 children at that point in the script) caused the card to auto-collapse to a near-zero hug
+  width (`182px`) despite `FIXED` mode being set — the width value read back from the node
+  mid-script wasn't yet the real target width. Fixed with an explicit final
+  `variantsRow.resize(820, variantsRow.height)` call _after_ all 79 icons were placed into their
+  sub-rows, re-asserting the intended `820px` card width. Lesson: don't trust a node's own
+  `width`/`height` as an intermediate reference value immediately after changing its sizing mode
+  mid-script, especially before its children are populated — re-assert the final fixed dimension
+  explicitly as the last step once the real content is in place.
+- Verified via `get_screenshot` on the card itself — renders as a clean 8-column grid (9 full rows
+  of 8, 1 final row of 7), consistent column alignment across all rows, wrapped labels rendering
+  correctly centered under their icons, and visible top/bottom padding matching the left/right
+  padding.
+
+## Follow-up — header rebuilt to match the pattern introduced on `ds-spinner`
+
+Same rebuild as `badge.figma.md`'s equivalent entry — see that file and
+`DOCUMENTATION-TEMPLATE.md` for the full spec. Summary: wrapped `top-bar`/`heading`/`body` into
+one `header` auto-layout frame; replaced the single `title` text with a two-line `heading`
+(`"Icon"` bold 48px + `"Main"` light 48px); restyled the link to Bold 16px underlined; bumped
+`lead` from 14px to 16px.
+
+**No overlay realignment needed afterward** — unlike Badge (and unlike Icon's own state before
+the earlier "sticky" reparenting fix), every one of the 79 `Icon/<name>` component sets is now a
+real child of its own per-icon table frame (`layoutPositioning: 'ABSOLUTE'`, relative coordinates)
+rather than a page-level sibling with page-absolute coordinates — confirmed via a stray-children
+check (`COMPONENT_SET` with `y < -1000` at the page level) returning zero results after the header
+change. This is the concrete payoff of that earlier structural fix: a header height change no
+longer requires re-running any alignment step for Icon's Main components grids, while Badge (and
+Spinner, which can't use the same fix — see `spinner.figma.md`) still do.
+
+**Note: this section describes a structure that was superseded shortly after by the "Major
+rebuild" below** — the 79 per-icon titled grids (and the 2,370 components behind them) were
+replaced by a single wrapper + Instance Swap glyph library. Left in place above for history; the
+reparenting payoff described here no longer applies to `size`/`color` (now one shared wrapper,
+see below), though the general "prefer reparenting a master into its table frame" lesson remains
+valid and was reapplied to the new wrapper's single grid.
+
+## Major rebuild — single wrapper COMPONENT_SET + Instance Swap glyph library
+
+User flagged the 2,370-component structure (79 top-level `COMPONENT_SET`s, each with its own
+30-variant `size`×`color` cross-product) as "too many variants," and proposed the standard
+real-world Figma icon-library pattern instead: **one master component that controls size and
+color, with an internal instance-swappable slot for which glyph to show** — so size/color live in
+exactly one place, and the 79 icons become a lightweight swap library rather than 79 duplicated
+30-variant structures.
+
+**New architecture**:
+
+- **79 lightweight glyph components** (`Icon/<name>`, plain standalone `COMPONENT`s, not
+  `COMPONENT_SET`s) — each just a single fill-bearing vector at the `base` (16px) reference size,
+  fill bound to `Component/Icon/Color/Primary`. Extracted by cloning each icon's existing
+  `size=base, color=primary` variant out of the old per-icon sets (not re-imported from SVG —
+  reused the already-correct, already-verified artwork). Parked off-canvas (`y: -30000`..`-29700`)
+  — these exist purely as an Instance Swap source library, never shown directly in the
+  documentation layout.
+- **One wrapper `COMPONENT_SET` named `"Icon"`** (node `2029:8391`), 30 variants
+  (`size`×`color`, same 5×6 cross-product as before, just defined once instead of 79 times).
+  Each variant contains exactly one nested `INSTANCE` of the default glyph (`Icon/alert-triangle`,
+  chosen arbitrarily as a representative shape), resized to the variant's `size` token and
+  recolored (its inner `Vector` fill rebound to the variant's `color` token) — the same
+  resize/recolor mechanism used throughout this project, just applied to a nested instance
+  instead of the component's own top-level vector.
+- **`addComponentProperty('Icon', 'INSTANCE_SWAP', defaultGlyphId)`** added once on the wrapper
+  set (returns a property key, `Icon#2029:0`), then `componentPropertyReferences = {
+mainComponent: 'Icon#2029:0' }` set on every one of the 30 variants' nested instances — this
+  exposes a single "Icon" dropdown on every instance of the wrapper, letting a consumer pick any
+  of the 79 glyphs via Figma's native Instance Swap picker, independent of the `size`/`color`
+  variant they're on.
+
+**Why this works (and was verified, not assumed)**: Figma preserves per-instance overrides
+(resize, fill rebinds) across an Instance Swap as long as the overridden node has a
+name-matching counterpart in the newly-swapped component. Tested directly: created an instance
+of `size=lg, color=danger`, swapped its `Icon` property from the default glyph to `Icon/user`,
+and confirmed the nested instance kept `32×32` sizing and the Danger color binding
+(`VariableID:137:1453`) — the swap only changed _which glyph_, not the size/color applied to it.
+
+**Real bug found and fixed during verification — multi-vector icons lost color-override
+propagation**: `xing` (2 direct `VECTOR` children, both named `"Vector"`) and `information`
+(2 vectors nested under groups) don't have a single name-matching node for the override system to
+target, so swapping to them only recolored one of the two paths (or none, for `information`),
+leaving the rest at their baked-in default color — visually a half-colored or wrong-colored icon.
+**Fixed** by flattening both icons' vector content into a single `VECTOR` (`figma.flatten()`)
+before adding them to the glyph library, so every one of the 79 glyphs now has exactly one
+fill-bearing node named `"Vector"`, matching the default glyph's own structure. **Second pitfall
+within that fix**: immediately after `flatten()`, the resulting vector's `fills` didn't survive
+being read back through a swapped instance (empty `fills` array on the swap target, confirmed via
+direct inspection) even though the master component's own `fills` looked correct — resolved by
+explicitly reassigning `vector.fills = JSON.parse(JSON.stringify(vector.fills))` right after
+flattening, which normalizes some internal state `flatten()` leaves behind. Re-verified both
+icons post-fix: full correct color propagation, confirmed via the same swap test. **Applies to any
+future icon with more than one top-level fill-bearing vector** — flatten before adding to any
+future instance-swap glyph library, and re-assign `fills` once after flattening as a matter of
+course, not just when something looks wrong.
+
+**Migration steps** (all verified via position math and/or explicit functional tests, not just
+visual screenshots — this grid hit the same known composite-overlay screenshot limitation
+documented throughout this file, even after reparenting):
+
+1. Extracted all 79 glyphs (cloned from each icon's `size=base, color=primary` variant,
+   detached, renamed `Icon/<name>`, parked off-canvas) — in 4 batches of ~20.
+2. Flattened `xing`/`information` and re-normalized their fills (see above).
+3. Built the 30-variant wrapper set with the nested-instance + Instance Swap property pattern
+   described above.
+4. **Swapped every existing documentation reference away from the old 2,370-component structure
+   before deleting it**: the "Copy me" instance and all 79 "Variants" row instances
+   (`instance.swapComponent(...)`) were repointed from the old per-icon sets to the new
+   lightweight glyph library — confirmed via an explicit page-wide scan (`findAll` every
+   `INSTANCE`, check `mainComponent.id` against the old container's descendant ID set) that zero
+   instances still referenced the old structure before removing it.
+5. **Deleted the entire old "Main components" structure** (the container holding all 79
+   `COMPONENT_SET`s and their 2,370 variants, plus the 79 titled per-icon grid chrome frames) —
+   confirmed removed via a follow-up existence check (not just trusting the absence of a thrown
+   error, per the standing `.remove()` silent-no-op caution).
+6. **Rebuilt "Main components" as a single 30-cell grid** (`size` rows × `color` columns, same
+   chrome conventions as `ds-badge`/`ds-close` — shaded header row/column, 2px `GreyLight`
+   borders, 8px corner radius), overlaid with the real wrapper set's 30 variants using the
+   **sticky reparenting technique** (the set is a real child of the table's `grid` frame,
+   `layoutPositioning: 'ABSOLUTE'`, not a page-level sibling) established during the earlier
+   per-icon-grid work — so this one grid auto-follows any future layout change above it, unlike
+   Badge/Spinner/Close's page-level-sibling overlays.
+7. Updated the "Main components" heading from `"🔒 Main components (79 icons)"` to
+   `"🔒 Main components"` (no longer meaningfully about "79 icons" — it's one 30-variant grid now;
+   the 79-icon reference already lives in the "Variants" section, unchanged by this rebuild).
+
+**Net result**: node count for the icon's variant structure dropped from **2,370 components across
+79 sets** to **30 + 79 = 109 components across 80 top-level entities** (1 wrapper set + 79 plain
+glyphs) — a ~95% reduction — while every documented capability (any icon name × any size × any
+color) is preserved, now expressed as Figma's standard "wrapper + instance-swap slot" icon-library
+pattern instead of a brute-force cross-product.
+
+**Template implication — supersedes the `ds-icon` "hard rule" in `CONVENTIONS.md`/
+`DOCUMENTATION-TEMPLATE.md`.** The earlier rule ("an open-ended content-selection prop with
+crossed same-layers sub-props becomes N top-level entities, each its own crossed `COMPONENT_SET`")
+is no longer the recommended default — see the updated entry in `CONVENTIONS.md` for the new
+guidance and the explicit reasoning for reversing the earlier hard rule.

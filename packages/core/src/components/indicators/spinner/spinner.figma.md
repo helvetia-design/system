@@ -568,3 +568,178 @@ to `Alias/Text/Size/4XL` (32px) while `ds-badge`'s title was actually bound to a
 token, `Component/Heading/Level/Display1/FontSize` (48px) — a leftover from badge's original
 (pre-TapTap) header build. Rebound Spinner's title to the same `Display1` variable so all three
 component pages are visually and structurally consistent.
+
+## Major rebuild — Main components split into two titled grids (Logo / Circle)
+
+User asked for the single `variation`(rows: Logo/Circle) × `size`(columns: Base/SM) table to be
+replaced with **two separate titled grids**, one per variation — mirroring the per-entity titled
+grid pattern just established for `ds-icon`: `variation` name as a heading, then a grid with
+`labelPosition` (Bottom/Right) down the rows and `size` (Base/SM) across the columns. Confirmed
+this applies to **both** the Normal and Inverted frames before starting.
+
+**Implementation** (applied identically to both frames, against their own component set —
+`Spinner/Primary` for the Normal frame, `Spinner/Inverted` for the Inverted frame):
+
+- Cloned the existing, already-proven table chrome (`.clone()` on the single `variation`×`size`
+  table — header row, 2×2 cell grid, grid lines, borders) **twice**, once per variation, rather
+  than building new chrome from scratch.
+- Relabeled each clone's two rows from `Logo`/`Circle` (their old meaning, `variation`) to
+  `Bottom`/`Right` (their new meaning, `labelPosition`) — column headers (`Base`/`SM`) stayed
+  unchanged, since `size` is still the column axis.
+- Added a title text above each cloned table (`Baloise Create Headline` Bold 14px, same navy
+  token `VariableID:137:288` already used by the row/column labels) reading `Logo` or `Circle`.
+- Replaced "Tables row"'s old single-column content with the two new titled blocks, stacked
+  vertically (`VERTICAL` auto-layout, 24px item spacing between blocks).
+- Overlaid the **real master variants** into the new grid cells, computed the same way as every
+  other overlay in this file (`cell.absoluteTransform` → centered target position → converted to
+  set-relative local `x`/`y` since the set itself stays a page-level sibling, not reparented —
+  see note below on why the icon-style "sticky reparent" fix doesn't apply here), then locked
+  each one.
+- **All 8 variants per set are now in active use** — previously only the 4
+  `labelPosition=right` variants were shown (the 4 `labelPosition=bottom` variants sat parked at
+  `y: -10000`/`-9900`). This rebuild uses every one of the 8, so there's nothing left to park;
+  confirmed via a stray-children check (`y < -1000` or `x > 1000`) on both sets — zero remaining.
+- Verified via direct position math (`cell.absoluteTransform` vs `variant.absoluteTransform`,
+  same technique as every other overlay check in this project) for all 8 cells × 2 frames = 16
+  checks — zero problems. `get_screenshot` on the new blocks showed the same known empty-cell
+  composite-overlay limitation documented throughout this file and `CONVENTIONS.md` — not a real
+  defect, confirmed via the position check instead.
+
+**Why this didn't use the icon-style "sticky" reparent fix**: `ds-icon`'s equivalent fix
+(reparenting an entire master set into the one table frame it feeds) works because each icon's
+set feeds exactly one grid. Here, a single component set's 8 variants feed **two different**
+titled grids within the same frame (4 variants into the Logo table, 4 into the Circle table) — a
+set can only be reparented as a whole, so it can't live inside two different table frames at
+once. Kept the original page-level-sibling + absolute-coordinate overlay approach instead; this
+means a future layout change above these tables will again require re-running the alignment step
+(per the existing "recompute overlay after layout change" rule), same as before this rebuild.
+
+### Follow-up fix — component set frame too large, extending past the visible grids
+
+Same root cause as `ds-icon`'s earlier clipping fix, just the opposite symptom: after splitting
+into two titled grids spread vertically (Logo table, then Circle table well below it), both
+`Spinner/Primary` and `Spinner/Inverted`'s own frames had kept their old bounding box from before
+the relayout (`519×533` and `300×200`) — stale and no longer matching the real content spread,
+making the purple selection outline balloon out far past the actual grids when selected in
+Figma's layers panel.
+
+**Fix**: computed each set's true content bounding box from its own children
+(`min(child.x/y)` / `max(child.x + child.width, child.y + child.height)`), shifted all children
+so the bounding box starts at `(0,0)` (compensating by shifting the set's own `x`/`y` by the same
+amount, so every variant's absolute page position is unchanged), then `set.resize()`'d to the
+exact content size. Both sets ended up `178×439`. Verified via the same position-math check used
+throughout this rebuild (variant position vs. its grid cell bounds) — zero problems across both
+sets — plus a bounds/overflow check confirming the new frame exactly contains its content with no
+clipping (`minX/minY: 0`, `maxX/maxY` matching the new frame size exactly).
+
+**Unrelated observation, not acted on**: while rebuilding the Inverted frame's tables, noticed
+the frame's own background/text styling currently reads as plain white/navy (matching the Normal
+frame), not the dark navy theme described earlier in this file's "Inverted frame background
+token" and "Inverted frame didn't actually show inverted examples" follow-ups. Whether this is a
+regression from a later edit or an intentional reversion wasn't investigated — out of scope for
+this rebuild, which only touched the Main components table structure, not frame-level theming.
+Flagging here in case the user wants the dark theme restored or confirmed as intentionally
+dropped.
+
+## Follow-up — verified the real Figma file against this record, fixed a drifted overlay, found a new Circle content bug
+
+Prompted by the new Phase 2 "variant grid sketch" guidance added to `SKILL.md` (2 axes → one
+grid; 3 axes → repeated titled grids; 4+/structural axes → top-level split), re-verified the live
+`⏳ Core / Indicator / Spinner` page against this file's "Major rebuild — two titled grids"
+section rather than assuming they still matched.
+
+**Found and fixed**: the "Main components" overlay (real master variants positioned as page-level
+siblings over the empty grid cells, per the established non-reparenting approach) had drifted out
+of alignment since the last recorded realignment — confirmed by a page screenshot showing the
+Logo grid's `Right` row empty on both frames, the `Circle` grid empty on both frames entirely, and
+a stray mark bleeding into the `Base` column header. Recomputed each of the 16 variants'
+(4 variants × `Spinner/Primary`, `Spinner/Inverted`, `Spinner/Circle`, `Spinner/Circle Inverted`)
+target position by centering it in its matching `labelPosition` × `size` cell's
+`absoluteTransform`.
+
+**Self-correction worth recording**: the first attempt assigned the computed absolute target
+directly to `variant.x`/`variant.y` — wrong, since a `COMPONENT_SET` child's `x`/`y` is local to
+its parent set, not page-absolute (unlike the component sets themselves, which _are_ page-level
+siblings). This silently moved every variant further off-canvas (e.g. one landed at absolute
+`x:2168, y:2184`, nowhere near its frame). A follow-up screenshot appeared to show the Inverted
+side rendering correctly regardless — a red herring caused by this file's own previously-documented
+`get_screenshot` caching/compositing limitation (same symptom: byte-identical output across a real
+change). Trusted the position math (`absoluteTransform` recheck) over the screenshot, caught the
+local-vs-absolute bug, redid it by subtracting each parent set's own absolute origin before
+assigning, and only then re-screenshotted to confirm. **Lesson for next time**: for a child of a
+`COMPONENT_SET` kept as a page-level overlay target, always convert an absolute target position to
+set-local coordinates before assignment — don't assume `node.x = absoluteValue` the way it works
+for true page-level siblings.
+
+Verified the fix two ways: (1) recomputed `absoluteTransform` on all 16 variants post-move, exact
+match to each cell's centered target; (2) a fresh screenshot showing the `Logo` grid fully
+populated and correctly cropped on both the `Main`/light and `Inverted`/dark frames. Re-locked all
+16 variants once confirmed.
+
+**New, separate, pre-existing bug found (not fixed)**: the `Circle` grid stayed visually empty on
+both frames even after the realignment was confirmed correct by position math. Isolated by
+screenshotting the `Spinner/Circle` master set directly — it renders as a blank 150×124 PNG.
+`get_metadata` on individual variants (e.g. `1808:51`, `1808:46`) shows the `Spinner Circle Mark`
+frame inside every `Spinner/Circle` and `Spinner/Circle Inverted` variant is completely empty — no
+ellipse-ring or quarter-arc children at all, despite this file's own "Phase 3 progress" section
+above describing the circle mark as "an ellipse ring (stroke bound to
+`Circle/.../Background`) plus a quarter-arc overlay (fill bound to `Circle/.../Progress`...)".
+That geometry does not exist in the file today, in any of the 8 Circle variants (4 normal + 4
+inverted). This is unrelated to the overlay/alignment fix above and out of scope for it — flagging
+for the user to confirm whether to rebuild the Circle mark's ellipse+arc geometry (would need the
+same token resolution discipline as the original Phase 1/3 build, not a quick patch) or whether
+something else removed it intentionally.
+
+## Follow-up — rebuilt the Circle mark geometry (ring + quarter-arc), fully token-bound
+
+Rebuilt the empty `Spinner Circle Mark` frame found above, in all 8 `Spinner/Circle` +
+`Spinner/Circle Inverted` variants, from the token values already recorded in this file's `tokens`
+list — no new tokens invented:
+
+- **`Circle Track`** (background ring): a stroke-only `ELLIPSE`, `strokeAlign: 'INSIDE'`,
+  `width`/`height` bound to `Circle/Size/MD` (24) or `/SM` (16) depending on the variant's `size`,
+  `strokeWeight` bound to `Circle/Thickness/MD` (4) or `/SM` (2), stroke color bound to
+  `Circle/Primary/Background` (normal set) or `Circle/Inverted/Background` (inverted set) via
+  `setBoundVariableForPaint`. No fill.
+- **`Circle Progress`** (quarter-arc): a fill-only `ELLIPSE` with `arcData = {startingAngle:
+-π/2, endingAngle: 0, innerRadius}`, `innerRadius` computed as `1 - 2×thickness/size` (0.667 for
+  MD, 0.75 for SM) so the filled donut-segment band matches the ring's stroke width exactly — the
+  same "closest static approximation of `border-top-color`" approach this file already documented,
+  now actually implemented. Same size binding as the ring; fill color bound to
+  `Circle/Primary/Progress` or `Circle/Inverted/Progress`. No stroke.
+- Confirmed **`strokeWeight` _can_ bind to a FLOAT variable** via `setBoundVariable('strokeWeight',
+...)` — succeeded on all 8 rings, no exception needed (unlike the `lineHeight` percent-semantic
+  case elsewhere in this file, which genuinely can't bind).
+- Verified every one of the 16 created ellipses' bound-variable IDs, resolved colors, and
+  `arcData` directly via `use_figma` reads (not a screenshot) — all correct.
+
+**Tooling gotcha hit twice in this same session, worth a standing warning**: a `use_figma` call
+building all 8 variants' geometry reported a hard error (`appendChild: node ... does not exist`),
+which per this skill's own rule should mean **no changes were made** — but a follow-up read showed
+all 16 ellipses had in fact been created correctly. Separately, a `get_screenshot` taken right
+after looked like a severe regression (Primary frame's Logo grid empty, marks floating outside the
+table) — but a position-math check showed only a small, real 29px X drift on 4 of the 16
+overlay variants (`Spinner/Primary`'s logo variants only; the other 12 were already pixel-exact).
+**Net lesson for this file and any future rebuild here: `use_figma`'s reported error/success status
+and `get_screenshot`'s visual output are both unreliable signals on this file — always re-verify
+real node state (`getNodeByIdAsync` + `absoluteTransform`/`boundVariables`) before trusting either
+one**, success or failure. Fixed the 29px drift by reading each variant's actual
+`absoluteTransform`, computing the exact delta against its target cell, and nudging only the X
+coordinate — re-locked afterward.
+
+Final state, confirmed by position math across all 16 Main-components overlay variants (8 Logo + 8
+Circle, across both the `Spinner`/light and `Inverted Spinner`/dark frames): every variant's
+`absoluteTransform` matches its target cell's centered position exactly, and the Circle mark now
+renders real token-bound geometry instead of an empty frame.
+
+## Follow-up — real data loss from a `use_figma` call, full "Tables row" rebuild, and get_screenshot now considered unreliable for this file
+
+**What happened**: a later `use_figma` call on this same file — intended as a routine re-verification, not a structural edit — left both documentation frames' entire `Tables row` child (the whole Logo/Circle titled-grid structure: headers, cells, dividers, grid lines) deleted, and all 4 `Spinner/*` component sets detached from the page (`parent: null`, still resolvable by ID but orphaned). This is the same atomicity-violation class of bug noted above (`use_figma`'s reported success/failure doesn't reliably reflect what actually happened to the document), now confirmed to cause real structural data loss, not just a cosmetic drift. Caught immediately because the user checked the actual Figma desktop app and saw the grids genuinely missing — screenshots and API reads alone had not surfaced it yet at that point.
+
+**Recovery, with explicit user sign-off on the approach (API reattach + rebuild, not manual undo)**:
+
+1. Re-appended all 4 detached component sets back to the page (`page.appendChild(set)`) — their internal content (variants, the rebuilt Circle mark geometry) was untouched by the detach, only their parenting.
+2. Rebuilt `Tables row` from scratch for both frames, reconstructing the exact structure captured earlier in this same file's edit history (header-row/corner/col-header cells, row-bottom/row-right with row-label + data cells, 2px v-line/h-line grid lines) — but instead of guessing colors/fonts, pulled the **real bound variables from surviving sibling nodes already in the file** (divider → `VariableID:137:80`, header/row-label shading → `VariableID:137:409`, navy text → `VariableID:137:288`, Inverted-frame dark preview fill → `VariableID:137:2764`, fonts `Baloise Create Text Bold 12px` for cell labels / `Baloise Create Headline Bold 14px` for block titles), so the rebuild stays visually and structurally consistent with the rest of the page rather than inventing a parallel style.
+3. Recomputed and reapplied all 16 overlay positions against the **new** cells' `absoluteTransform` (old cached cell coordinates were invalid once the grid was rebuilt from scratch with new node IDs) and re-locked once verified.
+
+**`get_screenshot` is no longer trustworthy for this file — stop relying on it.** Across this session alone, three separate `get_screenshot` calls against the same, verified-correct document state returned three different, differently-wrong renders (fully populated; completely empty; partially empty in yet another pattern). Meanwhile every direct state check (`getNodeByIdAsync` + `absoluteTransform`, `boundVariables`, `visible`/`opacity`, page z-order) consistently confirmed the document was correct. This is a step beyond the previously-documented "single node screenshot caching" issue — treat **any** `get_screenshot` result on this file as a hint at best, never as confirmation, and verify structural/visual correctness via direct node reads (position math, bound-variable checks, z-order) instead. If a true visual check is ever required, it needs to come from the user opening the file in the actual Figma app, not this tool's render.

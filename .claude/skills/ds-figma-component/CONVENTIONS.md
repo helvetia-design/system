@@ -28,18 +28,46 @@ it came from.
   it's an enum — it's: same layers, different token → variant; different layers/structure →
   top-level split via instance swap.** (From: user clarification referencing TapTap's Button,
   generalizing the existing `inverted` rule to cover any structural axis, including `color`.)
-  - **Confirmed hard rule, not just a preference**: for `ds-icon`, after splitting `name` into
-    79 top-level components (open-ended content-selection → top-level split, per the other
-    rule), the user explicitly required `size` and `color` to be real crossed variant
-    _properties_ on each of those 79 — not instance-overrides, even though an
-    instance-override would have been simpler and smaller (474–869 components vs. 2,370). Both
-    axes genuinely satisfy "same layers, different token" (resize/recolor the same vector), so
-    this isn't a contradiction of the rule above — it's confirmation that the rule applies
-    unconditionally once that test is met, regardless of how large the resulting cross-product
-    gets. Don't assume a large option count is reason enough to downgrade a same-layers axis to
-    an instance-override — ask first if genuinely unsure, but default to building the real
-    variant structure. (From: `ds-icon`'s `size`/`color`, confirmed as a hard rule after an
-    initial recommendation to simplify was explicitly rejected.)
+  - **SUPERSEDED — see the wrapper + Instance Swap pattern below.** For `ds-icon`, after
+    splitting `name` into 79 top-level components, the user initially required `size`/`color` to
+    be real crossed variant _properties_ on each of those 79 (2,370 components total). This was
+    later reversed: the user flagged the resulting component count as unmanageable and asked for
+    the standard real-world Figma icon-library pattern instead (see below). Left here for
+    history — the "same layers, different token → variant" test itself is still correct and
+    still the right call for a _closed, small_ enum; what changed is the structural answer for
+    when that axis is crossed against a _large open-ended_ content-selection prop like icon
+    `name`. (From: `ds-icon`'s `size`/`color`, hard rule confirmed then reversed after the
+    2,370-component structure became the actual problem reported.)
+
+  - **Current rule — a large open-ended content-selection prop with crossed same-layers
+    sub-props gets ONE wrapper `COMPONENT_SET` (crossing only the sub-props) + a lightweight
+    Instance Swap library for the content axis, not N top-level sets each repeating the full
+    cross-product.** For `ds-icon`: one `"Icon"` wrapper set with `size`×`color` (30 variants,
+    defined once), where each variant contains a nested `INSTANCE` of a default glyph bound to
+    an `INSTANCE_SWAP` component property (`addComponentProperty('Icon', 'INSTANCE_SWAP',
+defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey }` on each
+    variant's nested instance) — plus 79 lightweight single-vector `COMPONENT`s (not sets) as
+    the swap library, parked off-canvas. This works because Figma preserves per-instance
+    overrides (resize, fill rebinds) across an Instance Swap when the overridden node has a
+    name-matching counterpart in the new component — **verify this explicitly by testing an
+    actual swap and inspecting the result**, don't just assume it propagates. Reduced `ds-icon`
+    from 2,370 components to 109 (30 + 79) with no loss of capability. Apply this pattern by
+    default for any future component with this exact shape (open-ended content-selection prop ×
+    one or more same-layers sub-props), rather than defaulting to N top-level crossed sets.
+    (From: `ds-icon`'s rebuild, user-requested after the component-count problem surfaced.)
+    - **A glyph/content library item needs exactly one fill-bearing node, name-matched to the
+      wrapper's default's own structure, for color overrides to propagate fully on swap.** An
+      icon with more than one top-level `VECTOR` (e.g. a 2-path logo) only gets one of its paths
+      recolored on swap (or none, if the vectors sit under different group nesting than the
+      default) — Figma's override-preservation matches by node name/path, and a default with one
+      `"Vector"` child has nothing to match a second one against. Fix: `figma.flatten()` any
+      multi-vector library item into one `VECTOR` before adding it to the library, **then
+      immediately reassign `vector.fills = JSON.parse(JSON.stringify(vector.fills))`** — a plain
+      value-preserving reassignment, not a real change — since `flatten()` otherwise leaves the
+      new vector's fills in a state that reads correctly on the master component itself but
+      comes back empty when read through a swapped instance. Confirmed via direct swap-and-
+      inspect testing, not assumed. (From: `ds-icon`'s `xing`/`information`, the only 2 of 79
+      icons with multi-path source SVGs.)
 
 - **No visual attribute is ever assumed — every value on every Figma node needs an explicit,
   resolved design token, even if the component's own SCSS never sets that attribute at all.** A
@@ -244,6 +272,22 @@ layoutPositioning = ABSOLUTE if the parent node has layoutMode !== NONE` even wh
   - **Once locked** (per the standing "lock every overlaid grid variant" rule in SKILL.md),
     realignment still works fine via script — `locked` only blocks UI
     selection/dragging, not plugin API property writes. No need to unlock first.
+  - **Better fix — make the overlay structurally "sticky" instead of repeatedly recomputing a
+    page-absolute position.** `table.appendChild(set)` to reparent the master variant/set
+    directly into the table frame itself (as a real child, not a page-level sibling merely
+    positioned to look aligned), then `set.layoutPositioning = 'ABSOLUTE'` with `x`/`y` now
+    **relative to the table** instead of the page. The set then moves automatically whenever the
+    table does, since it's a genuine descendant — no more manual realignment pass needed after
+    future layout changes above it. Reparenting the _whole_ set this way is safe and distinct
+    from the existing "never move a variant child out of its own set" rule, which is about
+    detaching one variant from its set (breaks variant-property grouping), not relocating the
+    set as a unit. Z-order requirement becomes scoped to the table (set must be the table's last
+    child) instead of the page. **Bonus**: this also resolves the composite-overlay
+    `get_screenshot` unreliability below for that specific table, since the content becomes a
+    genuine descendant of the screenshotted subtree rather than a cross-branch composite — prefer
+    this reparenting approach over a page-level overlay from the start on any future component.
+    (From: `ds-icon`'s 79-icon Main components tables, after two rounds of manual realignment
+    prompted the user to ask for a structural fix instead.)
 
 - **Park unused/off-grid variants in the _negative_ x/y direction, never positive.** A positive
   offset just extends the page's visible bounding box past the documentation frames, so the

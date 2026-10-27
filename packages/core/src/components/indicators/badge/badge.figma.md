@@ -605,3 +605,31 @@ whether the component set itself could use Figma's native auto-layout.
 positioned via Figma's native `GRID` layout mode — `gridRowAnchorIndex`/`gridColumnAnchorIndex`
 are read-only on `COMPONENT` variants. For any custom grid arrangement of a component set's
 variants, use `layoutMode: 'NONE'` with manual `x`/`y` positioning, not the grid layout API.
+
+## Follow-up — header rebuilt to match the pattern introduced on `ds-spinner`
+
+User directly edited `ds-spinner`'s header in Figma (two-line stacked title, restyled link);
+applied the equivalent rebuild here to keep all component pages consistent — see
+`DOCUMENTATION-TEMPLATE.md`'s "two-line stacked heading"/"header wrapper frame"/"no longer
+literal link-blue" pitfall entries for the full spec.
+
+- Wrapped `top-bar` + the new `heading` + a new `body` (containing `lead` + `link`) into one
+  `header` auto-layout frame (`VERTICAL`, 16px item spacing), replacing the previous flat
+  top-level siblings.
+- Replaced the single `title` text node with a two-line `heading`: `"Badge"` bold 48px +
+  `"Main"` light-weight 48px, both `Alias/Text/Color/Primary`. Used an auto-layout `VERTICAL`
+  frame (0 item spacing) rather than a literal Figma `GROUP` (which is what the user's manual
+  Spinner edit produced) — visually identical, more robust to future edits. **"Main" was chosen
+  without re-confirming with the user** — this is the open generalization question already
+  flagged in `DOCUMENTATION-TEMPLATE.md` (Badge has no `inverted`/entity split, so there's no
+  second frame to contrast against, unlike Spinner's "Main" vs "Inverted" pair that motivated the
+  qualifier in the first place).
+- Restyled the "View in Storybook ↗" link: Bold 16px (was Regular 12px), `Alias/Text/Color/
+Primary` (was unchanged already), added `UNDERLINE` decoration. Hyperlink target unchanged.
+- Bumped `lead` from 14px to 16px to match the new body sizing.
+- **Realigned the Main components overlay afterward** — the two-line heading made the header
+  taller, which shifted "Main components table"'s position in the page's vertical auto-layout
+  stack, leaving the 18 real master variants (still page-level siblings with absolute coordinates,
+  not reparented into the table like `ds-icon`'s sets) misaligned. Recomputed and reapplied
+  against the table's current `absoluteTransform`, verified via position math — all 18 within
+  bounds.
