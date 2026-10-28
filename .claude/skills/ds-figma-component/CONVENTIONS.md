@@ -365,3 +365,38 @@ layoutPositioning = ABSOLUTE if the parent node has layoutMode !== NONE` even wh
   fill-clear across a frame's children can also hit sibling **text** layers (e.g. a row's
   `eyebrow` label) that need their own color fill kept intact — clear wrapper frames
   specifically, not every child indiscriminately. (From: `ds-badge`'s Phase 3b.)
+
+- **A `COMPONENT_SET`'s own `width`/`height` does NOT auto-update when its variant children are
+  repositioned — unlike an auto-layout frame, it never re-hugs, and a stale cached bounding box
+  silently crops it to nothing in a screenshot with zero error.** `combineAsVariants()` gives the
+  set whatever bounding box its children's positions implied at that moment; moving children
+  afterward (e.g. the "ABSOLUTE auto-layout child overlaid on a Main components table" technique)
+  changes where they render but does **not** grow the set's own `width`/`height` to match, because
+  `COMPONENT_SET` has `layoutMode: 'NONE'` — it behaves like a plain fixed-size frame, not an
+  auto-layout one, for sizing purposes. The screenshot renderer then composites against the
+  **stale** bounding box, so children repositioned outside it simply don't appear — no thrown
+  error, no warning, every node-level check (`visible`, `opacity`, `fills`, `absoluteTransform`)
+  reports completely correct values, because geometrically everything _is_ correct; only the set's
+  own `width`/`height` is wrong. Confirmed by direct diagnosis: `set.screenshot({contentsOnly:
+true})` showed a blank image matching the set's _stale_ `width`/`height` exactly, while every
+  child's `absoluteTransform` matched its intended target cell exactly. **Fix: after repositioning
+  a set's children into their final layout, explicitly `set.resize(width, height)` to the real
+  bounding box they now occupy** (or generously larger) — don't assume moving children is enough,
+  the way it is for an auto-layout frame. This bit `ds-icon`'s single-table case too, in
+  retrospect, but didn't surface there because the original pre-reposition packing happened to be
+  larger than the final grid; it only became visible on `ds-spinner`, whose two-stacked-titled-
+  grids layout repositions children well outside the original single-row packing bounds. Check
+  this any time a set is used as an overlaid/ABSOLUTE child and its render turns up unexpectedly
+  blank — before suspecting a stale screenshot (the next item below) or a structural bug. (From:
+  `ds-spinner`'s Logo/Circle titled-grids Main components build.)
+
+- **`get_screenshot` returning a blank/wrong render is not always the documented
+  stale-screenshot-cache pitfall — re-screenshotting isn't a universal fix, and ruling out a real
+  cause first saves a debugging loop.** On the same `ds-spinner` build above, re-screenshotting
+  (both the same node and a higher page-level node, per the existing stale-cache advice) kept
+  returning an identical, genuinely-blank result — because the real cause was the stale
+  `COMPONENT_SET` bounding box above, not a transient render cache issue. Before concluding
+  "just re-screenshot" or "trust a second render," check whether the byte size of a suspiciously
+  identical repeat screenshot is **exactly** the same (strong signal of a real, reproducible state,
+  not a flaky one-off) and verify the suspect node's own reported `width`/`height` against where
+  its children actually sit. (From: `ds-spinner`'s Main components build.)

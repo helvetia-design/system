@@ -33,7 +33,9 @@ flowchart TD
 
     subgraph P1G["Phase 1 — Analyze"]
         direction LR
-        P1a["Read component code<br/>.tsx / .host.scss"]:::code --> P1b["Resolve design tokens<br/>(read-only Figma variables)"]:::figma
+        P1a["Read component code<br/>.tsx / .host.scss"]:::code --> P1anat["Extract anatomy from<br/>@part tags"]:::code
+        P1anat --> P1anatC{{"User reviews<br/>anatomy list"}}:::human
+        P1anatC --> P1b["Resolve design tokens<br/>(read-only Figma variables)"]:::figma
         P1b --> P1c["Write draft<br/>name.figma.md"]:::code
     end
 
@@ -84,9 +86,9 @@ flowchart TD
 🟣 **figma** — a `use_figma`/`get_screenshot` call against the live Figma file.
 🟡 **human** — a required stop-and-wait checkpoint; never assume approval and keep going.
 
-The two human checkpoints (Phase 2's mapping confirmation, Phase 3's first-variant screenshot) are
-the only places this skill pauses for a decision — everything else is read/write work it does on
-its own between them.
+The three human checkpoints (Phase 1's anatomy review, Phase 2's mapping confirmation, Phase 3's
+first-variant screenshot) are the only places this skill pauses for a decision — everything else is
+read/write work it does on its own between them.
 
 ## Prerequisites
 
@@ -106,7 +108,19 @@ its own between them.
 1. Read `packages/core/src/components/<category>/<name>/<name>.tsx` and extract every **public
    `@Prop()`** — ignore `@Method`, `@Event`, and private `@State`. Note each prop's type
    (`@OneOf([...])` enum, boolean, string, number) and default.
-2. Read the component's `<name>.host.scss` and scan for **pseudo-class states** —
+2. Extract the component's **anatomy** — its named visual parts — from the class-level `@part`
+   JSDoc tags (e.g. `ds-button`: `@part native`, `@part spinner`, `@part icon`, `@part label`,
+   `@part icon-right`). Cross-check every `@part` tag against a real `part="..."` attribute in
+   `render()`: a tag with no matching attribute, or an attribute with no matching tag, is a **hard
+   stop** — same treatment as a missing token (see step 5 below) — report it and ask the user to
+   fix the component's code/JSDoc, or explicitly accept the mismatch, before continuing. Assign
+   each part a sequential letter (A, B, C, …) in the order its `part="..."` attribute appears in
+   `render()`'s JSX (DOM order, not JSDoc comment order). **Print the extracted list in the
+   conversation for the user to review before writing anything** — letter, part name, and its
+   one-line description taken verbatim from the `@part` JSDoc line. If the component has no
+   `@part` tags at all, skip the anatomy section entirely (note why in the draft; this is not a
+   gap to flag).
+3. Read the component's `<name>.host.scss` and scan for **pseudo-class states** —
    `:hover`, `:focus`, `:active`, `:disabled`, `:read-only`, and any loading-related
    class/attribute selector. These don't show up as props but still need a Figma
    representation (see Phase 2, rule 3).
@@ -119,17 +133,17 @@ its own between them.
      has nothing to naturally fall back to, and will otherwise render with Figma's own
      stale/leftover default styling (observed: black, 12px) instead of anything representative.
      **Every one of these attributes still needs an explicit resolved token in `<name>.figma.md`'s
-     tokens list — treat a missing one exactly like a missing CSS-var token in step 4, not as an
+     tokens list — treat a missing one exactly like a missing CSS-var token in step 5, not as an
      exemption.** For attributes inherited from this system's own default text treatment (not set
      by the component's own code), bind to the matching system-default token — e.g.
      `🔗 Alias/🔤 Text/Color/Primary` for color, `📱 Device/🔤 Text/Size/Base/Device` for size (from
      the `Design Responsive Tokens` collection, mode-based) — and flag these as inherited-context
      bindings, not literal bindings to something the component's own code sets. Never leave an
      attribute unbound/assumed because the component's SCSS doesn't mention it.
-3. Identify any **nested DS component** usage (e.g. `<ds-icon>` inside `ds-button`'s render). For
+4. Identify any **nested DS component** usage (e.g. `<ds-icon>` inside `ds-button`'s render). For
    each one, read its `<child>.figma.md` and pull the recorded Figma component key. If missing,
    stop per Prerequisites above.
-4. For every value the component's SCSS binds to a CSS custom property (`var(--ds-...)`),
+5. For every value the component's SCSS binds to a CSS custom property (`var(--ds-...)`),
    resolve it to the matching Figma variable.
    - **The real token variables are LOCAL to the component-library file, not a published
      library.** They're pushed directly into the file by the GitHub workflow
@@ -167,23 +181,23 @@ its own between them.
      specific case. Resolve this now, before Phase 2, not mid-build in Phase 3.
    - A value with no CSS-var binding in the component's own SCSS (e.g. a hardcoded literal in
      the component's `.tsx`, or an attribute the component's code never sets at all and instead
-     inherits — see step 2's text-attribute scan) is **not exempt from token resolution — it
+     inherits — see step 3's text-attribute scan) is **not exempt from token resolution — it
      still needs an explicit decision, same hard-stop rule as above.** If a matching Figma
      variable exists anyway (as found for `spinner.tsx`'s `getColor()` fallback, or for an
-     inherited text attribute per step 2), bind to it for the Figma visual and note it in
+     inherited text attribute per step 3), bind to it for the Figma visual and note it in
      `<name>.figma.md` (flagging any code-side drift as a separate follow-up, not fixed here). If
      no matching variable exists, treat it exactly like a missing CSS-var token: stop, report it,
      and ask the user to pick an existing token or explicitly accept a one-off hardcoded value —
      never silently build it with an assumed or Figma-default value.
-     4b. Before writing the draft file, build an explicit **completeness checklist**: list every node
+     5b. Before writing the draft file, build an explicit **completeness checklist**: list every node
      the Figma build will need (every text-bearing part, every filled/stroked shape, every spacing
      gap) and, for each one, every visual attribute it needs (text: family, size, weight,
      line-height, letter-spacing, color, decoration; shape: fill, stroke color/width, corner
      radius, dimensions, spacing). Cross-check each attribute against the tokens resolved in steps
-     2 and 4 — any attribute with no corresponding entry is a gap, not an assumption to fill in
-     during Phase 3. Surface every gap now, as a batch, using the same hard-stop flow as step 4,
+     3 and 5 — any attribute with no corresponding entry is a gap, not an assumption to fill in
+     during Phase 3. Surface every gap now, as a batch, using the same hard-stop flow as step 5,
      rather than discovering missing tokens one at a time mid-build.
-5. Write all of the above into `<name>.figma.md` (create it if it doesn't exist) as a draft, per
+6. Write all of the above into `<name>.figma.md` (create it if it doesn't exist) as a draft, per
    the schema in [Mapping file format](#mapping-file-format) below.
 
 ### Phase 2 — Propose variant grouping
@@ -378,7 +392,8 @@ set. Build this after Phase 3 confirms the variant matrix looks right, before Ph
 That file names `ds-close`'s documentation pages as the canonical live reference frames to inspect
 via `get_metadata` before building — don't rebuild the structure from prose alone each time;
 mirror the real, already-correct nodes. Summary of what it covers: page background, outer frame
-chrome, the four-section layout (Header / Copy me / Variants / Main components), the light+dark
+chrome, the section layout (Header / Copy me / Anatomy / Variants / Main components — Anatomy is
+skipped when the component's `figma.md` has no `anatomy:` list), the light+dark
 two-frame split for an `inverted` axis, the N-split-components pattern for open-ended
 content-selection props, instance-vs-master-set rules (including the `ABSOLUTE`-auto-layout-child
 mechanism for placing the real master set on the Main components grid), and every known pitfall,
@@ -432,6 +447,18 @@ and the output record Phase 3 writes back into.
 \`\`\`yaml
 figmaComponentKey: null # filled in by Phase 3 on success
 figmaPage: <Name>
+
+anatomy:
+
+- letter: A
+  part: label
+  description: "The text label wrapper (<span>)."
+- letter: B
+  part: icon
+  description: "The leading icon wrapper (or the brand icon wrapper when brandIcon is set)."
+
+# Omit this whole `anatomy:` key if the component has no @part tags at all.
+
 props:
 
 - name: size

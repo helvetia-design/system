@@ -22,8 +22,9 @@ on this file's first components. It now applies to every component built on this
   - [Page and outer frame](#page-and-outer-frame)
   - [1. Header](#1-header)
   - [2. "👉 Copy me"](#2--copy-me)
-  - [3. "🛠 Variants"](#3--variants)
-  - [4. "🔒 Main components"](#4--main-components)
+  - [3. "🏗️ Anatomy"](#3--anatomy)
+  - [4. "🛠 Variants"](#4--variants)
+  - [5. "🔒 Main components"](#5--main-components)
 - [Handling an `inverted` axis (two-frame split)](#handling-an-inverted-axis-two-frame-split)
 - [Handling an open-ended content-selection prop (wrapper + Instance Swap library)](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)
 - [Cross-cutting build pitfalls](#cross-cutting-build-pitfalls)
@@ -49,6 +50,11 @@ light frame (qualifier hidden) and `"Close" / "Inverted"` on the dark frame (qua
 and both frames' `Tables row` places the real `Close/Primary` / `Close/Inverted` component set as
 an `ABSOLUTE`-positioned, singly-locked auto-layout child next to the table chrome (`Normal col`).
 
+**`ds-close`'s reference pages predate the "🏗️ Anatomy" section — they don't have one.** Inspect
+them for every other section's structure as described below, but build Anatomy from this document's
+own spec (see [3. "🏗️ Anatomy"](#3--anatomy)) until a canonical reference page adopts it; update
+this pointer once one does.
+
 **Don't use `ds-badge` or `ds-spinner`'s live pages as a structural reference — inspect `ds-close`
 only.** `ds-badge` has no `inverted` axis (single frame), so it can't demonstrate the full
 template, and its "Main components" set/chrome split is a less clear version of the same mechanism
@@ -58,7 +64,7 @@ template, and its "Main components" set/chrome split is a less clear version of 
 its entire "Main components" grid structure, and separately found `get_screenshot` returning three
 different, differently-wrong renders of the same verified-correct document state — both were
 recovered, but its page still uses the older page-level-sibling overlay technique (a fallback-only
-pattern, see [Main components](#4--main-components) below) rather than the `ABSOLUTE`-auto-layout
+pattern, see [Main components](#5--main-components) below) rather than the `ABSOLUTE`-auto-layout
 mechanism, so copying its structure would teach the wrong default anyway. **Don't inspect `ds-icon`
 as a template either** — as of its wrapper-pattern rebuild (see
 [the wrapper + Instance Swap library section](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)),
@@ -90,14 +96,16 @@ At a high level, in order:
    [Page and outer frame](#page-and-outer-frame)).
 2. Build the [Header](#1-header).
 3. Build [Copy me](#2--copy-me).
-4. Build [Variants](#3--variants).
-5. Build [Main components](#4--main-components).
-6. If the component has a true `inverted`/dark-context axis, apply the
+4. Build [Anatomy](#3--anatomy) — skip this section entirely if the component's `<name>.figma.md`
+   has no `anatomy:` list (no `@part` tags found in Phase 1).
+5. Build [Variants](#4--variants).
+6. Build [Main components](#5--main-components).
+7. If the component has a true `inverted`/dark-context axis, apply the
    [two-frame split](#handling-an-inverted-axis-two-frame-split) instead of a single frame.
-7. If the component has an open-ended content-selection prop (many options, e.g. an icon `name`),
+8. If the component has an open-ended content-selection prop (many options, e.g. an icon `name`),
    apply the [wrapper + Instance Swap library handling](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)
    instead of a single plain component set.
-8. Iterate on the layout with the user before considering this phase done — the exact structure is
+9. Iterate on the layout with the user before considering this phase done — the exact structure is
    something to confirm visually (screenshot checkpoints), same as the variant matrix itself in
    Phase 3.
 
@@ -108,16 +116,28 @@ At a high level, in order:
 - **Page background**: set the Figma page's own `backgrounds` to a literal solid `#e8e8e8`
   (`page.backgrounds = [{ type: 'SOLID', color: { r: 232/255, g: 232/255, b: 232/255 } }]`) — not a
   design token, no page-background token exists in this system.
-- **One bordered outer frame**, white fill, **2px** `Alias/Border/Color/GreyLight` stroke, 8px
-  corner radius, ~40px padding, vertical auto-layout. No label above the frame (an earlier draft of
-  this template had one; removed on request — don't add it back).
+- **One bordered outer frame**, white fill, **2px** `Alias/Border/Color/GreyLight` stroke, ~40px
+  padding, vertical auto-layout. No label above the frame (an earlier draft of this template had
+  one; removed on request — don't add it back).
+- **Corner radius is bound to two different tokens depending on what's being rounded — never a
+  literal number, and never the same value everywhere.** Confirmed via `boundVariables` on the live
+  `ds-close` reference, not guessed:
+  - **Outer frame**: `🌐 Global/📏 Dimension/Radius/12` (12px) — bind all four corner radii
+    (`topLeftRadius`/`topRightRadius`/`bottomLeftRadius`/`bottomRightRadius`) to this variable, not
+    the plain `cornerRadius` setter with a literal.
+  - **Every section's inner card/grid frame** — the "Copy me" box, the "Variants" panel (`Variants
+row`), and the "Main components" table (`Normal table`) — uses `🌐 Global/📏 Dimension/Radius/6`
+    (6px) instead, bound the same way. A first build of `ds-spinner`'s documentation page missed
+    this distinction (used 8px literal outer / inconsistent or 0 inner), caught by a direct
+    side-by-side comparison against `ds-close`. (From: `ds-spinner`'s Phase 3b, user-flagged.)
 - **Every border/divider/grid-line in this template is 2px, always** — not 1px. This applies to:
   the outer frame's own stroke, every divider rule between sections, the Variants panel's border,
   the Main components table's border, and every internal grid-line rectangle. When building a
   divider or grid line as a rectangle, give it a 2px dimension on its thickness axis
   (`resize(width, 2)` for a horizontal divider, `resize(2, height)` for a vertical grid line); when
   it's a frame stroke, set `strokeWeight: 2`.
-- Inside the frame, the four sections below, in order, each separated by a 2px
+- Inside the frame, the sections below, in order (five when the component has an anatomy list, four
+  when it doesn't — see [3. "🏗️ Anatomy"](#3--anatomy)), each separated by a 2px
   `Alias/Border/Color/GreyLight` divider rule.
 
 ### 1. Header
@@ -148,6 +168,18 @@ At a high level, in order:
     paired dark frame's equivalent node (`2020:43`) is visible and reads `"Inverted"`. The text
     content can stay set to `"Main"` under the hood on a non-split frame — it's the node's
     `visible` property that must be `false`, not the text necessarily deleted.
+- **The `body` frame wrapping the lead paragraph + link must hug its content height — never a fixed
+  height, and never `resize()`d directly.** Confirmed live on `ds-close`: `body`'s
+  `primaryAxisSizingMode`/`counterAxisSizingMode` are both `'AUTO'` (hug/hug). A first build of
+  `ds-spinner`'s documentation page called `body.resize(600, 50)` to fix the width — but
+  **`resize()` resets sizing modes to `FIXED` on _both_ axes at once** (the general gotcha from
+  `figma-use`'s Rule 12c, not unique to this template), which silently froze the frame's height at
+  the literal `50` regardless of actual content height, clipping the "View in Storybook" link out
+  of view below it. Fix: `appendChild` the frame, set only `layoutSizingHorizontal = 'FIXED'`, then
+  call `resize(600, body.height)` using the frame's **own current (already-hugged) height**, not a
+  guessed literal — and if `resize()` resets `layoutSizingVertical` away from `'HUG'` afterward,
+  re-set it back to `'HUG'` explicitly as the very next statement. (From: `ds-spinner`'s Phase 3b,
+  user-flagged.)
 - Lead paragraph: sourced **verbatim from the component's own JSDoc comment** in its `.tsx` file —
   code is the source of truth for documentation copy, never write new descriptive copy. `16px`,
   color `Alias/Text/Color/Primary`.
@@ -160,8 +192,8 @@ At a high level, in order:
   `storyId`) — never guess a path from scratch, and don't rely on an older sibling component's URL
   pattern (confirmed these are NOT derivable by a fixed category/name formula — `ds-spinner` and
   `ds-icon`'s URL shapes differ from each other).
-- Each of the three section headings below ("👉 Copy me", "🛠 Variants", "🔒 Main components") is
-  bold, `Component/Heading/Level/1/FontSize` (28px), `Alias/Text/Color/Primary`.
+- Each of the section headings below ("🏗️ Anatomy", "👉 Copy me", "🛠 Variants", "🔒 Main
+  components") is bold, `Component/Heading/Level/1/FontSize` (28px), `Alias/Text/Color/Primary`.
 
 ### 2. "👉 Copy me"
 
@@ -173,7 +205,93 @@ conditional-render rule), override it to `true` on this instance for readability
 component set's own default stays whatever matches code. Fixing the main component later
 automatically propagates to this instance; editing it directly does not.
 
-### 3. "🛠 Variants"
+### 3. "🏗️ Anatomy"
+
+**Only build this section if the component's `<name>.figma.md` has a non-empty `anatomy:` list**
+(written in Phase 1, step 2 of `SKILL.md`, from the component's `@part` JSDoc tags). If the list is
+missing or empty, skip this section entirely — no heading, no placeholder — and the page goes
+straight from "👉 Copy me" to "🛠 Variants", same as a component with no `inverted` axis skips the
+two-frame split.
+
+Confirmed live on `ds-spinner`'s build (node `2105:43`, the first component this section was built
+for) — every value below is read off that real node tree, not guessed:
+
+**Section frame (`anatomy`)**: `VERTICAL` auto-layout, `itemSpacing: 16`, no fill, two children —
+the section heading text (see [1. Header](#1-header)'s heading-style rule — same 28px Bold
+`Baloise Create Headline`, `Alias/Text/Color/Primary`) and the panel below it (`Anatomy box`).
+`layoutSizingHorizontal: 'FILL'` against the outer documentation frame, same as every other section
+(`copy-me`, `variants`, `main-component`).
+
+**Panel (`Anatomy box`)**: `VERTICAL` auto-layout, `itemSpacing: 16`, `counterAxisAlignItems:
+'CENTER'`, padding `24` on all four sides, white fill, **2px** stroke bound to
+`Alias/Border/Color/GreyLight` (`VariableID:137:80`), all four corner radii bound to
+`🌐 Global/📏 Dimension/Radius/6` (`VariableID:137:2639` — the same inner-card radius every other
+section's panel uses). **`layoutSizingHorizontal: 'FILL'` against the `anatomy` section** — this is
+the piece easy to skip: a panel left on its default HUG sizing shrink-wraps to its widest child
+(observed: the legend's text, not the diagram), silently capping everything inside it at that
+narrower width instead of the real container width (816px on `ds-spinner`, confirmed). Set this
+`FILL` _before_ the diagram area inside it is set to `FILL` — verify by reading `diagramArea.width`
+afterward, not by assuming the first `FILL` was enough. (From: `ds-spinner`'s Anatomy build,
+user-flagged.) Two children, in order:
+
+1. **Diagram area** (`diagram-area`): a plain `FRAME` (`layoutMode: 'NONE'`, manual child
+   positioning — not auto-layout, since the circles/lines need freeform placement), no fill, fixed
+   160px height, **`layoutSizingHorizontal: 'FILL'`** against the panel (764px content width on
+   `ds-spinner`'s 816px-wide panel after its 24px×2 padding — confirmed live, this is the "full
+   width of the container" the diagram must span). Contains, as flat siblings (no further nesting):
+   - One real Figma `INSTANCE` of the default/base variant combination, same rule as "👉 Copy me"
+     above (`variant.createInstance()`, never the variant node itself) — centered horizontally and
+     vertically inside the diagram area (`instance.x = (diagramArea.width - instance.width) / 2`,
+     same for `y` against the 160px height). Recompute this centering, and every circle/line
+     position below, against `diagramArea.width` **after** it resolves to its real `FILL` value —
+     never against a placeholder fixed width from an earlier draft.
+   - One lettered circle + one leader line **per entry in the `anatomy:` list** (see next two
+     bullets), positioned relative to the real on-canvas location of that part inside the instance.
+     Find that location by locating the matching layer inside the instance —
+     `instance.query('[name=<part>]')`, since this skill's own builds commonly name a node after
+     the part it represents (e.g. `label`, `icon` on `ds-spinner`'s `mark-container`/`label`
+     layers) — and use that layer's bounding-box center as the line's target point. If no
+     name-matched layer exists, fall back to a visual read via `get_screenshot`/`get_metadata`
+     rather than guessing a coordinate.
+   - **Circle**: an `ELLIPSE`, 24px×24px (not `cornerRadius` — an ellipse is round by
+     construction), fill bound to `🔗 Alias/🎨 Surface/Purple` (`VariableID:137:437`). The letter
+     is a separate `TEXT` node of the same 24px×24px size, stacked exactly on top of the circle
+     (same `x`/`y`), `textAutoResize: 'NONE'` (required — the default auto-resize mode fights a
+     manual `resize()` to a fixed box), `textAlignHorizontal`/`textAlignVertical: 'CENTER'`,
+     `Baloise Create Text` **Bold**, 12px, fill bound to `🔗 Alias/🔤 Text/Color/Primary`
+     (`VariableID:137:288` — the same navy token already used elsewhere on this page for the
+     Variants tag chips' text and the Main components header labels) — a navy letter on a
+     light-purple circle, not white-on-navy. Confirmed against the user's own reference mockup.
+     (From: `ds-spinner`'s Anatomy build, user-flagged.)
+   - **Leader line**: a `VECTOR` with a single straight `M x1 y1 L x2 y2` path (not a `LINE` node —
+     built via `figma.createVector()`, resized to the path's own bounding box, positioned at the
+     path's own min `x`/`y` so the path coordinates are relative to the vector's local origin), no
+     fill, **2px** stroke weight, stroke bound to `🌐 Global/🌈 Color/Purple/3`
+     (`VariableID:137:2756` — resolves to the exact same RGB as `🔗 Alias/🎨 Surface/Purple`,
+     confirmed by comparing resolved values; bind to the Global primitive here rather than the
+     Alias/Surface token, since a line isn't a surface). Runs from the circle's edge (12px out from
+     its center, i.e. the circle's radius) to the target part's bounding-box center.
+   - Arrange circles around the instance (above, below, left, right as needed) so lines don't cross
+     and circles don't overlap each other — an eyeballed layout judgment confirmed against a
+     screenshot checkpoint, same as every other layout call in this template, not a fixed formula.
+     On `ds-spinner` (2 parts), circle A sits 50px directly above its part's center, circle B sits
+     50px directly below its part's center — a reasonable default spacing for two parts that don't
+     collide; more parts will need case-by-case placement, same as any other layout call here.
+2. **Legend** (`legend`): a `VERTICAL` auto-layout frame, **`itemSpacing: 8`** (not the panel's own
+   16px gap — tighter, since these are closely related lines of a single list), no fill,
+   `layoutSizingHorizontal: 'FILL'` against the panel. **One single-column stacked list, one text
+   node per `anatomy:` entry, in letter order — not a grid, not multiple columns.** (An earlier
+   draft of this section tried a 2-column grid; reverted on request — don't reintroduce it.) Each
+   entry is one `TEXT` node, 14px `Baloise Create Text`, fill bound to
+   `🔗 Alias/🔤 Text/Color/Primary`, reading `"<letter> · <part> — <description>"` (e.g.
+   `"A · inner — The spinner animation container element."`) — the same three `anatomy:` fields in
+   one line. The `"<letter> · <part>"` prefix is **Bold**, the rest (the em-dash and description)
+   is **Regular** — apply via `setRangeFontName(0, prefixLength, { family: 'Baloise Create Text',
+style: 'Bold' })` on just that leading span, after the full string's base font/characters are
+   already set per the canonical text-edit recipe. This lets the diagram read on its own without
+   the viewer needing to cross-reference `<name>.figma.md`.
+
+### 4. "🛠 Variants"
 
 A compact, single-axis reference — not a full cross-product. Pick the one variant property that
 most defines the component's _scale/shape_ (e.g. `size`). Left side: a shaded sidebar with a bold
@@ -181,7 +299,20 @@ axis-name label (e.g. "Size") and the option names as stacked pill/tag chips. Ri
 representative instance per option, side by side, in a bordered white panel. Same `INSTANCE` rule
 as "Copy me" above — never the variant node itself.
 
-### 4. "🔒 Main components"
+**The tag chips' exact styling, confirmed live on `ds-close`'s `tag-base` (`1993:18`) — not a
+rough "pill" approximation:**
+
+- Shape: fully rounded (`cornerRadius: 999`, i.e. a true pill regardless of text length), `AUTO`/
+  `AUTO` sizing (hugs its text + padding).
+- Fill: `Alias/Surface/Grey` (confirmed exact token name/binding — not a literal grey, and not the
+  same token as any other grey used elsewhere in the template).
+- Text: `Baloise Create Text` **Bold**, 12px, color `Alias/Text/Color/Primary` (navy, not grey — the
+  text reads as a bold blue label against the pale grey pill, not muted body copy). A first build
+  of `ds-spinner`'s documentation page used Regular weight and a plain white/light-grey literal
+  fill — caught by direct comparison against `ds-close`. (From: `ds-spinner`'s Phase 3b,
+  user-flagged.)
+
+### 5. "🔒 Main components"
 
 The exhaustive, full cross-product reference — every remaining variant property crossed together —
 as a single dense bordered table (shaded header row for one axis' options across the top, shaded
@@ -250,6 +381,16 @@ caught visually — a mistake worth expecting again on any new component's grid 
 `ds-close`'s already-correct live state alone will protect against (you'd only notice by rendering,
 not by reading the spec).
 
+**Every header/row-label text (`col-header-*`'s `label`, `row-label`'s `label`) is Bold, not
+Regular — and uses the `Baloise Create Headline` family, not `Baloise Create Text`.** Confirmed
+live on `ds-close`'s `col-header-default`/`row-base` label nodes: `Baloise Create Headline` Bold,
+12px, `Alias/Text/Color/Primary`. Easy to miss since every other 12px label in this template (the
+Variants tags, the axis-name label itself is the exception at Bold too — see "🛠 Variants" above)
+uses `Baloise Create Text`; the Main components table headers specifically switch family **and**
+weight. A first build of `ds-spinner`'s documentation page used `Baloise Create Text` Regular for
+these — caught by direct comparison against `ds-close`. (From: `ds-spinner`'s Phase 3b,
+user-flagged.)
+
 **Never move a variant out of its `COMPONENT_SET`.** A `COMPONENT` that is a variant can only be a
 direct child of its own `COMPONENT_SET` — moving it into any other frame (e.g. trying to place the
 "real" variant directly into a documentation table cell structure it doesn't belong to) silently
@@ -306,7 +447,7 @@ headings/dividers/kicker/wordmark/link same tokens and colors as the light frame
 dimmed grey, no recolor), Variants sidebar + chip backgrounds/text unchanged, Main components
 header row/column + corner cell + grid lines unchanged (same light grey/white/grey-text as the
 light frame — don't theme them dark, and don't forget they still need the centering fix from the
-[Main components](#4--main-components) section above). **The only thing that changes is giving a
+[Main components](#5--main-components) section above). **The only thing that changes is giving a
 dark background to every "preview" surface** — any container whose sole content is a real component
 instance, i.e. "the area where we present a component/instance/variant": the "Copy me" box, each
 swatch in the Variants panel (`example-right`/`example-bottom`), and each data cell in the Main
@@ -367,7 +508,7 @@ component — confirmed working, not just assumed. Reduced `ds-icon` from a theo
 
 **"Main components" for this pattern is the real wrapper set's own cross-product as a single table**
 (e.g. `ds-icon`: `color` rows × `size` columns, 40 cells) — same `ABSOLUTE`-auto-layout-child
-mechanism as the plain (non-split) case in [Main components](#4--main-components) above, just
+mechanism as the plain (non-split) case in [Main components](#5--main-components) above, just
 applied to the wrapper set instead of a plain component set. It is **not** N separate per-option
 tables; the content axis isn't part of this table at all.
 
