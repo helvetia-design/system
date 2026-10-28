@@ -42,7 +42,12 @@ flowchart TD
     subgraph P2G["Phase 2 — Propose grouping"]
         direction LR
         P2a["Read CONVENTIONS.md"]:::code --> P2b["Draft variant grid sketch<br/>in name.figma.md"]:::code
-        P2b --> P2c{{"User confirms<br/>the mapping"}}:::human
+        P2b --> P2v["Compute total variant count"]:::code
+        P2v --> P2check{{"Count ≤500?"}}:::human
+        P2check -->|over threshold| P2w["Hard stop: recommend<br/>mitigation by axis type"]:::code
+        P2w --> P2x{{"User picks<br/>mitigation"}}:::human
+        P2x --> P2v
+        P2check -->|under threshold| P2c{{"User confirms<br/>the mapping"}}:::human
         P2c -->|approved| P2d["Optional: append a new<br/>rule to CONVENTIONS.md"]:::code
     end
 
@@ -275,11 +280,49 @@ its own between them.
      This is the end state after several rebuild iterations on the real component — sketching it
      this way up front in Phase 2 is what lets the user catch "2 titled grids, not 1 table" before
      Phase 3 builds anything, rather than discovering it only after a build-review-rebuild cycle.
-4. Write the proposed grouping (and grid sketch) into `<name>.figma.md` and present it to the
+4. **Compute the total variant count and check it against the 500-variant hard-stop threshold**
+   before presenting anything for approval. This is this skill's own conservative ceiling, not a
+   number Figma enforces — Figma's own docs only warn qualitatively (performance issues appear
+   with "thousands" of variants per set, no fixed number given) and describe a shared ~2GB-per-tab
+   memory budget across the _whole_ library file, not per-component. Staying well under it leaves
+   headroom for every other component sharing that file.
+   - **Count** = sum, across every top-level split (e.g. each separately-split icon name from the
+     content-selection-prop rule), of the product of that split's own crossed variant-property
+     option counts from step 2 above (every variant property, including `state`).
+   - **Exclude lightweight Instance Swap library members** (plain single `COMPONENT`s parked as
+     swap targets, not crossed into a `COMPONENT_SET`) from the count — they're structurally
+     trivial (one vector, no bound state/size variants) and don't carry the same performance cost
+     as a crossed variant.
+   - **If the count is ≤500**, continue to step 5.
+   - **If the count exceeds 500**, stop here — do not present the grouping for approval yet.
+     Identify which axis/axes are driving the count up and classify each by the same test used in
+     step 2, then recommend a mitigation:
+     - A **token-swap axis** — same layers, only a different Figma-Variable-bound value (color is
+       the common case, but this generalizes to any variable-bound attribute, e.g. border-width or
+       elevation) — is eligible for the **variable-override mitigation**: bind that attribute to a
+       Figma Variable once and let consumers override it per-instance (`setBoundVariableForPaint`
+       for paint fields, or the matching bound-variable setter for other field types) instead of
+       crossing it into a variant property. This drops the axis from the cross-product entirely
+       with zero new nodes created, at the cost of a less discoverable per-instance override
+       instead of a variant dropdown — offer this specifically because the threshold was exceeded,
+       never as a universal default (see CONVENTIONS.md).
+     - A **structural or open-ended content-selection axis** (different layers/shape per option,
+       or an unbounded set like icon `name`) is eligible for the existing **wrapper + Instance
+       Swap split** pattern (see CONVENTIONS.md's current rule, originally developed for
+       `ds-icon`): one shared wrapper `COMPONENT_SET` crossing only the remaining same-layers
+       sub-props, plus a lightweight Instance Swap library for the content axis.
+     - **A size axis is never offered the variable-override mitigation** — resolve a
+       size-driven explosion via a crossed variant (if it fits the budget on its own) or a
+       structural split, never a variable swap.
+       Present the count, the dominant-axis breakdown, and the recommended mitigation(s) to the user
+       and ask them to choose (or combine both). Once they pick, recompute the total against the new
+       structure and **repeat this check** — loop until the count is ≤500, the same way step 6 below
+       loops on edits before approval.
+5. Write the proposed grouping (and grid sketch) into `<name>.figma.md` and present it to the
    user for review.
-5. **Stop and wait for the user to confirm or edit** the mapping directly in the file before
+6. **Stop and wait for the user to confirm or edit** the mapping directly in the file before
    proceeding to Phase 3. Do not proceed on an assumed approval.
-6. Once confirmed, propose any new heuristic worth keeping (e.g. a grouping decision that didn't
+7. Once confirmed, propose any new heuristic worth keeping (e.g. a grouping decision that didn't
    fit an existing `CONVENTIONS.md` rule) as an addition to `CONVENTIONS.md`. Show the user the
    exact diff and get approval before writing it — never auto-append.
 

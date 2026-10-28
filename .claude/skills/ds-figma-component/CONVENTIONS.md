@@ -69,6 +69,37 @@ defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey 
       inspect testing, not assumed. (From: `ds-icon`'s `xing`/`information`, the only 2 of 79
       icons with multi-path source SVGs.)
 
+- **Total variant count is checked against a hard-stop ceiling of 500 before any grouping is
+  presented for approval — this skill's own conservative limit, not a number Figma enforces.**
+  Figma's own docs only warn qualitatively (performance issues appear with "thousands" of
+  variants per set; no fixed number given) and describe a shared ~2GB-per-tab memory budget
+  across the _whole_ library file, not per-component — staying well under it leaves headroom for
+  every other component sharing that file. Count = sum, across every top-level split, of the
+  product of that split's own crossed variant-property option counts (every property from the
+  grouping step, including `state`). **Lightweight Instance Swap library members (plain single
+  `COMPONENT`s parked as swap targets, not crossed into a set) are excluded from the count** —
+  they're structurally trivial and don't carry the same cost as a crossed variant. If the count
+  exceeds 500, stop before presenting the grouping; recompute and re-check after every mitigation
+  choice, looping until under threshold. (From: user request after noting an 80-icon ×
+  size × color example would produce 1,600 variants.)
+- **When over threshold, a same-layers "only swaps a bound Variable value" axis (a token-swap
+  axis — color is the common case, but this generalizes to border-width, elevation, or any
+  variable-bound attribute) can be resolved via per-instance Figma Variable override instead of a
+  crossed variant property**, using `setBoundVariableForPaint` (or the matching bound-variable
+  setter for non-paint fields) so each instance can locally override the bound value — dropping
+  the axis from the cross-product with zero new nodes created. **Reserved for when the threshold
+  is actually exceeded, not a universal default** — a small, harmless token-swap axis still gets a
+  normal crossed variant dropdown by default, since that's more discoverable for consumers than
+  requiring them to know about per-instance variable overrides. **Size axes are never eligible for
+  this mitigation** — a size-driven explosion is resolved via a crossed variant (if it fits on its
+  own) or a structural wrapper/Instance-Swap split, never a variable swap, since a dimensional
+  change doesn't map to the same per-instance-override UX as a token-swap. (From: user request,
+  generalized from an initial "colors via variables" framing to any token-swap axis.)
+- **An open-ended/structural axis contributing to a threshold breach uses the existing wrapper +
+  Instance Swap split pattern** (see the "Current rule" above, originally developed for
+  `ds-icon`) rather than a new technique — the mitigation for this axis type was already solved,
+  the hard-stop check just surfaces when it's needed sooner than a human would have noticed.
+
 - **No visual attribute is ever assumed — every value on every Figma node needs an explicit,
   resolved design token, even if the component's own SCSS never sets that attribute at all.** A
   CSS-var binding is the common case, not the only case that counts: an attribute a component

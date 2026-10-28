@@ -25,7 +25,7 @@ on this file's first components. It now applies to every component built on this
   - [3. "🛠 Variants"](#3--variants)
   - [4. "🔒 Main components"](#4--main-components)
 - [Handling an `inverted` axis (two-frame split)](#handling-an-inverted-axis-two-frame-split)
-- [Handling an open-ended content-selection prop (N-split components)](#handling-an-open-ended-content-selection-prop-n-split-components)
+- [Handling an open-ended content-selection prop (wrapper + Instance Swap library)](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)
 - [Cross-cutting build pitfalls](#cross-cutting-build-pitfalls)
 
 ## Canonical reference — inspect before you build
@@ -59,10 +59,13 @@ its entire "Main components" grid structure, and separately found `get_screensho
 different, differently-wrong renders of the same verified-correct document state — both were
 recovered, but its page still uses the older page-level-sibling overlay technique (a fallback-only
 pattern, see [Main components](#4--main-components) below) rather than the `ABSOLUTE`-auto-layout
-mechanism, so copying its structure would teach the wrong default anyway. `ds-icon`'s existing
-Inverted page (if still present) may also still use an old full-dark-frame theming rather than the
-minimal theming rule below — don't inspect it as a template either; if it needs the fix, re-theme
-it to match `ds-close`'s confirmed minimal treatment instead.
+mechanism, so copying its structure would teach the wrong default anyway. **Don't inspect `ds-icon`
+as a template either** — as of its wrapper-pattern rebuild (see
+[the wrapper + Instance Swap library section](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)),
+it has no separate `Inverted` page at all (`inverted` is folded into `color` as a token-swap option,
+not a structural split), which is correct for `ds-icon` specifically but is a component-level
+modeling decision, not a template rule to copy blindly onto a future component that _does_ have a
+true structural `inverted` axis.
 
 Before building a new component's Phase 3b page, run a read-only `get_metadata` (or a `use_figma`
 traversal) against `ds-close`'s node IDs above to see the real current hierarchy, frame names,
@@ -92,8 +95,8 @@ At a high level, in order:
 6. If the component has a true `inverted`/dark-context axis, apply the
    [two-frame split](#handling-an-inverted-axis-two-frame-split) instead of a single frame.
 7. If the component has an open-ended content-selection prop (many options, e.g. an icon `name`),
-   apply the [N-split-components handling](#handling-an-open-ended-content-selection-prop-n-split-components)
-   instead of a single component set.
+   apply the [wrapper + Instance Swap library handling](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)
+   instead of a single plain component set.
 8. Iterate on the layout with the user before considering this phase done — the exact structure is
    something to confirm visually (screenshot checkpoints), same as the variant matrix itself in
    Phase 3.
@@ -259,11 +262,13 @@ key2=value2` format** — the round-trip can leave children as bare `Name/x/y`-s
 parsed variant properties, which silently produces empty-string property keys
 (`"=default, =base"`) if left as-is.
 
-**Within each of those N top-level entities** (if the component is itself split, see
-[N-split components](#handling-an-open-ended-content-selection-prop-n-split-components)) **, any
-remaining same-layers prop (size/color/etc.) is still a real crossed variant property** — see that
-section for the full rule. For a plain (non-split) component, "Main components" shows the full
-cross-product as described above.
+**If the component has an open-ended content-selection prop** (see
+[wrapper + Instance Swap library](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)),
+"Main components" shows the real wrapper set's own cross-product (the remaining same-layers props,
+not the content axis) as a single table, same mechanism as described above — see that section for
+the full rule, including the fallback case where N genuinely separate top-level sets are still
+warranted. For a plain (non-split) component, "Main components" shows the full cross-product as
+described above.
 
 ## Handling an `inverted` axis (two-frame split)
 
@@ -336,48 +341,107 @@ finally used the true master variant directly. Fix any such gap **in the master 
 with another per-instance override — it must propagate to every real use of that variant, not just
 the documentation page.
 
-## Handling an open-ended content-selection prop (N-split components)
+## Handling an open-ended content-selection prop (wrapper + Instance Swap library)
 
-**An open-ended content-selection prop with many options** (e.g. `ds-icon`'s 79-option `name`) **is
-never a crossed variant property at all — split it into N separate top-level components**, one per
-option, named `<Component>/<option>` (same Instance Swap pattern as the `inverted` axis above).
-"Main components" then becomes the exhaustive reference grid of all N real standalone components,
-each shown at its own **default** variant combination only (not every size/color combination — the
-grid stays about "which content/name," see the "Sizes & Colors" pattern below for the
-cross-product) — same centering/grid-line technique as a true table, just resolving components by
-page-level name lookup instead of `set.children`, since there's no single shared `COMPONENT_SET` to
-query across all N.
+**SUPERSEDED default — see CONVENTIONS.md's "Current rule" for the full history.** An earlier
+version of this section said an open-ended content-selection prop (e.g. `ds-icon`'s 79-option
+`name`) with its own crossed same-layers sub-props always becomes **N separate top-level
+`COMPONENT_SET`s**, each crossing those sub-props independently (`ds-icon`: 79 sets × `size`×`color`
+= 2,370 components). That was reversed once the resulting component count became the actual
+problem reported by the user — it's kept below as a **fallback for the rare case** this pattern
+doesn't fit (see the end of this section), not the default.
 
-**Within each of those N top-level entities, any remaining same-layers prop (size/color/etc.) is
-still a real crossed variant property — this is a hard rule, not a simplification opportunity,
-however large the resulting cross-product gets.** Each `<Component>/<option>` becomes its own
-`COMPONENT_SET` (not a plain `COMPONENT`) with every such prop crossed inside it. For `ds-icon`:
-`name` → 79 top-level components, and _within_ each one, `size` × `color` → 30 crossed variants
-(2,370 components total). Do not default to instance-overrides for "size/color/etc." just because
-the combined total looks large — ask first if genuinely unsure whether a prop qualifies, but once
-it passes the "same layers, different token" test, build the real variant structure. To build N
-top-level component sets at this scale: for each entity, clone its base node once per variant
-combination (reuse the real original node for exactly one combo, to avoid orphaning it),
-resize/recolor/rebind each per its combination, name each `key1=value1, key2=value2`, then
-`figma.combineAsVariants()` per entity. **Iteration order determines the default variant** —
-`combineAsVariants` has no settable `defaultVariant` (confirmed read-only); order each axis so the
-real code default comes first, not alphabetically. Batch several entities per `use_figma` call
-(batch size scales with how cheap each variant's setup is — simple resize/recolor supports larger
-batches than anything requiring font loads or nested property wiring).
+**Current default: ONE shared wrapper `COMPONENT_SET` crossing only the remaining same-layers
+sub-props, plus a lightweight Instance Swap library for the content axis.** For `ds-icon`: one
+`"Icon"` wrapper set with `size`×`color` (confirmed real build: 5×8 = 40 variants, after `inverted`
+and `disabled` were also folded into `color` as additional token-swap options rather than separate
+axes — see SKILL.md's variant-count hard-stop step for when/why that folding happens), where each
+variant contains a nested `INSTANCE` of a default glyph bound to an `INSTANCE_SWAP` component
+property (`addComponentProperty('Icon', 'INSTANCE_SWAP', defaultId)` on the set,
+`componentPropertyReferences = { mainComponent: propKey }` on each variant's nested instance) — plus
+N lightweight single-vector `COMPONENT`s (not sets, one per content option) as the swap library,
+parked off-canvas. This works because Figma preserves per-instance overrides (resize, fill rebinds)
+across an Instance Swap when the overridden node has a name-matching counterpart in the new
+component — confirmed working, not just assumed. Reduced `ds-icon` from a theoretical 2,370 down to
+119 (40 + 79).
 
-**If a component (or each of its N split top-level entities) has multiple same-layers props that
-deserve an exhaustive per-option-combination reference beyond the compact "Variants" sample, add a
-dedicated section after "Main components"** — don't try to cram a full cross-product into
-"Variants" itself, which stays a compact single-axis sample. For `ds-icon`'s `size` × `color` (5 ×
-6 = 30 combinations, across all 79 icons = 869 total swatches), this became a "📐 Sizes & Colors"
-table: one row per icon (or per top-level component, if the prop being exhausted sits above a
-top-level-component split), one column group per instance-override axis. Every swatch is an
-`instance` of that row's real component, never the master — size via `instance.resize(px, px)`,
-color via finding the inner fill-bearing node (often a single `VECTOR` child for a simple
-icon-like component) and rebinding its fill. For a build this large, split into batches (e.g. ~10
-rows per `use_figma` call) rather than one script, and build the table chrome (headers, row
-labels, empty cells) in a separate pass _before_ filling instances — makes the grid skeleton easy
-to verify before committing to filling hundreds of cells.
+**"Main components" for this pattern is the real wrapper set's own cross-product as a single table**
+(e.g. `ds-icon`: `color` rows × `size` columns, 40 cells) — same `ABSOLUTE`-auto-layout-child
+mechanism as the plain (non-split) case in [Main components](#4--main-components) above, just
+applied to the wrapper set instead of a plain component set. It is **not** N separate per-option
+tables; the content axis isn't part of this table at all.
+
+**Add a separate "🖼️ \<Plural noun\> names" (or equivalent) section after "Main components" so the
+content axis itself is still browsable.** Since "Main components" no longer shows the N options,
+consumers need another way to see what's available. Build a grid: one cell per option, each an
+`instance` of the wrapper's default variant (e.g. `size=md, color=primary`) with its `Icon`
+Instance Swap property overridden per cell (`instance.setProperties({ [swapPropertyKey]:
+optionComponentId })` — read the exact key, e.g. `"Icon#<nodeId>"`, off a real instance's
+`componentProperties`, don't assume the bare property name works) to that option's swap-library
+component, plus a small name label underneath. Build the grid on a **plain `figma.createFrame()`
+(`layoutMode: 'NONE'`), not an auto-layout frame** — cells are manually positioned (`cell.x`/`cell.y`
+in a row/column grid), and `layoutPositioning = 'ABSOLUTE'` only applies to (and is only needed on)
+an auto-layout parent; setting it on a plain frame's child throws. For `ds-icon`'s 79 icons this was
+a 9-column grid, built in one `use_figma` call (cheap per-cell setup: one instance + one swap-property
+override + one text label supports a much larger single-call batch than the SVG-import work needed
+to build the library itself).
+
+**A glyph/content library item needs exactly one fill-bearing node, name-matched to the wrapper's
+default's own structure, for color overrides to propagate fully on swap.** An icon with more than
+one top-level `VECTOR` (e.g. a 2-path logo) only gets one of its paths recolored on swap (or none,
+if the vectors sit under different group nesting than the default) — Figma's override-preservation
+matches by node name/path, and a default with one `"Vector"` child has nothing to match a second one
+against. Fix: `figma.flatten()` any multi-vector library item into one `VECTOR` before adding it to
+the library, **then immediately reassign `vector.fills = JSON.parse(JSON.stringify(vector.fills))`**
+— a plain value-preserving reassignment, not a real change — since `flatten()` otherwise leaves the
+new vector's fills in a state that reads correctly on the master component itself but comes back
+empty when read through a swapped instance. Confirmed via direct swap-and-inspect testing, not
+assumed. (From `ds-icon`'s `xing`/`information`, the only 2 of 79 icons with multi-path source
+SVGs.)
+
+**A `<clipPath>` in the source SVG can import as a visible sibling `GROUP`, not a real clip mask —
+strip it before flattening, don't just flatten everything blindly.** `figma.createNodeFromSvg`
+sometimes imports a `<clipPath>` as a plain `GROUP` named after its SVG `id` (e.g. a `<clipPath
+id="a">` becomes a sibling group literally named `"a"`), sitting alongside the real content group
+rather than being applied as an actual clip. Flattening it in with the real content either throws
+(`vector.fills` ends up `undefined` on a `GROUP`-typed result) or visually corrupts the icon.
+Detect via a regex on the raw SVG source (`/clip-path="url\(#([^)]+)\)"/`), find and `.remove()` the
+matching-named node from the imported frame, **then** flatten whatever vectors remain. (From
+`ds-icon`'s `information` and `triangle`.)
+
+**If a given content option's token-swap sub-prop renders invisibly when swapped into a specific
+context, the visibility fix belongs on the "Main components" table's data cells, not the master
+variant.** E.g. a `color` option resolving to a near-white/pale token (`inverted`, folded in as a
+color per the rule above) is invisible against a plain white table cell — give just that option's
+row/column of data cells (not the whole table, not the master component) a dark preview background,
+same reasoning as [the dark-preview-surface rule](#handling-an-inverted-axis-two-frame-split) for a
+true `inverted` frame split, just scoped to one row/column of cells instead of a whole frame since
+this pattern has no second frame to split into. (From `ds-icon`'s `color=inverted` row.)
+
+### Fallback — N separate top-level sets, each independently crossing its own sub-props
+
+Use this **only** when the wrapper pattern above genuinely doesn't fit — e.g. the content options
+don't share enough layer structure for one swap library to represent them all, or a sub-prop's
+effect isn't a pure token-swap for every option. **Within each of the N top-level entities, any
+remaining same-layers prop (size/color/etc.) is still a real crossed variant property** — this was
+the hard rule in the old default too. Each `<Component>/<option>` becomes its own `COMPONENT_SET`
+(not a plain `COMPONENT`) with every such prop crossed inside it. To build N top-level component
+sets at this scale: for each entity, clone its base node once per variant combination (reuse the
+real original node for exactly one combo, to avoid orphaning it), resize/recolor/rebind each per its
+combination, name each `key1=value1, key2=value2`, then `figma.combineAsVariants()` per entity.
+**Iteration order determines the default variant** — `combineAsVariants` has no settable
+`defaultVariant` (confirmed read-only); order each axis so the real code default comes first, not
+alphabetically. Batch several entities per `use_figma` call (batch size scales with how cheap each
+variant's setup is — simple resize/recolor supports larger batches than anything requiring font
+loads or nested property wiring). "Main components" then becomes the exhaustive reference grid of
+all N real standalone components, each shown at its own **default** variant combination only (not
+every size/color combination) — same centering/grid-line technique as a true table, just resolving
+components by page-level name lookup instead of `set.children`, since there's no single shared
+`COMPONENT_SET` to query across all N. If a full per-option-combination reference is still needed
+beyond that default-only grid, add a dedicated section after "Main components" (don't cram a full
+cross-product into "Variants," which stays a compact single-axis sample) — one row per entity, one
+column group per instance-override axis, every swatch an `instance` of that row's real component,
+built in batches with the table chrome built first in a separate pass.
 
 ## Cross-cutting build pitfalls
 

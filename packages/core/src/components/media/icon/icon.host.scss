@@ -196,7 +196,7 @@ $icon-sizes: ('sm', 'md', 'lg', 'xl');
 
 //
 // Colors
-$icon-colors: ('primary', 'primary-light', 'info', 'success', 'danger', 'warning', 'grey');
+$icon-colors: ('primary', 'info', 'success', 'danger', 'warning', 'grey');
 
 @each $color in $icon-colors {
   :host(.is-#{$color}:not(.is-inverted, .is-invalid, .is-disabled)) {
