@@ -201,6 +201,44 @@ tokens:
     figmaVariable: null
     resolved: EXCLUDED
     resolution: 'Dead CSS tied to the excluded `position` prop — see props list above.'
+
+specs: # added 2026-10-29 when the Specs section was relocated into this component's page; radius
+  # omitted everywhere (9999 on every size — a pill, per the no-radius-on-a-pill rule)
+  base:
+    - kind: icon
+      label: Icon
+      px: 14
+      token: 🧩 Component/Badge/Size/Base/Icon
+    - kind: spacing
+      label: Gap
+      px: 4
+      token: 🧩 Component/Badge/Size/Base/Gap
+    - kind: spacing
+      label: Padding
+      px: 4
+      token: 🧩 Component/Badge/Size/Base/Padding
+  sm:
+    - kind: size
+      label: Size
+      px: 12
+      token: 🧩 Component/Badge/Size/SM/Height
+      note: >
+        Bound as both min-width and max-width in code (effectively fixed) — sm also hides icon/
+        label/gap/padding entirely (`:host(.is-sm) > * { display: none }`), so this is the only
+        annotated row for this card.
+  lg:
+    - kind: icon
+      label: Icon
+      px: 18
+      token: 🧩 Component/Badge/Size/LG/Icon
+    - kind: spacing
+      label: Gap
+      px: 4
+      token: 🧩 Component/Badge/Size/LG/Gap
+    - kind: spacing
+      label: Padding
+      px: 4
+      token: 🧩 Component/Badge/Size/LG/Padding
 ```
 
 ## Anomalies found in Phase 1/3
@@ -233,3 +271,11 @@ tokens:
   reconciliation — consistent with this skill's v1 create-only scope.
 - `icon.figma.md`'s nested component key (`2056:8249`, the Icon wrapper `COMPONENT_SET`) is reused
   directly — never redrawn.
+- **2026-10-29**: the documentation page was rebuilt to the new blue-header/2-column template (see
+  DOCUMENTATION-TEMPLATE.md and CONVENTIONS.md). The real master `COMPONENT_SET` (`2129:84`) and
+  every real instance (Copy me, Anatomy, Variants) were reparented into the new structure rather
+  than rebuilt from scratch — `figmaComponentKey` is unchanged. A `specs:` list was added at the
+  same time (this component predates the Specs section). The Specs cards' icon-outline/callout
+  annotations are a simplified first pass (base/lg get an icon outline + legend; sm gets a legend
+  row only) — a later pass may want to add padding/gap markers on the stage itself, not just in the
+  legend, matching `ds-close`'s original level of annotation detail.

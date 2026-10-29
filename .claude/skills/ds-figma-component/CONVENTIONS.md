@@ -231,12 +231,46 @@ defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey 
   component, never a per-component layout decision.** As of `ds-badge`, this is the TapTap
   Design System-derived layout (bordered outer frame → Header → "Copy me" → "Variants" (compact
   single-axis) → "Main components" (full cross-product table) → "Specs" (annotated measurements
-  per Variants-axis option, added on `ds-close`)) — see DOCUMENTATION-TEMPLATE.md for the full
+  per Variants-axis option, added on `ds-close`)) — see `PHASE-3B-DOCUMENT.md` for the full
   spec. This entry exists only to flag it here too, since CONVENTIONS.md is the
   file re-read at the start of every run. `ds-spinner`/`ds-icon` still use the superseded
   row/card/column layout from before this change — revisit them to match when next touched, not
   yet done. (Template replaced on `ds-badge`'s request, referencing TapTap Design System's
   Figma community file.)
+  - **SUPERSEDED again, 2026-10-29 — full-width blue header over a 2-column body, "Main
+    components" dropped to raw table-chrome-free "🔒 Component Set".** Per a user-built
+    `ComponentTemplate` reference frame (`⏳ Core / Indicator / Badge` page, node `2160:3652`), the
+    single-column stack layout above is replaced with: a full-width header (blue fill bound to
+    `🔗 Alias/🎨 Surface/Primary`, title + review-marker kicker + lead on the left, a
+    version/last-updated/Storybook-link info block on the right) over a `HORIZONTAL` 2-column body
+    — left column stacks Copy me → Anatomy → Specs (moved here from the end of the page) →
+    Variants; right column holds one "🔒 Component Set" panel. The old "Main components" table
+    chrome (header row, row-label column, grid-line rectangles, `ABSOLUTE`-auto-layout-child
+    overlay) is gone entirely — the real master `COMPONENT_SET` is placed as a normal, non-absolute
+    auto-layout child, styled directly with a 2px dashed `🌐 Global/🌈 Color/Purple/4` stroke, and
+    left to arrange its own variant children via Figma's native `combineAsVariants()` grid, with no
+    custom cell-centering math. Per-cell labels are explicit future work, not built yet. Both
+    columns get an independent 734px-minimum, content-driven width (not locked to match each
+    other) so a large component set can grow the right column (and the whole page) without
+    constraining the left column's prose. Inter-section divider lines are dropped in favor of each
+    section's own 40px top padding. Full spec in `PHASE-3B-DOCUMENT.md`; canonical reference is
+    now `ComponentTemplate` for layout/header/Component Set, `ds-close` still for everything else
+    (panel styling, `inverted` split, focus states). `ds-close`/`ds-spinner`/`ds-icon`/`ds-badge`'s
+    pre-2026-10-29 pages still use the prior single-column layout — migrate when next touched; this
+    run also rebuilds `ds-badge`'s live page to the new structure as part of the same pass. (From:
+    user request, referencing a hand-built `ComponentTemplate` mockup frame.)
+  - **The header is now a real shared Figma component, not hand-built per page.** A `Header`
+    master component lives on the `🧰 Annotations` page (node `2180:17`) — every component page's
+    header is an `INSTANCE` of it with its text nodes overridden (component name, kicker
+    breadcrumb, lead paragraph, version/date wordmarks, Storybook link + hyperlink), never a
+    fresh hand-built frame. `ds-badge`'s header was converted to this instance in the same pass
+    that created the master. Edit the master once to change the header's design everywhere; never
+    fork a one-off copy for a single component. (From: user request, 2026-10-29.)
+  - **The master `COMPONENT_SET` placed in "🔒 Component Set" stays unlocked.** The old template
+    locked the set once to stop a human dragging the whole grid out of alignment inside hand-built
+    table chrome; that protection doesn't apply anymore since the set is just a normal auto-layout
+    child with no table geometry to misalign. Don't set `locked: true` on it. (From: user request,
+    2026-10-29.)
 
 - **Never move a `COMPONENT_SET`'s variant child into another frame — always
   `variant.createInstance()` instead, even when the goal is literally "show the real
@@ -442,3 +476,33 @@ true})` showed a blank image matching the set's _stale_ `width`/`height` exactly
   resolve fine. Build the paint from `variable.resolveForConsumer(node).value` before binding.
   Easy to miss: only the masters look wrong, the documentation instances look right. (From:
   `ds-close` — all 30 masters drew a black X instead of navy.)
+
+- **The Copy me / Anatomy / Specs / Variants panels on the Phase 3b documentation page all share
+  one chrome now: a real `Preview` master component** on the `🧰 Annotations` page (node `2182:2`)
+  — white fill, 2px stroke bound to `🔗 Alias/▭ Border/Color/GreyLight`, all four corner radii
+  bound to `🌐 Global/📏 Dimension/Radius/6` (6px — this file has no 8px radius token; 6px was
+  already what the Anatomy box used). Instance it rather than hand-building a bordered/rounded box
+  per section, same discipline as the `Header` master. This replaced three different ad-hoc
+  treatments that had drifted apart (Copy me's borderless 4px-radius box, Anatomy's correct 2px
+  border + 6px radius, Variants' 2px border with no radius at all) — see
+  `PHASE-3B-DOCUMENT.md`'s "0. Shared `Preview` box component" section for the full
+  rationale and usage. (From: user request, 2026-10-29.)
+  - **`appendChild` into an `INSTANCE` throws — instances can't accept arbitrary new children, only
+    overrides of structure the master already defines.** First build of this pattern tried
+    `preview.createInstance()` then `instance.appendChild(contentFrame)`, which fails with
+    `"Cannot move node. New parent is an instance or is inside of an instance"` since `Preview`'s
+    master has no children to override into. **Detaching the instance to work around this
+    (`instance.detachInstance()`) is the wrong fix** — it produces a plain frame baked with the
+    right-looking values but severed from the master entirely (invisible as `Preview` in the layers
+    panel, confirmed by the user noticing the Badge Documentation page's boxes showed no `Preview`
+    instance after a first pass used detach). **Correct pattern: keep the content frame as a normal
+    sibling, and layer a real `Preview` instance behind it** — `insertChild(0, instance)` into the
+    same parent as the content frame (index 0 renders behind), `instance.layoutPositioning =
+'ABSOLUTE'`, `x = 0`, `y = 0`, `instance.resize(contentWidth, contentHeight)` to match the
+    content frame's bounds exactly, and clear the content frame's own fill/stroke/radius so the
+    instance's chrome shows through. The content frame stays a normal (non-absolute) auto-layout
+    child so the parent still hugs/sizes around it; the `Preview` instance just rides along at the
+    same bounds without participating in the hug calculation. Confirmed: `resize()` works on the
+    instance even though the master's own sizing mode is `HUG`, same as it does on the master itself
+    (both have no real children to hug around). (From: Badge Documentation page's Copy me/Anatomy/
+    Specs/Variants boxes, 2026-10-29 — first pass used detach, caught and redone same day.)
