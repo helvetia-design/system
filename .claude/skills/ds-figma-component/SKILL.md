@@ -67,7 +67,7 @@ flowchart TD
 
     subgraph P3bG["Phase 3b — Documentation page"]
         direction LR
-        P3ba["Read DOCUMENTATION-TEMPLATE.md<br/>+ inspect the canonical live page"]:::code --> P3bb["Build Header / Copy me /<br/>Variants / Main components"]:::figma
+        P3ba["Read DOCUMENTATION-TEMPLATE.md<br/>+ inspect the canonical live page"]:::code --> P3bb["Build Header / Copy me /<br/>Variants / Main components / Specs"]:::figma
     end
 
     P3bG --> P4G
@@ -198,7 +198,12 @@ read/write work it does on its own between them.
      during Phase 3. Surface every gap now, as a batch, using the same hard-stop flow as step 5,
      rather than discovering missing tokens one at a time mid-build.
 6. Write all of the above into `<name>.figma.md` (create it if it doesn't exist) as a draft, per
-   the schema in [Mapping file format](#mapping-file-format) below.
+   the schema in [Mapping file format](#mapping-file-format) below. Include the `specs:` list —
+   the values (fixed or min width/height, padding/gaps, fixed sizes of nested elements, radius,
+   border width, typography) per option of the Variants axis that Phase 3b's "📐 Specs" section
+   will show, each pointing at its Figma variable. It's a view onto the completeness checklist
+   from step 5b, not new analysis. Leave out calculated inner content sizes and the radius of a
+   circle (see DOCUMENTATION-TEMPLATE.md → "6. 📐 Specs").
 
 ### Phase 2 — Propose variant grouping
 
@@ -392,8 +397,9 @@ set. Build this after Phase 3 confirms the variant matrix looks right, before Ph
 That file names `ds-close`'s documentation pages as the canonical live reference frames to inspect
 via `get_metadata` before building — don't rebuild the structure from prose alone each time;
 mirror the real, already-correct nodes. Summary of what it covers: page background, outer frame
-chrome, the section layout (Header / Copy me / Anatomy / Variants / Main components — Anatomy is
-skipped when the component's `figma.md` has no `anatomy:` list), the light+dark
+chrome, the section layout (Header / Copy me / Anatomy / Variants / Main components / Specs —
+Anatomy is skipped when the component's `figma.md` has no `anatomy:` list; Specs is built from the
+shared annotation components on the `🧰 Annotations` page), the light+dark
 two-frame split for an `inverted` axis, the N-split-components pattern for open-ended
 content-selection props, instance-vs-master-set rules (including the `ABSOLUTE`-auto-layout-child
 mechanism for placing the real master set on the Main components grid), and every known pitfall,
@@ -488,7 +494,18 @@ props:
   figmaVariable: null
   resolved: false
   resolution: "<decision made with the user — pick a token or accept hardcoded>"
-  \`\`\`
+  specs: # one entry per option of the Variants axis, shown in Phase 3b's "📐 Specs" section
+  base:
+  - kind: size # size | icon | spacing | radius (| type, once added)
+    label: Size # Size (width = height, same variable) | Width | Height | Min width | Min height | Padding | Gap | Radius | …
+    px: 24
+    token: 🧩 Component/Close/Size/Base # exact Figma variable name
+  - kind: spacing
+    label: Padding
+    px: 5 # actual value used (marker + legend Value)
+    token: 🧩 Component/Close/Padding/Base
+    calc: '(10px) ÷ 2' # only when px is calculated from the variable; shown in the legend
+    \`\`\`
 
 Notes on this mapping, open questions, and rationale for any non-obvious grouping decision go
 here as prose, below the YAML block.

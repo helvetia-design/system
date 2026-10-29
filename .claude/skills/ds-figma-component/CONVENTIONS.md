@@ -230,8 +230,9 @@ defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey 
 - **Phase 3b's documentation page structure is a fixed template applied identically to every
   component, never a per-component layout decision.** As of `ds-badge`, this is the TapTap
   Design System-derived layout (bordered outer frame → Header → "Copy me" → "Variants" (compact
-  single-axis) → "Main components" (full cross-product table)) — see SKILL.md's Phase 3b section
-  for the full spec. This entry exists only to flag it here too, since CONVENTIONS.md is the
+  single-axis) → "Main components" (full cross-product table) → "Specs" (annotated measurements
+  per Variants-axis option, added on `ds-close`)) — see DOCUMENTATION-TEMPLATE.md for the full
+  spec. This entry exists only to flag it here too, since CONVENTIONS.md is the
   file re-read at the start of every run. `ds-spinner`/`ds-icon` still use the superseded
   row/card/column layout from before this change — revisit them to match when next touched, not
   yet done. (Template replaced on `ds-badge`'s request, referencing TapTap Design System's
@@ -423,3 +424,21 @@ true})` showed a blank image matching the set's _stale_ `width`/`height` exactly
   `ds-badge`'s `Show icon` build — a raw `visible = false` on the icon instance was set during
   Phase 3's fan-out, silently working for the set's own master/children but breaking every
   Phase 3b instance built from it afterward.)
+
+- **Every focus state is built as absolutely positioned ring frames with _outside_ strokes —
+  never as `DROP_SHADOW` effects.** Use one ring frame per CSS `box-shadow` spread, stacked in
+  the same order, with stroke weights bound to the focus size tokens and stroke colors to the
+  focus color tokens. This applies to every component, whatever its background: a Figma drop
+  shadow is derived from the layer's own alpha, so on a component with a fully transparent
+  background a drop-shadow ring renders as nothing. Opaque components would render one, but a
+  single construction keeps focus states consistent across the library. (From: `ds-close`'s
+  `focus-shadow` mixin — 2px border color + 5px focus color — first built as two spread drop
+  shadows, which left the focus column empty. Checked 2026-10-29: no other pushed component has
+  a focus state.)
+
+- **When rebinding a cloned variant's paint to a variable, create the paint with the variable's
+  resolved value as its color — never a placeholder.** After `setBoundVariableForPaint`, a master
+  can keep rendering the placeholder color even though the binding is correct and instances
+  resolve fine. Build the paint from `variable.resolveForConsumer(node).value` before binding.
+  Easy to miss: only the masters look wrong, the documentation instances look right. (From:
+  `ds-close` — all 30 masters drew a black X instead of navy.)

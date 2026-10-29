@@ -10,7 +10,7 @@ and the real component set, not redrawn approximations.
 This document is a **fixed template, not a per-component judgment call** — deviating from its
 _structure_ is wrong. Adapt _content_ (which props, which tokens, which axis) to the component at
 hand; never improvise a different layout. The template follows the TapTap Design System's Figma
-community file structure (`Button–Primary` page), replacing an earlier row/card/column layout used
+community file structure (`Button–Primary` page, plus the "Space" section of its `Select` pages), replacing an earlier row/card/column layout used
 on this file's first components. It now applies to every component built on this Figma file.
 
 ## Table of contents
@@ -25,6 +25,7 @@ on this file's first components. It now applies to every component built on this
   - [3. "🏗️ Anatomy"](#3--anatomy)
   - [4. "🛠 Variants"](#4--variants)
   - [5. "🔒 Main components"](#5--main-components)
+  - [6. "📐 Specs"](#6--specs)
 - [Handling an `inverted` axis (two-frame split)](#handling-an-inverted-axis-two-frame-split)
 - [Handling an open-ended content-selection prop (wrapper + Instance Swap library)](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)
 - [Cross-cutting build pitfalls](#cross-cutting-build-pitfalls)
@@ -49,6 +50,8 @@ dark token `VariableID:137:2764`; the header's two-line `heading` shows a bare `
 light frame (qualifier hidden) and `"Close" / "Inverted"` on the dark frame (qualifier visible);
 and both frames' `Tables row` places the real `Close/Primary` / `Close/Inverted` component set as
 an `ABSOLUTE`-positioned, singly-locked auto-layout child next to the table chrome (`Normal col`).
+The light frame also carries the reference "📐 Specs" section (`specs`, node `2047:19`) — the
+dark frame has none, per [5. "📐 Specs"](#6--specs).
 
 **`ds-close`'s reference pages predate the "🏗️ Anatomy" section — they don't have one.** Inspect
 them for every other section's structure as described below, but build Anatomy from this document's
@@ -100,14 +103,15 @@ At a high level, in order:
    has no `anatomy:` list (no `@part` tags found in Phase 1).
 5. Build [Variants](#4--variants).
 6. Build [Main components](#5--main-components).
-7. If the component has a true `inverted`/dark-context axis, apply the
+7. Build [Specs](#6--specs).
+8. If the component has a true `inverted`/dark-context axis, apply the
    [two-frame split](#handling-an-inverted-axis-two-frame-split) instead of a single frame.
-8. If the component has an open-ended content-selection prop (many options, e.g. an icon `name`),
+9. If the component has an open-ended content-selection prop (many options, e.g. an icon `name`),
    apply the [wrapper + Instance Swap library handling](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library)
    instead of a single plain component set.
-9. Iterate on the layout with the user before considering this phase done — the exact structure is
-   something to confirm visually (screenshot checkpoints), same as the variant matrix itself in
-   Phase 3.
+10. Iterate on the layout with the user before considering this phase done — the exact structure is
+    something to confirm visually (screenshot checkpoints), same as the variant matrix itself in
+    Phase 3.
 
 ## Document structure
 
@@ -136,7 +140,7 @@ row`), and the "Main components" table (`Normal table`) — uses `🌐 Global/�
   divider or grid line as a rectangle, give it a 2px dimension on its thickness axis
   (`resize(width, 2)` for a horizontal divider, `resize(2, height)` for a vertical grid line); when
   it's a frame stroke, set `strokeWeight: 2`.
-- Inside the frame, the sections below, in order (five when the component has an anatomy list, four
+- Inside the frame, the sections below, in order (six when the component has an anatomy list, five
   when it doesn't — see [3. "🏗️ Anatomy"](#3--anatomy)), each separated by a 2px
   `Alias/Border/Color/GreyLight` divider rule.
 
@@ -193,7 +197,7 @@ row`), and the "Main components" table (`Normal table`) — uses `🌐 Global/�
   pattern (confirmed these are NOT derivable by a fixed category/name formula — `ds-spinner` and
   `ds-icon`'s URL shapes differ from each other).
 - Each of the section headings below ("🏗️ Anatomy", "👉 Copy me", "🛠 Variants", "🔒 Main
-  components") is bold, `Component/Heading/Level/1/FontSize` (28px), `Alias/Text/Color/Primary`.
+  components", "📐 Specs") is bold, `Component/Heading/Level/1/FontSize` (28px), `Alias/Text/Color/Primary`.
 
 ### 2. "👉 Copy me"
 
@@ -410,6 +414,120 @@ not the content axis) as a single table, same mechanism as described above — s
 the full rule, including the fallback case where N genuinely separate top-level sets are still
 warranted. For a plain (non-split) component, "Main components" shows the full cross-product as
 described above.
+
+### 6. "📐 Specs"
+
+The developer-handoff reference: the component's own measured values (dimensions, padding and
+gaps, fixed sizes of nested elements, corner radius, border width, typography), drawn as
+annotations on a real instance, each listed with the Figma variable it comes from. Modelled on the
+"Space" section of the TapTap Design System's component pages, adapted to this template's light
+chrome (no black band) and to this system's token-first rule (every value names its variable).
+
+**The data comes from Phase 1, never from measuring the canvas.** Phase 1's completeness checklist
+already resolves every spacing gap, size, radius and text attribute to a token; Phase 1 also
+records the subset shown here as the `specs:` list in `<name>.figma.md` (see SKILL.md's mapping
+file format). At build time, read each value from its Figma variable (walk the `VARIABLE_ALIAS`
+chain to the literal) instead of typing it from memory, and stop if it disagrees with `specs:`.
+
+What to annotate, and what not to:
+
+- **Width/height only when the code fixes them** (a size token on `width`/`height`). If the code
+  only sets `min-width`/`min-height`, annotate that instead, labelled `Min width`/`Min height`
+  with a `min 40px` value. If the size just hugs its content, don't annotate it: the padding and
+  gap annotations already explain it.
+- **Never annotate a calculated inner content size.** A value the code derives from other tokens
+  (e.g. `ds-close`'s glyph, `calc(size - padding)`) is a consequence, not a spec. Annotate the
+  tokens it's derived from.
+- **No radius on a circle or pill.** Skip the radius annotation — marker _and_ legend row — when
+  the radius is at least half of the component's height (and width, if smaller), e.g.
+  `ds-close`'s and `ds-tag`'s `9999`. The fully rounded shape already says it all; on a pill the
+  `Spec/Radius` dot would also float off the curved edge. Same as TapTap's Tag specs, which show
+  no radius on their pill tags.
+- **Padding on both sides gets a highlight on both sides.** A symmetric padding token (e.g.
+  `Padding/Y`) gets a `Spec/Inset` on top **and** bottom (or left **and** right); one
+  `Spec/Dimension` marker is enough. When the two sides differ (e.g. `ds-tag`'s closable right
+  padding, `Padding/X − 4`), give each side its own marker and its own legend row, labelled by
+  side (`Padding L` / `Padding R`), never an axis label next to a side label.
+
+Structure (mirror `ds-close`'s live `specs` node `2047:19`):
+
+- A 2px divider, then a `specs` `VERTICAL` auto-layout frame (`itemSpacing: 16`, no fill, `FILL`
+  width), last child of the outer frame.
+- `specs-heading`: clone the `variants-heading` text node and set it to `"📐 Specs"` — cloning
+  keeps its font/size/color bindings.
+- Optional `rule-note` (💡 + one or two sentences), only for a sizing rule the component's code
+  actually enforces (TapTap's example: "minimum width is 2× the field height"). Never write a rule
+  that isn't traceable to code.
+- `Specs grid`: `VERTICAL` auto-layout (`itemSpacing: 16`, `FILL` width) with **one card per option
+  of the Variants section's axis**, same order (usually `size`). Each card, `spec-<option>`:
+  - `HORIZONTAL` auto-layout, padding 20, `itemSpacing: 32`, corner radius 8, `FILL` width,
+    `counterAxisAlignItems: 'CENTER'`, literal fill `{0.976, 0.976, 0.976}` (same as "Copy me").
+  - `preview` (`VERTICAL`, `itemSpacing: 12`): the option name (clone the Variants `axis-label`
+    text) above a `stage`.
+  - `stage`: a plain frame (**no** auto-layout — this is an intentional absolute composition),
+    240×100, no fill, `clipsContent: false`. It holds one `INSTANCE` of the option's default
+    variant (`state=default`, Primary set) at **1×** — never rescaled, the spec shows the real
+    size — centered, plus the annotation instances positioned around it.
+  - `legend` (`VERTICAL`, `itemSpacing: 8`): one `Spec/Legend item` instance per annotated value.
+
+**Annotation components live on the shared `🧰 Annotations` page (node `2046:5`)**. Always
+instance them, never draw loose lines/labels (TapTap's hand-drawn markers are what this avoids):
+
+| Component                          | Use                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Spec/Dimension` (`side` × `kind`) | A measured distance. `side` (`top`/`bottom`/`left`/`right`) is the side of the component it sits on. Resize the instance to the length (constraints keep ticks/label in place). `Value` has units: `24px`, `min 40px`.                                                                                                                                                                                                       |
+| `Spec/Inset`                       | Translucent highlight over a padding/gap area, resized to that area.                                                                                                                                                                                                                                                                                                                                                         |
+| `Spec/Outline`                     | Dashed box around a nested element that has its own fixed size (e.g. a nested icon instance with a size token). Not for calculated content sizes.                                                                                                                                                                                                                                                                            |
+| `Spec/Radius`                      | Dot + leader line + `Value` label. Place it so the dot centers on the corner: instance `x = cornerX − 3`, `y = cornerY − 17`.                                                                                                                                                                                                                                                                                                |
+| `Spec/Callout`                     | A text part's typography, TapTap-style: purple pill label (`Value`: `16px Bold`) + vertical leader + dot. Put the dot on the text (`x = textCenterX − width/2`) and the pill fully **above** the component, 8px clear of its top edge, so it never overlaps the component or its padding highlights; shift the stage content down if the pill would leave the stage. Keep spacing markers below so the label has room above. |
+| `Spec/Legend item` (`kind`)        | Four aligned columns: swatch, `Value` (fixed 52px column, the actual value: `5px`), `Label` (fixed 72px column: `Size`, `Width`, `Height`, `Min width`, `Padding`, `Gap`, `Radius`, …), `Token` (variable name + calculation).                                                                                                                                                                                               |
+
+**Marker order, from the center out: component → measure line → label.** That's what `side`
+encodes: `top` has its label above the line, `bottom` below, `left` to the left, `right` to the
+right. So a width marker above the component uses `side=top`, a padding marker below it uses
+`side=bottom`.
+
+`kind` colors are fixed: `size` green, `icon` orange, `spacing` magenta, `radius` blue, `type`
+purple — literal documentation colors, not design tokens (same reasoning as the literal page
+background). One color per kind, even when a card has several rows of the same kind (TapTap uses
+one magenta for all spacing too). **Every text part gets a `Spec/Callout`** on the stage and a
+`kind=type` legend row (`Value` = font size, `Label` = `Type`, `Token` = the font-size token plus
+weight/family/line-height, abbreviated with `…/` so the row fits). Both were added for `ds-tag`,
+the first component with a text part.
+
+Legend `Value` is the **actual value used**, the same number as the marker (`5px`), not
+necessarily the variable's own value.
+
+Legend `Token`: the **exact Figma variable name**, emoji segment prefixes included
+(`🧩 Component/Close/Size/Base`), so it can be searched for in Figma's variable picker as-is.
+**When the actual value is calculated from the variable, add the variable's own value and the
+calculation**, so the row explains why `Value` differs from the variable:
+`🧩 Component/Close/Padding/Base (10px) ÷ 2`. The calculation must match the one in the
+component's code and the `specs:` entry in `<name>.figma.md`.
+
+One row per annotated value, with one exception: **when width and height use the same variable
+and end up with the same value, merge them into a single `Size` row** (`ds-close`:
+`24px · Size · 🧩 Component/Close/Size/Base`). Keep separate `Width`/`Height` rows when they use
+different variables, when one is a minimum (`Min width`) and the other fixed, or when the values
+differ. The stage still draws both the width and the height marker either way.
+
+Layout tips for the stage (from `ds-close`, whose smallest variant is 14px):
+
+- Width goes above the instance (`side=top`) and height to its left (`side=left`); spacing
+  markers go below (`side=bottom`) or to the right (`side=right`), so labels don't collide on
+  small variants.
+- Marker labels carry the value only; the legend repeats it next to the label + variable. That's
+  what keeps a 14px component readable at 1×.
+
+**Only the light/Primary frame gets a Specs section.** An `inverted` split changes colors, not
+geometry, so the dark frame would repeat identical numbers. For an
+[content-selection component](#handling-an-open-ended-content-selection-prop-wrapper--instance-swap-library), build the
+cards from one representative entity — the values are shared by every entity.
+
+**The Specs section is a static snapshot.** Legend and marker labels are plain text overrides, not
+live bindings, and annotation instances are sized to literal px, so a token value change needs the
+section rebuilt. Like the rest of this v1 skill, keeping it in sync with later token changes is out
+of scope.
 
 ## Handling an `inverted` axis (two-frame split)
 

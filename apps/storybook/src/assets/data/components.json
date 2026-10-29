@@ -1,7 +1,7 @@
 {
   "compiler": {
     "name": "@stencil/core",
-    "version": "4.45.1",
+    "version": "4.45.2",
     "typescriptVersion": "5.8.3"
   },
   "components": [
@@ -4904,10 +4904,10 @@
       "props": [
         {
           "name": "color",
-          "type": "\"danger\" | \"disabled\" | \"success\" | \"warning\" | undefined",
+          "type": "\"danger\" | \"disabled\" | \"info\" | \"success\" | \"warning\" | undefined",
           "complexType": {
             "original": "BadgeColor",
-            "resolved": "\"danger\" | \"disabled\" | \"success\" | \"warning\" | undefined",
+            "resolved": "\"danger\" | \"disabled\" | \"info\" | \"success\" | \"warning\" | undefined",
             "references": {
               "BadgeColor": {
                 "location": "import",
@@ -4932,6 +4932,10 @@
               "type": "string"
             },
             {
+              "value": "info",
+              "type": "string"
+            },
+            {
               "value": "success",
               "type": "string"
             },
@@ -4949,6 +4953,7 @@
           "setter": false,
           "oneOfValues": [
             "disabled",
+            "info",
             "danger",
             "warning",
             "success"
@@ -30121,7 +30126,7 @@
           "mutable": false,
           "attr": "turn",
           "reflectToAttr": false,
-          "docs": "If `true` the icon is rotated 180deg",
+          "docs": "If `true`, rotates the icon — the angle depends on `name`: 225deg for `plus` (turns it into\nan \"×\"), 180deg for `caret-down`/`caret-up`. Has no visual effect for any other icon name.",
           "docsTags": [
             {
               "name": "default",
@@ -68244,7 +68249,7 @@
       "path": "src/components/indicators/badge/badge.interfaces.ts"
     },
     "src/components/indicators/badge/badge.interfaces.ts::BadgeColor": {
-      "declaration": "\"success\" | \"warning\" | \"danger\" | \"disabled\"",
+      "declaration": "\"success\" | \"warning\" | \"danger\" | \"info\" | \"disabled\"",
       "docstring": "",
       "path": "src/components/indicators/badge/badge.interfaces.ts"
     },
