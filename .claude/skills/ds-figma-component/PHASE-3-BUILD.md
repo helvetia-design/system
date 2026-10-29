@@ -43,6 +43,6 @@ real Figma component set from that confirmed mapping.
    set, reusing the same bindings and nested instances.
 6. Write the resulting Figma component key/node-id back into `<name>.figma.md`.
 
-**Next: [`PHASE-3B-DOCUMENT.md`](PHASE-3B-DOCUMENT.md)** — once the full variant matrix is built
-and the component key is written back. Build the documentation page before Phase 4's review, so
+**Next: [`PHASE-4-DOCUMENT.md`](PHASE-4-DOCUMENT.md)** — once the full variant matrix is built
+and the component key is written back. Build the documentation page before Phase 5's review, so
 that review covers the documentation page too, not just the raw component set.

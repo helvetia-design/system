@@ -1,9 +1,9 @@
-# Phase 3b — Document (documentation presentation)
+# Phase 4 — Document (documentation presentation)
 
 **You are here:** assumes [`PHASE-3-BUILD.md`](PHASE-3-BUILD.md) has built and confirmed the full
 variant matrix as a real Figma `COMPONENT_SET`, with its key written back to `<name>.figma.md`.
 This phase builds the per-component **documentation page** — build it after Phase 3 confirms the
-variant matrix looks right, before [`PHASE-4-REVIEW.md`](PHASE-4-REVIEW.md)'s review, so that
+variant matrix looks right, before [`PHASE-5-REVIEW.md`](PHASE-5-REVIEW.md)'s review, so that
 review covers the documentation page too, not just the raw component set.
 
 ## What this is, and why we have it
@@ -73,7 +73,7 @@ being migrated to the new template in the same pass that introduced this documen
 migrated, check whether its live page is a better combined reference than `ComponentTemplate` +
 `ds-close` and update this pointer.
 
-Before building a new component's Phase 3b page, run a read-only `get_metadata` / targeted
+Before building a new component's Phase 4 page, run a read-only `get_metadata` / targeted
 property reads against `ComponentTemplate`'s node IDs above (and `ds-close`'s, for the parts it
 still covers) to see the real current hierarchy, fills, fonts, bound variables, and auto-layout
 settings — then mirror that structure, rather than reconstructing positions/alignment from this
@@ -83,7 +83,7 @@ this reference pointer if the canonical node IDs change.
 ## When to use this
 
 Build this after Phase 3 confirms the variant matrix looks right — don't start it on an unconfirmed
-or partially-built component set. Finish it before Phase 4's visual-regression review, so that
+or partially-built component set. Finish it before Phase 5's visual-regression review, so that
 review covers the documentation page too, not just the raw component set.
 
 ## What to do
@@ -439,5 +439,5 @@ These apply to building any frame/section in this template, not one specific sec
   non-deterministically. Confirmed by observing this fail silently on one build and succeed by luck
   on another with the exact same fire-and-forget pattern.
 
-**Next: [`PHASE-4-REVIEW.md`](PHASE-4-REVIEW.md)** — once the documentation page is built and
+**Next: [`PHASE-5-REVIEW.md`](PHASE-5-REVIEW.md)** — once the documentation page is built and
 iterated on with the user (step 8 above).

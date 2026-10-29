@@ -100,10 +100,10 @@ component's code and produces the draft mapping that Phase 2 proposes a grouping
 6. Write all of the above into `<name>.figma.md` (create it if it doesn't exist) as a draft, per
    the schema in `SKILL.md`'s "Mapping file format" section. Include the `specs:` list —
    the values (fixed or min width/height, padding/gaps, fixed sizes of nested elements, radius,
-   border width, typography) per option of the Variants axis that Phase 3b's "📐 Specs" section
+   border width, typography) per option of the Variants axis that Phase 4's "📐 Specs" section
    will show, each pointing at its Figma variable. It's a view onto the completeness checklist
    from step 5b, not new analysis. Leave out calculated inner content sizes and the radius of a
-   circle (see `PHASE-3B-DOCUMENT.md` → "6. 📐 Specs").
+   circle (see `PHASE-4-DOCUMENT.md` → "6. 📐 Specs").
 
 **Next: [`PHASE-2-PROPOSE.md`](PHASE-2-PROPOSE.md)** — once the draft `<name>.figma.md` (props,
 anatomy, states, resolved tokens, completeness checklist) exists.

@@ -1,6 +1,6 @@
-# Phase 4 — Review against visual regression screenshots
+# Phase 5 — Review against visual regression screenshots
 
-**You are here:** assumes [`PHASE-3B-DOCUMENT.md`](PHASE-3B-DOCUMENT.md) has built the component
+**You are here:** assumes [`PHASE-4-DOCUMENT.md`](PHASE-4-DOCUMENT.md) has built the component
 set and its documentation page, both iterated on and confirmed visually with the user. This is
 the last phase in this skill's v1 (create-only) scope — there is no update/reconcile phase after
 this; findings surfaced here go back to the user as a report, not an auto-fix loop.
@@ -34,9 +34,9 @@ this; findings surfaced here go back to the user as a report, not an auto-fix lo
    computed/rendered output.** `ds-icon`'s `turn` was documented as "rotated 180deg" but the
    real CSS only rotates 3 specific icon names, one of them by 225deg, not 180 — caught by
    comparing the real `turn` visual-regression baseline, confirmed via `getComputedStyle` matrix
-   inspection. When Phase 4 reveals the _component's own code doc_ was wrong (not just the Figma
+   inspection. When Phase 5 reveals the _component's own code doc_ was wrong (not just the Figma
    mapping or `<name>.figma.md`'s draft notes), fix the code doc too, in the same pass — code is
-   the source of truth for documentation copy (`PHASE-3B-DOCUMENT.md`'s header lead-paragraph
+   the source of truth for documentation copy (`PHASE-4-DOCUMENT.md`'s header lead-paragraph
    rule), so a known-wrong comment shouldn't survive a run that just disproved it.
 
 **Done.** No further phase — this skill's v1 scope ends here (no update/reconcile phase for an

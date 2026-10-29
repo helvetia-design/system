@@ -14,7 +14,7 @@ before anything is built.
      layers/structure** — e.g. a button `color`/`type` prop where `primary` is a solid fill,
      `ghost` is a transparent fill + border, `link` is text-only with an underline — don't force
      it into one variant set. Split it into separate top-level components instead, swapped via
-     Figma's native Instance Swap, same treatment as the `inverted` axis (Phase 3b) and an
+     Figma's native Instance Swap, same treatment as the `inverted` axis (Phase 4) and an
      open-ended content-selection prop like icon `name`. Confirmed against the TapTap Design
      System's own Button, which models exactly this (`Button/Primary`, `Button/Ghost`,
      `Button/Link`, `Button/Outline` as separate top-level components, never a shared "style"
@@ -39,14 +39,14 @@ before anything is built.
 3. **Sketch the resulting variant grid itself, not just the property list** — how many axes
    there are determines Figma's own native variant-grid arrangement, and the user should be able
    to picture it before Phase 3 builds anything. **This ASCII sketch is a planning/counting aid for
-   the variant matrix, not a literal rendering of Phase 3b's "🔒 Component Set" section** — that
+   the variant matrix, not a literal rendering of Phase 4's "🔒 Component Set" section** — that
    section no longer draws table chrome (headers/gridlines/cells); it just places the real
    `COMPONENT_SET` and lets Figma's own `combineAsVariants()` arrange its children natively. Include
    this sketch (plain ASCII, in the same draft) alongside the proposed grouping:
    - **2 axes (the normal case)**: one simple grid — one axis across the header row, the other
      down the header column, e.g. `state` (rows: default/hover/active/disabled/...) × a
      same-layers prop like `size` (columns: sm/base). One cell per combination, same shape as the
-     variant matrix Phase 3b's "🔒 Component Set" section will show:
+     variant matrix Phase 4's "🔒 Component Set" section will show:
      ```
                 sm        base
      default  [cell]    [cell]
@@ -70,7 +70,7 @@ before anything is built.
      ```
    - **4+ axes, or any axis that is structural rather than same-layer** (different layers/shape
      per option, not just a different token on an identical shape — same test as the enum-prop
-     rule above, and the same treatment `inverted` already gets in Phase 3b): stop stacking grids.
+     rule above, and the same treatment `inverted` already gets in Phase 4): stop stacking grids.
      That axis is a top-level split signal, not another grid dimension — split it into separate
      top-level components (Instance Swap), and sketch each split component's own grid separately,
      each with its own frame/title, same as `inverted`'s light/dark two-frame layout.

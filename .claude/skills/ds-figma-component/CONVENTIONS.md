@@ -119,14 +119,14 @@ defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey 
   ~30px width for a token that's actually exactly 24px, purely because the element was
   mid-rotation at the instant of measurement. Prefer reading the literal CSS property value
   (`getComputedStyle(el).width`) over the rendered bounding box for anything with a running CSS
-  `animation`, or measure a paused/non-animating instance. (From: `ds-spinner`'s circle Phase 4
+  `animation`, or measure a paused/non-animating instance. (From: `ds-spinner`'s circle Phase 5
   sweep.)
 - **When a library recolors nested SVG content dynamically (e.g. `lottie-colorify`), querying
   the first matching `path`/`g` can land on an unstyled wrapper, not the actual colored leaf
   element.** `getComputedStyle(el).fill` on the wrong element reads the SVG spec's initial
   value (`black`) instead of the real applied color. Check the element's `fill` _attribute_
   directly (not just computed style) across all matching descendants, and use the one that
-  actually has a non-null `fill` attribute set. (From: `ds-spinner`'s logo mark Phase 4 sweep,
+  actually has a non-null `fill` attribute set. (From: `ds-spinner`'s logo mark Phase 5 sweep,
   which also surfaced a real, now-quantified color drift between the live `getColor()` fallback
   hex and the token-bound Figma value — see `spinner.figma.md`.)
 
@@ -136,9 +136,9 @@ defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey 
   (`icon.host.scss`) only defines a transform for 3 specific icon names, and one of them
   (`plus`) rotates 225deg, not 180 — confirmed via `getComputedStyle` matrix inspection in a
   live browser, not by re-reading the SCSS harder. A generic-sounding prop description can hide
-  per-value or per-name special-casing. When a Phase 4 check reveals the _component's own code
+  per-value or per-name special-casing. When a Phase 5 check reveals the _component's own code
   doc_ was wrong (not just the Figma mapping), fix the code doc too, in the same pass — code is
-  supposed to be the source of truth for documentation copy (Phase 3b's lead-paragraph rule),
+  supposed to be the source of truth for documentation copy (Phase 4's lead-paragraph rule),
   so a known-wrong doc comment shouldn't survive a run that just disproved it. (From:
   `ds-icon`'s `turn`.)
 - **A tiny/compressed baseline screenshot can be visually misread — confirm a suspected color or
@@ -148,7 +148,7 @@ defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey 
   real computed `--mod-icon-color` was uniform white for all of them, confirming the Figma
   build was already correct. Don't trust a quick visual read of a small/compressed image for a
   color-equality judgment — crop/zoom or measure the DOM directly. (From: `ds-icon`'s
-  `inverted` + `color` interaction in Phase 4.)
+  `inverted` + `color` interaction in Phase 5.)
 
 - **When importing SVG art via `figma.createNodeFromSvg`, always `rescale()` the whole imported
   frame to the target token size — never `resize()` (or bind width/height on) an inner node's
@@ -227,11 +227,11 @@ defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey 
   `false`, since `label` defaults to `''`). Check every `instance-text-override` prop for this
   during Phase 1/2, don't wait to discover it after the build. (From: `ds-spinner`'s `label`.)
 
-- **Phase 3b's documentation page structure is a fixed template applied identically to every
+- **Phase 4's documentation page structure is a fixed template applied identically to every
   component, never a per-component layout decision.** As of `ds-badge`, this is the TapTap
   Design System-derived layout (bordered outer frame → Header → "Copy me" → "Variants" (compact
   single-axis) → "Main components" (full cross-product table) → "Specs" (annotated measurements
-  per Variants-axis option, added on `ds-close`)) — see `PHASE-3B-DOCUMENT.md` for the full
+  per Variants-axis option, added on `ds-close`)) — see `PHASE-4-DOCUMENT.md` for the full
   spec. This entry exists only to flag it here too, since CONVENTIONS.md is the
   file re-read at the start of every run. `ds-spinner`/`ds-icon` still use the superseded
   row/card/column layout from before this change — revisit them to match when next touched, not
@@ -253,7 +253,7 @@ defaultId)` on the set, `componentPropertyReferences = { mainComponent: propKey 
     columns get an independent 734px-minimum, content-driven width (not locked to match each
     other) so a large component set can grow the right column (and the whole page) without
     constraining the left column's prose. Inter-section divider lines are dropped in favor of each
-    section's own 40px top padding. Full spec in `PHASE-3B-DOCUMENT.md`; canonical reference is
+    section's own 40px top padding. Full spec in `PHASE-4-DOCUMENT.md`; canonical reference is
     now `ComponentTemplate` for layout/header/Component Set, `ds-close` still for everything else
     (panel styling, `inverted` split, focus states). `ds-close`/`ds-spinner`/`ds-icon`/`ds-badge`'s
     pre-2026-10-29 pages still use the prior single-column layout — migrate when next touched; this
@@ -390,7 +390,7 @@ layoutPositioning = ABSOLUTE if the parent node has layoutMode !== NONE` even wh
   variants on each of the 79 split entities.)
 
 - **`figma.createAutoLayout()` defaults every new frame to a solid white fill — clear it
-  explicitly (`fills = []`) on every purely-structural wrapper frame in the Phase 3b
+  explicitly (`fills = []`) on every purely-structural wrapper frame in the Phase 4
   documentation layout.** Only the one frame meant to have visible chrome (`Card`) should keep a
   fill; `Header`, `Rows`, row wrappers, `Columns`, and column frames must all be transparent, or
   they render as unintended white boxes over the page's grey canvas instead of showing it
@@ -399,7 +399,7 @@ layoutPositioning = ABSOLUTE if the parent node has layoutMode !== NONE` even wh
   they should have been transparent. Watch for a related mistake while fixing this: a blanket
   fill-clear across a frame's children can also hit sibling **text** layers (e.g. a row's
   `eyebrow` label) that need their own color fill kept intact — clear wrapper frames
-  specifically, not every child indiscriminately. (From: `ds-badge`'s Phase 3b.)
+  specifically, not every child indiscriminately. (From: `ds-badge`'s Phase 4.)
 
 - **A `COMPONENT_SET`'s own `width`/`height` does NOT auto-update when its variant children are
   repositioned — unlike an auto-layout frame, it never re-hugs, and a stale cached bounding box
@@ -457,7 +457,7 @@ true})` showed a blank image matching the set's _stale_ `width`/`height` exactly
   node simply won't exist on instances of that branch, which matches the real behavior. (From:
   `ds-badge`'s `Show icon` build — a raw `visible = false` on the icon instance was set during
   Phase 3's fan-out, silently working for the set's own master/children but breaking every
-  Phase 3b instance built from it afterward.)
+  Phase 4 instance built from it afterward.)
 
 - **Every focus state is built as absolutely positioned ring frames with _outside_ strokes —
   never as `DROP_SHADOW` effects.** Use one ring frame per CSS `box-shadow` spread, stacked in
@@ -477,7 +477,7 @@ true})` showed a blank image matching the set's _stale_ `width`/`height` exactly
   Easy to miss: only the masters look wrong, the documentation instances look right. (From:
   `ds-close` — all 30 masters drew a black X instead of navy.)
 
-- **The Copy me / Anatomy / Specs / Variants panels on the Phase 3b documentation page all share
+- **The Copy me / Anatomy / Specs / Variants panels on the Phase 4 documentation page all share
   one chrome now: a real `Preview` master component** on the `🧰 Annotations` page (node `2182:2`)
   — white fill, 2px stroke bound to `🔗 Alias/▭ Border/Color/GreyLight`, all four corner radii
   bound to `🌐 Global/📏 Dimension/Radius/6` (6px — this file has no 8px radius token; 6px was
@@ -485,7 +485,7 @@ true})` showed a blank image matching the set's _stale_ `width`/`height` exactly
   per section, same discipline as the `Header` master. This replaced three different ad-hoc
   treatments that had drifted apart (Copy me's borderless 4px-radius box, Anatomy's correct 2px
   border + 6px radius, Variants' 2px border with no radius at all) — see
-  `PHASE-3B-DOCUMENT.md`'s "0. Shared `Preview` box component" section for the full
+  `PHASE-4-DOCUMENT.md`'s "0. Shared `Preview` box component" section for the full
   rationale and usage. (From: user request, 2026-10-29.)
   - **`appendChild` into an `INSTANCE` throws — instances can't accept arbitrary new children, only
     overrides of structure the master already defines.** First build of this pattern tried

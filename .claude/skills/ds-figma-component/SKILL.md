@@ -63,23 +63,23 @@ flowchart TD
         P3d --> P3e["Write the component key<br/>back to name.figma.md"]:::code
     end
 
-    P3G --> P3bG
+    P3G --> P4G
 
-    subgraph P3bG["Phase 3b — Documentation page"]
+    subgraph P4G["Phase 4 — Documentation page"]
         direction LR
-        P3ba["Read PHASE-3B-DOCUMENT.md<br/>+ inspect the canonical live page"]:::code --> P3bb["Build blue Header /<br/>2-col: Copy me, Anatomy, Specs,<br/>Variants / Component Set"]:::figma
+        P4a["Read PHASE-4-DOCUMENT.md<br/>+ inspect the canonical live page"]:::code --> P4b["Build blue Header /<br/>2-col: Copy me, Anatomy, Specs,<br/>Variants / Component Set"]:::figma
     end
 
-    P3bG --> P4G
+    P4G --> P5G
 
-    subgraph P4G["Phase 4 — Review"]
+    subgraph P5G["Phase 5 — Review"]
         direction LR
-        P4a["Capture Figma<br/>screenshots"]:::figma --> P4b["Compare against real<br/>*.visual.play.ts-snapshots PNGs"]:::code
-        P4b --> P4c{{"User judges<br/>the findings"}}:::human
-        P4c -->|real bug found| P4d["Fix code / code docs"]:::code
+        P5a["Capture Figma<br/>screenshots"]:::figma --> P5b["Compare against real<br/>*.visual.play.ts-snapshots PNGs"]:::code
+        P5b --> P5c{{"User judges<br/>the findings"}}:::human
+        P5c -->|real bug found| P5d["Fix code / code docs"]:::code
     end
 
-    P4G --> Done(["Done: component live in Figma"]):::phase
+    P5G --> Done(["Done: component live in Figma"]):::phase
 ```
 
 🔵 **code** — reads or writes a file in this repo (`.tsx`/`.scss`, `name.figma.md`, `CONVENTIONS.md`, test snapshots).
@@ -115,9 +115,9 @@ have produced, and closes with an explicit `Next:` pointer to the following file
    budget check) and get the user's explicit sign-off before anything is built.
 3. [`PHASE-3-BUILD.md`](PHASE-3-BUILD.md) — build the real Figma `COMPONENT_SET` incrementally:
    one confirmed variant combination first, then fan out the rest.
-4. [`PHASE-3B-DOCUMENT.md`](PHASE-3B-DOCUMENT.md) — build the per-component documentation page
+4. [`PHASE-4-DOCUMENT.md`](PHASE-4-DOCUMENT.md) — build the per-component documentation page
    (header, Copy me, Anatomy, Specs, Variants, Component Set) from the fixed page template.
-5. [`PHASE-4-REVIEW.md`](PHASE-4-REVIEW.md) — compare the built Figma output against real visual
+5. [`PHASE-5-REVIEW.md`](PHASE-5-REVIEW.md) — compare the built Figma output against real visual
    regression baselines and report findings; this is the last phase in this skill's v1 scope.
 
 ## Mapping file format
@@ -173,7 +173,7 @@ props:
   figmaVariable: null
   resolved: false
   resolution: "<decision made with the user — pick a token or accept hardcoded>"
-  specs: # one entry per option of the Variants axis, shown in Phase 3b's "📐 Specs" section
+  specs: # one entry per option of the Variants axis, shown in Phase 4's "📐 Specs" section
   base:
   - kind: size # size | icon | spacing | radius (| type, once added)
     label: Size # Size (width = height, same variable) | Width | Height | Min width | Min height | Padding | Gap | Radius | …
@@ -204,8 +204,8 @@ here as prose, below the YAML block.
 - [`code-to-figma.md`](../../../code-to-figma.md) — the full plan and the reasoning behind every
   scope decision in this skill.
 - [`CONVENTIONS.md`](CONVENTIONS.md) — accumulated mapping heuristics across components.
-- `PHASE-1-ANALYZE.md` / `PHASE-2-PROPOSE.md` / `PHASE-3-BUILD.md` / `PHASE-3B-DOCUMENT.md` /
-  `PHASE-4-REVIEW.md` — the full workflow, one file per phase (see "## Workflow" above).
+- `PHASE-1-ANALYZE.md` / `PHASE-2-PROPOSE.md` / `PHASE-3-BUILD.md` / `PHASE-4-DOCUMENT.md` /
+  `PHASE-5-REVIEW.md` — the full workflow, one file per phase (see "## Workflow" above).
 - [`packages/tokens/CONTEXT.md`](../../../packages/tokens/CONTEXT.md) — token layers and naming.
 - [`packages/core/CONTEXT.md`](../../../packages/core/CONTEXT.md) — component categories and
   structure.
