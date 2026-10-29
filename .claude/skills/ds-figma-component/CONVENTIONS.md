@@ -400,3 +400,26 @@ true})` showed a blank image matching the set's _stale_ `width`/`height` exactly
   identical repeat screenshot is **exactly** the same (strong signal of a real, reproducible state,
   not a flaky one-off) and verify the suspect node's own reported `width`/`height` against where
   its children actually sit. (From: `ds-spinner`'s Main components build.)
+
+- **A master component's child with a hardcoded `visible: false` is not instantiated on fresh
+  instances at all — Figma drops it entirely, it does not carry over as a hidden override.**
+  Confirmed by direct inspection: a master's `.children` correctly lists the hidden child, but
+  `instance.createInstance().children` on a brand-new instance omits it completely (not merely
+  `visible: false` — genuinely absent from the array). This breaks the "Show X" pattern any time
+  the paired layer's visibility is set via a plain `node.visible = false` instead of a real
+  component property: `findOne`/`findAll`/`.children` on the fresh instance can't find a node that
+  isn't there, so any later attempt to reveal it (`instance.children.find(...).visible = true`)
+  throws on `undefined`. **Fix: the master's layer must stay `visible: true`, with its visibility
+  instead driven by a real `BOOLEAN` component property** —
+  `set.addComponentProperty('Show <name>', 'BOOLEAN', false)` once on the set, then
+  `layer.componentPropertyReferences = { visible: propKey }` on every variant child (keeping
+  `layer.visible = true` itself) — a property-driven false still instantiates the node on every
+  fresh instance; only a hardcoded false on the master doesn't. Toggle it per-instance via
+  `instance.setProperties({ [propKey]: true })`, not by reaching for the child node directly. For a
+  layer that must be structurally and unconditionally absent for one variant branch regardless of
+  any boolean (e.g. `ds-badge`'s icon at `size=sm`, which code gates with its own separate
+  condition) — the hardcoded `visible: false` with no property reference is correct there and the
+  node simply won't exist on instances of that branch, which matches the real behavior. (From:
+  `ds-badge`'s `Show icon` build — a raw `visible = false` on the icon instance was set during
+  Phase 3's fan-out, silently working for the set's own master/children but breaking every
+  Phase 3b instance built from it afterward.)
