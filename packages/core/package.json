@@ -78,7 +78,7 @@
     "@stencil/core": "catalog:",
     "air-datepicker": "3.6.0",
     "big.js": "^7.0.1",
-    "dompurify": "3.4.16",
+    "dompurify": "3.4.17",
     "focus-trap": "8.2.3",
     "imask": "7.6.1",
     "libphonenumber-js": "^1.13.15",
