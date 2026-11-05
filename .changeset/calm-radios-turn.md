@@ -1,5 +1,0 @@
----
-'@helvetia-design/skills': minor
----
-
-**skills**: Add bal-radio scanning and migration instructions to ds-migrate-from-baloise
