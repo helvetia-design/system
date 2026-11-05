@@ -51,11 +51,100 @@ function readSource(rootDir, filePath, collect) {
     return
   }
 
+  const extension = extname(filePath)
+  let masked
+  let comments
   collect({
     file: relative(rootDir, filePath).split(sep).join('/'),
-    masked: maskSource(text, extname(filePath) === '.html'),
     text,
+    get masked() {
+      masked ??= maskSource(text, extension === '.html')
+      return masked
+    },
+    get comments() {
+      comments ??= maskComments(text, commentKind(extension))
+      return comments
+    },
   })
+}
+
+/** Scans the whole root, or only `files` (paths relative to the root), and returns the paths that matched no source file. */
+export function scanSelectedFiles(rootDir, files, collect, extensions) {
+  const root = realpathSync(resolve(rootDir))
+  const only = files.length > 0 ? new Set(files.map(file => toRootRelative(root, file))) : undefined
+  const scanned = new Set()
+  scanSourceFiles(
+    root,
+    source => {
+      if (only && !only.has(source.file)) return
+      scanned.add(source.file)
+      collect(source)
+    },
+    extensions,
+  )
+  return only ? [...only].filter(file => !scanned.has(file)).sort() : []
+}
+
+export function toRootRelative(root, file) {
+  const absolute = resolve(root, file)
+  let real = absolute
+  try {
+    real = realpathSync(absolute)
+  } catch {
+    // A missing file keeps its resolved path and ends up in `unmatched`.
+  }
+  return relative(root, real).split(sep).join('/')
+}
+
+function commentKind(extension) {
+  if (extension === '.html' || extension === '.vue') return 'markup'
+  if (extension === '.css') return 'css'
+  if (extension === '.scss' || extension === '.sass' || extension === '.less') return 'scss'
+  return 'script'
+}
+
+/**
+ * Blanks comments only and keeps every string. `kind` is `script`, `css`, `scss` (with `//` line comments) or
+ * `markup`, where only `<!--` is a comment outside `<script>` and `<style>` blocks.
+ */
+export function maskComments(text, kind) {
+  const mask = text.split('')
+  let region = kind === 'markup' ? 'markup' : kind
+  let i = 0
+  while (i < text.length) {
+    if (kind === 'markup') {
+      const tag = /^<(\/?)(script|style)\b/i.exec(text.slice(i, i + 9))
+      if (tag) {
+        region = tag[1] ? 'markup' : tag[2].toLowerCase() === 'script' ? 'script' : 'css'
+        i = tag[1] ? i + tag[0].length : closeAt(text, '>', i)
+        continue
+      }
+    }
+    if (text.startsWith('<!--', i)) {
+      i = blank(mask, i, closeAt(text, '-->', i + 4))
+      continue
+    }
+    if (region === 'markup') {
+      i++
+      continue
+    }
+    if (text.startsWith('//', i) && (region === 'script' || (region === 'scss' && text[i - 1] !== ':'))) {
+      const end = text.indexOf('\n', i)
+      i = blank(mask, i, end === -1 ? text.length : end)
+      continue
+    }
+    if (text.startsWith('/*', i)) {
+      i = blank(mask, i, closeAt(text, '*/', i + 2))
+      continue
+    }
+    const quote = text[i]
+    if (quote === '"' || quote === "'" || quote === '`') {
+      i = keepTemplate(text, mask, i, false)
+      continue
+    }
+    i++
+  }
+  return mask.join('')
 }
 
 function maskSource(text, html) {
@@ -78,7 +167,7 @@ function maskSource(text, html) {
 
     const quote = text[i]
     if (quote === '"' || quote === "'" || quote === '`') {
-      i = !html && isTemplatePropertyString(text, i) ? keepTemplate(text, mask, i) : blankString(text, mask, i)
+      i = !html && isTemplatePropertyString(text, i) ? keepTemplate(text, mask, i, true) : blankString(text, mask, i)
       continue
     }
     i++
@@ -97,7 +186,7 @@ function isTemplatePropertyString(text, quoteIndex) {
   return text.slice(index + 1, end) === 'template'
 }
 
-function keepTemplate(text, mask, start) {
+function keepTemplate(text, mask, start, blankNested) {
   const quote = text[start]
   let i = start + 1
   while (i < text.length) {
@@ -109,7 +198,7 @@ function keepTemplate(text, mask, start) {
       i = blank(mask, i, closeAt(text, '-->', i + 4))
       continue
     }
-    if ((text[i] === '"' || text[i] === "'") && text[i] !== quote) {
+    if (blankNested && (text[i] === '"' || text[i] === "'") && text[i] !== quote) {
       i = blankString(text, mask, i)
       continue
     }
@@ -124,7 +213,8 @@ function blankString(text, mask, start) {
   return blank(mask, start, endOfString(text, start))
 }
 
-function endOfString(text, start) {
+/** Returns the index after the string that opens at `start`; with `substitutions`, `${…}` may hold nested strings. */
+export function endOfString(text, start, substitutions = false) {
   const quote = text[start]
   let i = start + 1
   while (i < text.length) {
@@ -132,8 +222,28 @@ function endOfString(text, start) {
       i += 2
       continue
     }
+    if (substitutions && quote === '`' && text.startsWith('${', i)) {
+      i = endOfSubstitution(text, i + 2)
+      continue
+    }
     if (text[i] === quote) return i + 1
     if (quote !== '`' && text[i] === '\n') return i
+    i++
+  }
+  return text.length
+}
+
+function endOfSubstitution(text, from) {
+  let depth = 1
+  let i = from
+  while (i < text.length) {
+    const ch = text[i]
+    if (ch === '"' || ch === "'" || ch === '`') {
+      i = endOfString(text, i, true)
+      continue
+    }
+    if (ch === '{') depth++
+    if (ch === '}' && --depth === 0) return i + 1
     i++
   }
   return text.length

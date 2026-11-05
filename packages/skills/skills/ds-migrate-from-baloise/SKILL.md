@@ -13,7 +13,7 @@ On invocation, present this menu and wait for one choice:
 
 1. **Init** — bootstrap Helvetia packages alongside the existing Baloise install
 2. **Components** — migrate a specific `bal-*` component to `ds-*`
-3. **CSS utils (coming soon)**
+3. **CSS utils** — rewrite legacy Baloise utility classes and delete the Baloise utilities line once none is left
 4. **Assets** — migrate legacy icons in files that no component migration touches, and delete the legacy config call once no `bal-*` component is left
 
 Then follow only the matching section below. Stop when that section says to stop.
@@ -136,9 +136,16 @@ If `suggested` is empty, report that none of the used components has an availabl
 
 Build a picker from every entry in `suggested`, showing its `name` and `total`. Wait for one choice, then dispatch to `components/<name>/migration.md`.
 
-### CSS utils (coming soon)
+### CSS utils
 
-Report "coming soon" and stop.
+Rewrite the legacy Baloise utility classes in the project to their Helvetia names, following `shared/css-utils.md`, and delete the Baloise utilities line once no legacy class is left. Component migrations do not rewrite utility classes. This step covers them for the whole project or for a path list.
+
+1. Ask whether to scan the whole project or a list of paths. Run the Scan section of `shared/css-utils.md`, with the paths when the user gave any. Show the findings grouped by file (path, line, snippet, and each class move), the total per group, and the `dynamic` list. Then decide whether the Baloise utilities line can go: it can when a whole-project scan (the same one, when no paths were given) reports no `lost` move, no `dynamic` place and no move outside the scanned files. In that case, list each Baloise utilities line that the Legacy utilities line section of `shared/css-utils.md` would delete after the findings.
+2. When step 1 listed class moves with a `to`, ask one yes/no: rewrite every listed class and delete every listed line? When it listed only lines to delete, ask one yes/no: delete every listed line? On no, stop with the files unchanged. When it listed neither, say that nothing can be rewritten or deleted, naming the `lost` moves and `dynamic` places, and skip to step 5.
+3. Apply the Rewrite section of `shared/css-utils.md` to every listed move.
+4. Apply the Legacy utilities line section of `shared/css-utils.md`. It scans the whole project again and deletes only the lines that step 2 confirmed.
+5. Append a `css-utils` section to `ds-migration-report.md` as `shared/report.md` describes. Its checklist holds the `U1.`, `U2.`, ... items from the Report section of `shared/css-utils.md`.
+6. Stop. Do not run `git add` or `git commit`. Leave every change unstaged for the consumer to review.
 
 ### Assets
 

@@ -50,7 +50,9 @@ describe('skills add', () => {
     expect(copiedSkill).toContain('Components')
     expect(copiedSkill).toContain('Manual')
     expect(copiedSkill).toContain('Detect')
-    expect(copiedSkill).toContain('CSS utils (coming soon)')
+    expect(copiedSkill).toContain('CSS utils')
+    expect(copiedSkill).not.toContain('CSS utils (coming soon)')
+    expect(copiedSkill).toContain('shared/css-utils.md')
     expect(copiedSkill).not.toContain('Assets (coming soon)')
     expect(copiedSkill).toContain('shared/icons.md')
     expect(copiedSkill).toContain('@helvetia-design/core')
@@ -59,6 +61,9 @@ describe('skills add', () => {
     expect(copiedSkill).toMatch(/git commit/i)
     expect(existsSync(join(cwd, SKILL_RELATIVE_PATH, 'scripts', 'scan-migratable.mjs'))).toBe(true)
     expect(existsSync(join(cwd, SKILL_RELATIVE_PATH, 'shared', 'icon-name-map.json'))).toBe(true)
+    expect(existsSync(join(cwd, SKILL_RELATIVE_PATH, 'shared', 'css-utils.md'))).toBe(true)
+    expect(existsSync(join(cwd, SKILL_RELATIVE_PATH, 'shared', 'css-utils-map.json'))).toBe(true)
+    expect(existsSync(join(cwd, SKILL_RELATIVE_PATH, 'scripts', 'scan-css-utils.mjs'))).toBe(true)
   })
 
   it('overwrites a previous copy on re-run', async () => {

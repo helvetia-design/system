@@ -212,7 +212,8 @@ Run `add` in the consuming application, then invoke the skill there.
 - Copies the skill into the consumer's `.claude/skills/ds-migrate-from-baloise/`
 - **Init** — detects `@baloise/ds-*`, adds the real `@helvetia-design/*` packages for the current `latest` version, and inserts the new CSS/JS import next to the old one. Stops with "nothing to migrate" when no Baloise install is found
 - **Components** — offers a manual list of every migration, or scans the app and suggests migrations for the `bal-*` components it uses. Currently covers accordion, app, badge, card, carousel, icon, spinner, text, toast, and tooltip (see [packages/skills/CONTEXT.md](../packages/skills/CONTEXT.md) for the current list); after one bulk confirmation, rewrites matched usages to their `ds-*` equivalent
-- **CSS utils** and **Assets** — report "coming soon" and stop
+- **CSS utils** — rewrites legacy Baloise utility classes in the app's markup to their Helvetia names (`widescreen:` to `desktop-lg:`, `grid` to `ds-grid`, `border-primary-hovered` to `border-primary-hover`), reports approximated and lost classes, and deletes the Baloise utilities line once no legacy class is left
+- **Assets** — migrates legacy icons in files that no component migration touches, and deletes the legacy config call once no `bal-*` component is left
 - Edits files and leaves them unstaged. Never runs `git add` or `git commit`
 
 **Use when:**
