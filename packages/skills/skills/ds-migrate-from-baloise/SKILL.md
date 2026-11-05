@@ -54,12 +54,17 @@ If `status` is `ready`, show the detected framework, package manager, version, a
      ```
 
    - `font`, `structure`, `core`: leave these three lines unchanged and keep them. Immediately above the first of the three (or, if `normalize` was on the line directly above, immediately below the two new imports), insert one comment noting they must be removed manually once the migration is verified, e.g. `/* TODO: remove these legacy Baloise imports once the Helvetia migration is verified */`. Insert that comment once, not once per line.
-   - Baloise **utilities** line (`css/utilities/all`, any of the nine category files, or `css/utilities/<name>`): do not duplicate this line. Replace it in place with the `@helvetia-design/styles/css/utilities` equivalent, using the matching at-rule or the equivalent local form for the project's `framework`. This avoids both utility stylesheets being loaded and clashing.
-   - Bundled `css/all`: this one file already contains normalize + font + structure + core + utilities together, so — unlike `font`/`structure`/`core` — it cannot be left in place: that would duplicate the utility classes too. Treat it like `normalize`: comment out the original line in place, and immediately below it insert all three, using the matching at-rule:
+   - Baloise **utilities** line (`css/utilities/all`, any of the nine category files, or `css/utilities/<name>`): leave the line unchanged and keep it. The app markup still uses the legacy utility classes, and many of them have no Helvetia equivalent. Insert the `@helvetia-design/styles/css/utilities` equivalent once, immediately below the last Baloise utilities line, using the matching at-rule or the equivalent local form for the project's `framework`. The Helvetia line must load after the Baloise one, so Helvetia wins where both define the same class. Immediately above the first Baloise utilities line, insert one comment noting it must be removed manually once the migration is verified, e.g. `/* TODO: remove the legacy Baloise utilities once no legacy utility class is left */`.
+   - Bundled `css/all`: this one file contains normalize + font + structure + core + utilities together. Its normalize clashes with the Helvetia design system, so comment out the original line in place. Immediately below it, insert the Helvetia base imports, then the legacy parts without normalize, then the Helvetia utilities, using the matching at-rule:
 
      ```scss
      @import '@helvetia-design/tokens/css/base';
      @import '@helvetia-design/styles/css/design-system';
+     /* TODO: remove these legacy Baloise imports once the Helvetia migration is verified */
+     @import '@baloise/ds-styles/css/font';
+     @import '@baloise/ds-styles/css/structure';
+     @import '@baloise/ds-styles/css/core';
+     @import '@baloise/ds-styles/css/utilities/all';
      @import '@helvetia-design/styles/css/utilities';
      ```
 
