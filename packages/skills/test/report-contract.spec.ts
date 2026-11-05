@@ -216,8 +216,9 @@ describe('shared/report.md', () => {
 describe('SKILL.md', () => {
   const skill = read('SKILL.md')
 
-  it('writes the Init and Assets reports through shared/report.md', () => {
+  it('writes the Init, CSS utils and Assets reports through shared/report.md', () => {
     expect(section(skill, '### Init')).toContain('`shared/report.md`')
+    expect(section(skill, '### CSS utils')).toContain('`shared/report.md`')
     expect(section(skill, '### Assets')).toContain('`shared/report.md`')
   })
 
@@ -254,6 +255,18 @@ describe('shared/legacy-config.md Report', () => {
   it('lists the legacy config items as a continuous L-numbered checklist', () => {
     const report = section(read('shared/legacy-config.md'), '## Report')
     const numbers = [...report.matchAll(/^- L(\d+)\. /gm)].map(([, number]) => Number(number))
+
+    expect(report).toContain('`shared/report.md`')
+    expect(report).not.toContain('summary')
+    expect(numbers.length).toBeGreaterThan(0)
+    expect(numbers).toEqual(numbers.map((_, index) => index + 1))
+  })
+})
+
+describe('shared/css-utils.md Report', () => {
+  it('lists the CSS utils items as a continuous U-numbered checklist', () => {
+    const report = section(read('shared/css-utils.md'), '## Report')
+    const numbers = [...report.matchAll(/^- U(\d+)\. /gm)].map(([, number]) => Number(number))
 
     expect(report).toContain('`shared/report.md`')
     expect(report).not.toContain('summary')

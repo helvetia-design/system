@@ -808,6 +808,9 @@ importers:
       '@helvetia-design/assets':
         specifier: workspace:*
         version: link:../assets
+      '@helvetia-design/styles':
+        specifier: workspace:*
+        version: link:../styles
       eslint:
         specifier: 'catalog:'
         version: 10.12.0(jiti@2.7.0)(supports-color@8.1.1)

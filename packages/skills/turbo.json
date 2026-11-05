@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "test": {
-      "inputs": ["src/**", "skills/**"]
+      "inputs": ["src/**", "skills/**", "scripts/**", "test/**"]
     }
   }
 }

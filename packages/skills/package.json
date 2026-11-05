@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@helvetia-design/assets": "workspace:*",
+    "@helvetia-design/styles": "workspace:*",
     "eslint": "catalog:",
     "vitest": "catalog:"
   }

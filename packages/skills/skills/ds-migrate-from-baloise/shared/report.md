@@ -1,6 +1,6 @@
 # Report file
 
-Every Report step of this skill writes to one file, `ds-migration-report.md` at `<project-root>`. Init, every component migration and the **Assets** step each append one section to it. The file stays in the consumer's repository, so a reviewer reads it next to the diff, long after the chat is gone. `SKILL.md` and every component file point here for their Report step.
+Every Report step of this skill writes to one file, `ds-migration-report.md` at `<project-root>`. Init, every component migration, the **CSS utils** step and the **Assets** step each append one section to it. The file stays in the consumer's repository, so a reviewer reads it next to the diff, long after the chat is gone. `SKILL.md` and every component file point here for their Report step.
 
 ## File
 
@@ -38,7 +38,7 @@ Each run appends one section. Take the date from `date +%F`.
 - `src/pages/x.tsx`: 3 `bal-select` and 5 `bal-select-option` tags rewritten
 ```
 
-The section title names the step: `<date> init`, `<date> components: <name>` or `<date> assets`.
+The section title names the step: `<date> init`, `<date> components: <name>`, `<date> css-utils` or `<date> assets`.
 
 **Needs your attention** lists every line that needs a decision or an action from the consumer, each with file and line. When there is none, write `None.`
 
@@ -59,7 +59,7 @@ When unsure, treat the line as needing attention. A skipped item costs more than
 
 ## Checklist
 
-The Report step of every component file ends with a numbered list of items. Some need attention when found, the rest are coverage only. When the run also follows `shared/field.md`, its items follow the component items with an `F` prefix: `F1.`, `F2.`, and so on. When the run also follows `shared/icons.md`, its items come next with an `I` prefix: `I1.`, `I2.`, and so on. The items of `shared/legacy-config.md` come last with an `L` prefix: `L1.`, `L2.`, and so on.
+The Report step of every component file ends with a numbered list of items. Some need attention when found, the rest are coverage only. When the run also follows `shared/field.md`, its items follow the component items with an `F` prefix: `F1.`, `F2.`, and so on. When the run also follows `shared/icons.md`, its items come next with an `I` prefix: `I1.`, `I2.`, and so on. The items of `shared/legacy-config.md` come last with an `L` prefix: `L1.`, `L2.`, and so on. The **CSS utils** step has only the items of `shared/css-utils.md`, with a `U` prefix: `U1.`, `U2.`, and so on.
 
 Write one checklist line per numbered item, with the same number, in the same order. Never merge two items into one line, and never skip one. Each line has one outcome:
 
@@ -75,7 +75,7 @@ The Report step is not done while any numbered item lacks its line.
 
 ## Chat
 
-A component or Assets run shows only the **Needs your attention** lines in chat, in full. When there are none, it says `Nothing needs your attention.` Then it ends with exactly one pointer line:
+A component, Assets or CSS utils run shows only the **Needs your attention** lines in chat, in full. When there are none, it says `Nothing needs your attention.` Then it ends with exactly one pointer line:
 
 ```text
 Full coverage checklist written to ds-migration-report.md: <N> items checked, <M> found.
