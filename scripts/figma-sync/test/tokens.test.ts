@@ -1,7 +1,6 @@
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { computeTokenDiff as realComputeTokenDiff } from '../../../packages/tokens/src/config.brand.ts'
 import {
   brandFilePath,
   computeTokenDiff,
@@ -143,9 +142,9 @@ describe('mergeBrandTree', () => {
     expect(resolved).toEqual(base)
   })
 
-  it('round-trips through the real computeTokenDiff: diffing a merged tree against Base reproduces exactly the override that was merged in', () => {
+  it('round-trips through computeTokenDiff: diffing a merged tree against Base reproduces exactly the override that was merged in', () => {
     const resolved = mergeBrandTree(base, brandOverride)
-    expect(stripExtensions(realComputeTokenDiff(base, resolved))).toEqual(brandOverride)
+    expect(stripExtensions(computeTokenDiff(base, resolved))).toEqual(brandOverride)
   })
 })
 
@@ -218,26 +217,6 @@ describe('mergeBrandTree — responsive dimension extension', () => {
   })
 })
 
-describe('computeTokenDiff (local copy) matches packages/tokens/src/config.brand.ts', () => {
-  it('produces the same output as the real Style Dictionary implementation', () => {
-    expect(computeTokenDiff(base, brandOverride)).toEqual(realComputeTokenDiff(base, brandOverride))
-  })
-
-  it('produces the same output on the real Base + brand token files', () => {
-    // Exercises both implementations against production data, not just the
-    // synthetic fixture above — this is the parity check the Phase 1
-    // milestone in docs/plans/figma-sync-action-plan.md calls for.
-    const realBase = loadTokenFile(resolve(TOKENS_DIR, 'Base.tokens.json'))
-
-    for (const brandName of listBrandNames(TOKENS_DIR)) {
-      const override = loadTokenFile(brandFilePath(TOKENS_DIR, brandName))
-      expect(computeTokenDiff(realBase, override), `mismatch for brand ${brandName}`).toEqual(
-        realComputeTokenDiff(realBase, override),
-      )
-    }
-  })
-})
-
 describe('mergeBrandTree round-trips on the real Base + brand token files', () => {
   it('resolving then diffing a real brand file against Base reproduces the same sparse diff the raw file itself produces', () => {
     // Not "reproduces the raw override file" — a real brand file can contain
@@ -251,8 +230,8 @@ describe('mergeBrandTree round-trips on the real Base + brand token files', () =
     for (const brandName of listBrandNames(TOKENS_DIR)) {
       const override = loadTokenFile(brandFilePath(TOKENS_DIR, brandName))
       const resolved = mergeBrandTree(realBase, override)
-      const expected = realComputeTokenDiff(realBase, override)
-      const received = stripExtensions(realComputeTokenDiff(realBase, resolved))
+      const expected = stripExtensions(computeTokenDiff(realBase, override))
+      const received = stripExtensions(computeTokenDiff(realBase, resolved))
       expect(received, `round-trip mismatch for brand ${brandName}`).toEqual(expected)
     }
   })

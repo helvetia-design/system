@@ -61,6 +61,13 @@ jobs:
       - name: Test
         run: pnpm test
 
+      # Root scripts, not workspace packages, so `turbo run test` skips them.
+      - name: Test Figma sync
+        run: pnpm test:figma-sync
+
+      - name: Test token usage
+        run: pnpm test:token-usage
+
       - name: Generate SBOM
         if: github.event_name == 'push'
         run: pnpm sbom --sbom-format cyclonedx --out sbom.cdx.json
