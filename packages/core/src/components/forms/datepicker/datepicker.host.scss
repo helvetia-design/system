@@ -4,6 +4,7 @@
 @use '../../../vars' as vars;
 @use '../form/form.mixin' as form;
 @use '../input/input.mixin' as input;
+@use '../../../typography' as typo;
 @use '../../actions/close/close.mixin' as close-mx;
 @use '../../actions/button/button.mixin' as button-mx;
 
@@ -13,10 +14,13 @@
  *
  * @prop --datepicker-color: Text color inside the date input field.
  * @prop --datepicker-placeholder: Placeholder text color.
- * @prop --datepicker-family: Font family of the date input text.
- * @prop --datepicker-weight: Font weight of the date input text.
- * @prop --datepicker-size: Font size of the date input text.
+ * @prop --datepicker-font-family: Font family of the date input text.
+ * @prop --datepicker-font-weight: Font weight of the date input text.
+ * @prop --datepicker-font-size: Font size of the date input text.
  * @prop --datepicker-line-height: Line height of the date input text.
+ * @prop --datepicker-letter-spacing: Letter spacing of the date input text.
+ * @prop --datepicker-text-decoration: Text decoration of the date input text.
+ * @prop --datepicker-text-transform: Text transform of the date input text.
  * @prop --form-container-background: Background color of the input container.
  * @prop --form-container-border-color: Border color of the input container.
  * @prop --form-container-border-width: Border width of the input container.
@@ -28,14 +32,14 @@
  * @prop --form-container-active-border: Container border color when active.
  * @prop --form-container-focus-border: Container border color when focused.
  * @prop --form-label-color: Text color of the label.
- * @prop --form-label-family: Font family of the label.
- * @prop --form-label-weight: Font weight of the label.
- * @prop --form-label-size: Font size of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
  * @prop --form-label-line-height: Line height of the label.
  * @prop --form-description-color: Text color of the description.
- * @prop --form-description-family: Font family of the description.
- * @prop --form-description-weight: Font weight of the description.
- * @prop --form-description-size: Font size of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
  * @prop --form-description-line-height: Line height of the description.
  * @prop --datepicker-trigger-icon-color-hover: Trigger icon color on hover.
  * @prop --datepicker-trigger-icon-color-active: Trigger icon color when active/pressed.
@@ -315,9 +319,12 @@
   --mod-form-container-border: var(--ds-form-disabled-container-border);
   --mod-form-label-color: var(--ds-form-disabled-color-label);
   --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
   --mod-date-color: var(--ds-form-disabled-control-color-value);
   --mod-date-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(datepicker, 'form-disabled-control-typo');
 }
 
 /**

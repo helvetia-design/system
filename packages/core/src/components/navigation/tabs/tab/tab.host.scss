@@ -1,4 +1,5 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
+@use '../../../../typography' as typo;
 
 // ─── Panels mode ────────────────────────────────────────────────────────────
 
@@ -24,10 +25,7 @@ a {
   cursor: pointer;
   text-decoration: none;
   color: var(--_tabs-tab-unselected-color-base);
-  font-family: var(--_tabs-tab-unselected-font-family);
-  font-size: var(--_tabs-tab-unselected-font-size);
-  font-weight: var(--_tabs-tab-unselected-font-weight);
-  line-height: var(--_tabs-tab-unselected-line-height);
+  @include typo.apply(tabs-tab-unselected);
   outline: none;
   white-space: nowrap;
   transition: color 120ms ease;
@@ -72,10 +70,7 @@ a {
 span.is-selected,
 a.is-selected {
   color: var(--_tabs-tab-selected-color-base);
-  font-family: var(--_tabs-tab-selected-font-family);
-  font-size: var(--_tabs-tab-selected-font-size);
-  font-weight: var(--_tabs-tab-selected-font-weight);
-  line-height: var(--_tabs-tab-selected-line-height);
+  @include typo.apply(tabs-tab-selected);
 
   @include hover {
     &:hover {
@@ -149,8 +144,7 @@ a ::slotted(ds-icon.is-filled:not(.is-auto)) {
 
 :host(.is-inverted) span.is-selected,
 :host(.is-inverted) a.is-selected {
-  font-family: var(--_tabs-tab-inverted-selected-font-family);
-  font-weight: var(--_tabs-tab-selected-font-weight);
+  @include typo.apply(tabs-tab-inverted-selected);
 }
 
 // ─── Navigation mode ─────────────────────────────────────────────────────────
@@ -186,10 +180,7 @@ a ::slotted(ds-icon.is-filled:not(.is-auto)) {
   gap: var(--_tabs-tab-gap);
   padding: var(--_tabs-tab-py) var(--_tabs-tab-px);
   color: var(--_tabs-tab-unselected-color-base);
-  font-family: var(--_tabs-tab-unselected-font-family);
-  font-size: var(--_tabs-tab-unselected-font-size);
-  font-weight: var(--_tabs-tab-unselected-font-weight);
-  line-height: var(--_tabs-tab-unselected-line-height);
+  @include typo.apply(tabs-tab-unselected);
   text-decoration: none;
   white-space: nowrap;
   transition: color 120ms ease;
@@ -204,16 +195,12 @@ a ::slotted(ds-icon.is-filled:not(.is-auto)) {
 :host(.is-navigation.is-selected) ::slotted(a),
 :host(.is-navigation) ::slotted([aria-current]) {
   color: var(--_tabs-tab-selected-color-base);
-  font-family: var(--_tabs-tab-selected-font-family);
-  font-size: var(--_tabs-tab-selected-font-size);
-  font-weight: var(--_tabs-tab-selected-font-weight);
-  line-height: var(--_tabs-tab-selected-line-height);
+  @include typo.apply(tabs-tab-selected);
 }
 
 :host(.is-navigation.is-inverted.is-selected) ::slotted(a),
 :host(.is-navigation.is-inverted) ::slotted([aria-current]) {
-  font-family: var(--_tabs-tab-inverted-selected-font-family);
-  font-weight: var(--_tabs-tab-selected-font-weight);
+  @include typo.apply(tabs-tab-inverted-selected);
 }
 
 // Vertical navigation — flip indicator to left

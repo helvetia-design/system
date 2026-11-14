@@ -88,6 +88,51 @@ Use CSS classes, never attribute selectors:
 :host(.is-primary) { ... }
 ```
 
+### Typography
+
+Every text part reads all seven parts of one typography token (family, size, weight, line
+height, letter spacing, text decoration, text transform) through the shared mixin family in
+`packages/core/src/typography.scss`. Never write `font-*`/`line-height`/`letter-spacing`/
+`text-decoration`/`text-transform` by hand outside it (a pure element reset like
+`text-decoration: none` on `<a>`/`<button>` is the only exception).
+
+```scss
+@use '../../../typography' as typo;
+
+@include vars.hybrid($name, $css-selector, $use-host) {
+  @include typo.local(button-size-base-label, 'button-size-base-label-typo');
+}
+
+@include hybrid.component($host-selector, $css-selector, $use-host) {
+  @include typo.apply(button-size-base-label);
+}
+
+// a prop/state that changes the whole typography, e.g. a size variant
+@mixin size-sm() {
+  @include typo.mod(button-size-base-label, 'button-size-sm-label-typo');
+}
+```
+
+An **inline text part** (a link inside running text) inherits family, size and line height
+from its surrounding text; pass `$inline: true` to wire only weight, letter spacing, text
+decoration and text transform:
+
+```scss
+@include typo.apply(link, $inline: true);
+```
+
+Document all seven canonical custom properties per text part:
+
+```
+ * @prop --<component>[-<part>]-font-family - Font family of <part>.
+ * @prop --<component>[-<part>]-font-size - Font size of <part>.
+ * @prop --<component>[-<part>]-font-weight - Font weight of <part>.
+ * @prop --<component>[-<part>]-line-height - Line height of <part>.
+ * @prop --<component>[-<part>]-letter-spacing - Letter spacing of <part>.
+ * @prop --<component>[-<part>]-text-decoration - Text decoration of <part>.
+ * @prop --<component>[-<part>]-text-transform - Text transform of <part>.
+```
+
 ### Class Management — Use JSX, Not DOM Mutation
 
 Always manage classes through JSX class binding. Never use `classList.add()`, `classList.remove()`, or `classList.toggle()` unless there's a critical performance reason.

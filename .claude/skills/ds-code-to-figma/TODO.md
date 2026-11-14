@@ -2,6 +2,7 @@
 
 - [x] Letter-spacing: now a token — `Alias.Text.LetterSpacing.{Text,Heading}` (0rem), and a `letterSpacing` field on every typography token. Bind the Figma `LetterSpacing` variable instead of using the default.
 - [x] Text-decoration: now a token — `Alias.Text.TextDecoration.None`, and a `textDecoration` field on every typography token (Figma variable holds `"NONE"`). Text-transform follows the same pattern (`Alias.Text.TextTransform.None`).
+- [] Bind all seven typography variables per text node (ADR-0037, `docs/plans/typography-text-parts-plan.md` decision 8): fontFamily, fontSize, fontWeight, lineHeight, letterSpacing, textDecoration, textTransform — not just the 4 wired today. Inline text parts (a link in running text) bind only weight, letterSpacing, textDecoration, textTransform — family/size/lineHeight stay inherited from the surrounding text, don't bind them.
 
 - [] Top-level split onyl when working with inverted. We need to ask the A-Team
 

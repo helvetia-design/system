@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
+@use '../../../../typography' as typo;
 
 // SCSS variables used in both layout and the @for-loop transform.
 // Must be SCSS values (not CSS custom properties) because they are
@@ -25,9 +26,8 @@ $_max-items: 8;
     @include vars.local(segment-item-py, var(--ds-segment-item-padding-block));
     @include vars.local(segment-item-icon-size, var(--ds-segment-item-icon-size));
     @include vars.local(segment-item-icon-gap, var(--ds-segment-item-icon-gap));
-    @include vars.local(segment-item-font-weight, var(--ds-segment-item-font-weight));
-    @include vars.local(segment-description-font-size, var(--ds-segment-description-font-size));
-    @include vars.local(segment-description-font-weight, var(--ds-segment-description-font-weight));
+    @include typo.local(segment-item, 'segment-item-typo');
+    @include typo.local(segment-description, 'segment-description-typo');
     @include vars.local(segment-content-gap, var(--ds-segment-content-gap));
     @include vars.local(segment-item-vertical-gap, var(--ds-segment-item-vertical-gap));
 
@@ -80,14 +80,13 @@ $_max-items: 8;
       border-radius: inherit;
       cursor: pointer;
       user-select: none;
-      font-weight: var(--_segment-item-font-weight);
+      @include typo.apply(segment-item);
 
       color: var(--_segment-item-unselected-color-base);
       --icon-color: var(--_segment-item-unselected-color-base);
 
       .description {
-        font-size: var(--_segment-description-font-size);
-        font-weight: var(--_segment-description-font-weight);
+        @include typo.apply(segment-description);
         text-align: center;
       }
 

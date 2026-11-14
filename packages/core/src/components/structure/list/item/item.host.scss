@@ -29,14 +29,20 @@
  * @prop --list-item-background-active: Background of a clickable list item when active.
  * @prop --list-item-accordion-py: Vertical padding applied to slotted paragraph content inside the accordion variant.
  * @prop --list-item-action-icon-size: Size of the trailing action icon shown in link and button variants.
- * @prop --list-item-title-size: Font size of the label heading inside a list item.
- * @prop --list-item-title-weight: Font weight of the label heading inside a list item.
- * @prop --list-item-title-family: Font family of the label heading inside a list item.
+ * @prop --list-item-title-font-family: Font family of the label heading inside a list item.
+ * @prop --list-item-title-font-size: Font size of the label heading inside a list item.
+ * @prop --list-item-title-font-weight: Font weight of the label heading inside a list item.
  * @prop --list-item-title-line-height: Line height of the label heading inside a list item.
- * @prop --list-item-text-family: Font family of the description text inside a list item.
- * @prop --list-item-text-weight: Font weight of the description text inside a list item.
- * @prop --list-item-text-size: Font size of the description text inside a list item.
+ * @prop --list-item-title-letter-spacing: Letter spacing of the label heading inside a list item.
+ * @prop --list-item-title-text-decoration: Text decoration of the label heading inside a list item.
+ * @prop --list-item-title-text-transform: Text transform of the label heading inside a list item.
+ * @prop --list-item-text-font-family: Font family of the description text inside a list item.
+ * @prop --list-item-text-font-weight: Font weight of the description text inside a list item.
+ * @prop --list-item-text-font-size: Font size of the description text inside a list item.
  * @prop --list-item-text-line-height: Line height of the description text inside a list item.
+ * @prop --list-item-text-letter-spacing: Letter spacing of the description text inside a list item.
+ * @prop --list-item-text-text-decoration: Text decoration of the description text inside a list item.
+ * @prop --list-item-text-text-transform: Text transform of the description text inside a list item.
  *
  * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface.
  * @variant is-lg - Large size, increasing the minimum row height.
@@ -79,15 +85,8 @@
 
   @include vars.local(list-item-action-icon-size, var(--ds-list-item-action-icon-size));
 
-  @include vars.local(list-item-title-size, var(--ds-list-item-title-typo-font-size));
-  @include vars.local(list-item-title-weight, var(--ds-list-item-title-typo-font-weight));
-  @include vars.local(list-item-title-family, var(--ds-list-item-title-typo-font-family));
-  @include vars.local(list-item-title-line-height, var(--ds-list-item-title-typo-line-height));
-
-  @include vars.local(list-item-text-family, var(--ds-list-item-text-typo-font-family));
-  @include vars.local(list-item-text-weight, var(--ds-list-item-text-typo-font-weight));
-  @include vars.local(list-item-text-size, var(--ds-list-item-text-typo-font-size));
-  @include vars.local(list-item-text-line-height, var(--ds-list-item-text-typo-line-height));
+  @include typography.local(list-item-title, 'list-item-title-typo');
+  @include typography.local(list-item-text, 'list-item-text-typo');
 }
 
 /**
@@ -136,7 +135,7 @@
   text-align: left;
 
   @include font-smoothing();
-  font-family: var(--_list-item-title-family);
+  font-family: var(--_list-item-title-font-family);
   padding: var(--_list-item-py) var(--_list-item-px);
   padding-bottom: calc(var(--_list-item-py) + var(--_list-item-border-width));
   min-height: var(--_list-item-min-height);
@@ -160,23 +159,17 @@
     flex-direction: column;
     gap: var(--_list-item-content-gap);
 
-    font-family: var(--_list-item-text-family);
-    font-weight: var(--_list-item-text-weight);
+    font-family: var(--_list-item-text-font-family);
+    font-weight: var(--_list-item-text-font-weight);
   }
 
   #label {
-    font-family: var(--_list-item-title-family);
-    font-weight: var(--_list-item-title-weight);
-    font-size: var(--_list-item-title-size);
-    line-height: var(--_list-item-title-line-height);
+    @include typography.apply(list-item-title);
     margin: 0;
   }
 
   #description {
-    font-family: var(--_list-item-text-family);
-    font-weight: var(--_list-item-text-weight);
-    font-size: var(--_list-item-text-size);
-    line-height: var(--_list-item-text-line-height);
+    @include typography.apply(list-item-text);
     margin: 0;
   }
 
@@ -206,7 +199,7 @@ $size-aliases: (
   @each $class in $class-group {
     :host(.has-label-#{$class}) {
       // Intentional reuse: label sizes mirror ds-heading's level scale.
-      --mod-list-item-title-size: var(--ds-heading-level-#{$token}-font-size);
+      --mod-list-item-title-font-size: var(--ds-heading-level-#{$token}-font-size);
     }
   }
 }
@@ -236,10 +229,7 @@ $size-aliases: (
     #content {
       hyphens: auto;
       overflow-wrap: break-word;
-      font-family: var(--_list-item-title-family);
-      font-weight: var(--_list-item-title-weight);
-      font-size: var(--_list-item-title-size);
-      line-height: var(--_list-item-title-line-height);
+      @include typography.apply(list-item-title);
       color: var(--_list-item-color);
     }
 

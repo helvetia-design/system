@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
+@use '../../../../typography' as typo;
 
 /**
  * @prop --steps-connector-color: Color of the connector line between steps.
@@ -23,9 +24,11 @@
  * @prop --steps-circle-color-text-disabled: Text/icon color inside the circle (disabled state).
  * @prop --steps-step-font-family: Font family for step labels and circle numbers.
  * @prop --steps-step-font-size: Font size for step labels and circle numbers.
- * @prop --steps-step-font-size-sm: Font size for step labels and circle numbers on mobile.
  * @prop --steps-step-font-weight: Font weight for step labels.
  * @prop --steps-step-line-height: Line height for step labels and circle numbers.
+ * @prop --steps-step-letter-spacing: Letter spacing for step labels and circle numbers.
+ * @prop --steps-step-text-decoration: Text decoration for step labels and circle numbers.
+ * @prop --steps-step-text-transform: Text transform for step labels and circle numbers.
  * @prop --steps-step-color: Text color for step labels (default state).
  * @prop --steps-step-color-selected: Text color for step labels (selected state).
  * @prop --steps-step-color-done: Text color for step labels (done state).
@@ -62,11 +65,7 @@
   @include vars.local(steps-circle-color-text-done, var(--ds-steps-circle-done-color-text));
   @include vars.local(steps-circle-color-text-invalid, var(--ds-steps-circle-invalid-color-text));
   @include vars.local(steps-circle-color-text-disabled, var(--ds-steps-circle-disabled-color-text));
-  @include vars.local(steps-step-font-family, var(--ds-steps-step-typo-base-font-family));
-  @include vars.local(steps-step-font-size, var(--ds-steps-step-typo-base-font-size));
-  @include vars.local(steps-step-font-size-sm, var(--ds-steps-step-typo-sm-font-size));
-  @include vars.local(steps-step-font-weight, var(--ds-steps-step-typo-base-font-weight));
-  @include vars.local(steps-step-line-height, var(--ds-steps-step-typo-base-line-height));
+  @include typo.local(steps-step, 'steps-step-typo-base');
   @include vars.local(steps-step-color, var(--ds-steps-step-color-base));
   @include vars.local(steps-step-color-done, var(--ds-steps-step-color-done));
   @include vars.local(steps-step-color-selected, var(--ds-steps-step-color-selected));

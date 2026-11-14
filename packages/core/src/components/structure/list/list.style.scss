@@ -42,15 +42,8 @@ ol.ds-list li details {
 
   @include vars.local(list-item-action-icon-size, var(--ds-list-item-action-icon-size));
 
-  @include vars.local(list-item-title-size, var(--ds-list-item-title-typo-font-size));
-  @include vars.local(list-item-title-weight, var(--ds-list-item-title-typo-font-weight));
-  @include vars.local(list-item-title-family, var(--ds-list-item-title-typo-font-family));
-  @include vars.local(list-item-title-line-height, var(--ds-list-item-title-typo-line-height));
-
-  @include vars.local(list-item-text-family, var(--ds-list-item-text-typo-font-family));
-  @include vars.local(list-item-text-weight, var(--ds-list-item-text-typo-font-weight));
-  @include vars.local(list-item-text-size, var(--ds-list-item-text-typo-font-size));
-  @include vars.local(list-item-text-line-height, var(--ds-list-item-text-typo-line-height));
+  @include typography.local(list-item-title, 'list-item-title-typo');
+  @include typography.local(list-item-text, 'list-item-text-typo');
 }
 
 /**
@@ -115,7 +108,7 @@ ul.ds-list li .ds-item {
   border: none;
   align-self: stretch;
   text-align: left;
-  font-family: var(--_list-item-title-family);
+  font-family: var(--_list-item-title-font-family);
 
   padding: var(--_list-item-py) var(--_list-item-px);
   padding-bottom: calc(var(--_list-item-py) + var(--_list-item-border-width));
@@ -142,19 +135,13 @@ ul.ds-list li .ds-item {
   }
 
   .ds-item-title {
-    font-family: var(--_list-item-title-family);
-    font-weight: var(--_list-item-title-weight);
-    font-size: var(--_list-item-title-size);
-    line-height: var(--_list-item-title-line-height);
+    @include typography.apply(list-item-title);
     margin: 0;
   }
 
   .ds-item-text,
   .ds-item-subtitle {
-    font-family: var(--_list-item-text-family);
-    font-weight: var(--_list-item-text-weight);
-    font-size: var(--_list-item-text-size);
-    line-height: var(--_list-item-text-line-height);
+    @include typography.apply(list-item-text);
     margin: 0;
   }
 
@@ -182,9 +169,15 @@ ul.ds-list li button.ds-item {
   cursor: pointer;
   hyphens: auto;
   overflow-wrap: break-word;
-  font-family: var(--_list-item-title-family);
-  font-weight: var(--_list-item-title-weight);
+  // Deliberate: this element is the whole item (it may contain its own nested
+  // .ds-item-text at a different size), so font-size stays unset here — only family,
+  // weight and the voice properties come from the title typo.
+  font-family: var(--_list-item-title-font-family);
+  font-weight: var(--_list-item-title-font-weight);
   line-height: var(--_list-item-title-line-height);
+  letter-spacing: var(--_list-item-title-letter-spacing);
+  text-decoration: var(--_list-item-title-text-decoration);
+  text-transform: var(--_list-item-title-text-transform);
   color: var(--_list-item-color);
 
   outline: none;

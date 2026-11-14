@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * General Mixins
@@ -25,10 +26,7 @@
  */
 
 @mixin vars($prefix) {
-  @include vars.local(#{$prefix}-family, var(--ds-form-default-control-typo-font-family));
-  @include vars.local(#{$prefix}-weight, var(--ds-form-default-control-typo-font-weight));
-  @include vars.local(#{$prefix}-line-height, var(--ds-form-default-control-typo-line-height));
-  @include vars.local(#{$prefix}-size, var(--ds-form-default-control-typo-font-size));
+  @include typo.local($prefix, 'form-default-control-typo');
 
   @include vars.local(#{$prefix}-color, var(--ds-form-default-control-color-value));
   @include vars.local(#{$prefix}-placeholder, var(--ds-form-default-control-color-placeholder));
@@ -46,10 +44,7 @@
     min-width: 0;
 
     color: var(--_#{$prefix}-color);
-    font-family: var(--_#{$prefix}-family);
-    font-weight: var(--_#{$prefix}-weight);
-    font-size: var(--_#{$prefix}-size);
-    line-height: var(--_#{$prefix}-line-height);
+    @include typo.apply($prefix);
 
     @include placeholder {
       color: var(--_#{$prefix}-placeholder);

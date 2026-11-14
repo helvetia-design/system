@@ -179,9 +179,18 @@ Margin's suffix set is generated for free by `vars.margin($name)` (see `packages
 
 **Typography Variables:**
 
-- `--{component}-font-size` — text size
-- `--{component}-font-weight` — text weight
-- `--{component}-font-family` — typeface
+Every text part wires all seven typography parts through the shared `typo.*` mixin family in
+`packages/core/src/typography.scss` — never by hand. See [STYLE_GUIDE.md](../../docs/STYLE_GUIDE.md#typography)
+for the full usage pattern (`typo.local`/`typo.apply`/`typo.mod`, and the inline-text-part exception
+for links in running text). The seven public custom properties per text part:
+
+- `--{component}[-<part>]-font-family` — typeface
+- `--{component}[-<part>]-font-size` — text size
+- `--{component}[-<part>]-font-weight` — text weight
+- `--{component}[-<part>]-line-height` — line height
+- `--{component}[-<part>]-letter-spacing` — letter spacing
+- `--{component}[-<part>]-text-decoration` — text decoration
+- `--{component}[-<part>]-text-transform` — text transform
 
 **Border & Radius:**
 

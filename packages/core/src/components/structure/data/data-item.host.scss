@@ -1,19 +1,26 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
  * ═══════════════════════════════════════════════════════════════════════════════
  * Define CSS custom properties that can be overridden by consumers.
  *
- * @prop --data-item-font-family-label: Font family of the label
- * @prop --data-item-font-size-label: Font size of the label
- * @prop --data-item-font-weight-label: Font weight of the label
- * @prop --data-item-line-height-label: Line height of the label
- * @prop --data-item-font-family: Font family of the value
- * @prop --data-item-font-size: Font size of the value
- * @prop --data-item-font-weight: Font weight of the value
- * @prop --data-item-line-height: Line height of the value
+ * @prop --data-item-label-font-family: Font family of the label
+ * @prop --data-item-label-font-size: Font size of the label
+ * @prop --data-item-label-font-weight: Font weight of the label
+ * @prop --data-item-label-line-height: Line height of the label
+ * @prop --data-item-label-letter-spacing: Letter spacing of the label
+ * @prop --data-item-label-text-decoration: Text decoration of the label
+ * @prop --data-item-label-text-transform: Text transform of the label
+ * @prop --data-item-value-font-family: Font family of the value
+ * @prop --data-item-value-font-size: Font size of the value
+ * @prop --data-item-value-font-weight: Font weight of the value
+ * @prop --data-item-value-line-height: Line height of the value
+ * @prop --data-item-value-letter-spacing: Letter spacing of the value
+ * @prop --data-item-value-text-decoration: Text decoration of the value
+ * @prop --data-item-value-text-transform: Text transform of the value
  * @prop --data-item-color-text: Text color of the value
  * @prop --data-item-color-text-label: Text color of the label
  * @prop --data-item-color-text-required: Color of the required indicator
@@ -32,14 +39,8 @@
 :host {
   @include vars.base(data-item);
 
-  @include vars.local(data-item-font-family-label, var(--ds-data-item-label-typo-font-family));
-  @include vars.local(data-item-font-size-label, var(--ds-data-item-label-typo-font-size));
-  @include vars.local(data-item-font-weight-label, var(--ds-data-item-label-typo-font-weight));
-  @include vars.local(data-item-line-height-label, var(--ds-data-item-label-typo-line-height));
-  @include vars.local(data-item-font-family, var(--ds-data-item-value-typo-font-family));
-  @include vars.local(data-item-font-size, var(--ds-data-item-value-typo-font-size));
-  @include vars.local(data-item-font-weight, var(--ds-data-item-value-typo-font-weight));
-  @include vars.local(data-item-line-height, var(--ds-data-item-value-typo-line-height));
+  @include typo.local(data-item-label, 'data-item-label-typo');
+  @include typo.local(data-item-value, 'data-item-value-typo');
   @include vars.local(data-item-color-text, var(--ds-data-item-value-color));
   @include vars.local(data-item-color-text-label, var(--ds-data-item-label-color));
   @include vars.local(data-item-color-text-required, var(--ds-data-item-required-color));
@@ -88,10 +89,7 @@
 .label-container {
   display: flex;
   gap: var(--_data-item-gap-label);
-  font-family: var(--_data-item-font-family-label);
-  font-size: var(--_data-item-font-size-label);
-  font-weight: var(--_data-item-font-weight-label);
-  line-height: var(--_data-item-line-height-label);
+  @include typo.apply(data-item-label);
   color: var(--_data-item-color-text-label);
   margin: 0;
   padding: 0;
@@ -106,10 +104,7 @@
   display: flex;
   align-items: center;
   gap: var(--_data-item-gap-value);
-  font-family: var(--_data-item-font-family);
-  font-size: var(--_data-item-font-size);
-  font-weight: var(--_data-item-font-weight);
-  line-height: var(--_data-item-line-height);
+  @include typo.apply(data-item-value);
   color: var(--_data-item-color-text);
   flex: 1;
   min-width: 0;

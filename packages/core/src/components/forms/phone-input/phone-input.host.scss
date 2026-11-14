@@ -2,6 +2,7 @@
 @use '../../../vars' as vars;
 @use '../form/form.mixin' as form;
 @use '../input/input.mixin' as input;
+@use '../../../typography' as typo;
 
 $chevron-icon: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2010%2010'%3E%3Cpath%20fill='black'%20d='M5,7.874a1.238,1.238,0,0,1-.879-.364L.206,3.393A.75.75,0,1,1,1.294,2.36L4.819,6.072a.249.249,0,0,0,.362,0L8.706,2.36A.75.75,0,1,1,9.794,3.393L5.9,7.5A1.269,1.269,0,0,1,5,7.874Z'/%3E%3C/svg%3E");
 $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M2 6C2 3.79086 3.79086 2 6 2C8.20914 2 10 3.79086 10 6C10 8.20914 8.20914 10 6 10C3.79086 10 2 8.20914 2 6ZM6 0C2.68629 0 0 2.68629 0 6C0 9.31371 2.68629 12 6 12C7.29578 12 8.49562 11.5892 9.47642 10.8908L12.2929 13.7073C12.6834 14.0978 13.3166 14.0978 13.7071 13.7073C14.0976 13.3168 14.0976 12.6836 13.7071 12.2931L10.8907 9.47665C11.5892 8.49581 12 7.29588 12 6C12 2.68629 9.31371 0 6 0Z'/%3E%3C/svg%3E");
@@ -14,10 +15,13 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
  *
  * @prop --phone-input-color: Text color inside the number field.
  * @prop --phone-input-placeholder: Placeholder text color.
- * @prop --phone-input-family: Font family of the number field text.
- * @prop --phone-input-weight: Font weight of the number field text.
- * @prop --phone-input-size: Font size of the number field text.
+ * @prop --phone-input-font-family: Font family of the number field text.
+ * @prop --phone-input-font-weight: Font weight of the number field text.
+ * @prop --phone-input-font-size: Font size of the number field text.
  * @prop --phone-input-line-height: Line height of the number field text.
+ * @prop --phone-input-letter-spacing: Letter spacing of the number field text.
+ * @prop --phone-input-text-decoration: Text decoration of the number field text.
+ * @prop --phone-input-text-transform: Text transform of the number field text.
  * @prop --phone-input-flag-width: Width of the country flag.
  * @prop --phone-input-flag-height: Height of the country flag.
  * @prop --phone-input-flag-radius: Border radius of the country flag.
@@ -60,14 +64,14 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
  * @prop --form-container-active-border: Container border color when active.
  * @prop --form-container-focus-border: Container border color when focused.
  * @prop --form-label-color: Text color of the label.
- * @prop --form-label-family: Font family of the label.
- * @prop --form-label-weight: Font weight of the label.
- * @prop --form-label-size: Font size of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
  * @prop --form-label-line-height: Line height of the label.
  * @prop --form-description-color: Text color of the description.
- * @prop --form-description-family: Font family of the description.
- * @prop --form-description-weight: Font weight of the description.
- * @prop --form-description-size: Font size of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
  * @prop --form-description-line-height: Line height of the description.
  */
 
@@ -174,10 +178,7 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
     // ds-token-check: intentional — transparent reset, not a themeable surface
     background: transparent;
     color: var(--_phone-input-color);
-    font-family: var(--_phone-input-family);
-    font-weight: var(--_phone-input-weight);
-    font-size: var(--_phone-input-size);
-    line-height: var(--_phone-input-line-height);
+    @include typo.apply(phone-input);
     cursor: pointer;
 
     &:disabled {
@@ -353,8 +354,7 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
       // ds-token-check: intentional — transparent reset, not a themeable surface
       background: transparent;
       color: var(--_phone-input-color);
-      font-family: var(--_phone-input-family);
-      font-size: var(--_phone-input-size);
+      @include typo.apply(phone-input);
 
       @include input.placeholder {
         color: var(--_phone-input-filter-placeholder-color);
@@ -475,9 +475,12 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
   --mod-form-container-border: var(--ds-form-disabled-container-border);
   --mod-form-label-color: var(--ds-form-disabled-color-label);
   --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
   --mod-phone-input-color: var(--ds-form-disabled-control-color-value);
   --mod-phone-input-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(phone-input, 'form-disabled-control-typo');
 }
 
 @media (prefers-reduced-motion: reduce) {

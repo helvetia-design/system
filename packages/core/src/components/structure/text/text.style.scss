@@ -22,10 +22,13 @@ $host-selector: ('#text');
   // owning its own default, so unstyled `ds-text` always matches the surrounding copy.
   @include vars.local(text-color, var(--ds-body-color));
 
-  @include vars.local(text-family, var(--ds-text-typo-paragraph-font-family));
-  @include vars.local(text-weight, var(--ds-text-typo-paragraph-font-weight));
+  @include vars.local(text-font-family, var(--ds-text-typo-paragraph-font-family));
+  @include vars.local(text-font-weight, var(--ds-text-typo-paragraph-font-weight));
   @include vars.local(text-line-height, var(--ds-text-typo-paragraph-line-height));
-  @include vars.local(text-size, var(--ds-text-typo-paragraph-font-size));
+  @include vars.local(text-font-size, var(--ds-text-typo-paragraph-font-size));
+  @include vars.local(text-letter-spacing, var(--ds-text-typo-paragraph-letter-spacing));
+  @include vars.local(text-decoration, var(--ds-text-typo-paragraph-text-decoration));
+  @include vars.local(text-transform, var(--ds-text-typo-paragraph-text-transform));
 
   @include vars.local(text-margin, var(--ds-text-margin-bottom));
   @include vars.local(text-shadow, none);
@@ -47,10 +50,13 @@ $host-selector: ('#text');
   text-wrap: balance;
   text-align: var(--_text-align);
 
-  font-weight: var(--_text-weight);
-  font-family: var(--_text-family);
-  font-size: var(--_text-size);
+  font-weight: var(--_text-font-weight);
+  font-family: var(--_text-font-family);
+  font-size: var(--_text-font-size);
   line-height: var(--_text-line-height);
+  letter-spacing: var(--_text-letter-spacing);
+  text-decoration: var(--_text-decoration);
+  text-transform: var(--_text-transform);
 
   color: var(--_text-color);
   text-shadow: var(--_text-shadow);
@@ -118,14 +124,14 @@ $weights: ('light', 'regular', 'bold');
 @include hybrid.styles($css-selector, $use-host) {
   @each $weight in $weights {
     &.is-#{$weight} {
-      --mod-text-weight: var(--ds-text-weight-#{$weight});
+      --mod-text-font-weight: var(--ds-text-weight-#{$weight});
     }
   }
 }
 
 @include hybrid.host($use-host) {
   :host(.is-bold) {
-    --mod-text-weight: var(--ds-text-weight-bold);
+    --mod-text-font-weight: var(--ds-text-weight-bold);
   }
 }
 
@@ -225,7 +231,7 @@ $size-tokens: (
     @error 'ds-text: no Typo token mapped for size step "#{$level}".';
   }
 
-  --mod-text-size: var(--ds-text-typo-#{$token}-font-size);
+  --mod-text-font-size: var(--ds-text-typo-#{$token}-font-size);
 }
 
 $size-aliases: (
@@ -278,9 +284,12 @@ $sizes: ('xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl');
 // Font size is deliberately not taken from the composite — it stays owned by the `size`
 // prop so heading/subtitle compose with it instead of replacing it.
 @mixin typo($variant) {
-  --mod-text-family: var(--ds-text-typo-#{$variant}-font-family);
-  --mod-text-weight: var(--ds-text-typo-#{$variant}-font-weight);
+  --mod-text-font-family: var(--ds-text-typo-#{$variant}-font-family);
+  --mod-text-font-weight: var(--ds-text-typo-#{$variant}-font-weight);
   --mod-text-line-height: var(--ds-text-typo-#{$variant}-line-height);
+  --mod-text-letter-spacing: var(--ds-text-typo-#{$variant}-letter-spacing);
+  --mod-text-decoration: var(--ds-text-typo-#{$variant}-text-decoration);
+  --mod-text-transform: var(--ds-text-typo-#{$variant}-text-transform);
 }
 
 @include hybrid.styles($css-selector, $use-host) {

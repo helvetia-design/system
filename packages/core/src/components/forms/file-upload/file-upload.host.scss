@@ -2,15 +2,20 @@
 @use '../input/input.mixin' as input;
 @use '../form/form.mixin' as form;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
  * --------------------------------
  * Define here the css variables for the component to be able to use it in host or non-host mode.
  *
- * @prop --file-upload-label-family: Font family of the drop-zone placeholder text.
- * @prop --file-upload-label-weight: Font weight of the drop-zone placeholder text.
- * @prop --file-upload-label-size: Font size of the drop-zone placeholder text.
+ * @prop --file-upload-label-font-family: Font family of the drop-zone placeholder text.
+ * @prop --file-upload-label-font-weight: Font weight of the drop-zone placeholder text.
+ * @prop --file-upload-label-font-size: Font size of the drop-zone placeholder text.
+ * @prop --file-upload-label-line-height: Line height of the drop-zone placeholder text.
+ * @prop --file-upload-label-letter-spacing: Letter spacing of the drop-zone placeholder text.
+ * @prop --file-upload-label-text-decoration: Text decoration of the drop-zone placeholder text.
+ * @prop --file-upload-label-text-transform: Text transform of the drop-zone placeholder text.
  * @prop --file-upload-drop-zone-border-color: Border color of the drop zone.
  * @prop --file-upload-drop-zone-border-width: Border width of the drop zone.
  * @prop --file-upload-drop-zone-border-style: Border style of the drop zone.
@@ -45,9 +50,7 @@
  */
 
 :host {
-  @include vars.local(file-upload-label-family, var(--ds-file-upload-label-font-family));
-  @include vars.local(file-upload-label-weight, var(--ds-file-upload-label-font-weight));
-  @include vars.local(file-upload-label-size, var(--ds-file-upload-label-text-size));
+  @include typo.local(file-upload-label, 'file-upload-label-typo');
   @include vars.local(file-upload-drop-zone-border-color, var(--ds-file-upload-drop-zone-border-color-base));
   @include vars.local(file-upload-drop-zone-border-width, var(--ds-file-upload-drop-zone-border-width));
   @include vars.local(file-upload-drop-zone-border-style, var(--ds-file-upload-drop-zone-border-style));
@@ -163,9 +166,7 @@
   align-items: center;
   gap: var(--_file-upload-drop-zone-gap);
 
-  font-family: var(--_file-upload-label-family);
-  font-weight: var(--_file-upload-label-weight);
-  font-size: var(--_file-upload-label-size);
+  @include typo.apply(file-upload-label);
   text-align: center;
 }
 

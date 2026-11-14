@@ -177,23 +177,33 @@ exists anywhere in this skill.
   skill — there is no Alias/Device motion-token layer in `Base.tokens.json` today, and
   proposing one is a design-system-wide decision, not a per-component fix. Report these
   as `EXEMPT` (informational) if mentioned at all, never as a blocker.
-- NEVER flag `letter-spacing`, `text-decoration`, or `text-transform` Component tokens
-  that exist in `Base.tokens.json` but aren't referenced in a component's SCSS/TSX as
-  VIOLATION or GAP by default — check the Alias layer first. As of this writing,
-  `Alias.Text.LetterSpacing` only has `Text`/`Heading` options and both resolve to the
-  same `0` Global value, and `Alias.Text.TextDecoration`/`TextTransform` each only have
-  a single `None` option — there is currently no way for _any_ component to express a
-  non-default value for these three properties through the token system at all, so an
-  unwired token here is a design-system-wide characteristic, not a per-component code
-  bug worth flagging. Report as `EXEMPT` (informational) if mentioned at all, with a
-  one-line note of the actual resolved value(s) so the exemption is visibly justified,
-  not just asserted.
-  - This is conditional, not permanent: before exempting, resolve the specific family's
-    tokens down to their actual values. If the Alias layer ever grows a second real
-    option (e.g. an `Uppercase` `TextTransform`, or a `LetterSpacing` option that isn't
-    `0`) and the family under review actually resolves to that non-default value, it's a
-    real GAP like any other unapplied token — wiring it up would change rendering, so
-    it isn't exempt just because the property name matches this rule.
+- Per ADR-0037, a text part's typography is wired **one token, seven parts**:
+  - **One typography token per text part** (not per property) — a text part backed by
+    loose per-property Component tokens (`Button.Size.Base.FontFamily`,
+    `Button.Size.Base.FontWeight`, …) instead of one composite `…Typo` token is a
+    `VIOLATION`/`GAP`, same as any other missing Component token.
+  - **Every `fontSize` must resolve to `Device.Text.Size.*`** (any reference chain) — a
+    typography token whose `fontSize` only ever touches `Alias`/`Global`, or is a literal,
+    is a `GAP`. `packages/tokens` fails its own build on this (decision 6); treat a
+    violation found here as high-priority.
+  - **Inline text parts** (e.g. a link inside running text) only apply weight, letter
+    spacing, text decoration and text transform (`typo.apply($inline: true)`) — family,
+    size and line height stay inherited by design. Don't flag an inline text part's
+    missing family/size/line-height wiring as a GAP.
+  - **Part modifiers** (`typo.mod`) are only valid for a prop/state that changes exactly
+    **one** typography part (e.g. `ds-text`'s weight prop, a selected datepicker day's
+    weight). A prop/state that changes two or more parts needs its own typography token
+    instead of two part-modifier overrides — flag that as a `NAMING`/structure finding.
+  - **Canonical public custom properties:**
+    `--<component>[-<part>]-{font-family,font-size,font-weight,line-height,letter-spacing,text-decoration,text-transform}`.
+    A short/legacy name (`--link-family`, `--text-size`, `--form-label-weight`, …) is a
+    `NAMING` finding — propose the renamed canonical form, not an alias.
+  - **New typography token names** follow `<Component>.[<Variant/State>.]<Part>.Typo`
+    (decision 9) — flag a proposed/found typography token that doesn't match this shape.
+  - Hand-written `font-*`/`line-height`/`letter-spacing`/`text-decoration`/
+    `text-transform` outside the `typo.*` mixin family is a finding — except a pure
+    element reset (`text-decoration: none` on `<a>`/`<button>`) and `inherit`, both
+    `EXEMPT`.
 - NEVER flag a hardcoded literal as GAP if it represents a **brand-invariant constant**
   — a value that is identical across every brand/theme by construction and will never
   come from a design token (e.g. a fixed rotation angle for a "turn" modifier, a
@@ -220,15 +230,18 @@ Checklist** — an explicit, enumerated pass over the 9 property categories a Fi
 designer needs bound as variables, so nothing is left to "the agent happened to notice
 it while reading the file":
 
-**Border · Background · Radius · Typography (font-family, font-weight, font-size,
-line-height) · Text-Color · Opacity · Padding · Gap · Margin**
+**Border · Background · Radius · Typography (font-family, font-size, font-weight,
+line-height, letter-spacing, text-decoration, text-transform) · Text-Color · Opacity ·
+Padding · Gap · Margin**
 
-`letter-spacing`, `text-decoration`, and `text-transform` are deliberately **not** among
-the 4 tracked Typography suffixes, even though every typography Component token in
-`Base.tokens.json` carries all seven fields (including these three). See the Rules
-section above — today the Alias layer has no real variation for any of the three
-(`LetterSpacing` is always `0`, `TextDecoration`/`TextTransform` are always `None`), so
-there's nothing for the Typography row to meaningfully check for them yet.
+Per [ADR-0037](../../../docs/adr/0037-one-typography-token-per-text-part.md), the
+Typography row checks all **7** parts, not 4 — `letter-spacing`, `text-decoration`, and
+`text-transform` are no longer blanket-exempt. Every text part must read all seven parts
+of one typography token through the `typo.*` mixin family
+(`packages/core/src/typography.scss`); a missing/unwired part on a text part the
+component actually renders is a `GAP` like any other, not an automatic `EXEMPT`. The one
+narrow exception: a pure element reset (`text-decoration: none` on `<a>`/`<button>` to
+undo the browser default) is `EXEMPT`, never a `GAP`.
 
 - Each category is crossed only against the `@Prop()` variant dimension(s) that
   actually gate it for this component (e.g. button's Border/Background/Text-Color vary
@@ -480,7 +493,7 @@ Variant dimensions: `color` (13 options) · `size` (sm, lg) — from `tab.tsx` `
 | Border     | color × state | ✅ all 39 cells resolved                                                      |
 | Background | color × state | ⚠️ 1 missing — see finding #5                                                 |
 | Radius     | size          | ✅ all 2 cells resolved                                                       |
-| Typography | size          | ✅ all 8 cells resolved (family/weight/size/line-height)                      |
+| Typography | size          | ✅ all 14 cells resolved (7 parts × 2 sizes)                                  |
 | Text-Color | color × state | ✅ all 39 cells resolved                                                      |
 | Opacity    | —             | N/A — tab has no opacity-based state, disabled uses dedicated color tokens    |
 | Padding    | size          | ✅ all 2 cells resolved                                                       |

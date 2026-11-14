@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Control Mixins
@@ -17,10 +18,7 @@
     @include vars.local(toggle-label-hover-color, var(--ds-toggle-label-color-hover));
     @include vars.local(toggle-label-active-color, var(--ds-toggle-label-color-active));
     @include vars.local(toggle-label-disabled-color, var(--ds-toggle-label-color-disabled));
-    @include vars.local(toggle-label-family, var(--ds-toggle-label-typo-font-family));
-    @include vars.local(toggle-label-size, var(--ds-toggle-label-typo-font-size));
-    @include vars.local(toggle-label-weight, var(--ds-toggle-label-typo-font-weight));
-    @include vars.local(toggle-label-line-height, var(--ds-toggle-label-typo-line-height));
+    @include typo.local(toggle-label, 'toggle-label-typo');
 
     // dimensions
     @include vars.local(toggle-height, var(--ds-toggle-height));
@@ -82,10 +80,7 @@
   cursor: pointer;
   user-select: none;
   color: var(--_toggle-label-base-color);
-  font-family: var(--_toggle-label-family);
-  font-size: var(--_toggle-label-size);
-  font-weight: var(--_toggle-label-weight);
-  line-height: var(--_toggle-label-line-height);
+  @include typo.apply(toggle-label);
   padding-top: var(--_toggle-py);
   padding-bottom: var(--_toggle-py);
   min-height: var(--_toggle-min-height);

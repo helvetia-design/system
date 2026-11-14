@@ -1,5 +1,6 @@
 @use './radio-group.mixin.scss' as group;
 @use '../../form/form.mixin' as form;
+@use '../../../../typography' as typo;
 
 /**
  * Variables
@@ -7,16 +8,16 @@
  * Define here the css variables for the component to be able to use it in host or non-host mode
  * These variables can be used in the component styles below and later on be overridden in themes.
  *
- * @prop --radio-group-label-color: Text color of the group label.
- * @prop --radio-group-label-family: Font family of the group label.
- * @prop --radio-group-label-weight: Font weight of the group label.
- * @prop --radio-group-label-size: Font size of the group label.
- * @prop --radio-group-label-line-height: Line height of the group label.
- * @prop --radio-group-description-color: Text color of the group description.
- * @prop --radio-group-description-family: Font family of the group description.
- * @prop --radio-group-description-weight: Font weight of the group description.
- * @prop --radio-group-description-size: Font size of the group description.
- * @prop --radio-group-description-line-height: Line height of the group description.
+ * @prop --form-label-color: Text color of the group label.
+ * @prop --form-label-font-family: Font family of the group label.
+ * @prop --form-label-font-weight: Font weight of the group label.
+ * @prop --form-label-font-size: Font size of the group label.
+ * @prop --form-label-line-height: Line height of the group label.
+ * @prop --form-description-color: Text color of the group description.
+ * @prop --form-description-font-family: Font family of the group description.
+ * @prop --form-description-font-weight: Font weight of the group description.
+ * @prop --form-description-font-size: Font size of the group description.
+ * @prop --form-description-line-height: Line height of the group description.
  */
 
 :host {
@@ -74,6 +75,8 @@
 
   --mod-form-label-color: var(--ds-form-disabled-color-label);
   --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 }
 
 //

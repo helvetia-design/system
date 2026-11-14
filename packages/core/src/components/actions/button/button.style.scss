@@ -3,6 +3,7 @@
 @use '../../../hybrid' as hybrid;
 @use '../../../vars' as vars;
 @use '../../../host' as host;
+@use '../../../typography' as typo;
 @use './button-group/button-group.mixin.scss' as button-group;
 
 $use-host: false !default;
@@ -18,10 +19,7 @@ $host-selector: ('#button');
  */
 
 @include vars.hybrid($name, $css-selector, $use-host) {
-  @include vars.local(button-font-family, var(--ds-button-size-base-font-family));
-  @include vars.local(button-font-weight, var(--ds-button-size-base-font-weight));
-  @include vars.local(button-font-size, var(--ds-button-size-base-font-size));
-  @include vars.local(button-line-height, var(--ds-button-size-base-line-height));
+  @include typo.local(button, 'button-size-base-label-typo');
   @include vars.local(button-radius, var(--ds-button-size-base-radius));
 
   @include vars.local(button-color-text, var(--ds-button-color-primary-base-text));
@@ -83,10 +81,7 @@ $host-selector: ('#button');
   transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 
-  font-size: var(--_button-font-size);
-  font-family: var(--_button-font-family);
-  font-weight: var(--_button-font-weight);
-  line-height: var(--_button-line-height);
+  @include typo.apply(button);
 
   border-radius: var(--_button-radius);
 
@@ -198,7 +193,7 @@ $host-selector: ('#button');
 // --------------------------------
 
 @mixin text-decoration() {
-  text-decoration: underline;
+  --mod-button-text-decoration: var(--ds-button-link-label-text-decoration);
   text-underline-offset: var(--ds-button-link-underline-offset);
   // ds-token-check: intentional — reuses ds-link's underline width so link buttons match real links
   text-decoration-thickness: var(--ds-link-underline-width);
@@ -348,10 +343,7 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'link');
 // Sizes
 // --------------------------------
 @mixin size-sm() {
-  --mod-button-font-family: var(--ds-button-size-sm-font-family);
-  --mod-button-font-weight: var(--ds-button-size-sm-font-weight);
-  --mod-button-font-size: var(--ds-button-size-sm-font-size);
-  --mod-button-line-height: var(--ds-button-size-sm-line-height);
+  @include typo.mod(button, 'button-size-sm-label-typo');
   --mod-button-radius: var(--ds-button-size-sm-radius);
   --mod-button-gap: var(--ds-button-size-sm-gap);
   --mod-button-min-height: var(--ds-button-size-sm-min-height);
@@ -373,10 +365,7 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'link');
 }
 
 @mixin size-lg() {
-  --mod-button-font-family: var(--ds-button-size-lg-font-family);
-  --mod-button-font-weight: var(--ds-button-size-lg-font-weight);
-  --mod-button-font-size: var(--ds-button-size-lg-font-size);
-  --mod-button-line-height: var(--ds-button-size-lg-line-height);
+  @include typo.mod(button, 'button-size-lg-label-typo');
   --mod-button-radius: var(--ds-button-size-lg-radius);
   --mod-button-gap: var(--ds-button-size-lg-gap);
   --mod-button-min-height: var(--ds-button-size-lg-min-height);
@@ -555,7 +544,7 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'link');
     // ds-token-check: intentional — opacity reset, disabled uses color tokens
     opacity: 1;
     box-shadow: none;
-    text-decoration: none;
+    --mod-button-text-decoration: var(--ds-button-disabled-label-text-decoration);
     cursor: default;
     translate: 0 0;
     background-color: var(--ds-button-color-disabled-base-background);

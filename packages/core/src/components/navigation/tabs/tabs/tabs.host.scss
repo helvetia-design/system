@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
+@use '../../../../typography' as typo;
 
 /**
  * @prop --tabs-border-base: Border of the tablist border track. Set to transparent to hide it.
@@ -9,6 +10,20 @@
  * @prop --tabs-tab-py: Vertical padding inside each tab button.
  * @prop --tabs-tab-min-height: Minimum height of a tab button (touch target).
  * @prop --tabs-tab-gap: Gap between a tab's label and its icon or badge.
+ * @prop --tabs-tab-unselected-font-family: Font family of an unselected tab button.
+ * @prop --tabs-tab-unselected-font-size: Font size of an unselected tab button.
+ * @prop --tabs-tab-unselected-font-weight: Font weight of an unselected tab button.
+ * @prop --tabs-tab-unselected-line-height: Line height of an unselected tab button.
+ * @prop --tabs-tab-unselected-letter-spacing: Letter spacing of an unselected tab button.
+ * @prop --tabs-tab-unselected-text-decoration: Text decoration of an unselected tab button.
+ * @prop --tabs-tab-unselected-text-transform: Text transform of an unselected tab button.
+ * @prop --tabs-tab-selected-font-family: Font family of the selected tab button.
+ * @prop --tabs-tab-selected-font-size: Font size of the selected tab button.
+ * @prop --tabs-tab-selected-font-weight: Font weight of the selected tab button.
+ * @prop --tabs-tab-selected-line-height: Line height of the selected tab button.
+ * @prop --tabs-tab-selected-letter-spacing: Letter spacing of the selected tab button.
+ * @prop --tabs-tab-selected-text-decoration: Text decoration of the selected tab button.
+ * @prop --tabs-tab-selected-text-transform: Text transform of the selected tab button.
  * @prop --tabs-tab-unselected-color-base: Text color of an unselected tab button.
  * @prop --tabs-tab-unselected-color-hover: Text color of a hovered, unselected tab button.
  * @prop --tabs-tab-unselected-color-active: Text color of a pressed, unselected tab button.
@@ -50,21 +65,15 @@
   @include vars.local(tabs-tab-py, var(--ds-tabs-tab-padding-y));
   @include vars.local(tabs-tab-min-height, var(--ds-tabs-tab-min-height));
   @include vars.local(tabs-tab-gap, var(--ds-tabs-tab-gap));
-  @include vars.local(tabs-tab-unselected-font-family, var(--ds-tabs-tab-unselected-typo-font-family));
-  @include vars.local(tabs-tab-unselected-font-size, var(--ds-tabs-tab-unselected-typo-font-size));
-  @include vars.local(tabs-tab-unselected-font-weight, var(--ds-tabs-tab-unselected-typo-font-weight));
-  @include vars.local(tabs-tab-unselected-line-height, var(--ds-tabs-tab-unselected-typo-line-height));
+  @include typo.local(tabs-tab-unselected, 'tabs-tab-unselected-typo');
   @include vars.local(tabs-tab-unselected-color-base, var(--ds-tabs-tab-unselected-color-text-base));
   @include vars.local(tabs-tab-unselected-color-hover, var(--ds-tabs-tab-unselected-color-text-hover));
   @include vars.local(tabs-tab-unselected-color-active, var(--ds-tabs-tab-unselected-color-text-active));
-  @include vars.local(tabs-tab-selected-font-family, var(--ds-tabs-tab-selected-typo-font-family));
-  @include vars.local(tabs-tab-selected-font-size, var(--ds-tabs-tab-selected-typo-font-size));
-  @include vars.local(tabs-tab-selected-font-weight, var(--ds-tabs-tab-selected-typo-font-weight));
-  @include vars.local(tabs-tab-selected-line-height, var(--ds-tabs-tab-selected-typo-line-height));
+  @include typo.local(tabs-tab-selected, 'tabs-tab-selected-typo');
   @include vars.local(tabs-tab-selected-color-base, var(--ds-tabs-tab-selected-color-text-base));
   @include vars.local(tabs-tab-selected-color-hover, var(--ds-tabs-tab-selected-color-text-hover));
   @include vars.local(tabs-tab-selected-color-active, var(--ds-tabs-tab-selected-color-text-active));
-  @include vars.local(tabs-tab-inverted-selected-font-family, var(--ds-tabs-tab-inverted-selected-typo-font-family));
+  @include typo.local(tabs-tab-inverted-selected, 'tabs-tab-inverted-selected-typo');
   // Focus ring color is the one cross-cutting Alias value every component shares —
   // there is no per-component variation to wrap in a Component token.
   @include vars.local(tabs-tab-color-focus, var(--ds-alias-interaction-focus-color-base));
@@ -131,8 +140,7 @@
   --_tabs-tab-unselected-color-base: var(--ds-tabs-tab-inverted-unselected-color-text-base);
   --_tabs-tab-unselected-color-hover: var(--ds-tabs-tab-inverted-unselected-color-text-hover);
   --_tabs-tab-unselected-color-active: var(--ds-tabs-tab-inverted-unselected-color-text-active);
-  --_tabs-tab-unselected-font-family: var(--ds-tabs-tab-inverted-unselected-typo-font-family);
-  --_tabs-tab-unselected-font-weight: var(--ds-tabs-tab-inverted-unselected-typo-font-weight);
+  @include typo.mod(tabs-tab-unselected, 'tabs-tab-inverted-unselected-typo');
   --_tabs-tab-selected-color-base: var(--ds-tabs-tab-inverted-selected-color-text-base);
   --_tabs-tab-selected-color-hover: var(--ds-tabs-tab-inverted-selected-color-text-hover);
   --_tabs-tab-selected-color-active: var(--ds-tabs-tab-inverted-selected-color-text-active);

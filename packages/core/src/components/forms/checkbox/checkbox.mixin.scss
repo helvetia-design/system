@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Control Mixins
@@ -19,10 +20,7 @@
     @include vars.local(checkbox-label-hover-color, var(--ds-checkbox-label-color-hover));
     @include vars.local(checkbox-label-active-color, var(--ds-checkbox-label-color-active));
     @include vars.local(checkbox-label-disabled-color, var(--ds-checkbox-label-color-disabled));
-    @include vars.local(checkbox-label-family, var(--ds-checkbox-label-typo-font-family));
-    @include vars.local(checkbox-label-size, var(--ds-checkbox-label-typo-font-size));
-    @include vars.local(checkbox-label-weight, var(--ds-checkbox-label-typo-font-weight));
-    @include vars.local(checkbox-label-line-height, var(--ds-checkbox-label-typo-line-height));
+    @include typo.local(checkbox-label, 'checkbox-label-typo');
 
     // dimensions
     @include vars.local(checkbox-size, var(--ds-checkbox-size));
@@ -103,10 +101,7 @@
   cursor: pointer;
   user-select: none;
   color: var(--_checkbox-label-base-color);
-  font-family: var(--_checkbox-label-family);
-  font-size: var(--_checkbox-label-size);
-  font-weight: var(--_checkbox-label-weight);
-  line-height: var(--_checkbox-label-line-height);
+  @include typo.apply(checkbox-label);
   padding-top: var(--_checkbox-py);
   padding-bottom: var(--_checkbox-py);
   min-height: var(--_checkbox-min-height);

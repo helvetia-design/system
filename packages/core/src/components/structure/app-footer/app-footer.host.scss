@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -14,6 +15,9 @@
  * @prop --app-footer-font-size: Font size of the app-footer text.
  * @prop --app-footer-font-weight: Font weight of the app-footer text.
  * @prop --app-footer-line-height: Line height of the app-footer text.
+ * @prop --app-footer-letter-spacing: Letter spacing of the app-footer text.
+ * @prop --app-footer-text-decoration: Text decoration of the app-footer text.
+ * @prop --app-footer-text-transform: Text transform of the app-footer text.
  *
  * @prop --app-footer-gap: Gap between the app-footer elements.
  * @prop --app-footer-gap-sm: Tight gap between related inline items (language picker, link list rows).
@@ -24,12 +28,18 @@
  * @prop --app-footer-max-width-fluid: Max width of the app-footer in fluid container mode.
  * @prop --app-footer-max-width-compact: Max width of the app-footer in compact container mode.
  *
+ * @prop --app-footer-language-font-family: Font family of the language picker.
+ * @prop --app-footer-language-font-size: Font size of the language picker.
  * @prop --app-footer-language-font-weight: Font weight of the language picker.
  * @prop --app-footer-language-line-height: Line height of the language picker select.
+ * @prop --app-footer-language-letter-spacing: Letter spacing of the language picker.
+ * @prop --app-footer-language-text-decoration: Text decoration of the language picker.
+ * @prop --app-footer-language-text-transform: Text transform of the language picker.
  *
  * @prop --app-footer-link-color: Text color of the app-footer links.
  * @prop --app-footer-link-color-hover: Text color of the app-footer links on hover.
  * @prop --app-footer-link-color-active: Text color of the app-footer links when active.
+ * @prop --app-footer-link-hover-text-decoration: Text decoration of a hovered/active app-footer link — single-property part modifier.
  *
  * @prop --app-footer-social-icon-size: Size of the social link icons in the app-footer.
  * @prop --app-footer-social-icon-color: Color of the social link icons in the app-footer.
@@ -40,10 +50,7 @@
   @include vars.local(app-footer-color-background, var(--ds-app-footer-color-background));
   @include vars.local(app-footer-color-text, var(--ds-app-footer-color-text));
 
-  @include vars.local(app-footer-font-family, var(--ds-app-footer-typo-font-family));
-  @include vars.local(app-footer-font-size, var(--ds-app-footer-typo-font-size));
-  @include vars.local(app-footer-font-weight, var(--ds-app-footer-typo-font-weight));
-  @include vars.local(app-footer-line-height, var(--ds-app-footer-typo-line-height));
+  @include typo.local(app-footer, 'app-footer-typo');
 
   @include vars.local(app-footer-gap, var(--ds-app-footer-gap));
   @include vars.local(app-footer-gap-sm, var(--ds-app-footer-gap-sm));
@@ -54,8 +61,7 @@
   @include vars.local(app-footer-max-width-fluid, var(--ds-app-footer-width-fluid));
   @include vars.local(app-footer-max-width-compact, var(--ds-app-footer-width-compact));
 
-  @include vars.local(app-footer-language-font-weight, var(--ds-app-footer-language-typo-font-weight));
-  @include vars.local(app-footer-language-line-height, var(--ds-app-footer-language-typo-line-height));
+  @include typo.local(app-footer-language, 'app-footer-language-typo');
 
   @include vars.local(app-footer-link-color, var(--ds-app-footer-link-color-text-base));
   @include vars.local(app-footer-link-color-hover, var(--ds-app-footer-link-color-text-hover));
@@ -63,6 +69,8 @@
 
   @include vars.local(app-footer-social-icon-size, var(--ds-app-footer-social-icon-size));
   @include vars.local(app-footer-social-icon-color, var(--ds-app-footer-social-icon-color));
+
+  @include vars.local(app-footer-link-hover-text-decoration, var(--ds-app-footer-link-hover-text-decoration));
 }
 
 :host {
@@ -93,10 +101,7 @@ footer {
   flex-direction: column;
   gap: var(--_app-footer-gap);
 
-  font-family: var(--_app-footer-font-family);
-  font-size: var(--_app-footer-font-size);
-  font-weight: var(--_app-footer-font-weight);
-  line-height: var(--_app-footer-line-height);
+  @include typo.apply(app-footer);
 }
 
 #top {
@@ -125,7 +130,7 @@ footer {
     border: 0;
     display: inline-flex;
     color: var(--_app-footer-color-text);
-    font-weight: var(--_app-footer-language-font-weight);
+    @include typo.apply(app-footer-language);
     gap: var(--_app-footer-gap-sm);
     // ds-token-check: intentional — pushes the picker to the end, not a design value
     margin: 0 0 0 auto;
@@ -149,7 +154,6 @@ footer {
     cursor: pointer;
     flex: 0 0 auto;
     font: inherit;
-    line-height: var(--_app-footer-language-line-height);
     min-width: auto;
     padding: 0;
     outline: none;
@@ -199,15 +203,13 @@ footer {
   .links a:hover,
   ::slotted([slot='links']:hover) {
     color: var(--_app-footer-link-color-hover);
-    // ds-token-check: intentional — no Alias TextDecoration underline option
-    text-decoration: underline;
+    text-decoration: var(--_app-footer-link-hover-text-decoration);
   }
 
   .links a:active,
   ::slotted([slot='links']:active) {
     color: var(--_app-footer-link-color-active);
-    // ds-token-check: intentional — no Alias TextDecoration underline option
-    text-decoration: underline;
+    text-decoration: var(--_app-footer-link-hover-text-decoration);
   }
 
   .social a,

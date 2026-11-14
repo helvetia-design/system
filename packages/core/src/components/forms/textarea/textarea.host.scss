@@ -1,6 +1,7 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../form/form.mixin' as form;
 @use './textarea.mixin' as textarea;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -10,10 +11,13 @@
  *
  * @prop --textarea-color: Text color inside the textarea field.
  * @prop --textarea-placeholder: Placeholder text color.
- * @prop --textarea-family: Font family of the textarea text.
- * @prop --textarea-weight: Font weight of the textarea text.
- * @prop --textarea-size: Font size of the textarea text.
+ * @prop --textarea-font-family: Font family of the textarea text.
+ * @prop --textarea-font-weight: Font weight of the textarea text.
+ * @prop --textarea-font-size: Font size of the textarea text.
  * @prop --textarea-line-height: Line height of the textarea text.
+ * @prop --textarea-letter-spacing: Letter spacing of the textarea text.
+ * @prop --textarea-text-decoration: Text decoration of the textarea text.
+ * @prop --textarea-text-transform: Text transform of the textarea text.
  * @prop --form-container-background: Background color of the textarea container.
  * @prop --form-container-border-color: Border color of the textarea container.
  * @prop --form-container-border-width: Border width of the textarea container.
@@ -25,14 +29,14 @@
  * @prop --form-container-active-border: Container border color when active.
  * @prop --form-container-focus-border: Container border color when focused.
  * @prop --form-label-color: Text color of the label.
- * @prop --form-label-family: Font family of the label.
- * @prop --form-label-weight: Font weight of the label.
- * @prop --form-label-size: Font size of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
  * @prop --form-label-line-height: Line height of the label.
  * @prop --form-description-color: Text color of the description.
- * @prop --form-description-family: Font family of the description.
- * @prop --form-description-weight: Font weight of the description.
- * @prop --form-description-size: Font size of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
  * @prop --form-description-line-height: Line height of the description.
  */
 
@@ -117,7 +121,10 @@
   --mod-form-container-border: var(--ds-form-disabled-container-border);
   --mod-form-label-color: var(--ds-form-disabled-color-label);
   --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
   --mod-textarea-color: var(--ds-form-disabled-control-color-value);
   --mod-textarea-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(textarea, 'form-disabled-control-typo');
 }

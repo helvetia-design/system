@@ -7,10 +7,13 @@
 
   // Intentional reuse: ds-button small-size scale, so header buttons
   // have the same height as the title
-  --button-font-family: var(--ds-button-size-sm-font-family);
-  --button-font-weight: var(--ds-button-size-sm-font-weight);
-  --button-font-size: var(--ds-button-size-sm-font-size);
-  --button-line-height: var(--ds-button-size-sm-line-height);
+  --button-font-family: var(--ds-button-size-sm-label-typo-font-family);
+  --button-font-weight: var(--ds-button-size-sm-label-typo-font-weight);
+  --button-font-size: var(--ds-button-size-sm-label-typo-font-size);
+  --button-line-height: var(--ds-button-size-sm-label-typo-line-height);
+  --button-letter-spacing: var(--ds-button-size-sm-label-typo-letter-spacing);
+  --button-text-decoration: var(--ds-button-size-sm-label-typo-text-decoration);
+  --button-text-transform: var(--ds-button-size-sm-label-typo-text-transform);
   --button-radius: var(--ds-button-size-sm-radius);
   --button-gap: var(--ds-button-size-sm-gap);
   --button-min-height: var(--ds-button-size-sm-min-height);

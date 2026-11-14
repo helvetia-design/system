@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * @prop --modal-background: Background color of the modal dialog.
@@ -8,10 +9,13 @@
  * @prop --modal-backdrop-opacity: Opacity of the backdrop overlay.
  * @prop --modal-backdrop-background: Background color of the backdrop overlay.
  * @prop --modal-backdrop-filter: Backdrop filter of the backdrop overlay.
- * @prop --modal-heading-family: Font family of the modal title.
- * @prop --modal-heading-weight: Font weight of the modal title.
- * @prop --modal-heading-size: Font size of the modal title.
+ * @prop --modal-heading-font-family: Font family of the modal title.
+ * @prop --modal-heading-font-weight: Font weight of the modal title.
+ * @prop --modal-heading-font-size: Font size of the modal title.
  * @prop --modal-heading-line-height: Line height of the modal title.
+ * @prop --modal-heading-letter-spacing: Letter spacing of the modal title.
+ * @prop --modal-heading-text-decoration: Text decoration of the modal title.
+ * @prop --modal-heading-text-transform: Text transform of the modal title.
  * @prop --modal-width: Width of the modal dialog from tablet up. Overridden by the `modal-width` property.
  * @prop --modal-margin: Responsive inset between the modal dialog and the viewport edge.
  * @prop --modal-p: Responsive inner padding of the modal dialog.
@@ -29,10 +33,7 @@
   @include vars.local(modal-backdrop-opacity, var(--ds-modal-backdrop-opacity));
   @include vars.local(modal-backdrop-background, var(--ds-modal-backdrop-color-background));
   @include vars.local(modal-backdrop-filter, var(--ds-modal-backdrop-filter));
-  @include vars.local(modal-heading-family, var(--ds-modal-heading-font-family));
-  @include vars.local(modal-heading-weight, var(--ds-modal-heading-font-weight));
-  @include vars.local(modal-heading-size, var(--ds-modal-heading-font-size));
-  @include vars.local(modal-heading-line-height, var(--ds-modal-heading-line-height));
+  @include typo.local(modal-heading, 'modal-heading');
   @include vars.local(modal-width, var(--ds-modal-width));
   @include vars.local(modal-margin, var(--ds-modal-margin));
   @include vars.local(modal-p, var(--ds-modal-padding));
@@ -132,10 +133,7 @@
   // Clears the absolutely positioned close button: its icon size (1.5rem) + a 0.5rem gap.
   padding-right: calc(var(--_modal-p) + var(--_modal-title-padding-end));
   margin: 0 0 var(--_modal-gap);
-  font-family: var(--_modal-heading-family);
-  font-weight: var(--_modal-heading-weight);
-  font-size: var(--_modal-heading-size);
-  line-height: var(--_modal-heading-line-height);
+  @include typo.apply(modal-heading);
 }
 
 // ─── Body ─────────────────────────────────────────────────────────────────────

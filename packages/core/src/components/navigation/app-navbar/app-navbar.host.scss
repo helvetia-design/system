@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -26,6 +27,10 @@
  * @prop --app-navbar-title-font-family: Font family of the title
  * @prop --app-navbar-title-font-size: Font size of the title
  * @prop --app-navbar-title-font-weight: Font weight of the title
+ * @prop --app-navbar-title-line-height: Line height of the title
+ * @prop --app-navbar-title-letter-spacing: Letter spacing of the title
+ * @prop --app-navbar-title-text-decoration: Text decoration of the title
+ * @prop --app-navbar-title-text-transform: Text transform of the title
  *
  * Hamburger Button Variables (sizing only):
  * @prop --app-navbar-hamburger-width: Width of the hamburger button
@@ -59,6 +64,10 @@
  * @prop --app-navbar-sidebar-item-font-size: Font size of menu items in sidebar
  * @prop --app-navbar-sidebar-item-font-weight: Font weight of menu items in sidebar
  * @prop --app-navbar-sidebar-item-font-family: Font family of menu items in sidebar
+ * @prop --app-navbar-sidebar-item-line-height: Line height of menu items in sidebar
+ * @prop --app-navbar-sidebar-item-letter-spacing: Letter spacing of menu items in sidebar
+ * @prop --app-navbar-sidebar-item-text-decoration: Text decoration of menu items in sidebar
+ * @prop --app-navbar-sidebar-item-text-transform: Text transform of menu items in sidebar
  * @prop --app-navbar-sidebar-item-color: Text color of menu items in sidebar
  * @prop --app-navbar-sidebar-item-background-active: Background of active menu items in sidebar
  * @prop --app-navbar-sidebar-item-background-hover: Background of menu items on hover in sidebar
@@ -76,8 +85,14 @@
  * @prop --app-navbar-menu-gap: Gap between menu and actions sections
  * @prop --app-navbar-menu-start-gap: Gap between menu-start items on desktop
  * @prop --app-navbar-menu-item-color: Text color of menu items on desktop
+ * @prop --app-navbar-menu-item-font-family: Font family of menu items on desktop
  * @prop --app-navbar-menu-item-font-size: Font size of menu items on desktop
- * @prop --app-navbar-menu-item-font-weight-selected: Font weight of selected desktop menu items
+ * @prop --app-navbar-menu-item-font-weight: Font weight of menu items on desktop
+ * @prop --app-navbar-menu-item-line-height: Line height of menu items on desktop
+ * @prop --app-navbar-menu-item-letter-spacing: Letter spacing of menu items on desktop
+ * @prop --app-navbar-menu-item-text-decoration: Text decoration of menu items on desktop
+ * @prop --app-navbar-menu-item-text-transform: Text transform of menu items on desktop
+ * @prop --app-navbar-menu-item-font-weight-active: Font weight of the selected/active desktop menu item — single-property part modifier.
  * @prop --app-navbar-menu-item-py: Vertical padding of desktop menu items
  * @prop --app-navbar-menu-item-px: Horizontal padding of desktop menu items
  * @prop --app-navbar-menu-item-border-radius: Border radius of desktop menu items
@@ -132,9 +147,7 @@
 
   // Title slot
   @include vars.local(app-navbar-title-color, var(--ds-app-navbar-default-title-color));
-  @include vars.local(app-navbar-title-font-family, var(--ds-app-navbar-default-title-typo-font-family));
-  @include vars.local(app-navbar-title-font-size, var(--ds-app-navbar-default-title-typo-font-size));
-  @include vars.local(app-navbar-title-font-weight, var(--ds-app-navbar-default-title-typo-font-weight));
+  @include typo.local(app-navbar-title, 'app-navbar-default-title-typo');
 
   // Hamburger button (sizing only; colors use button variables)
   @include vars.local(app-navbar-hamburger-width, var(--ds-app-navbar-default-hamburger-width));
@@ -169,9 +182,7 @@
   @include vars.local(app-navbar-sidebar-item-min-height, var(--ds-app-navbar-default-sidebar-item-min-height));
   @include vars.local(app-navbar-sidebar-item-py, var(--ds-app-navbar-default-sidebar-item-padding-block));
   @include vars.local(app-navbar-sidebar-item-px, var(--ds-app-navbar-default-sidebar-item-padding-inline));
-  @include vars.local(app-navbar-sidebar-item-font-size, var(--ds-app-navbar-default-sidebar-item-typo-font-size));
-  @include vars.local(app-navbar-sidebar-item-font-weight, var(--ds-app-navbar-default-sidebar-item-typo-font-weight));
-  @include vars.local(app-navbar-sidebar-item-font-family, var(--ds-app-navbar-default-sidebar-item-typo-font-family));
+  @include typo.local(app-navbar-sidebar-item, 'app-navbar-default-sidebar-item-typo');
   @include vars.local(app-navbar-sidebar-item-color, var(--ds-app-navbar-default-sidebar-item-color-base));
   @include vars.local(
     app-navbar-sidebar-item-background-active,
@@ -198,10 +209,10 @@
   @include vars.local(app-navbar-menu-gap, var(--ds-app-navbar-default-menu-gap));
   @include vars.local(app-navbar-menu-start-gap, var(--ds-app-navbar-default-menu-start-gap));
   @include vars.local(app-navbar-menu-item-color, var(--ds-app-navbar-default-menu-item-color-base));
-  @include vars.local(app-navbar-menu-item-font-size, var(--ds-app-navbar-default-menu-item-typo-base-font-size));
+  @include typo.local(app-navbar-menu-item, 'app-navbar-default-menu-item-typo');
   @include vars.local(
-    app-navbar-menu-item-font-weight-selected,
-    var(--ds-app-navbar-default-menu-item-typo-selected-font-weight)
+    app-navbar-menu-item-font-weight-active,
+    var(--ds-app-navbar-default-menu-item-active-font-weight)
   );
   @include vars.local(app-navbar-menu-item-py, var(--ds-app-navbar-default-menu-item-padding-block));
   @include vars.local(app-navbar-menu-item-px, var(--ds-app-navbar-default-menu-item-padding-inline));
@@ -372,9 +383,7 @@
 
 ::slotted([slot='title']) {
   color: var(--_app-navbar-title-color);
-  font-family: var(--_app-navbar-title-font-family);
-  font-size: var(--_app-navbar-title-font-size);
-  font-weight: var(--_app-navbar-title-font-weight);
+  @include typo.apply(app-navbar-title);
 
   display: none;
 
@@ -556,9 +565,7 @@
     position: relative;
     color: var(--_app-navbar-sidebar-item-color);
     --icon-color: var(--_app-navbar-sidebar-item-color);
-    font-size: var(--_app-navbar-sidebar-item-font-size);
-    font-weight: var(--_app-navbar-sidebar-item-font-weight);
-    font-family: var(--_app-navbar-sidebar-item-font-family);
+    @include typo.apply(app-navbar-sidebar-item);
     text-decoration: none;
     min-height: var(--_app-navbar-sidebar-item-min-height);
     padding-block: var(--_app-navbar-sidebar-item-py);
@@ -701,7 +708,7 @@
       display: inline-flex;
       align-items: center;
       color: var(--_app-navbar-menu-item-color);
-      font-size: var(--_app-navbar-menu-item-font-size);
+      @include typo.apply(app-navbar-menu-item);
       border-radius: var(--_app-navbar-menu-item-border-radius);
       padding-inline: var(--_app-navbar-menu-item-px);
       padding-block: var(--_app-navbar-menu-item-py);
@@ -732,7 +739,7 @@
 
     ::slotted([slot='menu-start'].is-active),
     ::slotted([slot='menu-start'][aria-current='page']) {
-      font-weight: var(--_app-navbar-menu-item-font-weight-selected);
+      font-weight: var(--_app-navbar-menu-item-font-weight-active);
       &::after {
         background-color: var(--_app-navbar-menu-item-color-selected);
       }

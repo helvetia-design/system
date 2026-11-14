@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Field Layout Mixins
@@ -96,10 +97,7 @@
 
 @mixin vars-label() {
   @include vars.local(form-label-color, var(--ds-form-default-color-label));
-  @include vars.local(form-label-family, var(--ds-form-default-label-typo-font-family));
-  @include vars.local(form-label-weight, var(--ds-form-default-label-typo-font-weight));
-  @include vars.local(form-label-line-height, var(--ds-form-default-label-typo-line-height));
-  @include vars.local(form-label-size, var(--ds-form-default-label-typo-font-size));
+  @include typo.local(form-label, 'form-default-label-typo');
 }
 
 @mixin label($selector: 'label') {
@@ -128,10 +126,7 @@
     // margin-bottom: 0.25rem;
 
     color: var(--_form-label-color);
-    font-family: var(--_form-label-family);
-    font-weight: var(--_form-label-weight);
-    font-size: var(--_form-label-size);
-    line-height: var(--_form-label-line-height);
+    @include typo.apply(form-label);
   }
 }
 
@@ -142,10 +137,7 @@
 
 @mixin vars-description() {
   @include vars.local(form-description-color, var(--ds-form-default-color-description));
-  @include vars.local(form-description-family, var(--ds-form-default-description-typo-font-family));
-  @include vars.local(form-description-weight, var(--ds-form-default-description-typo-font-weight));
-  @include vars.local(form-description-line-height, var(--ds-form-default-description-typo-line-height));
-  @include vars.local(form-description-size, var(--ds-form-default-description-typo-font-size));
+  @include typo.local(form-description, 'form-default-description-typo');
 }
 
 @mixin description($selector: '#description') {
@@ -163,13 +155,10 @@
 
     // this is needed to prevent screen flimmering when the descriptions is only shown on error
     // reserve exactly one line of description text: font-size × unitless line-height
-    min-height: calc(var(--_form-description-size) * var(--_form-description-line-height));
+    min-height: calc(var(--_form-description-font-size) * var(--_form-description-line-height));
 
     color: var(--_form-description-color);
-    font-family: var(--_form-description-family);
-    font-weight: var(--_form-description-weight);
-    font-size: var(--_form-description-size);
-    line-height: var(--_form-description-line-height);
+    @include typo.apply(form-description);
 
     ds-icon {
       --icon-color: var(--_form-description-color);

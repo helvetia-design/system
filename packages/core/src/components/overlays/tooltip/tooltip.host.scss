@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -16,6 +17,9 @@
  * @prop --tooltip-text-font-weight: Font weight of the tooltip text.
  * @prop --tooltip-text-font-size: Font size of the tooltip text.
  * @prop --tooltip-text-line-height: Line height of the tooltip text.
+ * @prop --tooltip-text-letter-spacing: Letter spacing of the tooltip text.
+ * @prop --tooltip-text-text-decoration: Text decoration of the tooltip text.
+ * @prop --tooltip-text-text-transform: Text transform of the tooltip text.
  * @prop --tooltip-z-index: Z-index of the tooltip layer.
  */
 
@@ -31,10 +35,7 @@
   @include vars.local(tooltip-py, var(--ds-tooltip-padding-y));
   // Read from JS (see tooltip.tsx resolveOffset) — floating-ui needs a number, not a var()
   @include vars.local(tooltip-offset, var(--ds-tooltip-offset));
-  @include vars.local(tooltip-text-font-family, var(--ds-tooltip-text-font-family));
-  @include vars.local(tooltip-text-font-weight, var(--ds-tooltip-text-font-weight));
-  @include vars.local(tooltip-text-font-size, var(--ds-tooltip-text-font-size));
-  @include vars.local(tooltip-text-line-height, var(--ds-tooltip-text-line-height));
+  @include typo.local(tooltip-text, 'tooltip-text');
   @include vars.local(tooltip-z-index, var(--ds-tooltip-z-index));
 }
 
@@ -126,10 +127,7 @@
   // ds-token-check: intentional — viewport safe-area guard, identical across brands
   max-height: calc(100svh - 8rem);
   color: var(--_tooltip-color-text);
-  font-family: var(--_tooltip-text-font-family);
-  font-weight: var(--_tooltip-text-font-weight);
-  font-size: var(--_tooltip-text-font-size);
-  line-height: var(--_tooltip-text-line-height);
+  @include typo.apply(tooltip-text);
 }
 
 ::slotted(span),
@@ -139,4 +137,7 @@
   font-weight: inherit;
   font-size: inherit;
   line-height: inherit;
+  letter-spacing: inherit;
+  text-decoration: inherit;
+  text-transform: inherit;
 }

@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
+@use '../../../../typography' as typo;
 
 /**
  * Variables
@@ -13,7 +14,21 @@
  * @prop --snackbar-border: Border of the snackbar.
  * @prop --snackbar-color: Text color inside the snackbar.
  * @prop --snackbar-icon-color: Color of the snackbar icon.
+ * @prop --snackbar-heading-font-family: Font family of the snackbar heading.
+ * @prop --snackbar-heading-font-size: Font size of the snackbar heading.
+ * @prop --snackbar-heading-font-weight: Font weight of the snackbar heading.
+ * @prop --snackbar-heading-line-height: Line height of the snackbar heading.
+ * @prop --snackbar-heading-letter-spacing: Letter spacing of the snackbar heading.
+ * @prop --snackbar-heading-text-decoration: Text decoration of the snackbar heading.
+ * @prop --snackbar-heading-text-transform: Text transform of the snackbar heading.
  * @prop --snackbar-heading-color: Text color of the snackbar heading.
+ * @prop --snackbar-content-font-family: Font family of the snackbar message.
+ * @prop --snackbar-content-font-size: Font size of the snackbar message.
+ * @prop --snackbar-content-font-weight: Font weight of the snackbar message.
+ * @prop --snackbar-content-line-height: Line height of the snackbar message.
+ * @prop --snackbar-content-letter-spacing: Letter spacing of the snackbar message.
+ * @prop --snackbar-content-text-decoration: Text decoration of the snackbar message.
+ * @prop --snackbar-content-text-transform: Text transform of the snackbar message.
  * @prop --snackbar-content-color: Text color of the snackbar message.
  * @prop --snackbar-p: Padding inside the snackbar.
  * @prop --snackbar-gap: Gap between content and close button.
@@ -27,17 +42,11 @@
   @include vars.local(snackbar-border, var(--ds-snackbar-primary-border));
   @include vars.local(snackbar-color, var(--ds-snackbar-primary-color-body));
 
-  @include vars.local(snackbar-heading-font-family, var(--ds-snackbar-heading-font-family));
-  @include vars.local(snackbar-heading-font-weight, var(--ds-snackbar-heading-font-weight));
-  @include vars.local(snackbar-heading-font-size, var(--ds-snackbar-heading-font-size));
-  @include vars.local(snackbar-heading-line-height, var(--ds-snackbar-heading-line-height));
+  @include typo.local(snackbar-heading, 'snackbar-heading');
   @include vars.local(snackbar-heading-color, var(--ds-snackbar-primary-color-heading));
   @include vars.local(snackbar-icon-color, var(--_snackbar-heading-color));
 
-  @include vars.local(snackbar-content-font-family, var(--ds-snackbar-body-font-family));
-  @include vars.local(snackbar-content-font-weight, var(--ds-snackbar-body-font-weight));
-  @include vars.local(snackbar-content-font-size, var(--ds-snackbar-body-font-size));
-  @include vars.local(snackbar-content-line-height, var(--ds-snackbar-body-line-height));
+  @include typo.local(snackbar-content, 'snackbar-body');
   @include vars.local(snackbar-content-color, var(--ds-snackbar-primary-color-body));
 
   @include vars.local(snackbar-gap, var(--ds-snackbar-gap));
@@ -108,10 +117,7 @@
     & > strong,
     & > b,
     & > h2 {
-      font-family: var(--_snackbar-heading-font-family);
-      font-weight: var(--_snackbar-heading-font-weight);
-      line-height: var(--_snackbar-heading-line-height);
-      font-size: var(--_snackbar-heading-font-size);
+      @include typo.apply(snackbar-heading);
       color: var(--_snackbar-heading-color);
       margin: 0 !important;
     }
@@ -122,10 +128,7 @@
     &,
     & > span,
     & > p {
-      font-family: var(--_snackbar-content-font-family);
-      font-size: var(--_snackbar-content-font-size);
-      font-weight: var(--_snackbar-content-font-weight);
-      line-height: var(--_snackbar-content-line-height);
+      @include typo.apply(snackbar-content);
       color: var(--_snackbar-content-color);
     }
   }
@@ -141,8 +144,14 @@
     ds-button,
     .ds-button {
       --button-mt: var(--ds-snackbar-action-margin);
-      // Deliberate reuse: action buttons match ds-button sm font size
-      --button-font-size: var(--ds-button-size-sm-font-size);
+      // Deliberate reuse: action buttons match ds-button sm typography
+      --button-font-family: var(--ds-button-size-sm-label-typo-font-family);
+      --button-font-size: var(--ds-button-size-sm-label-typo-font-size);
+      --button-font-weight: var(--ds-button-size-sm-label-typo-font-weight);
+      --button-line-height: var(--ds-button-size-sm-label-typo-line-height);
+      --button-letter-spacing: var(--ds-button-size-sm-label-typo-letter-spacing);
+      --button-text-decoration: var(--ds-button-size-sm-label-typo-text-decoration);
+      --button-text-transform: var(--ds-button-size-sm-label-typo-text-transform);
       --button-min-height: var(--ds-snackbar-action-min-height);
       --button-min-width: var(--ds-snackbar-action-min-width);
       --button-px: var(--ds-snackbar-action-padding-x);
@@ -153,8 +162,14 @@
   ::slotted(ds-close),
   ::slotted(ds-button-group) {
     --button-mt: var(--ds-snackbar-action-margin);
-    // Deliberate reuse: action buttons match ds-button sm font size
-    --button-font-size: var(--ds-button-size-sm-font-size);
+    // Deliberate reuse: action buttons match ds-button sm typography
+    --button-font-family: var(--ds-button-size-sm-label-typo-font-family);
+    --button-font-size: var(--ds-button-size-sm-label-typo-font-size);
+    --button-font-weight: var(--ds-button-size-sm-label-typo-font-weight);
+    --button-line-height: var(--ds-button-size-sm-label-typo-line-height);
+    --button-letter-spacing: var(--ds-button-size-sm-label-typo-letter-spacing);
+    --button-text-decoration: var(--ds-button-size-sm-label-typo-text-decoration);
+    --button-text-transform: var(--ds-button-size-sm-label-typo-text-transform);
     --button-min-height: var(--ds-snackbar-action-min-height);
     --button-min-width: var(--ds-snackbar-action-min-width);
     --button-px: var(--ds-snackbar-action-padding-x);

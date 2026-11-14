@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
+@use '../../../../typography' as typo;
 
 /**
  * Variables
@@ -13,7 +14,21 @@
  * @prop --toast-border: Border of the toast.
  * @prop --toast-color: Text color inside the toast.
  * @prop --toast-icon-color: Color of the toast icon.
+ * @prop --toast-heading-font-family: Font family of the toast heading.
+ * @prop --toast-heading-font-size: Font size of the toast heading.
+ * @prop --toast-heading-font-weight: Font weight of the toast heading.
+ * @prop --toast-heading-line-height: Line height of the toast heading.
+ * @prop --toast-heading-letter-spacing: Letter spacing of the toast heading.
+ * @prop --toast-heading-text-decoration: Text decoration of the toast heading.
+ * @prop --toast-heading-text-transform: Text transform of the toast heading.
  * @prop --toast-heading-color: Text color of the toast heading.
+ * @prop --toast-content-font-family: Font family of the toast message.
+ * @prop --toast-content-font-size: Font size of the toast message.
+ * @prop --toast-content-font-weight: Font weight of the toast message.
+ * @prop --toast-content-line-height: Line height of the toast message.
+ * @prop --toast-content-letter-spacing: Letter spacing of the toast message.
+ * @prop --toast-content-text-decoration: Text decoration of the toast message.
+ * @prop --toast-content-text-transform: Text transform of the toast message.
  * @prop --toast-content-color: Text color of the toast message.
  * @prop --toast-progress-duration: Duration of the progress bar animation.
  * @prop --toast-progress-bar-bg: Background color of the progress bar.
@@ -36,17 +51,11 @@
   @include vars.local(toast-progress-bg, var(--ds-toast-primary-progress-track-color-background));
   @include vars.local(toast-progress-height, var(--ds-toast-progress-height));
 
-  @include vars.local(toast-heading-font-family, var(--ds-toast-heading-font-family));
-  @include vars.local(toast-heading-font-weight, var(--ds-toast-heading-font-weight));
-  @include vars.local(toast-heading-font-size, var(--ds-toast-heading-font-size));
-  @include vars.local(toast-heading-line-height, var(--ds-toast-heading-line-height));
+  @include typo.local(toast-heading, 'toast-heading');
   @include vars.local(toast-heading-color, var(--ds-toast-primary-color-heading));
   @include vars.local(toast-icon-color, var(--_toast-heading-color));
 
-  @include vars.local(toast-content-font-family, var(--ds-toast-body-font-family));
-  @include vars.local(toast-content-font-weight, var(--ds-toast-body-font-weight));
-  @include vars.local(toast-content-font-size, var(--ds-toast-body-font-size));
-  @include vars.local(toast-content-line-height, var(--ds-toast-body-line-height));
+  @include typo.local(toast-content, 'toast-body');
   @include vars.local(toast-content-color, var(--ds-toast-primary-color-body));
 
   @include vars.local(toast-gap, var(--ds-toast-gap));
@@ -122,10 +131,7 @@
     & > strong,
     & > b,
     & > h2 {
-      font-family: var(--_toast-heading-font-family);
-      font-weight: var(--_toast-heading-font-weight);
-      line-height: var(--_toast-heading-line-height);
-      font-size: var(--_toast-heading-font-size);
+      @include typo.apply(toast-heading);
       color: var(--_toast-heading-color);
       margin: 0 !important;
     }
@@ -136,10 +142,7 @@
     &,
     & > span,
     & > p {
-      font-family: var(--_toast-content-font-family);
-      font-size: var(--_toast-content-font-size);
-      font-weight: var(--_toast-content-font-weight);
-      line-height: var(--_toast-content-line-height);
+      @include typo.apply(toast-content);
       color: var(--_toast-content-color);
     }
   }

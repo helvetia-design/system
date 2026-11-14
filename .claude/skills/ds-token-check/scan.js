@@ -260,7 +260,17 @@ const CATEGORY_SUFFIXES = {
   'Border': ['border', 'border-color', 'border-width', 'border-style'],
   'Background': ['background', 'background-color'],
   'Radius': ['radius', 'border-radius'],
-  'Typography': ['font-family', 'font-weight', 'font-size', 'line-height'],
+  // ADR-0037: a typography token wires all 7 parts, not 4 — letter-spacing/text-decoration/
+  // text-transform are real, checkable suffixes now (no longer blanket-EXEMPT, see SKILL.md).
+  'Typography': [
+    'font-family',
+    'font-weight',
+    'font-size',
+    'line-height',
+    'letter-spacing',
+    'text-decoration',
+    'text-transform',
+  ],
   'Text-Color': ['text', 'color', 'text-color'],
   'Opacity': ['opacity'],
   'Padding': ['padding-x', 'padding-y', 'padding', 'padding-inline', 'padding-block'],
@@ -293,6 +303,9 @@ const PROPERTY_CATEGORY_MAP = {
   'font-weight': 'Typography',
   'font-size': 'Typography',
   'line-height': 'Typography',
+  'letter-spacing': 'Typography',
+  'text-decoration': 'Typography',
+  'text-transform': 'Typography',
   'color': 'Text-Color',
   'opacity': 'Opacity',
   'padding': 'Padding',
@@ -327,7 +340,15 @@ function categorizeLocalName(name) {
   if (n.includes('background')) return 'Background'
   if (n.includes('border')) return 'Border'
   if (n.includes('opacity')) return 'Opacity'
-  if (n.includes('font') || n.includes('line-height') || n.includes('lineheight')) return 'Typography'
+  if (
+    n.includes('font') ||
+    n.includes('line-height') ||
+    n.includes('lineheight') ||
+    n.includes('letter-spacing') ||
+    n.includes('text-decoration') ||
+    n.includes('text-transform')
+  )
+    return 'Typography'
   if (n.includes('gap')) return 'Gap'
   if (n.includes('margin')) return 'Margin'
   if (/(^|[-_])(padding|px|py)([-_]|$)/.test(n)) return 'Padding'
@@ -480,8 +501,6 @@ function buildSharedOwnerInventory(sharedOwners, definedTokens, usages) {
     const uncategorized = []
     for (const token of definedTokens) {
       if (!token.startsWith(`--ds-${owner}-`)) continue
-      // letter-spacing / text-decoration / text-transform are EXEMPT by default (SKILL.md Rules)
-      if (/-(letter-spacing|text-decoration|text-transform)$/.test(token)) continue
       const match = suffixEntries.find(({ suffix }) => token.endsWith(`-${suffix}`))
       const entry = { token, referencedInFamilySource: referenced.has(token) }
       if (match) byCategory[match.category].push(entry)

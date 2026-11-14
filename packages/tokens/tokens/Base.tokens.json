@@ -2161,6 +2161,10 @@
               "ALL_SCOPES"
             ]
           }
+        },
+        "Underline": {
+          "$type": "textDecoration",
+          "$value": "{🌐 Global.🔤 Font.TextDecoration.Underline}"
         }
       },
       "TextTransform": {
@@ -6558,6 +6562,13 @@
               }
             }
           }
+        },
+        "Hover": {
+          "TextDecoration": {
+            "$type": "textDecoration",
+            "$value": "{🔗 Alias.🔤 Text.TextDecoration.Underline}",
+            "$description": "Single-property part modifier — a hovered/active footer link changes only decoration (ADR-0037 decision 12)."
+          }
         }
       },
       "Gap": {
@@ -7360,19 +7371,6 @@
               "com.figma.variableId": "VariableID:137:952"
             }
           },
-          "Font": {
-            "$type": "dimension",
-            "$value": {
-              "value": 0,
-              "unit": "rem"
-            },
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:953"
-            }
-          },
           "Padding": {
             "$type": "dimension",
             "$value": "{🔗 Alias.↔️ Space.Padding.2XS}",
@@ -7445,14 +7443,18 @@
               "com.figma.variableId": "VariableID:137:960"
             }
           },
-          "Font": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.SM}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:961"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Heading}",
+                "fontSize": "{📱 Device.🔤 Text.Size.SM}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Single}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Heading}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           }
         },
@@ -7497,14 +7499,18 @@
               "com.figma.variableId": "VariableID:137:965"
             }
           },
-          "Font": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.LG}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:966"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Heading}",
+                "fontSize": "{📱 Device.🔤 Text.Size.LG}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Single}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Heading}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           },
           "Icon": {
@@ -7516,38 +7522,6 @@
               ],
               "com.figma.variableId": "VariableID:137:967"
             }
-          }
-        }
-      },
-      "Typo": {
-        "FontFamily": {
-          "$type": "fontFamily",
-          "$value": "{🔗 Alias.🔤 Text.Family.Heading}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:968"
-          }
-        },
-        "FontWeight": {
-          "$type": "fontWeight",
-          "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:969"
-          }
-        },
-        "LineHeight": {
-          "$type": "number",
-          "$value": "{🔗 Alias.🔤 Text.LineHeight.Single}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:2826:10050"
           }
         }
       },
@@ -9620,44 +9594,18 @@
       },
       "Size": {
         "Base": {
-          "LineHeight": {
-            "$type": "number",
-            "$value": "{🔗 Alias.🔤 Text.LineHeight.Heading}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:2826:10051"
-            }
-          },
-          "FontWeight": {
-            "$type": "fontWeight",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1259"
-            }
-          },
-          "FontFamily": {
-            "$type": "fontFamily",
-            "$value": "{🔗 Alias.🔤 Text.Family.Heading}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1261"
-            }
-          },
-          "FontSize": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.Base}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1262"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Heading}",
+                "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Heading}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Heading}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           },
           "Gap": {
@@ -9712,24 +9660,18 @@
           }
         },
         "SM": {
-          "LineHeight": {
-            "$type": "number",
-            "$value": "{🔗 Alias.🔤 Text.LineHeight.Heading}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:2826:10052"
-            }
-          },
-          "FontWeight": {
-            "$type": "fontWeight",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1268"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Heading}",
+                "fontSize": "{📱 Device.🔤 Text.Size.SM}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Heading}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Heading}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           },
           "Radius": {
@@ -9740,26 +9682,6 @@
                 "ALL_SCOPES"
               ],
               "com.figma.variableId": "VariableID:137:1269"
-            }
-          },
-          "FontFamily": {
-            "$type": "fontFamily",
-            "$value": "{🔗 Alias.🔤 Text.Family.Heading}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1270"
-            }
-          },
-          "FontSize": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.SM}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1271"
             }
           },
           "Gap": {
@@ -9804,24 +9726,18 @@
           }
         },
         "LG": {
-          "LineHeight": {
-            "$type": "number",
-            "$value": "{🔗 Alias.🔤 Text.LineHeight.Heading}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:2826:10053"
-            }
-          },
-          "FontWeight": {
-            "$type": "fontWeight",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1277"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Heading}",
+                "fontSize": "{📱 Device.🔤 Text.Size.LG}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Heading}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Heading}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           },
           "Radius": {
@@ -9832,26 +9748,6 @@
                 "ALL_SCOPES"
               ],
               "com.figma.variableId": "VariableID:137:1278"
-            }
-          },
-          "FontFamily": {
-            "$type": "fontFamily",
-            "$value": "{🔗 Alias.🔤 Text.Family.Heading}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1279"
-            }
-          },
-          "FontSize": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.LG}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1280"
             }
           },
           "Gap": {
@@ -9922,6 +9818,22 @@
           "$type": "dimension",
           "$value": "{🔗 Alias.🔤 Text.UnderlineOffset}",
           "$description": "Underline offset of the link-colored button."
+        },
+        "Label": {
+          "TextDecoration": {
+            "$type": "textDecoration",
+            "$value": "{🔗 Alias.🔤 Text.TextDecoration.Underline}",
+            "$description": "The is-link variant changes only decoration — a single-property part modifier, not a new typography token (ADR-0037 decision 12)."
+          }
+        }
+      },
+      "Disabled": {
+        "Label": {
+          "TextDecoration": {
+            "$type": "textDecoration",
+            "$value": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+            "$description": "A disabled link-colored button loses its underline — single-property part modifier (ADR-0037 decision 12)."
+          }
         }
       },
       "Flat": {
@@ -11230,7 +11142,7 @@
         "Day": {
           "Weight": {
             "Base": {
-              "$type": "string",
+              "$type": "fontWeight",
               "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
               "$extensions": {
                 "com.figma.scopes": [
@@ -11240,7 +11152,7 @@
               }
             },
             "Selected": {
-              "$type": "string",
+              "$type": "fontWeight",
               "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
               "$extensions": {
                 "com.figma.scopes": [
@@ -12774,7 +12686,7 @@
             "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
             "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
           },
-          "$description": "Typography of the counter value display. Only fontFamily and fontWeight are applied in code; fontSize/lineHeight stay inherited from context.",
+          "$description": "Typography of the counter value display.",
           "$extensions": {
             "com.figma.scopes": [
               "ALL_SCOPES"
@@ -13011,292 +12923,6 @@
           }
         }
       },
-      "Label": {
-        "Weight": {
-          "$type": "fontWeight",
-          "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1630"
-          }
-        },
-        "Color": {
-          "Base": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Primary}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1634"
-            }
-          },
-          "Success": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Success}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1635"
-            }
-          },
-          "Warning": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Warning}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1636"
-            }
-          },
-          "Danger": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Danger}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1637"
-            }
-          },
-          "Disabled": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Disabled}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1638"
-            }
-          }
-        },
-        "Family": {
-          "$type": "fontFamily",
-          "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1631"
-          }
-        },
-        "LineHeight": {
-          "$type": "number",
-          "$value": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:2826:10166"
-          }
-        },
-        "Size": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.🔤 Text.Size.SM}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1633"
-          }
-        }
-      },
-      "Control": {
-        "Weight": {
-          "$type": "fontWeight",
-          "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1639"
-          }
-        },
-        "Color": {
-          "Value": {
-            "Base": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🔤 Text.Color.Primary}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ],
-                "com.figma.variableId": "VariableID:137:1643"
-              }
-            },
-            "Disabled": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🔤 Text.Color.Disabled}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ],
-                "com.figma.variableId": "VariableID:137:1644"
-              }
-            }
-          },
-          "Placeholder": {
-            "Disabled": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🔤 Text.Color.Disabled}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ],
-                "com.figma.variableId": "VariableID:137:1645"
-              }
-            },
-            "Base": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🔤 Text.Color.Placeholder}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ],
-                "com.figma.variableId": "VariableID:137:1646"
-              }
-            }
-          }
-        },
-        "Family": {
-          "$type": "fontFamily",
-          "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1640"
-          }
-        },
-        "LineHeight": {
-          "$type": "number",
-          "$value": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:2826:10167"
-          }
-        },
-        "FontSize": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.🔤 Text.Size.Base}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1642"
-          }
-        },
-        "Height": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.📏 Size.Control.Indicator}",
-          "$description": "Minimum height of a selected-option chip row.",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ]
-          }
-        }
-      },
-      "Description": {
-        "Weight": {
-          "$type": "fontWeight",
-          "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1647"
-          }
-        },
-        "Color": {
-          "Success": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Success}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1651"
-            }
-          },
-          "Warning": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Warning}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1652"
-            }
-          },
-          "Danger": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Danger}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1653"
-            }
-          },
-          "Disabled": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Disabled}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1654"
-            }
-          },
-          "Base": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Hint}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:1655"
-            }
-          }
-        },
-        "Family": {
-          "$type": "fontFamily",
-          "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1648"
-          }
-        },
-        "LineHeight": {
-          "$type": "number",
-          "$value": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:2826:10168"
-          }
-        },
-        "Size": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.🔤 Text.Size.XS}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1650"
-          }
-        }
-      },
       "Chip": {
         "Color": {
           "Text": {
@@ -13320,14 +12946,17 @@
             }
           }
         },
-        "Family": {
-          "$type": "fontFamily",
-          "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1656"
+        "Typo": {
+          "$type": "typography",
+          "$description": "Typography of a selected-option chip's text. lineHeight is Single (1) — the chip is a fixed-height pill, not a multi-line text part.",
+          "$value": {
+            "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+            "fontSize": "{📱 Device.🔤 Text.Size.SM}",
+            "fontWeight": "{🔗 Alias.🔤 Text.Weight.Regular}",
+            "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Single}",
+            "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+            "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+            "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
           }
         },
         "Radius": {
@@ -13360,24 +12989,6 @@
                     "ALL_SCOPES"
                   ]
                 }
-              }
-            },
-            "FontWeight": {
-              "$type": "fontWeight",
-              "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            },
-            "FontSize": {
-              "$type": "dimension",
-              "$value": "{🔗 Alias.🔤 Text.Size.SM}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
               }
             }
           }
@@ -13556,16 +13167,6 @@
               "spread": "VariableID:137:1673",
               "color": "VariableID:137:1674"
             }
-          }
-        },
-        "Family": {
-          "$type": "fontFamily",
-          "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1675"
           }
         },
         "Color": {
@@ -13758,10 +13359,16 @@
             }
           }
         },
+        "Typo": {
+          "$type": "typography",
+          "$description": "Typography of a dropdown option row (and the trigger's displayed value, same text identity). Aliases Form.Default.Control.Typo.",
+          "$value": "{🧩 Component.Form.Default.Control.Typo}"
+        },
         "Weight": {
           "Selected": {
-            "$type": "string",
+            "$type": "fontWeight",
             "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
+            "$description": "Single-property part modifier — a selected option changes only weight (ADR-0037 decision 12).",
             "$extensions": {
               "com.figma.scopes": [
                 "ALL_SCOPES"
@@ -13772,14 +13379,16 @@
         }
       },
       "Optgroup": {
-        "Weight": {
-          "$type": "fontWeight",
-          "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:1690"
+        "Typo": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+            "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+            "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+            "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+            "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+            "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+            "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
           }
         },
         "Color": {
@@ -15989,7 +15598,7 @@
               "$type": "typography",
               "$value": {
                 "fontFamily": "{🔗 Alias.🔤 Text.Family.Heading}",
-                "fontSize": "{🔗 Alias.🔤 Text.Size.Base}",
+                "fontSize": "{📱 Device.🔤 Text.Size.Base}",
                 "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
                 "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Heading}",
                 "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Heading}",
@@ -16262,28 +15871,26 @@
               }
             },
             "Typo": {
-              "Base": {
-                "$type": "typography",
-                "$value": {
-                  "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
-                  "fontSize": "{🔗 Alias.🔤 Text.Size.Base}",
-                  "fontWeight": "{🔗 Alias.🔤 Text.Weight.Regular}",
-                  "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-                  "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
-                  "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
-                  "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
-                }
-              },
-              "Selected": {
-                "$type": "typography",
-                "$value": {
-                  "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
-                  "fontSize": "{🔗 Alias.🔤 Text.Size.Base}",
-                  "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
-                  "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-                  "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
-                  "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
-                  "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+                "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Regular}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
+            },
+            "Active": {
+              "FontWeight": {
+                "$type": "fontWeight",
+                "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "$description": "Single-property part modifier — a selected/active desktop menu item changes only weight (ADR-0037 decision 12).",
+                "$extensions": {
+                  "com.figma.scopes": [
+                    "ALL_SCOPES"
+                  ]
                 }
               }
             },
@@ -17304,44 +16911,16 @@
             "com.figma.variableId": "PENDING-FIGMA-SYNC"
           }
         },
-        "FontFamily": {
-          "$type": "fontFamily",
-          "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "PENDING-FIGMA-SYNC"
-          }
-        },
-        "LineHeight": {
-          "$type": "number",
-          "$value": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "PENDING-FIGMA-SYNC"
-          }
-        },
-        "FontSize": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.🔤 Text.Size.Base}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "PENDING-FIGMA-SYNC"
-          }
-        },
-        "FontWeight": {
-          "$type": "fontWeight",
-          "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "PENDING-FIGMA-SYNC"
+        "Typo": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+            "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+            "fontWeight": "{🔗 Alias.🔤 Text.Weight.Regular}",
+            "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+            "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+            "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+            "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
           }
         },
         "Color": {
@@ -17931,24 +17510,18 @@
               }
             }
           },
-          "FontWeight": {
-            "$type": "string",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2160"
-            }
-          },
-          "FontSize": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.Base}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2161"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+                "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           }
         },
@@ -17985,24 +17558,18 @@
               }
             }
           },
-          "FontWeight": {
-            "$type": "string",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2165"
-            }
-          },
-          "FontSize": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.SM}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2166"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+                "fontSize": "{📱 Device.🔤 Text.Size.SM}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Regular}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           }
         },
@@ -18039,24 +17606,18 @@
               }
             }
           },
-          "FontWeight": {
-            "$type": "string",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2170"
-            }
-          },
-          "FontSize": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.Base}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2171"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+                "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           }
         },
@@ -18093,24 +17654,18 @@
               }
             }
           },
-          "FontWeight": {
-            "$type": "string",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2175"
-            }
-          },
-          "FontSize": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.Base}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2176"
+          "Label": {
+            "Typo": {
+              "$type": "typography",
+              "$value": {
+                "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+                "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+                "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+                "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+                "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+                "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+                "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+              }
             }
           }
         }
@@ -18365,26 +17920,6 @@
           "com.figma.variableId": "VariableID:137:2156"
         }
       },
-      "LineHeight": {
-        "$type": "number",
-        "$value": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-        "$extensions": {
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
-          "com.figma.variableId": "VariableID:2826:10400"
-        }
-      },
-      "FontFamily": {
-        "$type": "fontFamily",
-        "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-        "$extensions": {
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
-          "com.figma.variableId": "VariableID:137:2158"
-        }
-      },
       "PurpleDark": {
         "Color": {
           "Text": {
@@ -18626,36 +18161,30 @@
         }
       },
       "Description": {
-        "FontWeight": {
-          "$type": "fontWeight",
-          "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:2222"
-          }
-        },
-        "FontSize": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.🔤 Text.Size.SM}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:2223"
+        "Typo": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+            "fontSize": "{📱 Device.🔤 Text.Size.SM}",
+            "fontWeight": "{🔗 Alias.🔤 Text.Weight.Regular}",
+            "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+            "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+            "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+            "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
           }
         }
       },
       "Item": {
-        "FontWeight": {
-          "$type": "fontWeight",
-          "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-          "$extensions": {
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ],
-            "com.figma.variableId": "VariableID:137:2224"
+        "Typo": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+            "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+            "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+            "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+            "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+            "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+            "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
           }
         },
         "Color": {
@@ -20797,7 +20326,7 @@
           "$type": "typography",
           "$value": {
             "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
-            "fontSize": "{🔗 Alias.🔤 Text.Size.SM}",
+            "fontSize": "{📱 Device.🔤 Text.Size.SM}",
             "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
             "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Single}",
             "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
@@ -23930,26 +23459,16 @@
     },
     "FileUpload": {
       "Label": {
-        "Font": {
-          "Weight": {
-            "$type": "fontWeight",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2546"
-            }
-          },
-          "Family": {
-            "$type": "fontFamily",
-            "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2547"
-            }
+        "Typo": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+            "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+            "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+            "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+            "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+            "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+            "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
           }
         },
         "Text": {
@@ -23961,26 +23480,6 @@
                 "ALL_SCOPES"
               ],
               "com.figma.variableId": "VariableID:137:2548"
-            }
-          },
-          "LineHeight": {
-            "$type": "number",
-            "$value": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:2826:10460"
-            }
-          },
-          "Size": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.Base}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2550"
             }
           }
         }
@@ -24201,162 +23700,6 @@
           }
         }
       },
-      "Control": {
-        "Font": {
-          "Family": {
-            "$type": "fontFamily",
-            "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2567"
-            }
-          },
-          "Weight": {
-            "$type": "fontWeight",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2568"
-            }
-          }
-        },
-        "Text": {
-          "Size": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.Base}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2569"
-            }
-          },
-          "LineHeight": {
-            "$type": "number",
-            "$value": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:2826:10461"
-            }
-          },
-          "Color": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Primary}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2571"
-            }
-          }
-        },
-        "Placeholder": {
-          "Color": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🔤 Text.Color.Placeholder}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2572"
-            }
-          }
-        }
-      },
-      "Description": {
-        "Font": {
-          "Family": {
-            "$type": "fontFamily",
-            "$value": "{🔗 Alias.🔤 Text.Family.Text}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2573"
-            }
-          },
-          "Weight": {
-            "$type": "fontWeight",
-            "$value": "{🔗 Alias.🔤 Text.Weight.Regular}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2574"
-            }
-          }
-        },
-        "Text": {
-          "Size": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.🔤 Text.Size.XS}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:137:2575"
-            }
-          },
-          "LineHeight": {
-            "$type": "number",
-            "$value": "{🔗 Alias.🔤 Text.LineHeight.Text}",
-            "$extensions": {
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ],
-              "com.figma.variableId": "VariableID:2826:10462"
-            }
-          },
-          "Color": {
-            "Default": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🔤 Text.Color.Hint}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ],
-                "com.figma.variableId": "VariableID:137:2577"
-              }
-            },
-            "Danger": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🔤 Text.Color.Danger}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ],
-                "com.figma.variableId": "VariableID:137:2578"
-              }
-            },
-            "Success": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🔤 Text.Color.Success}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ],
-                "com.figma.variableId": "VariableID:137:2579"
-              }
-            },
-            "Warning": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🔤 Text.Color.Warning}",
-              "$extensions": {
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ],
-                "com.figma.variableId": "VariableID:137:2580"
-              }
-            }
-          }
-        }
-      },
       "FileList": {
         "Background": {
           "Color": {
@@ -24431,26 +23774,17 @@
       }
     },
     "Link": {
-      "FontFamily": {
-        "$type": "fontFamily",
-        "$value": [
-          "inherit"
-        ],
-        "$extensions": {
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
-          "com.figma.variableId": "VariableID:137:2583"
-        }
-      },
-      "FontWeight": {
-        "$type": "fontWeight",
-        "$value": "{🔗 Alias.🔤 Text.Weight.Bold}",
-        "$extensions": {
-          "com.figma.scopes": [
-            "ALL_SCOPES"
-          ],
-          "com.figma.variableId": "VariableID:137:2584"
+      "Typo": {
+        "$type": "typography",
+        "$description": "Inline text part — only fontWeight, letterSpacing, textDecoration, textTransform apply (typo.apply($inline: true)). fontFamily/fontSize/lineHeight are a Figma sample only; the link inherits them from its surrounding text in code.",
+        "$value": {
+          "fontFamily": "{🔗 Alias.🔤 Text.Family.Text}",
+          "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+          "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+          "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Text}",
+          "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+          "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.Underline}",
+          "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
         }
       },
       "UnderlineWidth": {

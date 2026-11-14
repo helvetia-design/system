@@ -68,7 +68,7 @@ describe('resolvedValueToCss', () => {
   })
 
   it('renders a single-entry fontFamily keyword bare — not quoted', () => {
-    // dist/css/base.tokens.css: --ds-link-family: inherit;
+    // dist/css/base.tokens.css: --ds-link-typo-font-family: inherit;
     expect(resolvedValueToCss(['inherit'], 'fontFamily', [])).toBe('inherit')
   })
 

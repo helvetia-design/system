@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * @prop --hint-trigger-color-icon-base: Color of the info-circle trigger icon.
@@ -9,7 +10,21 @@
  * @prop --hint-trigger-padding: Extra space added around the trigger icon to size the trigger button.
  * @prop --hint-trigger-size: Size of the trigger icon.
  * @prop --hint-color-focus: Focus outline color of the trigger icon.
+ * @prop --hint-heading-font-family: Font family of the hint panel title.
+ * @prop --hint-heading-font-size: Font size of the hint panel title.
+ * @prop --hint-heading-font-weight: Font weight of the hint panel title.
+ * @prop --hint-heading-line-height: Line height of the hint panel title.
+ * @prop --hint-heading-letter-spacing: Letter spacing of the hint panel title.
+ * @prop --hint-heading-text-decoration: Text decoration of the hint panel title.
+ * @prop --hint-heading-text-transform: Text transform of the hint panel title.
  * @prop --hint-color-heading: Text color of the hint panel title.
+ * @prop --hint-body-font-family: Font family of the hint panel body.
+ * @prop --hint-body-font-size: Font size of the hint panel body.
+ * @prop --hint-body-font-weight: Font weight of the hint panel body.
+ * @prop --hint-body-line-height: Line height of the hint panel body.
+ * @prop --hint-body-letter-spacing: Letter spacing of the hint panel body.
+ * @prop --hint-body-text-decoration: Text decoration of the hint panel body.
+ * @prop --hint-body-text-transform: Text transform of the hint panel body.
  * @prop --hint-color-body: Text color of the hint panel body.
  * @prop --hint-color-background: Background color of the hint panel.
  * @prop --hint-radius: Border radius of the hint panel.
@@ -30,16 +45,10 @@
   @include vars.local(hint-trigger-size, var(--ds-hint-trigger-size));
   @include vars.local(hint-color-focus, var(--ds-hint-color-focus));
 
-  @include vars.local(hint-heading-font-family, var(--ds-hint-heading-font-family));
-  @include vars.local(hint-heading-font-weight, var(--ds-hint-heading-font-weight));
-  @include vars.local(hint-heading-font-size, var(--ds-hint-heading-font-size));
-  @include vars.local(hint-heading-line-height, var(--ds-hint-heading-line-height));
+  @include typo.local(hint-heading, 'hint-heading');
   @include vars.local(hint-color-heading, var(--ds-hint-color-heading));
 
-  @include vars.local(hint-body-font-family, var(--ds-hint-body-font-family));
-  @include vars.local(hint-body-font-weight, var(--ds-hint-body-font-weight));
-  @include vars.local(hint-body-font-size, var(--ds-hint-body-font-size));
-  @include vars.local(hint-body-line-height, var(--ds-hint-body-line-height));
+  @include typo.local(hint-body, 'hint-body');
   @include vars.local(hint-color-body, var(--ds-hint-color-body));
 
   @include vars.local(hint-color-background, var(--ds-hint-color-background));
@@ -130,18 +139,12 @@
   }
 
   .hint-title {
-    font-family: var(--_hint-heading-font-family);
-    font-weight: var(--_hint-heading-font-weight);
-    font-size: var(--_hint-heading-font-size);
-    line-height: var(--_hint-heading-line-height);
+    @include typo.apply(hint-heading);
     color: var(--_hint-color-heading);
   }
 
   .hint-body {
-    font-family: var(--_hint-body-font-family);
-    font-weight: var(--_hint-body-font-weight);
-    font-size: var(--_hint-body-font-size);
-    line-height: var(--_hint-body-line-height);
+    @include typo.apply(hint-body);
     color: var(--_hint-color-body);
   }
 

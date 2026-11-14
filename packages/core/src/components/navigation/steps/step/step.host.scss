@@ -1,4 +1,5 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
+@use '../../../../typography' as typo;
 
 // ─── Host layout ─────────────────────────────────────────────────────────────
 // Default: circle top, label below (column). Flex: 1 so all steps share equal width.
@@ -33,9 +34,7 @@
   justify-content: center;
   background-color: var(--_steps-circle-color-bg);
   color: var(--_steps-circle-color-text);
-  font-family: var(--_steps-step-font-family);
-  font-size: var(--_steps-step-font-size);
-  font-weight: var(--_steps-step-font-weight);
+  @include typo.apply(steps-step);
   // ds-token-check: intentional — line-height 1 centers the glyph in the fixed-size circle
   line-height: 1;
   transition:
@@ -50,9 +49,7 @@
 
 .step-invalid {
   color: var(--_steps-circle-color-text-invalid);
-  font-family: var(--_steps-step-font-family);
-  font-size: var(--_steps-step-font-size);
-  font-weight: var(--_steps-step-font-weight);
+  @include typo.apply(steps-step);
   // ds-token-check: intentional — line-height 1 centers the invalid icon glyph in the circle
   line-height: 1;
 }
@@ -94,10 +91,7 @@
   text-overflow: ellipsis;
   max-width: 100%;
   color: var(--_steps-step-color);
-  font-family: var(--_steps-step-font-family);
-  font-size: var(--_steps-step-font-size);
-  font-weight: var(--_steps-step-font-weight);
-  line-height: var(--_steps-step-line-height);
+  @include typo.apply(steps-step);
   transition: color 180ms ease;
 }
 
@@ -150,7 +144,7 @@
   .circle {
     width: var(--_steps-circle-size-sm);
     height: var(--_steps-circle-size-sm);
-    font-size: var(--_steps-step-font-size-sm);
+    @include typo.mod(steps-step, 'steps-step-typo-sm');
     --mod-icon-size: var(--ds-icon-size-sm);
     --mod-icon-inner-size: var(--ds-icon-size-sm);
   }
@@ -218,10 +212,7 @@
   text-overflow: ellipsis;
   max-width: 100%;
   color: var(--_steps-step-color);
-  font-family: var(--_steps-step-font-family);
-  font-size: var(--_steps-step-font-size);
-  font-weight: var(--_steps-step-font-weight);
-  line-height: var(--_steps-step-line-height);
+  @include typo.apply(steps-step);
   transition: color 180ms ease;
   outline: none;
 }
@@ -251,6 +242,6 @@
 
 @include mobile {
   :host(.is-navigation) ::slotted(a) {
-    font-size: var(--_steps-step-font-size-sm);
+    @include typo.mod(steps-step, 'steps-step-typo-sm');
   }
 }

@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 @use '../form/form.mixin' as form;
 
 // nouislider.css ships both functional plumbing (position: relative/absolute offsets pointer/touch
@@ -23,15 +24,22 @@
  * @prop --slider-thumb-color: Background color of the thumb.
  * @prop --slider-thumb-hover-color: Thumb color on hover.
  * @prop --slider-thumb-active-color: Thumb color while dragging/pressed.
+ * @prop --slider-tooltip-font-family: Font family of the value tooltip.
+ * @prop --slider-tooltip-font-size: Font size of the value tooltip.
+ * @prop --slider-tooltip-font-weight: Font weight of the value tooltip.
+ * @prop --slider-tooltip-line-height: Line height of the value tooltip.
+ * @prop --slider-tooltip-letter-spacing: Letter spacing of the value tooltip.
+ * @prop --slider-tooltip-text-decoration: Text decoration of the value tooltip.
+ * @prop --slider-tooltip-text-transform: Text transform of the value tooltip.
  * @prop --form-label-color: Text color of the label.
- * @prop --form-label-family: Font family of the label.
- * @prop --form-label-weight: Font weight of the label.
- * @prop --form-label-size: Font size of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
  * @prop --form-label-line-height: Line height of the label.
  * @prop --form-description-color: Text color of the description.
- * @prop --form-description-family: Font family of the description.
- * @prop --form-description-weight: Font weight of the description.
- * @prop --form-description-size: Font size of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
  * @prop --form-description-line-height: Line height of the description.
  */
 
@@ -59,6 +67,8 @@
   @include vars.local(slider-thumb-border-color, var(--ds-slider-default-thumb-color-border-base));
   @include vars.local(slider-thumb-border-color-hover, var(--ds-slider-default-thumb-color-border-hover));
   @include vars.local(slider-thumb-border-color-active, var(--ds-slider-default-thumb-color-border-active));
+
+  @include typo.local(slider-tooltip, 'slider-tooltip-typo');
 }
 
 /**
@@ -149,11 +159,8 @@
   .noUi-tooltip {
     background: var(--ds-slider-tooltip-color-background);
     color: var(--ds-slider-tooltip-color-text);
-    font-size: var(--ds-slider-tooltip-typo-font-size);
-    font-weight: var(--ds-slider-tooltip-typo-font-weight);
-    font-family: var(--ds-slider-tooltip-typo-font-family);
+    @include typo.apply(slider-tooltip);
     border-radius: var(--ds-slider-tooltip-radius);
-    line-height: var(--ds-slider-tooltip-typo-line-height);
     padding: 0.4rem 0.4rem;
     // ds-token-check: intentional — tooltip anchor offset relative to thumb
     bottom: 130%;
@@ -253,6 +260,8 @@
 
   --mod-form-label-color: var(--ds-form-disabled-color-label);
   --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
   --mod-slider-track-color: var(--ds-slider-disabled-track-color-background);
   --mod-slider-connect-color: var(--ds-slider-disabled-connect-color-background);

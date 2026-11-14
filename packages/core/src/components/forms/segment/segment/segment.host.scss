@@ -15,16 +15,26 @@
  * @prop --segment-border-width: Border width of the segment.
  * @prop --segment-gap: Gap between segment items.
  * @prop --segment-p: Padding inside the segment.
- * @prop --segment-label-color: Text color of the label.
- * @prop --segment-label-family: Font family of the label.
- * @prop --segment-label-weight: Font weight of the label.
- * @prop --segment-label-size: Font size of the label.
- * @prop --segment-label-line-height: Line height of the label.
+ * @prop --form-label-color: Text color of the field label.
+ * @prop --form-label-font-family: Font family of the field label.
+ * @prop --form-label-font-weight: Font weight of the field label.
+ * @prop --form-label-font-size: Font size of the field label.
+ * @prop --form-label-line-height: Line height of the field label.
+ * @prop --segment-item-font-family: Font family of a segment item's label.
+ * @prop --segment-item-font-weight: Font weight of a segment item's label.
+ * @prop --segment-item-font-size: Font size of a segment item's label.
+ * @prop --segment-item-line-height: Line height of a segment item's label.
+ * @prop --segment-item-letter-spacing: Letter spacing of a segment item's label.
+ * @prop --segment-item-text-decoration: Text decoration of a segment item's label.
+ * @prop --segment-item-text-transform: Text transform of a segment item's label.
  * @prop --segment-description-color: Text color of the description.
- * @prop --segment-description-family: Font family of the description.
- * @prop --segment-description-weight: Font weight of the description.
- * @prop --segment-description-size: Font size of the description.
+ * @prop --segment-description-font-family: Font family of the description.
+ * @prop --segment-description-font-weight: Font weight of the description.
+ * @prop --segment-description-font-size: Font size of the description.
  * @prop --segment-description-line-height: Line height of the description.
+ * @prop --segment-description-letter-spacing: Letter spacing of the description.
+ * @prop --segment-description-text-decoration: Text decoration of the description.
+ * @prop --segment-description-text-transform: Text transform of the description.
  */
 
 @include segment.vars(':host');

@@ -2,6 +2,7 @@
 
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 @use '../form/form.mixin' as form;
 @use '../input/input.mixin' as input;
 @use '../../actions/close/close.mixin' as close-mx;
@@ -30,10 +31,13 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
  *
  * @prop --select-color - Text color of the selected value.
  * @prop --select-placeholder - Text color of the placeholder text.
- * @prop --select-family - Font family of the select control.
- * @prop --select-weight - Font weight of the select control.
- * @prop --select-size - Font size of the select control.
+ * @prop --select-font-family - Font family of the select control.
+ * @prop --select-font-weight - Font weight of the select control.
+ * @prop --select-font-size - Font size of the select control.
  * @prop --select-line-height - Line height of the select control.
+ * @prop --select-letter-spacing - Letter spacing of the select control.
+ * @prop --select-text-decoration - Text decoration of the select control.
+ * @prop --select-text-transform - Text transform of the select control.
  * @prop --select-background-color: Background color of the select control.
  * @prop --select-text-color: Text color used by slim-select for values and controls.
  * @prop --select-primary-color: Accent color used by slim-select for icons and controls.
@@ -45,7 +49,13 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
  * @prop --select-success-color: Text color used by slim-select in success state.
  * @prop --select-error-color: Text color used by slim-select in error state.
  * @prop --select-radius: Border radius of the slim-select dropdown and controls.
- * @prop --select-content-family: Font family of the slim-select dropdown widget.
+ * @prop --select-option-font-family: Font family of a dropdown option (and the trigger's displayed value).
+ * @prop --select-option-font-size: Font size of a dropdown option.
+ * @prop --select-option-font-weight: Font weight of a dropdown option.
+ * @prop --select-option-line-height: Line height of a dropdown option.
+ * @prop --select-option-letter-spacing: Letter spacing of a dropdown option.
+ * @prop --select-option-text-decoration: Text decoration of a dropdown option.
+ * @prop --select-option-text-transform: Text transform of a dropdown option.
  * @prop --select-content-background-color: Background color of the dropdown content.
  * @prop --select-content-shadow: Box shadow of the dropdown content.
  * @prop --select-content-border: Border of the dropdown content.
@@ -55,7 +65,7 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
  * @prop --select-option-text-color: Text color of a dropdown option in its base state.
  * @prop --select-option-background-color: Background color of a dropdown option in its base state.
  * @prop --select-option-border-color: Border color between dropdown options.
- * @prop --select-option-selected-weight: Font weight of a selected option.
+ * @prop --select-option-selected-font-weight: Font weight of a selected option — single-property part modifier.
  * @prop --select-option-selected-icon-color: Color of the selected option checkmark icon.
  * @prop --select-option-selected-text-color: Text color of a selected option.
  * @prop --select-option-selected-background-color: Background color of a selected option.
@@ -63,13 +73,25 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
  * @prop --select-option-highlight-background-color: Background color of a hovered/keyboard-highlighted option.
  * @prop --select-optgroup-background-color: Background color of an option group label.
  * @prop --select-optgroup-text-color: Text color of an option group label.
- * @prop --select-optgroup-weight: Font weight of an option group label.
+ * @prop --select-optgroup-font-family: Font family of an option group label.
+ * @prop --select-optgroup-font-size: Font size of an option group label.
+ * @prop --select-optgroup-font-weight: Font weight of an option group label.
+ * @prop --select-optgroup-line-height: Line height of an option group label.
+ * @prop --select-optgroup-letter-spacing: Letter spacing of an option group label.
+ * @prop --select-optgroup-text-decoration: Text decoration of an option group label.
+ * @prop --select-optgroup-text-transform: Text transform of an option group label.
  * @prop --select-icon-color: Color of the dropdown arrow icon, search icon and deselect icon.
  * @prop --select-icon-hover-color: Color of the deselect icon on hover state.
  * @prop --select-icon-active-color: Color of the deselect icon on active state.
  * @prop --select-tag-background-color: Background color of a selected value tag.
  * @prop --select-tag-text-color: Text color of a selected value tag.
- * @prop --select-tag-family: Font family of a selected value tag.
+ * @prop --select-tag-font-family: Font family of a selected value tag.
+ * @prop --select-tag-font-size: Font size of a selected value tag.
+ * @prop --select-tag-font-weight: Font weight of a selected value tag.
+ * @prop --select-tag-line-height: Line height of a selected value tag.
+ * @prop --select-tag-letter-spacing: Letter spacing of a selected value tag.
+ * @prop --select-tag-text-decoration: Text decoration of a selected value tag.
+ * @prop --select-tag-text-transform: Text transform of a selected value tag.
  * @prop --select-checkbox-border-color: Border color of the multi-select checkbox.
  * @prop --select-checkbox-selected-background-color: Background color of a checked multi-select checkbox.
  * @prop --select-checkbox-selected-border-color: Border color of a checked multi-select checkbox.
@@ -96,7 +118,11 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
   @include vars.local(select-error-color, var(--ds-select-color-error));
   @include vars.local(select-radius, var(--ds-select-radius));
 
-  @include vars.local(select-content-family, var(--ds-select-content-family));
+  @include typo.local(select-option, 'select-option-typo');
+  @include vars.local(select-option-selected-font-weight, var(--ds-select-option-weight-selected));
+  @include typo.local(select-optgroup, 'select-optgroup-typo');
+  @include typo.local(select-tag, 'select-chip-typo');
+
   @include vars.local(select-content-background-color, var(--ds-select-content-color-background));
   @include vars.local(select-content-shadow, var(--ds-select-content-shadow));
   @include vars.local(select-content-border, var(--ds-select-content-border));
@@ -107,7 +133,6 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
   @include vars.local(select-option-text-color, var(--ds-select-option-color-text-base));
   @include vars.local(select-option-background-color, var(--ds-select-option-color-background-base));
   @include vars.local(select-option-border-color, var(--ds-select-option-color-border));
-  @include vars.local(select-option-selected-weight, var(--ds-select-option-weight-selected));
   @include vars.local(select-option-selected-icon-color, var(--ds-select-option-color-icon-selected));
   @include vars.local(select-option-selected-text-color, var(--ds-select-option-color-text-selected));
   @include vars.local(select-option-selected-background-color, var(--ds-select-option-color-background-selected));
@@ -120,7 +145,6 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
 
   @include vars.local(select-optgroup-background-color, var(--ds-select-optgroup-color-background));
   @include vars.local(select-optgroup-text-color, var(--ds-select-optgroup-color-text));
-  @include vars.local(select-optgroup-weight, var(--ds-select-optgroup-weight));
 
   @include vars.local(select-icon-color, var(--ds-select-icon-color-base));
   @include vars.local(select-icon-hover-color, var(--ds-select-icon-color-hover));
@@ -128,7 +152,6 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
 
   @include vars.local(select-tag-background-color, var(--ds-select-chip-color-background));
   @include vars.local(select-tag-text-color, var(--ds-select-chip-color-text));
-  @include vars.local(select-tag-family, var(--ds-select-chip-family));
 
   @include vars.local(select-checkbox-border-color, var(--ds-select-checkbox-color-border-base));
   @include vars.local(select-checkbox-selected-background-color, var(--ds-select-checkbox-color-background-selected));
@@ -238,6 +261,8 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
   --mod-form-container-border: var(--ds-form-disabled-container-border);
   --mod-form-label-color: var(--ds-form-disabled-color-label);
   --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
   --mod-select-text-color: var(--ds-form-disabled-control-color-value);
   --mod-select-placeholder-color: var(--ds-form-disabled-control-color-placeholder);
@@ -301,7 +326,7 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
     border: none;
     box-shadow: none;
     background: none;
-    font-family: var(--_select-content-family);
+    @include typo.apply(select-option);
   }
 
   .ss-content {
@@ -410,7 +435,7 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
   }
 
   .ss-content .ss-list .ss-option .ss-search-highlight {
-    font-weight: var(--_select-option-selected-weight);
+    font-weight: var(--_select-option-selected-font-weight);
     color: var(--_select-option-highlight-text-color);
     border-radius: var(--_select-radius);
   }
@@ -422,6 +447,7 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
   .ss-content .ss-list .ss-option {
     color: var(--_select-option-text-color);
     background-color: var(--_select-option-background-color);
+    @include typo.apply(select-option);
     border-left: none !important;
     border-radius: var(--ds-select-radius);
     margin: 0 var(--_select-content-padding);
@@ -452,7 +478,7 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
   //
   // selected (persistent, keyboard/mouse independent)
   .ss-content .ss-list .ss-option.ss-selected {
-    font-weight: var(--_select-option-selected-weight);
+    font-weight: var(--_select-option-selected-font-weight);
     background-color: var(--_select-option-selected-background-color);
     color: var(--_select-option-selected-text-color);
 
@@ -556,11 +582,7 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
 
     .ss-value-text {
       color: var(--_select-tag-text-color);
-      font-family: var(--_select-tag-family);
-      // ds-token-check: intentional — single-line height reset, not a themeable typography value
-      line-height: 1;
-      font-size: var(--ds-select-chip-size-sm-font-size);
-      font-weight: var(--ds-select-chip-size-sm-font-weight);
+      @include typo.apply(select-tag);
       padding: 0;
     }
 
@@ -587,7 +609,7 @@ $select-icon-search: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='h
   .ss-content .ss-list .ss-optgroup .ss-optgroup-label {
     background-color: var(--_select-optgroup-background-color);
     color: var(--_select-optgroup-text-color);
-    font-weight: var(--_select-optgroup-weight);
+    @include typo.apply(select-optgroup);
   }
 }
 

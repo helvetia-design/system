@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -16,9 +17,12 @@
  * @prop --spinner-label-gap: Gap between the spinner animation and its label (right position).
  * @prop --spinner-label-gap-bottom: Gap between the spinner animation and its label (bottom position).
  * @prop --spinner-label-font-family: Font family of the visible label.
- * @prop --spinner-label-line-height: Line height of the visible label.
  * @prop --spinner-label-font-size: Font size of the visible label.
  * @prop --spinner-label-font-weight: Font weight of the visible label.
+ * @prop --spinner-label-line-height: Line height of the visible label.
+ * @prop --spinner-label-letter-spacing: Letter spacing of the visible label.
+ * @prop --spinner-label-text-decoration: Text decoration of the visible label.
+ * @prop --spinner-label-text-transform: Text transform of the visible label.
  * @prop --spinner-label-color-text: Text color of the visible label.
  * @prop --spinner-logo-color: Overrides the animated logo's fill color (read via JS, not CSS cascade — see spinner.tsx getColor()).
  * @prop --spinner-animation-duration: Duration of the spinner animation.
@@ -36,10 +40,7 @@
   @include vars.local(spinner-circle-border-style, var(--ds-spinner-circle-border-style));
   @include vars.local(spinner-label-gap, var(--ds-spinner-label-gap));
   @include vars.local(spinner-label-gap-bottom, var(--ds-spinner-label-gap-bottom));
-  @include vars.local(spinner-label-font-family, var(--ds-spinner-label-font-family));
-  @include vars.local(spinner-label-line-height, var(--ds-spinner-label-line-height));
-  @include vars.local(spinner-label-font-size, var(--ds-spinner-label-font-size));
-  @include vars.local(spinner-label-font-weight, var(--ds-spinner-label-font-weight));
+  @include typo.local(spinner-label, 'spinner-label-typo');
   @include vars.local(spinner-label-color-text, var(--ds-spinner-label-color-primary));
 }
 
@@ -122,10 +123,7 @@
 }
 
 ::part(label) {
-  font-family: var(--_spinner-label-font-family);
-  line-height: var(--_spinner-label-line-height);
-  font-size: var(--_spinner-label-font-size);
-  font-weight: var(--_spinner-label-font-weight);
+  @include typo.apply(spinner-label);
   color: var(--_spinner-label-color-text);
 }
 
