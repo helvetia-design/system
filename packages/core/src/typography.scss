@@ -34,6 +34,22 @@ $_inline-parts: 'font-weight', 'letter-spacing', 'text-decoration', 'text-transf
   }
 }
 
+// Same token wiring as `apply`, but writes the literal CSS properties straight from the
+// token instead of through the --_/--mod- cascade. Use this when the override is applied on
+// a different element (e.g. a different shadow tree, or slotted content) than the one where
+// `local` declared the --_ variables — --mod- set there can't reach a --_ fallback already
+// resolved on an ancestor.
+@mixin apply-token($token, $inline: false) {
+  $parts: $_parts;
+  @if $inline {
+    $parts: $_inline-parts;
+  }
+
+  @each $part in $parts {
+    #{$part}: var(--ds-#{$token}-#{$part});
+  }
+}
+
 @mixin content($margin: true) {
   // Body text — all seven parts of the shared Text.Typo.Paragraph token.
   font-family: var(--ds-text-typo-paragraph-font-family);

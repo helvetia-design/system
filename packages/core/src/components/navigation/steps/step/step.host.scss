@@ -144,7 +144,9 @@
   .circle {
     width: var(--_steps-circle-size-sm);
     height: var(--_steps-circle-size-sm);
-    @include typo.mod(steps-step, 'steps-step-typo-sm');
+    @include typo.apply-token('steps-step-typo-sm');
+    // ds-token-check: intentional — line-height 1 centers the glyph in the fixed-size circle
+    line-height: 1;
     --mod-icon-size: var(--ds-icon-size-sm);
     --mod-icon-inner-size: var(--ds-icon-size-sm);
   }
@@ -242,6 +244,6 @@
 
 @include mobile {
   :host(.is-navigation) ::slotted(a) {
-    @include typo.mod(steps-step, 'steps-step-typo-sm');
+    @include typo.apply-token('steps-step-typo-sm');
   }
 }
