@@ -27,7 +27,7 @@ describe('fetchBaseTokensFile', () => {
     await fetchBaseTokensFile()
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Base.tokens.json?ref=next',
+      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Base.tokens.json?ref=main',
       {
         cache: 'no-store',
         headers: {

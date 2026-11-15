@@ -5,7 +5,7 @@
  * variableIds into Base.tokens.json and/or drops deleted tokens'
  * (docs/adr/0019-pull-auto-deletes-figma-variables.md) entries from
  * packages/tokens/.figma-sync-state.json, as one atomic direct commit to
- * `next` (docs/adr/0014-git-data-api-atomic-commits.md) — no PR. Commits
+ * `main` (docs/adr/0014-git-data-api-atomic-commits.md) — no PR. Commits
  * only the file(s) that actually changed: a deletion-only run never
  * touches Base.tokens.json — the token was already gone once the Toky PR
  * merged, there's nothing here to patch.
@@ -44,7 +44,7 @@ async function runRemote({ newIds, removedIds, syncedAt }) {
 
   const token = requireEnv('GITHUB_TOKEN')
   const mergeCommitSha = requireEnv('MERGE_COMMIT_SHA')
-  const branch = process.env.TARGET_BRANCH ?? 'next'
+  const branch = process.env.TARGET_BRANCH ?? 'main'
 
   const files = []
   let patchedTokens = []
