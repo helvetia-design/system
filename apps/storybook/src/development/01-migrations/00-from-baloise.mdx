@@ -1,27 +1,34 @@
 import { Meta } from '@storybook/addon-docs/blocks'
-import { Banner, Footer, Lead, LinkCard, LinkCards, WarningQuote } from '../../../.storybook/blocks'
+import { Banner, Footer, InfoQuote, Lead, LinkCard, LinkCards, WarningQuote } from '../../../.storybook/blocks'
 
 <Meta title="Development/Migrations/From Baloise" name="From Baloise" />
 
 <Banner label="From Baloise" section="Development/Migrations">
   <Lead>
     A Claude Code skill that migrates your app from the Baloise Design System to the Helvetia
-    Design System, one component at a time.
+    Design System. 50 component migrations, run one at a time.
   </Lead>
 </Banner>
 
 <br />
 
+<InfoQuote>
+**The migration is incremental**
+
+Init installs the Helvetia packages alongside the existing Baloise ones without removing anything. Both design systems coexist in the same application, so components can be migrated and released individually rather than in a single cutover.
+</InfoQuote>
+
 <WarningQuote>
 **This skill never commits**
 
-It edits files and leaves every change unstaged for you to review, like any other change.
+It leaves every change unstaged for you to review, like any other change.
 </WarningQuote>
 
 ## Requirements
 
 - [Claude Code](https://www.anthropic.com/claude-code)
 - An app that already has `@baloise/ds-*` installed
+- Angular apps need a major version the Helvetia packages support — the skill checks and tells you
 
 ## Install
 
@@ -29,25 +36,48 @@ It edits files and leaves every change unstaged for you to review, like any othe
 npx @helvetia-design/skills add
 ```
 
-Run this in your app's repository root. It copies the skill into
-`.claude/skills/ds-migrate-from-baloise/`. Re-run it any time to update to the latest version.
+Run it in your repository root, and re-run it any time to update.
 
 ## Use
-
-In a Claude Code session in that repository, run:
 
 ```
 /ds-migrate-from-baloise
 ```
 
-You'll get a menu:
+<video autoPlay muted loop playsInline width="100%" style={{ borderRadius: '8px' }}>
+  <source src="/assets/videos/migration-demo.mp4" type="video/mp4" />
+</video>
 
-1. **Init** — adds the `@helvetia-design/*` packages next to your `@baloise/*` ones and inserts the
-   matching import next to each existing one. Nothing is removed, so your app keeps working with
-   both installed while you migrate.
-2. **Components** — migrates one `bal-*` component to `ds-*`. Pick a component yourself, or scan
-   the project and suggest the ones it finds in use. Either way, it shows you what it found and
-   asks for confirmation before changing anything.
+<p style={{ marginTop: '0.5rem', fontSize: '0.875rem', opacity: 0.7 }}>
+  Invoking the skill, the menu, and the output of <strong>Init</strong>.
+</p>
+
+Five entries, best run in order:
+
+1. **Init** — installs the `@helvetia-design/*` packages and imports next to your `@baloise/*` ones. Nothing is removed, so both run side by side and your app keeps working.
+2. **Components** — migrates `bal-*` to `ds-*`. One component, the ones it detects, or a whole folder.
+3. **CSS utils** — rewrites legacy utility and `css/core` classes, then removes the Baloise utilities import.
+4. **Assets** — migrates leftover icons, moves fonts and favicons, removes the legacy config call.
+5. **Cleanup** — removes the legacy imports and `@baloise/ds-*` dependencies. Refuses while anything is still unmigrated.
+
+## How a migration runs
+
+1. **Scan** — lists every usage with file, line and snippet.
+2. **Confirm** — asks before editing. Nothing has changed yet.
+3. **Rewrite** — applies the mapping. Anything it cannot map safely is left alone and reported.
+4. **Report** — appends to `ds-migration-report.md` and prints what needs you.
+
+## Doing more than one
+
+- **Manual** — pick one migration and run it everywhere.
+- **Detect** — suggests what it finds in use, with counts, plus a `not yet` list of what it cannot cover.
+- **Scope** — every `bal-*` component in the files or folders you name.
+
+**Scope** suits most migrations. Components nest, and a migrated parent around an unmigrated child breaks quietly, so a batch migrates them together and orders parents before leaves.
+
+## The report
+
+`ds-migration-report.md` grows with every phase. **Needs your attention** holds the decisions only you can make — a prop with no equivalent, a missing accessible name, a test selector that no longer matches. **Coverage** records what was handled automatically. The file is part of the unstaged diff and is committed with the rest of the changes.
 
 <Footer>
   <LinkCards>
