@@ -99,6 +99,15 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
   @Type('string')
   value: string | null = null
 
+  @Watch('value')
+  protected valueChanged() {
+    this.control.inputValue = this.value
+    // Only while not focused: a focused change is exactly what onBlur's dsChange must still catch.
+    if (!this.focused) {
+      this.control.committedValue = this.value
+    }
+  }
+
   /**
    * The name of the control, which is submitted with the form data.
    */

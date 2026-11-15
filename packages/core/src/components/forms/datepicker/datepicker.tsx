@@ -397,6 +397,7 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
         this.updatingFromMask = true
         this.value = iso
         this.control.inputValue = iso
+        this.control.committedValue = iso
         this.dateMask?.syncFromISO(iso)
         this.displayValue = isoToDisplay(iso, getDisplayFormat(this.region))
         this.dsChange.emit(iso)
@@ -558,6 +559,7 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
     this.updatingFromMask = true
     this.value = null
     this.control.inputValue = null
+    this.control.committedValue = null
     if (resetMask) {
       this.dateMask?.syncFromISO(null)
       this.displayValue = ''
@@ -611,6 +613,7 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
         this.updatingFromMask = true
         this.value = isoValue
         this.control.inputValue = isoValue
+        this.control.committedValue = isoValue
         this.datePicker?.syncFromValue(isoValue)
         this.dsChange.emit(isoValue)
         this.updatingFromMask = false
