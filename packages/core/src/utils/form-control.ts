@@ -41,6 +41,8 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
 
   initialValue: Value = null as Value
   inputValue: Value = null as Value
+  // Baseline for hasValueChanged, kept apart from component.value so an external value set while focused still emits on blur.
+  committedValue: Value = null as Value
 
   nativeEl?: HTMLInputElement | HTMLTextAreaElement
 
@@ -83,6 +85,7 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
 
   componentDidLoad() {
     this.inputValue = this.component.value
+    this.committedValue = this.component.value
     setFormValue(this.component.internals, this.inputValue as ControlValue)
   }
 
@@ -124,9 +127,10 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
    */
 
   setValue = (newValue: Value) => {
-    if (hasValueChanged(this.component.value, newValue)) {
+    if (hasValueChanged(this.committedValue, newValue)) {
       this.component.value = newValue
       this.inputValue = newValue
+      this.committedValue = newValue
       setFormValue(this.component.internals, this.inputValue as ControlValue)
       this.component.dsChange.emit(this.component.value)
     }

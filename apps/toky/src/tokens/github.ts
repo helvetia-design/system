@@ -31,7 +31,7 @@ export function requireGithubOrgToken(): string {
 }
 
 export function getGithubRef(): string {
-  return process.env.TOKY_GITHUB_REF ?? 'next'
+  return process.env.TOKY_GITHUB_REF ?? 'main'
 }
 
 // Percent-encodes a GitHub content path or ref for safe interpolation into

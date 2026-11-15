@@ -1,6 +1,6 @@
 {
   "name": "@helvetia-design/playwright",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "The Helvetia Design System is an open source project for styling awesome web applications that follow the Helvetia corporate styling guidelines.",
   "repository": {
     "type": "git",
@@ -12,21 +12,26 @@
   "homepage": "https://helvetia-design.vercel.app",
   "security": "https://github.com/helvetia-design/system/security/advisories/new",
   "license": "Apache-2.0",
-  "type": "module",
   "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
     "dist/"
   ],
   "scripts": {
-    "build": "swc src -d dist --config-file .swcrc",
+    "build": "swc src -d dist --config-file .swcrc && tsc -p tsconfig.lib.json",
     "test": "vitest --run",
     "lint": "eslint ."
   },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0"
+  },
   "dependencies": {
     "@axe-core/playwright": "catalog:",
+    "@swc/helpers": "0.5.23",
     "fast-deep-equal": "catalog:"
   },
   "devDependencies": {
+    "@playwright/test": "1.59.1",
     "eslint": "catalog:",
     "vitest": "catalog:"
   }

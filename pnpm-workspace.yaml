@@ -12,9 +12,9 @@ linkWorkspacePackages: true
 catalog:
   '@axe-core/playwright': 4.13.0
   '@stencil/core': 4.45.2
-  '@storybook/addon-docs': 10.6.1
-  '@storybook/addon-links': 10.6.1
-  '@storybook/html-vite': 10.6.1
+  '@storybook/addon-docs': 10.6.7
+  '@storybook/addon-links': 10.6.7
+  '@storybook/html-vite': 10.6.7
   '@typescript-eslint/utils': 8.71.1
   compression: 1.8.2
   eslint: 10.12.0
@@ -24,12 +24,17 @@ catalog:
   lodash: 4.18.1
   sass: 1.105.1
   serve-index: 1.9.2
-  storybook: 10.6.0
+  storybook: 10.6.7
   tslib: 2.8.1
   tsx: 4.23.15
   typescript: 5.6.3
-  vite: 8.3.5
+  vite: 8.3.8
   vitest: 4.1.11
+
+# No `overrides` block is needed right now: every transitive dependency that
+# carried a high/critical advisory resolves to a patched version on a fresh
+# install. If one is needed again, add it here *and* to "pnpm.overrides" in
+# package.json — see docs/adr/0005-duplicate-pnpm-overrides.md.
 
 # Dependency lifecycle scripts are blocked by default (strictDepBuilds).
 # These native-build packages are explicitly allowed to run their scripts.
