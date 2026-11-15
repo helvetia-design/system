@@ -289,3 +289,25 @@ test.describe('aria-label', () => {
     await expect(select.trigger).not.toHaveAttribute('aria-labelledby')
   })
 })
+
+test.describe('moved in the DOM', () => {
+  test('should still open the dropdown and select an option after being moved', async ({ page }) => {
+    await page.mount(`<ds-select label="Country"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+
+    await select.el.evaluate(el => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(el)
+    })
+    await page.waitForChanges()
+
+    const changeSpy = await select.el.spyOnEvent('dsChange')
+    await select.select('Italy')
+
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('it')
+    await select.assertValue('Italy')
+  })
+})
