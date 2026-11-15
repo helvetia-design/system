@@ -14,10 +14,6 @@
   "license": "Apache-2.0",
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./dist/preset/index.js",
-      "require": "./dist/preset/index.cjs"
-    },
     "./css/design-system": "./dist/css/design-system.css",
     "./css/design-system.min": "./dist/css/design-system.min.css",
     "./css/design-system.local": "./dist/css/design-system.local.css",
