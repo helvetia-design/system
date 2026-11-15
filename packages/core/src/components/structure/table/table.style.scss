@@ -11,6 +11,29 @@ $css-selector: ('.ds-table');
  * --------------------------------
  * Define here the css variables for the component to be able to use it in host or non-host mode
  * These variables can be used in the component styles below and later on be overridden in themes.
+ *
+ * @prop --table-font-family: Font family of table cells.
+ * @prop --table-font-weight: Font weight of table cells.
+ * @prop --table-font-size: Font size of table cells.
+ * @prop --table-line-height: Line height of table cells.
+ * @prop --table-letter-spacing: Letter spacing of table cells.
+ * @prop --table-text-decoration: Text decoration of table cells.
+ * @prop --table-text-transform: Text transform of table cells.
+ * @prop --table-head-font-family: Font family of table head cells.
+ * @prop --table-head-font-weight: Font weight of table head cells.
+ * @prop --table-head-font-size: Font size of table head cells.
+ * @prop --table-head-line-height: Line height of table head cells.
+ * @prop --table-head-letter-spacing: Letter spacing of table head cells.
+ * @prop --table-head-text-decoration: Text decoration of table head cells.
+ * @prop --table-head-text-transform: Text transform of table head cells.
+ * @prop --table-color: Text color of table cells.
+ * @prop --table-cell-border: Border of table cells.
+ * @prop --table-cell-px: Horizontal padding of table cells.
+ * @prop --table-cell-py: Vertical padding of table cells.
+ * @prop --table-head-border: Border of table head cells.
+ * @prop --table-row-background-active: Row background color when active.
+ * @prop --table-row-background-hover: Row background color on hover.
+ * @prop --table-row-background-striped: Row background color for striped rows.
  */
 
 @include vars.hybrid($name, $css-selector, $use-host) {

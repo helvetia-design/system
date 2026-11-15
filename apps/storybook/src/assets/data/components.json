@@ -22497,6 +22497,18 @@
           "docs": "Line height of the group label."
         },
         {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the group label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the group label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the group label."
+        },
+        {
           "name": "--form-description-color",
           "docs": "Text color of the group description."
         },
@@ -22515,6 +22527,18 @@
         {
           "name": "--form-description-line-height",
           "docs": "Line height of the group description."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the group description."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the group description."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the group description."
         }
       ],
       "slots": [
@@ -24539,6 +24563,18 @@
           "docs": "Line height of the label."
         },
         {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the label."
+        },
+        {
           "name": "--form-description-color",
           "docs": "Text color of the description."
         },
@@ -24557,6 +24593,18 @@
         {
           "name": "--form-description-line-height",
           "docs": "Line height of the description."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the description."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the description."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the description."
         }
       ],
       "slots": [
@@ -27366,6 +27414,18 @@
           "docs": "Line height of the label."
         },
         {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the label."
+        },
+        {
           "name": "--form-description-color",
           "docs": "Text color of the description."
         },
@@ -27384,6 +27444,18 @@
         {
           "name": "--form-description-line-height",
           "docs": "Line height of the description."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the description."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the description."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the description."
         },
         {
           "name": "--datepicker-trigger-icon-color-hover",
@@ -30913,6 +30985,70 @@
         {
           "name": "--file-upload-disabled-text-color",
           "docs": "Text color when disabled."
+        },
+        {
+          "name": "--form-label-color",
+          "docs": "Text color of the field label."
+        },
+        {
+          "name": "--form-label-font-family",
+          "docs": "Font family of the field label."
+        },
+        {
+          "name": "--form-label-font-weight",
+          "docs": "Font weight of the field label."
+        },
+        {
+          "name": "--form-label-font-size",
+          "docs": "Font size of the field label."
+        },
+        {
+          "name": "--form-label-line-height",
+          "docs": "Line height of the field label."
+        },
+        {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the field label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the field label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the field label."
+        },
+        {
+          "name": "--form-description-color",
+          "docs": "Text color of the field description."
+        },
+        {
+          "name": "--form-description-font-family",
+          "docs": "Font family of the field description."
+        },
+        {
+          "name": "--form-description-font-weight",
+          "docs": "Font weight of the field description."
+        },
+        {
+          "name": "--form-description-font-size",
+          "docs": "Font size of the field description."
+        },
+        {
+          "name": "--form-description-line-height",
+          "docs": "Line height of the field description."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the field description."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the field description."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the field description."
         }
       ],
       "slots": [
@@ -36654,6 +36790,18 @@
           "docs": "Line height of the label."
         },
         {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the label."
+        },
+        {
           "name": "--form-description-color",
           "docs": "Text color of the description."
         },
@@ -36672,6 +36820,18 @@
         {
           "name": "--form-description-line-height",
           "docs": "Line height of the description."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the description."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the description."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the description."
         }
       ],
       "slots": [
@@ -46936,6 +47096,18 @@
           "docs": "Line height of the label."
         },
         {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the label."
+        },
+        {
           "name": "--form-description-color",
           "docs": "Text color of the description."
         },
@@ -46954,6 +47126,18 @@
         {
           "name": "--form-description-line-height",
           "docs": "Line height of the description."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the description."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the description."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the description."
         }
       ],
       "slots": [
@@ -52876,6 +53060,18 @@
           "docs": "Line height of the group label."
         },
         {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the group label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the group label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the group label."
+        },
+        {
           "name": "--form-description-color",
           "docs": "Text color of the group description."
         },
@@ -52894,6 +53090,18 @@
         {
           "name": "--form-description-line-height",
           "docs": "Line height of the group description."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the group description."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the group description."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the group description."
         }
       ],
       "slots": [
@@ -54936,6 +55144,18 @@
         {
           "name": "--form-label-line-height",
           "docs": "Line height of the field label."
+        },
+        {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the field label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the field label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the field label."
         },
         {
           "name": "--segment-item-font-family",
@@ -61015,6 +61235,18 @@
           "docs": "Line height of the label."
         },
         {
+          "name": "--form-label-letter-spacing",
+          "docs": "Letter spacing of the label."
+        },
+        {
+          "name": "--form-label-text-decoration",
+          "docs": "Text decoration of the label."
+        },
+        {
+          "name": "--form-label-text-transform",
+          "docs": "Text transform of the label."
+        },
+        {
           "name": "--form-description-color",
           "docs": "Text color of the description."
         },
@@ -61033,6 +61265,18 @@
         {
           "name": "--form-description-line-height",
           "docs": "Line height of the description."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the description."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the description."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the description."
         }
       ],
       "slots": [
@@ -77200,20 +77444,32 @@
           "docs": "Text color of the invalid text below the toggle."
         },
         {
-          "name": "--form-description-family",
+          "name": "--form-description-font-family",
           "docs": "Font family of the invalid text below the toggle."
         },
         {
-          "name": "--form-description-weight",
+          "name": "--form-description-font-weight",
           "docs": "Font weight of the invalid text below the toggle."
         },
         {
-          "name": "--form-description-size",
+          "name": "--form-description-font-size",
           "docs": "Font size of the invalid text below the toggle."
         },
         {
           "name": "--form-description-line-height",
           "docs": "Line height of the invalid text below the toggle."
+        },
+        {
+          "name": "--form-description-letter-spacing",
+          "docs": "Letter spacing of the invalid text below the toggle."
+        },
+        {
+          "name": "--form-description-text-decoration",
+          "docs": "Text decoration of the invalid text below the toggle."
+        },
+        {
+          "name": "--form-description-text-transform",
+          "docs": "Text transform of the invalid text below the toggle."
         }
       ],
       "slots": [

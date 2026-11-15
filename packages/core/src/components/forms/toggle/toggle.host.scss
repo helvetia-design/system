@@ -27,10 +27,13 @@
  * @prop --toggle-helper-color: Text color of helper text.
  * @prop --toggle-helper-font-size: Font size of helper text.
  * @prop --form-description-color: Text color of the invalid text below the toggle.
- * @prop --form-description-family: Font family of the invalid text below the toggle.
- * @prop --form-description-weight: Font weight of the invalid text below the toggle.
- * @prop --form-description-size: Font size of the invalid text below the toggle.
+ * @prop --form-description-font-family: Font family of the invalid text below the toggle.
+ * @prop --form-description-font-weight: Font weight of the invalid text below the toggle.
+ * @prop --form-description-font-size: Font size of the invalid text below the toggle.
  * @prop --form-description-line-height: Line height of the invalid text below the toggle.
+ * @prop --form-description-letter-spacing: Letter spacing of the invalid text below the toggle.
+ * @prop --form-description-text-decoration: Text decoration of the invalid text below the toggle.
+ * @prop --form-description-text-transform: Text transform of the invalid text below the toggle.
  */
 
 :host {
