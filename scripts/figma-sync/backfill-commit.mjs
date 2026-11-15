@@ -2,13 +2,16 @@
 /**
  * Entry point for figma-sync.yml's write-back step
  * (docs/adr/0017-direct-commit-variableid-backfill.md): patches new
- * variableIds into Base.tokens.json and/or drops deleted tokens'
+ * variableIds into Base.tokens.json, drops deleted tokens'
  * (docs/adr/0019-pull-auto-deletes-figma-variables.md) entries from
- * packages/tokens/.figma-sync-state.json, as one atomic direct commit to
- * `main` (docs/adr/0014-git-data-api-atomic-commits.md) — no PR. Commits
- * only the file(s) that actually changed: a deletion-only run never
- * touches Base.tokens.json — the token was already gone once the Toky PR
- * merged, there's nothing here to patch.
+ * packages/tokens/.figma-sync-state.json, and — on every run, including one
+ * with no new/removed ids — rebuilds the baseline's resolvedValue for every
+ * token from the current tree, so a value-only change still refreshes its
+ * entry (otherwise the next PR touching that token sees a stale baseline
+ * and gets flagged as a false conflict). All as one atomic direct commit to
+ * `main` (docs/adr/0014-git-data-api-atomic-commits.md) — no PR. Only
+ * Base.tokens.json itself is conditionally written: a run with no new ids
+ * never touches it, since there's nothing to patch.
  *
  * Reads NEW_IDS_FILE / REMOVED_IDS_FILE (paths to JSON files pull.mjs wrote, from its outputs) —
  * or, for small local test payloads only, the inline-JSON NEW_IDS / REMOVED_IDS env vars.
@@ -47,13 +50,16 @@ async function runRemote({ newIds, removedIds, syncedAt }) {
   const branch = process.env.TARGET_BRANCH ?? 'main'
 
   const files = []
-  let patchedTokens = []
 
+  // Always read the current tree — the baseline must be rebuilt from every token's live resolved
+  // value on every successful sync (not just a run that added/removed variableIds), so a
+  // value-only change that merged without touching ids still refreshes its stale baseline entry.
+  const baseFile = await getFileContent(TOKEN_FILE_PATH, branch, token)
+  if (!baseFile) throw new Error(`${TOKEN_FILE_PATH} not found on ${branch}.`)
+  const currentTree = JSON.parse(baseFile.content)
+  const patchedTree = newIds.length > 0 ? applyVariableIdPatch(currentTree, newIds) : currentTree
+  const patchedTokens = flattenTokens(patchedTree)
   if (newIds.length > 0) {
-    const baseFile = await getFileContent(TOKEN_FILE_PATH, branch, token)
-    if (!baseFile) throw new Error(`${TOKEN_FILE_PATH} not found on ${branch}.`)
-    const patchedTree = applyVariableIdPatch(JSON.parse(baseFile.content), newIds)
-    patchedTokens = flattenTokens(patchedTree)
     files.push({ path: TOKEN_FILE_PATH, content: JSON.stringify(patchedTree, null, 2) + '\n' })
   }
 
@@ -78,12 +84,11 @@ function patchLocalFiles({ newIds, removedIds, syncedAt }) {
   const mergeCommitSha = process.env.MERGE_COMMIT_SHA ?? 'local-test'
 
   const files = []
-  let patchedTokens = []
 
+  const currentTree = loadTokenFile(resolve(tokensDir, 'Base.tokens.json'))
+  const patchedTree = newIds.length > 0 ? applyVariableIdPatch(currentTree, newIds) : currentTree
+  const patchedTokens = flattenTokens(patchedTree)
   if (newIds.length > 0) {
-    const baseTree = loadTokenFile(resolve(tokensDir, 'Base.tokens.json'))
-    const patchedTree = applyVariableIdPatch(baseTree, newIds)
-    patchedTokens = flattenTokens(patchedTree)
     files.push({ path: 'tokens/Base.tokens.json', content: JSON.stringify(patchedTree, null, 2) + '\n' })
   }
 
@@ -124,6 +129,7 @@ function buildCommitMessage(newIds, removedIds) {
   const parts = []
   if (newIds.length > 0) parts.push(`back-fill ${newIds.length} Figma variableId(s)`)
   if (removedIds.length > 0) parts.push(`drop ${removedIds.length} deleted Figma variable(s) from the baseline`)
+  if (parts.length === 0) parts.push('refresh sync baseline')
   return `chore(tokens): ${parts.join(', ')}\n\nAutomated — see docs/adr/0017-direct-commit-variableid-backfill.md.`
 }
 
@@ -140,11 +146,9 @@ async function main() {
   const newIds = readIdsInput('NEW_IDS_FILE', 'NEW_IDS')
   const removedIds = readIdsInput('REMOVED_IDS_FILE', 'REMOVED_IDS')
 
-  if (newIds.length === 0 && removedIds.length === 0) {
-    console.log('No new or removed variableIds — nothing to write.')
-    return
-  }
-
+  // Always runs through to a baseline rebuild, even with no new/removed ids — a value-only sync
+  // (e.g. a color edit to an already-synced token) still needs its baseline entry's resolvedValue
+  // refreshed, or the next PR touching that token gets a false conflict against the stale value.
   const syncedAt = new Date().toISOString()
 
   if (!process.env.TOKENS_DIR_OVERRIDE) {
