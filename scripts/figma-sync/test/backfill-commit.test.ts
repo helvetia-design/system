@@ -1,3 +1,6 @@
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const originalEnv = { ...process.env }
@@ -12,6 +15,9 @@ function routingFetchMock() {
 
     if (url.includes('/contents/packages/tokens/.figma-sync-state.json')) {
       return new Response('not found', { status: 404 })
+    }
+    if (url.includes('/contents/packages/tokens/tokens/Base.tokens.json')) {
+      return jsonResponse({ sha: 'base-file-sha', content: Buffer.from('{}').toString('base64') })
     }
     if (url.includes('/git/ref/heads/')) {
       return jsonResponse({ object: { sha: 'base-sha' } })
@@ -80,5 +86,61 @@ describe('backfill-commit.mjs TARGET_BRANCH default', () => {
       .filter(url => url.includes('/git/ref/heads/') || url.includes('/git/refs/heads/'))
     expect(refHeadsCalls.length).toBeGreaterThan(0)
     expect(refHeadsCalls.every(url => url.endsWith('/heads/some-other-branch'))).toBe(true)
+  })
+})
+
+describe('backfill-commit.mjs value-only sync (no new/removed ids)', () => {
+  it('still refreshes the baseline entry for a token whose value changed without touching its variableId', async () => {
+    const repoRoot = mkdtempSync(join(tmpdir(), 'figma-sync-baseline-'))
+    const tokensDir = join(repoRoot, 'tokens')
+    mkdirSync(tokensDir)
+
+    writeFileSync(
+      join(tokensDir, 'Base.tokens.json'),
+      JSON.stringify({
+        '🌐 Global': {
+          '🌈 Color': {
+            Brand: {
+              $type: 'color',
+              $value: { colorSpace: 'srgb', components: [0.6, 0, 0], alpha: 1, hex: '#990000' },
+              $extensions: { 'com.figma.variableId': 'VariableID:1:1', 'com.figma.scopes': ['ALL_SCOPES'] },
+            },
+          },
+        },
+      }),
+    )
+    writeFileSync(
+      join(repoRoot, '.figma-sync-state.json'),
+      JSON.stringify({
+        lastSyncedCommit: 'old-sha',
+        lastSyncedAt: '2026-01-01T00:00:00Z',
+        entries: {
+          'VariableID:1:1': {
+            tokenPath: ['🌐 Global', '🌈 Color', 'Brand'],
+            resolvedValue: {
+              kind: 'literal',
+              value: { colorSpace: 'srgb', components: [0.5, 0, 0], alpha: 1, hex: '#800000' },
+            },
+            lastModifiedSource: 'code',
+            lastModifiedAt: '2026-01-01T00:00:00Z',
+          },
+        },
+      }),
+    )
+
+    delete process.env.REMOVED_IDS
+    delete process.env.NEW_IDS
+    delete process.env.NEW_IDS_FILE
+    delete process.env.REMOVED_IDS_FILE
+    delete process.env.GITHUB_TOKEN
+    process.env.TOKENS_DIR_OVERRIDE = tokensDir
+    process.env.MERGE_COMMIT_SHA = 'merge-sha-2'
+
+    await import('../backfill-commit.mjs')
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    const refreshed = JSON.parse(readFileSync(join(repoRoot, '.figma-sync-state.json'), 'utf-8'))
+    expect(refreshed.lastSyncedCommit).toBe('merge-sha-2')
+    expect(refreshed.entries['VariableID:1:1'].resolvedValue.value.components).toEqual([0.6, 0, 0])
   })
 })
