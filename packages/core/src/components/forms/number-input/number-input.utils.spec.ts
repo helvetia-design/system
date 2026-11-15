@@ -107,6 +107,11 @@ describe('bal-number-input', () => {
       const result = toNumber('42`000')
       expect(result).toBe(42000)
     })
+
+    it('should treat a stray "," as the decimal mark in a "."-decimal locale (de-CH default)', () => {
+      const result = toNumber('1,5', 2)
+      expect(result).toBe(1.5)
+    })
   })
 
   describe('toFixedNumber', () => {
@@ -148,6 +153,11 @@ describe('bal-number-input', () => {
     it('should return empty string for null value', () => {
       const result = toFixedNumber(null as any, 2)
       expect(result).toBe('')
+    })
+
+    it('should treat a stray "," as the decimal mark in a "."-decimal locale (de-CH default)', () => {
+      const result = toFixedNumber('1,5', 2)
+      expect(result).toBe('1.50')
     })
   })
 
@@ -623,6 +633,21 @@ describe('bal-number-input', () => {
       expect(countDecimalSeparators('4.2,')).toBe(2)
       expect(countDecimalSeparators('4.2')).toBe(1)
       expect(countDecimalSeparators('4,2')).toBe(1)
+    })
+  })
+
+  describe('toNumber and toFixedNumber in a locale whose decimal separator is a comma', () => {
+    beforeEach(() => {
+      ;(window as any).DesignSystem = { config: { locale: 'de-DE' } }
+    })
+
+    afterEach(() => {
+      delete (window as any).DesignSystem
+    })
+
+    test('should still treat "," as the locale decimal mark (unaffected by de-CH handling)', () => {
+      expect(toNumber('1,5', 2)).toBe(1.5)
+      expect(toFixedNumber('1,5', 2)).toBe('1.50')
     })
   })
 })
