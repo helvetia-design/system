@@ -270,7 +270,7 @@ describe('scanBalSnackbar', () => {
     })
   })
 
-  it('does not match sibling tags, ambient types, or other components that share an event name', () => {
+  it('lists the HTMLBal*Element types, but not sibling tags or other components that share an event name', () => {
     const root = createScratchDir()
     write(
       root,
@@ -290,8 +290,16 @@ describe('scanBalSnackbar', () => {
     )
 
     expect(scanBalSnackbar(root)).toEqual({
-      total: 1,
-      files: [{ file: 'types.ts', findings: [{ line: 4, snippet: 'let comp: Components.BalSnackbar' }] }],
+      total: 2,
+      files: [
+        {
+          file: 'types.ts',
+          findings: [
+            { line: 3, snippet: 'let el: HTMLBalSnackbarElement' },
+            { line: 4, snippet: 'let comp: Components.BalSnackbar' },
+          ],
+        },
+      ],
     })
   })
 

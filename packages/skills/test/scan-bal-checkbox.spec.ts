@@ -581,12 +581,17 @@ describe('scanBalCheckbox', () => {
     )
 
     const expected = {
-      total: 5,
+      total: 8,
       files: [
         {
           file: 'other.ts',
           findings: [
+            { line: 1, snippet: 'export function reset(group: HTMLBalCheckboxGroupElement, control: FormControl) {' },
             { line: 2, snippet: 'group.setValue([])', setValue: true },
+            {
+              line: 4,
+              snippet: ";(document.querySelector('bal-checkbox-group') as HTMLBalCheckboxGroupElement).setValue([])",
+            },
             {
               line: 4,
               snippet: ";(document.querySelector('bal-checkbox-group') as HTMLBalCheckboxGroupElement).setValue([])",
@@ -603,7 +608,10 @@ describe('scanBalCheckbox', () => {
         },
         {
           file: 'topics.component.ts',
-          findings: [{ line: 5, snippet: 'this.topicsGroup?.nativeElement.setValue([])', setValue: true }],
+          findings: [
+            { line: 2, snippet: "@ViewChild('topicsGroup') topicsGroup?: ElementRef<HTMLBalCheckboxGroupElement>" },
+            { line: 5, snippet: 'this.topicsGroup?.nativeElement.setValue([])', setValue: true },
+          ],
         },
       ],
     }
@@ -611,7 +619,13 @@ describe('scanBalCheckbox', () => {
     expect(scanBalCheckbox(root)).toEqual(expected)
     expect(scanBalCheckbox(root, ['topics.component.html'])).toEqual({
       total: 3,
-      files: expected.files.slice(1),
+      files: [
+        expected.files[1],
+        {
+          file: 'topics.component.ts',
+          findings: [{ line: 5, snippet: 'this.topicsGroup?.nativeElement.setValue([])', setValue: true }],
+        },
+      ],
     })
   })
 
@@ -622,10 +636,22 @@ describe('scanBalCheckbox', () => {
     write(root, 'g.vue', `<script setup lang="ts">\n${reset}</script>\n`)
 
     expect(scanBalCheckbox(root)).toEqual({
-      total: 2,
+      total: 4,
       files: [
-        { file: 'g.vue', findings: [{ line: 3, snippet: 'group.setValue([])', setValue: true }] },
-        { file: 'reset.mts', findings: [{ line: 2, snippet: 'group.setValue([])', setValue: true }] },
+        {
+          file: 'g.vue',
+          findings: [
+            { line: 2, snippet: 'export function reset(group: HTMLBalCheckboxGroupElement) {' },
+            { line: 3, snippet: 'group.setValue([])', setValue: true },
+          ],
+        },
+        {
+          file: 'reset.mts',
+          findings: [
+            { line: 1, snippet: 'export function reset(group: HTMLBalCheckboxGroupElement) {' },
+            { line: 2, snippet: 'group.setValue([])', setValue: true },
+          ],
+        },
       ],
     })
   })
@@ -755,11 +781,14 @@ describe('scanBalCheckbox', () => {
     )
 
     expect(scanBalCheckbox(root)).toEqual({
-      total: 5,
+      total: 10,
       files: [
         {
           file: 'refs.component.ts',
           findings: [
+            { line: 2, snippet: "@ViewChild('g') g?: ElementRef<HTMLBalCheckboxGroupElement>" },
+            { line: 3, snippet: 'a!: ElementRef<HTMLBalCheckboxGroupElement>' },
+            { line: 4, snippet: "readonly req = viewChild.required<ElementRef<HTMLBalCheckboxGroupElement>>('g')" },
             { line: 7, snippet: '?.nativeElement.setValue([])', setValue: true },
             { line: 9, snippet: 'el?.setValue([])', setValue: true },
             { line: 10, snippet: 'this.req().nativeElement.setValue([])', setValue: true },
@@ -768,7 +797,9 @@ describe('scanBalCheckbox', () => {
         {
           file: 'Refs.tsx',
           findings: [
+            { line: 2, snippet: 'const group = useRef<HTMLBalCheckboxGroupElement>(null)' },
             { line: 3, snippet: 'const reset = () => group.current?.setValue([])', setValue: true },
+            { line: 5, snippet: 'const g = el as HTMLBalCheckboxGroupElement' },
             { line: 6, snippet: 'g.setValue([])', setValue: true },
           ],
         },

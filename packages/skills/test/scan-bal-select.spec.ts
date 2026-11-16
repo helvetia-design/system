@@ -66,7 +66,7 @@ describe('scanBalSelect', () => {
     })
   })
 
-  it('lists the option tag but not longer names or the ambient types', () => {
+  it('lists the option tag and the HTMLBalSelect*Element types but not longer names or BalProps', () => {
     const root = createScratchDir()
     write(
       root,
@@ -85,13 +85,20 @@ describe('scanBalSelect', () => {
     )
 
     expect(scanBalSelect(root)).toEqual({
-      total: 2,
+      total: 4,
       files: [
         {
           file: 'index.html',
           findings: [
             { line: 1, snippet: '<bal-select-option>' },
             { line: 1, snippet: '</bal-select-option>' },
+          ],
+        },
+        {
+          file: 'types.ts',
+          findings: [
+            { line: 1, snippet: 'const el: HTMLBalSelectElement | null = null' },
+            { line: 2, snippet: 'const opt: HTMLBalSelectOptionElement | null = null' },
           ],
         },
       ],
@@ -293,7 +300,7 @@ describe('scanBalSelect', () => {
     )
 
     expect(scanBalSelect(root)).toEqual({
-      total: 8,
+      total: 9,
       files: [
         {
           file: 'application.component.ts',
@@ -306,6 +313,7 @@ describe('scanBalSelect', () => {
             { line: 7, snippet: 'detail?: BalEvents.BalSelectChangeDetail' },
             { line: 8, snippet: 'both(a: BalEvents.BalSelectBlur, b: BalSelectOptionCustomEvent<string>) {}' },
             { line: 8, snippet: 'both(a: BalEvents.BalSelectBlur, b: BalSelectOptionCustomEvent<string>) {}' },
+            { line: 10, snippet: 'el?: HTMLBalSelectElement' },
           ],
         },
       ],

@@ -26,7 +26,7 @@ function write(root: string, rel: string, contents: string) {
 }
 
 describe('scanBalTimeInput', () => {
-  it('lists a multiline Angular tag and the class file types, but not BalProps, the ambient type or bundles', () => {
+  it('lists a multiline Angular tag and the class file types, but not BalProps or bundles', () => {
     const root = createScratchDir()
     write(
       root,
@@ -59,7 +59,7 @@ describe('scanBalTimeInput', () => {
     )
 
     expect(scanBalTimeInput(root)).toEqual({
-      total: 7,
+      total: 8,
       files: [
         {
           file: 'form-section.component.html',
@@ -80,6 +80,7 @@ describe('scanBalTimeInput', () => {
             { line: 4, snippet: 'onTimeChange(event: BalEvents.BalTimeInputCustomEvent<string | undefined>) {}' },
             { line: 5, snippet: 'onBare(event: BalTimeInputCustomEvent<string>) {}' },
             { line: 6, snippet: 'detail?: BalEvents.BalTimeInputChangeDetail' },
+            { line: 7, snippet: 'el?: HTMLBalTimeInputElement' },
           ],
         },
       ],

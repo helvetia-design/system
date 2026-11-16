@@ -27,6 +27,21 @@ function write(root: string, rel: string, contents: string) {
 }
 
 describe('scanBalInput', () => {
+  it('lists an HTMLBal*Element type that is the only legacy reference in a file', () => {
+    const root = createScratchDir()
+    write(root, 'field.directive.ts', 'constructor(private el: ElementRef<HTMLBalInputElement>) {}\n')
+
+    expect(scanBalInput(root)).toEqual({
+      total: 1,
+      files: [
+        {
+          file: 'field.directive.ts',
+          findings: [{ line: 1, snippet: 'constructor(private el: ElementRef<HTMLBalInputElement>) {}' }],
+        },
+      ],
+    })
+  })
+
   it('lists React tags and the import symbol and skips comments, strings, and dist', () => {
     const root = createScratchDir()
     write(

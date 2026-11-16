@@ -264,7 +264,7 @@ Needs your attention when found:
 23. Every call to `getOptionByValue()`, `renderLine()`, `closeAccordion()`, `getOptions()` or `setActive()`, with its Unmapped props and handlers outcome.
 24. Every `balNavigate`, `balKeyDown`, `balWillAnimate` or `balDidAnimate` listener, with its Unmapped props and handlers outcome.
 25. Every left-in-place `BalTabOption` reference.
-26. Every ambient type reference `BalProps.BalTabs*`, `BalEvents.BalTabs*`, `HTMLBalTabsElement` and `HTMLBalTabItemElement`. The scan cannot see them. Grep for them and rename by hand. The scan does list `Components.BalTabs`, because it matches the bare `BalTabs` symbol. Treat it as a type reference too.
+26. Every ambient type reference `BalProps.BalTabs*` and `BalEvents.BalTabs*`. The scan cannot see them. Grep for them and rename by hand. It does list `HTMLBalTabsElement` and `HTMLBalTabItemElement`. The scan does list `Components.BalTabs`, because it matches the bare `BalTabs` symbol. Treat it as a type reference too.
 27. Every legacy `bal-tabs__*` class, the `bal-tab-item` class and `data-testid` selector. They no longer match, because `ds-tabs` uses shadow DOM.
 28. One-time note: in navigation mode, `ds-tabs` takes an accessible `label` for its `<nav>` landmark. Nothing was added. Suggest the consumer adds one that fits the page.
 

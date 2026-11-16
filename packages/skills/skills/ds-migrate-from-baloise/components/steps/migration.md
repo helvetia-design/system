@@ -256,7 +256,7 @@ Needs your attention when found:
 14. Every call to `getOptionByValue()`, `getOptions()` or `setActive()`, with its Unmapped props and handlers outcome.
 15. Every `balNavigate` listener, with its Unmapped props and handlers outcome.
 16. Every left-in-place `BalStepOption` reference.
-17. Every ambient type reference `BalProps.BalStepsColor`, `BalEvents.BalSteps*`, `HTMLBalStepsElement` and `HTMLBalStepItemElement`. The scan cannot see them. Grep for them and rename by hand. The scan does list `Components.BalSteps`, because it matches the bare `BalSteps` symbol. Treat it as a type reference too.
+17. Every ambient type reference `BalProps.BalStepsColor` and `BalEvents.BalSteps*`. The scan cannot see them. Grep for them and rename by hand. It does list `HTMLBalStepsElement` and `HTMLBalStepItemElement`. The scan does list `Components.BalSteps`, because it matches the bare `BalSteps` symbol. Treat it as a type reference too.
 18. Every legacy `bal-steps__*` class, the `bal-step-item` class and `data-testid="bal-steps-option"` selector. They no longer match, because `ds-steps` uses shadow DOM.
 19. One-time note: in navigation mode, `ds-steps` takes an accessible `label` for its `<nav>` landmark. Nothing was added. Suggest the consumer adds one that fits the page.
 20. Every `color` that is not a string literal and not a mapped conditional, with the framework outcome (left in HTML, kept or removed (Unmapped) in React and Angular). `purple`, `green`, `red` and `yellow` are the accepted values.

@@ -6,7 +6,7 @@ Both legacy tags are migrated together, not separately. A legacy `bal-select` re
 
 Apply `shared/field.md` in the Rewrite step to every migrated `ds-select` that sits inside a `bal-field`, in the same pass. It moves the label, description and message of the wrapper onto the control and removes the wrapper tags. A `bal-field` around a control that is still a legacy `bal-*` tag stays unchanged. `components/field/migration.md` migrates `bal-form-grid`, `bal-form-col` and every `bal-field` that is left.
 
-The scan also lists `BalSelectBundle` and the `BalEvents.BalSelect*` and `BalSelect*CustomEvent` types. It does not match the ambient `HTMLBalSelectElement`, `HTMLBalSelectOptionElement` or `BalProps.BalSelect*` types. Search for them yourself in each file with a finding. `SKILL.md` "Legacy types and bundles" says how to rewrite all of them.
+The scan also lists `BalSelectBundle` and the `BalEvents.BalSelect*` and `BalSelect*CustomEvent` types. It lists the `HTMLBalSelectElement` and `HTMLBalSelectOptionElement` types too. It does not match `BalProps.BalSelect*`. Search for them yourself in each file with a finding. `SKILL.md` "Legacy types and bundles" says how to rewrite all of them.
 
 ## 1. Scan
 

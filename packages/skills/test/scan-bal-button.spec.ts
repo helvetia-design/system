@@ -346,7 +346,7 @@ describe('scanBalButton', () => {
     )
 
     expect(scanBalButton(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -356,6 +356,7 @@ describe('scanBalButton', () => {
             { line: 4, snippet: 'onGroup(event: BalButtonGroupCustomEvent<void>) {}' },
             { line: 5, snippet: 'both(a: BalEvents.BalButtonNavigate, b: BalButtonCustomEvent<MouseEvent>) {}' },
             { line: 5, snippet: 'both(a: BalEvents.BalButtonNavigate, b: BalButtonCustomEvent<MouseEvent>) {}' },
+            { line: 7, snippet: 'el?: HTMLBalButtonElement' },
           ],
         },
       ],

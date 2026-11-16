@@ -231,7 +231,7 @@ describe('scanBalInputStepper', () => {
     )
 
     expect(scanBalInputStepper(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -247,6 +247,7 @@ describe('scanBalInputStepper', () => {
               line: 7,
               snippet: 'both(a: BalEvents.BalInputStepperIncrease, b: BalInputStepperCustomEvent<number>) {}',
             },
+            { line: 9, snippet: 'el?: HTMLBalInputStepperElement' },
           ],
         },
       ],

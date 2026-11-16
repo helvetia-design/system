@@ -242,7 +242,7 @@ describe('scanBalTextarea', () => {
     )
 
     expect(scanBalTextarea(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -252,6 +252,7 @@ describe('scanBalTextarea', () => {
             { line: 6, snippet: 'detail?: BalEvents.BalTextareaChangeDetail' },
             { line: 7, snippet: 'both(a: BalEvents.BalTextareaBlur, b: BalTextareaCustomEvent<string>) {}' },
             { line: 7, snippet: 'both(a: BalEvents.BalTextareaBlur, b: BalTextareaCustomEvent<string>) {}' },
+            { line: 8, snippet: 'el?: HTMLBalTextareaElement' },
           ],
         },
       ],

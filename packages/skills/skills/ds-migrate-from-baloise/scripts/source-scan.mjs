@@ -673,6 +673,14 @@ export function toSnippet(raw) {
   return raw.replace(/\s+/g, ' ').replace(/ >/g, '>').trim().slice(0, 240)
 }
 
+/**
+ * Blanks the `HTML` and `Element` around every `HTMLBal*Element` type (`HTMLBalInputElement` reads `    BalInput       `),
+ * so a scanner's `\bBalInput\b` matches the type at the same index.
+ */
+export function unwrapElementTypes(masked) {
+  return masked.replace(/\bHTML(Bal[A-Z]\w*?)Element\b/g, (_, name) => `    ${name}       `)
+}
+
 /** Returns the `.ts` file beside an Angular `.html` template, or `undefined` for any other file. */
 export function siblingScript(file) {
   return file.endsWith('.html') ? `${file.slice(0, -'.html'.length)}.ts` : undefined

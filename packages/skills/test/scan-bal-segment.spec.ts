@@ -66,7 +66,7 @@ describe('scanBalSegment', () => {
     })
   })
 
-  it('lists the item tag but not longer names or the ambient types', () => {
+  it('lists the item tag and the HTMLBalSegmentElement type but not longer names or BalProps', () => {
     const root = createScratchDir()
     write(
       root,
@@ -84,7 +84,7 @@ describe('scanBalSegment', () => {
     )
 
     expect(scanBalSegment(root)).toEqual({
-      total: 2,
+      total: 3,
       files: [
         {
           file: 'index.html',
@@ -93,6 +93,7 @@ describe('scanBalSegment', () => {
             { line: 1, snippet: '</bal-segment-item>' },
           ],
         },
+        { file: 'types.ts', findings: [{ line: 1, snippet: 'const el: HTMLBalSegmentElement | null = null' }] },
       ],
     })
   })
@@ -292,7 +293,7 @@ describe('scanBalSegment', () => {
     )
 
     expect(scanBalSegment(root)).toEqual({
-      total: 8,
+      total: 9,
       files: [
         {
           file: 'application.component.ts',
@@ -305,6 +306,7 @@ describe('scanBalSegment', () => {
             { line: 7, snippet: 'detail?: BalEvents.BalSegmentChangeDetail' },
             { line: 8, snippet: 'both(a: BalEvents.BalSegmentBlur, b: BalSegmentItemCustomEvent<string>) {}' },
             { line: 8, snippet: 'both(a: BalEvents.BalSegmentBlur, b: BalSegmentItemCustomEvent<string>) {}' },
+            { line: 10, snippet: 'el?: HTMLBalSegmentElement' },
           ],
         },
       ],
