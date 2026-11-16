@@ -57,6 +57,8 @@ import {
  * @part inner - The field's outer wrapper element.
  * @part label - The field's label element.
  * @part control - The wrapper around the native input and its start/end slots.
+ * @part start - The `start` slot element.
+ * @part end - The `end` slot element.
  * @part input - The native HTML input element.
  * @part description - The description or invalid-text message element below the control.
  */

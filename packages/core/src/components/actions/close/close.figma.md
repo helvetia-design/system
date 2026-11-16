@@ -23,11 +23,15 @@ anatomy:
 props:
   - name: size
     type: enum
-    options: [sm, md] # CLOSE_SIZES; unset is the real code default, rendering as 24px (see tokens)
+    options:
+      [md] # CLOSE_SIZES; unset is the real code default, rendering as 24px (see tokens).
+      # `sm` removed 16.11.2026 — its 14×14 hit target was below WCAG 2.5.8's 24×24 minimum (see
+      # Notes); the --ds-close-size-sm/--ds-close-padding-sm tokens stay, still consumed directly
+      # by ds-tag's small-size mixin.
     default: '(unset — falls back to Component/Close/Size/Base, same implicit-default pattern as badge/spinner/icon)'
     figmaProperty: size
     figmaPropertyType: variant
-    figmaOptions: [base, sm, md] # code default first, then canonical order
+    figmaOptions: [base, md] # code default first, then canonical order
 
   - name: inverted
     type: boolean
@@ -122,10 +126,12 @@ tokens:
     figmaVariable: 🧩 Component/Close/Size/SM
     figmaVariableId: 'VariableID:137:1389'
     resolved: true
+    note: "no longer bound to ds-close's own `size` variant (sm removed 16.11.2026, see Notes) — token kept because ds-tag's small-size mixin consumes it directly"
   - cssVar: --ds-close-padding-sm
     figmaVariable: 🧩 Component/Close/Padding/SM
     figmaVariableId: 'VariableID:137:1392'
     resolved: true
+    note: 'same as above — ds-tag only, not a ds-close variant anymore'
   - cssVar: --ds-close-size-md
     figmaVariable: 🧩 Component/Close/Size/MD
     figmaVariableId: 'VariableID:137:1388'
@@ -185,7 +191,7 @@ measurements: # confirmed measurements triage (06.11.2026, measured on the dev s
   drawnState: hover # default has a transparent background, so the circle the Size line measures
   # can't be seen; hover fills it
   drawnStateReason: 'default background is transparent — the 24px circle is only visible on hover; confirmed by the user 06.11.2026'
-  options: [base, sm, md]
+  options: [base, md] # `sm` removed 16.11.2026 — see Notes
   rows:
     - property: Size (w = h)
       kind: size
@@ -195,7 +201,6 @@ measurements: # confirmed measurements triage (06.11.2026, measured on the dev s
       source: close.mixin.scss:48
       values:
         base: { px: 24, token: 🧩 Component/Close/Size/Base }
-        sm: { px: 14, token: 🧩 Component/Close/Size/SM }
         md: { px: 32, token: 🧩 Component/Close/Size/MD }
     - property: Icon size
       kind: size
@@ -205,7 +210,6 @@ measurements: # confirmed measurements triage (06.11.2026, measured on the dev s
       source: close.mixin.scss:67 # ::after min/max = size − padding token
       values:
         base: { px: 14, token: 🧩 Component/Close/Size/Base − 🧩 Component/Close/Padding/Base }
-        sm: { px: 8, token: 🧩 Component/Close/Size/SM − 🧩 Component/Close/Padding/SM }
         md: { px: 18, token: 🧩 Component/Close/Size/MD − 🧩 Component/Close/Padding/MD }
     - property: Focus ring
       kind: shape
@@ -219,10 +223,9 @@ measurements: # confirmed measurements triage (06.11.2026, measured on the dev s
       kind: spacing
       group: fixed
       show: skip
-      reason: 'not a CSS padding — the token is subtracted from the size to get the icon size (visible inset 5 / 3 / 7 per side); shown inside the Icon size token instead'
+      reason: 'not a CSS padding — the token is subtracted from the size to get the icon size (visible inset 5 / 7 per side); shown inside the Icon size token instead'
       values:
         base: { px: 10, token: 🧩 Component/Close/Padding/Base }
-        sm: { px: 6, token: 🧩 Component/Close/Padding/SM }
         md: { px: 14, token: 🧩 Component/Close/Padding/MD }
     - property: Radius
       kind: shape
@@ -231,13 +234,6 @@ measurements: # confirmed measurements triage (06.11.2026, measured on the dev s
       reason: 'circle (9999) — no radius on a circle or pill'
       values:
         base: { px: 9999, token: 🧩 Component/Close/Radius }
-    - property: Hit area
-      kind: size
-      group: hit area
-      show: skip
-      reason: 'equals the visible box (no outline to draw); sm is 14 × 14, below WCAG 2.5.8 24 × 24 — reported as an a11y finding, consumers need enough spacing'
-      values:
-        sm: { px: 14 }
 ```
 
 ## Notes
@@ -248,10 +244,15 @@ measurements: # confirmed measurements triage (06.11.2026, measured on the dev s
   rendering path (size / inverted / state) is in scope.
 - All CSS-var tokens resolved locally via `css-token-lookup.mjs` — zero hard stops, zero missing
   tokens.
-- **Measurements findings (06.11.2026):** `sm` is a 14 × 14 target, below WCAG 2.5.8's 24 × 24
-  (allowed only with enough spacing around it). With `size="sm"` the host is 14 × **24**: the
-  `inline-block` host takes the 24px line height, so a small close still takes 24px of vertical
-  space in a layout — a code smell, not drawn.
+- **`sm` size removed from code (16.11.2026):** Measurements (06.11.2026) had flagged `sm` as a
+  14 × 14 target, below WCAG 2.5.8's 24 × 24 minimum. Per user decision, `sm` was dropped from
+  `CLOSE_SIZES` in `close.interfaces.ts` and its `:host(.is-sm)`/`.ds-close.is-sm` rules removed
+  from `close.host.scss`/`close.style.scss`. The `--ds-close-size-sm`/`--ds-close-padding-sm`
+  tokens were kept — `ds-tag`'s small-size mixin sets them directly on `ds-close` via CSS vars,
+  bypassing the `size` prop entirely, so it's unaffected. **The Phase 2/3 proposal and build below
+  still reflect the old 3-size (`base`/`sm`/`md`) variant grid** — the Figma component itself has
+  not been re-synced; treat the `sm` column/row in the built Figma sets and in
+  `close.figma-validation.md` as stale until the next `ds-code-to-figma` push drops it.
 - The "X" glyph has no CSS-var binding (it's a literal inline SVG in the component's own SCSS,
   not a token or a nested `ds-icon`) — flagged and resolved above as a static vector, not an
   Instance Swap.

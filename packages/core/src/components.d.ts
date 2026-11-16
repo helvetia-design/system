@@ -294,7 +294,7 @@ export namespace Components {
          */
         "position"?: BadgePosition;
         /**
-          * If `true` the badge is added to the top right corner of the card.
+          * If `true` the badge animates with a pulsing effect to draw attention to it.
           * @default false
          */
         "pulse": boolean;
@@ -5402,7 +5402,7 @@ declare namespace LocalJSX {
          */
         "position"?: BadgePosition;
         /**
-          * If `true` the badge is added to the top right corner of the card.
+          * If `true` the badge animates with a pulsing effect to draw attention to it.
           * @default false
          */
         "pulse"?: boolean;

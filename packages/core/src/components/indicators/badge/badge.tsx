@@ -67,7 +67,7 @@ export class Badge implements DsComponentInterface {
   readonly position?: BadgePosition
 
   /**
-   * If `true` the badge is added to the top right corner of the card.
+   * If `true` the badge animates with a pulsing effect to draw attention to it.
    */
   @Prop({ reflect: true })
   @Type('boolean')

@@ -42,9 +42,11 @@ anatomy:
 # (no matching part="..." anywhere in the render tree) and omitted inner/label/control/description
 # (which do render). Fixed directly in input.tsx's JSDoc as part of this phase (user-approved).
 # `<slot name="start">`/`<slot name="end">` in field.util.tsx render real content (see props: suffix
-# usage below, and the visual.html "Suffix"/"Slots" sections) but carry no `part="..."` attribute
-# and aren't declared as `@slot` tags on ds-input either — pre-existing gap, out of this skill's
-# @part-only cross-check scope; flagging here, not fixing.
+# usage below, and the visual.html "Suffix"/"Slots" sections). Previously flagged as carrying no
+# `part="..."` attribute and not declared as `@slot` tags on ds-input — fixed in input.tsx (added
+# `@slot start`/`@slot end` and `@part start`/`@part end` JSDoc) and field.util.tsx (added
+# `part="start"`/`part="end"` to the slot elements). Not added to the `anatomy:` table above since
+# that drives the Figma anatomy diagram, which is out of this fix's scope.
 
 props:
   - name: value
