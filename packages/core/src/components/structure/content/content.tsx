@@ -115,6 +115,8 @@ export class Content implements DsComponentInterface {
           'ds-stack-content': true,
           'as-row': direction === 'row',
           'as-col': direction === 'column',
+          'as-row-reverse': direction === 'row-reverse',
+          'as-col-reverse': direction === 'column-reverse',
           [`align-${alignValue}`]: align || alignment,
           [`text-${this.textAlign}`]: hasValue(this.textAlign),
           [`has-space-${this.space}`]: hasValue(this.space),
