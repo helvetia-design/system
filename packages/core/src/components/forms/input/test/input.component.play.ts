@@ -34,6 +34,38 @@ test.describe('component', () => {
 
     expect(changeSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should keep a value the app set while focused and emit it on blur', async ({ page }) => {
+    await page.mount(`<ds-input label="Label" value="initial"></ds-input>`)
+    const input = new DsInput(page.locator('ds-input'))
+    const changeSpy = await input.el.spyOnEvent('dsChange')
+
+    await input.nativeInput.focus()
+    await input.el.evaluate((el: HTMLDsInputElement) => {
+      el.value = 'app-set'
+    })
+    await page.waitForChanges()
+    await input.blur()
+
+    await input.assertValue('app-set')
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('app-set')
+  })
+
+  test('should not fire dsChange on blur when value was set while unfocused', async ({ page }) => {
+    await page.mount(`<ds-input label="Label" value="initial"></ds-input>`)
+    const input = new DsInput(page.locator('ds-input'))
+    const changeSpy = await input.el.spyOnEvent('dsChange')
+
+    await input.el.evaluate((el: HTMLDsInputElement) => {
+      el.value = 'app-set'
+    })
+    await page.waitForChanges()
+    await input.nativeInput.focus()
+    await input.blur()
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
 })
 
 test.describe('disabled', () => {

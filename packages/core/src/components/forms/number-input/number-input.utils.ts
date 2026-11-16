@@ -7,6 +7,12 @@ function checkIfValueIsStringAndDoesNotHaveGermanFormat(val: any): boolean {
   return typeof val === 'string' && getThousandSeparator() !== '.'
 }
 
+// In a `.`-decimal locale (de-CH / fr-CH) a stray `,` can still reach the value — via paste, or
+// from Android IMEs that report the key as "Unidentified" — and must be treated as the decimal mark.
+function normalizeStrayComma(val: string): string {
+  return getDecimalSeparator() === '.' ? val.replace(',', '.') : val
+}
+
 export function isNumber(value: any): boolean {
   const num = parseFloat(value)
   return typeof num === 'number' && !isNaN(num)
@@ -35,7 +41,7 @@ export function toNumber(value: any, decimalPoints = 0): number | undefined {
   }
 
   if (typeof val === 'string') {
-    val = val.replace(getDecimalSeparator(), '.')
+    val = normalizeStrayComma(val).replace(getDecimalSeparator(), '.')
   }
 
   return decimalPoints === 0 ? parseInt(val, 10) : parseFloat(val)
@@ -50,6 +56,8 @@ export function toFixedNumber(value: string, decimalPoints = 0): string {
   if (checkIfValueIsStringAndDoesNotHaveGermanFormat(val)) {
     val = val.split(getThousandSeparator()).join('').split('`').join('').split("'").join('')
   }
+
+  val = normalizeStrayComma(val)
 
   if (val.charAt(0) === getDecimalSeparator()) {
     val = `0${val}`

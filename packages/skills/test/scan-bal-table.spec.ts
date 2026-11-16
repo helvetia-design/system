@@ -61,7 +61,7 @@ describe('scanBalTable', () => {
     })
   })
 
-  it('lists Angular template tags and the class file binding, but not longer names or the ambient type', () => {
+  it('lists Angular template tags, the class file binding and the HTMLBalTableElement type, but not longer names', () => {
     const root = createScratchDir()
     write(
       root,
@@ -88,7 +88,7 @@ describe('scanBalTable', () => {
     )
 
     expect(scanBalTable(root)).toEqual({
-      total: 4,
+      total: 5,
       files: [
         {
           file: 'profile.component.html',
@@ -102,6 +102,7 @@ describe('scanBalTable', () => {
           findings: [
             { line: 1, snippet: "import { BalTable, BalComponentBundle } from '@baloise/ds-angular'" },
             { line: 2, snippet: '@Component({ imports: [BalTable, ...BalComponentBundle] })' },
+            { line: 4, snippet: 'el?: HTMLBalTableElement' },
           ],
         },
       ],

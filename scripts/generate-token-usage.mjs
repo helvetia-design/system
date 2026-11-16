@@ -13,6 +13,7 @@
  *
  * Run with: pnpm tokens:usage
  */
+import { glob } from 'glob'
 import { execSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
@@ -49,7 +50,6 @@ const tokens = collectBaseTokens(docsJson)
 console.log(`   ${tokens.length} Base tokens found.`)
 
 console.log('🔍 Scanning compiled CSS in packages/core and packages/styles for var(--ds-...) usage...')
-const glob = (await import('fast-glob')).default
 const files = []
 for (const { package: pkg, dir, patterns } of SCAN_ROOTS) {
   const cssFiles = await glob(patterns, { cwd: dir, absolute: true })

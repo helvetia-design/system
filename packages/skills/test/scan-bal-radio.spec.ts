@@ -68,7 +68,7 @@ describe('scanBalRadio', () => {
     })
   })
 
-  it('lists the group and icon tags as findings but not longer names or the ambient types', () => {
+  it('lists the group and icon tags and the HTMLBalRadioElement type as findings but not longer names or BalProps', () => {
     const root = createScratchDir()
     write(
       root,
@@ -91,7 +91,7 @@ describe('scanBalRadio', () => {
     )
 
     expect(scanBalRadio(root)).toEqual({
-      total: 4,
+      total: 5,
       files: [
         {
           file: 'index.html',
@@ -102,6 +102,7 @@ describe('scanBalRadio', () => {
             { line: 2, snippet: '</bal-radio-icon>' },
           ],
         },
+        { file: 'types.ts', findings: [{ line: 1, snippet: 'const el: HTMLBalRadioElement | null = null' }] },
       ],
     })
   })
@@ -300,6 +301,8 @@ describe('scanBalRadio', () => {
     write(root, 'page.html', '<bal-radio></bal-radio>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-radio></bal-radio>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalRadio />\n')
     }
 
@@ -362,10 +365,10 @@ describe('scanBalRadio', () => {
         },
       ],
     })
-    expect(scanBalRadio(root).total).toBe(4)
+    expect(scanBalRadio(root).total).toBe(6)
   })
 
-  it('does not flag a commented-out setValue() on a legacy radio group ref', () => {
+  it('does not flag a commented-out setValue() on a legacy radio group ref, only the HTMLBalRadioGroupElement type', () => {
     const root = createScratchDir()
     write(
       root,
@@ -379,7 +382,15 @@ describe('scanBalRadio', () => {
       ].join('\n'),
     )
 
-    expect(scanBalRadio(root)).toEqual({ total: 0, files: [] })
+    expect(scanBalRadio(root)).toEqual({
+      total: 1,
+      files: [
+        {
+          file: 'plan.ts',
+          findings: [{ line: 1, snippet: 'export function reset(group: HTMLBalRadioGroupElement) {' }],
+        },
+      ],
+    })
   })
 
   it('lists the bundle and BalEvents types once per occurrence, but not BalProps or multi-family bundles', () => {
@@ -405,7 +416,7 @@ describe('scanBalRadio', () => {
     )
 
     expect(scanBalRadio(root)).toEqual({
-      total: 9,
+      total: 10,
       files: [
         {
           file: 'application.component.ts',
@@ -418,6 +429,7 @@ describe('scanBalRadio', () => {
             { line: 7, snippet: 'detail?: BalEvents.BalRadioChangeDetail' },
             { line: 8, snippet: 'both(a: BalEvents.BalRadioBlur, b: BalRadioCustomEvent<boolean>) {}' },
             { line: 8, snippet: 'both(a: BalEvents.BalRadioBlur, b: BalRadioCustomEvent<boolean>) {}' },
+            { line: 10, snippet: 'el?: HTMLBalRadioElement' },
             { line: 11, snippet: 'onIcon(event: BalRadioIconCustomEvent<boolean>) {}' },
           ],
         },

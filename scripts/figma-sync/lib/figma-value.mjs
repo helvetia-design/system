@@ -140,6 +140,44 @@ export const FONT_WEIGHT_KEYWORD_BY_NUMBER = {
   950: 'Extra-Black',
 }
 
+/**
+ * Maps a literal-valued token's resolved `$value` to the exact Figma shape write.mjs writes for
+ * it — shared so the conflict check compares against the same shape it would actually sync,
+ * rather than re-deriving (and risking drifting from) write.mjs's own mapping. Only covers the
+ * standalone-token path (not shadow/border/typography's multi-variable fan-out), matching
+ * conflict.mjs's current literal-token-only scope.
+ */
+export function figmaLiteralValueFor(token, literalValue) {
+  return isLineHeightNumberToken(token)
+    ? figmaLineHeightPercentFor(literalValue)
+    : figmaValueFor(token.type, literalValue)
+}
+
+function channelToByte(value) {
+  return Math.round(Math.min(1, Math.max(0, value)) * 255)
+}
+
+// Figma's REST API round-trips color floats through float32 (e.g. 0.5 comes back as
+// 0.5000000074505806) — bit-exact comparison flags spurious "changes" on every read. Byte-rounds
+// each channel, the same tolerance apps/toky/src/tokens/figma-map.ts's isColorEqual uses
+// (reimplemented here, not imported — Node-only module, outside apps/toky's module boundary, same
+// reasoning as LINE_HEIGHT_PERCENT_MULTIPLIER above).
+export function isFigmaColorValueEqual(a, b) {
+  if (!a || !b) return a === b
+  return (
+    channelToByte(a.r) === channelToByte(b.r) &&
+    channelToByte(a.g) === channelToByte(b.g) &&
+    channelToByte(a.b) === channelToByte(b.b) &&
+    channelToByte(a.a) === channelToByte(b.a)
+  )
+}
+
+/** Equality for any Figma mode-value shape the conflict check compares — colors get the
+ * byte-rounded tolerance above; every other literal type (number/string/boolean) compares exactly. */
+export function isFigmaValueEqual(dtcgType, a, b) {
+  return dtcgType === 'color' ? isFigmaColorValueEqual(a, b) : JSON.stringify(a) === JSON.stringify(b)
+}
+
 export function resolvedTypeFor(dtcgType) {
   const resolvedType = RESOLVED_TYPE_BY_DTCG_TYPE[dtcgType]
   if (!resolvedType) {
@@ -280,12 +318,6 @@ export const SHADOW_SUB_PROPERTY_RESOLVED_TYPE = {
 // lossy-but-visible fallback), so there's no unsyncable shadow shape left to exclude here.
 export function isSyncableShadowToken(token) {
   return token.type === 'shadow'
-}
-
-// Whether this token can have a Figma identity at all — every type otherwise handled here, plus
-// every shadow shape (isSyncableShadowToken is now unconditional for `shadow`).
-export function isPushableToken(token) {
-  return token.type !== 'shadow' || isSyncableShadowToken(token)
 }
 
 /**

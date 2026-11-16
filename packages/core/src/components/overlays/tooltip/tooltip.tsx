@@ -31,6 +31,9 @@ export class Tooltip implements DsComponentInterface {
   private tooltipId = `ds-tooltip-${tooltipIds++}`
   private containerEl: HTMLDivElement | undefined
   private cleanup?: () => void
+  private trigger: HTMLElement | undefined
+  private handlePresent = () => this.present()
+  private handleDismiss = () => this.dismiss()
 
   log!: LogInstance
 
@@ -112,12 +115,13 @@ export class Tooltip implements DsComponentInterface {
     const trigger = this.triggerElement
     if (!trigger) return
 
+    this.trigger = trigger
     trigger.setAttribute('aria-describedby', this.tooltipId)
 
-    trigger.addEventListener('mouseenter', () => this.present())
-    trigger.addEventListener('focus', () => this.present())
-    trigger.addEventListener('mouseleave', () => this.dismiss())
-    trigger.addEventListener('blur', () => this.dismiss())
+    trigger.addEventListener('mouseenter', this.handlePresent)
+    trigger.addEventListener('focus', this.handlePresent)
+    trigger.addEventListener('mouseleave', this.handleDismiss)
+    trigger.addEventListener('blur', this.handleDismiss)
 
     if (this.open) {
       this.present()
@@ -127,11 +131,16 @@ export class Tooltip implements DsComponentInterface {
   disconnectedCallback(): void {
     if (this.cleanup) {
       this.cleanup()
+      this.cleanup = undefined
     }
 
-    const trigger = this.triggerElement
-    if (trigger) {
-      trigger.removeAttribute('aria-describedby')
+    if (this.trigger) {
+      this.trigger.removeAttribute('aria-describedby')
+      this.trigger.removeEventListener('mouseenter', this.handlePresent)
+      this.trigger.removeEventListener('focus', this.handlePresent)
+      this.trigger.removeEventListener('mouseleave', this.handleDismiss)
+      this.trigger.removeEventListener('blur', this.handleDismiss)
+      this.trigger = undefined
     }
   }
 
@@ -151,6 +160,10 @@ export class Tooltip implements DsComponentInterface {
     this.dsWillAnimate.emit(true)
 
     this.presented = true
+
+    if (this.cleanup) {
+      this.cleanup()
+    }
 
     this.cleanup = autoUpdate(trigger, this.containerEl, () => this.update(), {
       ancestorScroll: true,

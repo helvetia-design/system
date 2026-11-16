@@ -11,7 +11,7 @@
  * check doesn't build yet — a real, stated limitation, not a silent gap
  * (docs/plans/figma-sync-action-plan.md §8 territory, not attempted here).
  */
-import { figmaLiteralValueFor } from './figma-value.mjs'
+import { figmaLiteralValueFor, isFigmaValueEqual } from './figma-value.mjs'
 
 export const COMMENT_MARKER = '<!-- figma-sync-conflict-check -->'
 
@@ -40,11 +40,11 @@ export function findConflicts({ existingState, currentBaseTokens, figmaVariables
     const baselineFigmaShape = figmaLiteralValueFor(token, baseline.resolvedValue.value)
     const currentFigmaShape = figmaLiteralValueFor(token, token.value.value)
 
-    const githubChanged = JSON.stringify(currentFigmaShape) !== JSON.stringify(baselineFigmaShape)
-    const figmaChanged = JSON.stringify(figmaLiveValue) !== JSON.stringify(baselineFigmaShape)
+    const githubChanged = !isFigmaValueEqual(token.type, currentFigmaShape, baselineFigmaShape)
+    const figmaChanged = !isFigmaValueEqual(token.type, figmaLiveValue, baselineFigmaShape)
     // Both sides moving to the *same* value isn't a conflict — nothing
     // would actually be overwritten by merging.
-    const disagree = JSON.stringify(currentFigmaShape) !== JSON.stringify(figmaLiveValue)
+    const disagree = !isFigmaValueEqual(token.type, currentFigmaShape, figmaLiveValue)
 
     if (githubChanged && figmaChanged && disagree) {
       conflicts.push({

@@ -179,6 +179,15 @@
   background: linear-gradient(to left, var(--_carousel-scroll-fade-background), transparent);
 }
 
+// Reserve space for the arrow buttons only when they are rendered (2.5rem button + 0.25rem margin)
+:host(.is-tile.has-large-arrows) .carousel-outer::before {
+  left: calc(2.5rem + 0.25rem);
+}
+
+:host(.is-tile.has-large-arrows) .carousel-outer::after {
+  right: calc(2.5rem + 0.25rem);
+}
+
 // Specificity must match the base rule (two host classes) so opacity:1 wins
 :host(.is-tile.can-scroll-left) .carousel-outer::before {
   // ds-token-check: intentional — visibility toggle

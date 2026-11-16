@@ -98,7 +98,7 @@ beforeEach(() => {
   getBaseTokensFileMeta.mockResolvedValue({ sha: 'file-sha', content: fixtureDoc })
   getBrandTokensFileMeta.mockResolvedValue({ sha: 'zurich-sha', content: zurichFixtureDoc })
   listTokenBrandFiles.mockResolvedValue(['Zurich'])
-  resolveReadRef.mockResolvedValue({ ref: 'next', status: { state: 'synced', prUrl: null, prNumber: null } })
+  resolveReadRef.mockResolvedValue({ ref: 'main', status: { state: 'synced', prUrl: null, prNumber: null } })
   createBranch.mockResolvedValue(undefined)
   updateFileOnBranch.mockResolvedValue(undefined)
   updateFileAtPath.mockResolvedValue(undefined)
@@ -176,7 +176,7 @@ describe('POST /api/propose-change', () => {
     const json = await response.json()
     expect(json).toEqual({ url: 'https://github.com/helvetia-design/system/pull/7', number: 7 })
 
-    expect(resolveReadRef).toHaveBeenCalledWith('next')
+    expect(resolveReadRef).toHaveBeenCalledWith('main')
     expect(createBranch).toHaveBeenCalledTimes(1)
     expect(updateFileOnBranch).toHaveBeenCalledTimes(1)
     expect(createFileOnBranch).toHaveBeenCalledTimes(1)
@@ -185,21 +185,21 @@ describe('POST /api/propose-change', () => {
     expect(updatePullRequestBody).not.toHaveBeenCalled()
 
     const [branch, , sha] = updateFileOnBranch.mock.calls[0]
-    expect(branch).toBe('toky/update-next')
+    expect(branch).toBe('toky/update-main')
     expect(sha).toBe('file-sha') // read from base (synced) — base's sha
 
     const [changesetBranch, changesetPath, changesetContent] = createFileOnBranch.mock.calls[0]
-    expect(changesetBranch).toBe('toky/update-next')
-    expect(changesetPath).toMatch(/^\.changeset\/toky-update-next-\d+\.md$/)
+    expect(changesetBranch).toBe('toky/update-main')
+    expect(changesetPath).toMatch(/^\.changeset\/toky-update-main-\d+\.md$/)
     expect(changesetContent).toContain("'@helvetia-design/tokens': patch")
     expect(changesetContent).toContain('**tokens**: Lighten white slightly')
 
-    expect(getBaseTokensFileMeta).toHaveBeenCalledWith('next')
+    expect(getBaseTokensFileMeta).toHaveBeenCalledWith('main')
     const [, baseRef] = createBranch.mock.calls[0]
-    expect(baseRef).toBe('next')
+    expect(baseRef).toBe('main')
     const [prBranch, , , base] = openPullRequest.mock.calls[0]
-    expect(prBranch).toBe('toky/update-next')
-    expect(base).toBe('next')
+    expect(prBranch).toBe('toky/update-main')
+    expect(base).toBe('main')
   })
 
   it('credits the signed-in user in the initial PR body, not any client-supplied field', async () => {
@@ -425,8 +425,8 @@ describe('POST /api/propose-change', () => {
     expect(json).toEqual({ url: 'https://github.com/helvetia-design/system/pull/7', number: 7 })
 
     expect(updateFileOnBranch).not.toHaveBeenCalled()
-    expect(createBrandFile).toHaveBeenCalledWith('toky/update-next', 'Acme')
-    expect(addBrandToIndex).toHaveBeenCalledWith('toky/update-next', 'Acme')
+    expect(createBrandFile).toHaveBeenCalledWith('toky/update-main', 'Acme')
+    expect(addBrandToIndex).toHaveBeenCalledWith('toky/update-main', 'Acme')
 
     const [, , changesetContent] = createFileOnBranch.mock.calls[0]
     expect(changesetContent).toContain("'@helvetia-design/tokens': minor")
@@ -440,8 +440,8 @@ describe('POST /api/propose-change', () => {
     expect(response.status).toBe(200)
 
     expect(updateFileOnBranch).toHaveBeenCalledTimes(1)
-    expect(createBrandFile).toHaveBeenCalledWith('toky/update-next', 'Acme')
-    expect(addBrandToIndex).toHaveBeenCalledWith('toky/update-next', 'Acme')
+    expect(createBrandFile).toHaveBeenCalledWith('toky/update-main', 'Acme')
+    expect(addBrandToIndex).toHaveBeenCalledWith('toky/update-main', 'Acme')
   })
 
   it('rejects a badly-formatted brand name with a 400 before touching GitHub', async () => {
@@ -488,10 +488,10 @@ describe('POST /api/propose-change', () => {
       const response = await POST(makeRequest({ diff: [], description: '', brandDiffs: { Zurich: zurichCleanDiff } }))
       expect(response.status).toBe(200)
 
-      expect(getBrandTokensFileMeta).toHaveBeenCalledWith('Zurich', 'next')
+      expect(getBrandTokensFileMeta).toHaveBeenCalledWith('Zurich', 'main')
       expect(updateFileAtPath).toHaveBeenCalledTimes(1)
       const [branch, path, content, sha] = updateFileAtPath.mock.calls[0]
-      expect(branch).toBe('toky/update-next')
+      expect(branch).toBe('toky/update-main')
       expect(path).toBe('packages/tokens/tokens/Zurich.tokens.json')
       expect(sha).toBe('zurich-sha')
       expect(JSON.parse(content)).toEqual({
@@ -549,12 +549,12 @@ describe('POST /api/propose-change', () => {
       const [branch, path, content] = createFileOnBranch.mock.calls.find(
         call => call[1] === 'packages/tokens/tokens/Acme.tokens.json',
       )!
-      expect(branch).toBe('toky/update-next')
+      expect(branch).toBe('toky/update-main')
       expect(path).toBe('packages/tokens/tokens/Acme.tokens.json')
       expect(JSON.parse(content)).toEqual({
         '🌐 Global': { '🌈 Color': { White: { $type: 'color', $value: { hex: '#EEEEEE' } } } },
       })
-      expect(addBrandToIndex).toHaveBeenCalledWith('toky/update-next', 'Acme')
+      expect(addBrandToIndex).toHaveBeenCalledWith('toky/update-main', 'Acme')
     })
 
     it('mentions brand overrides in the changeset and PR body', async () => {

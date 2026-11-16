@@ -69,7 +69,7 @@ Rewrite only handlers that are attached to the `bal-date` element being migrated
 
 When the value in `balChange` or `balInput` is read, note that it is `string | undefined` in legacy and `string | null` in `ds-datepicker`. A cleared field now yields `null`. Do not edit the handler, report it.
 
-Retype handler parameters and refs as `SKILL.md` "Legacy types and bundles" describes. `BalEvents.BalDate*` and `BalDateCustomEvent` become `DsDatepickerCustomEvent`. Write a detail alias such as `BalEvents.BalDateChangeDetail` out as the new detail type, `string | null` for `dsChange` and `dsInput`. `HTMLBalDateElement` becomes `HTMLDsDatepickerElement`. The scan lists the `BalEvents.BalDate*` and `BalDateCustomEvent` types, but not the `BalDateCalendar*` ones. It does not list `BalProps.*` or `HTMLBal*Element`, so search for them yourself in each file with a finding.
+Retype handler parameters and refs as `SKILL.md` "Legacy types and bundles" describes. `BalEvents.BalDate*` and `BalDateCustomEvent` become `DsDatepickerCustomEvent`. Write a detail alias such as `BalEvents.BalDateChangeDetail` out as the new detail type, `string | null` for `dsChange` and `dsInput`. `HTMLBalDateElement` becomes `HTMLDsDatepickerElement`. The scan lists the `BalEvents.BalDate*` and `BalDateCustomEvent` types, but not the `BalDateCalendar*` ones. It lists the `HTMLBal*Element` types too. It does not list `BalProps.*`, so search for them yourself in each file with a finding.
 
 ### Methods
 

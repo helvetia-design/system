@@ -313,7 +313,7 @@ describe('scanBalSteps', () => {
     })
   })
 
-  it('does not match sibling tags, ambient types, or other components that share an event name', () => {
+  it('lists the HTMLBal*Element types, but not sibling tags or other components that share an event name', () => {
     const root = createScratchDir()
     write(
       root,
@@ -340,8 +340,17 @@ describe('scanBalSteps', () => {
     )
 
     expect(scanBalSteps(root)).toEqual({
-      total: 1,
-      files: [{ file: 'types.ts', findings: [{ line: 5, snippet: 'let comp: Components.BalSteps' }] }],
+      total: 3,
+      files: [
+        {
+          file: 'types.ts',
+          findings: [
+            { line: 3, snippet: 'let el: HTMLBalStepsElement' },
+            { line: 4, snippet: 'let item: HTMLBalStepItemElement' },
+            { line: 5, snippet: 'let comp: Components.BalSteps' },
+          ],
+        },
+      ],
     })
   })
 
@@ -350,6 +359,8 @@ describe('scanBalSteps', () => {
     write(root, 'page.html', '<bal-steps></bal-steps>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-steps></bal-steps>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalSteps></BalSteps>\n')
     }
 

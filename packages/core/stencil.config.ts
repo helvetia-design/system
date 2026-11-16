@@ -1,6 +1,6 @@
 import { Config } from '@stencil/core'
 import { sass } from '@stencil/sass'
-import fg from 'fast-glob'
+import { glob } from 'glob'
 import { mkdir, writeFile } from 'fs/promises'
 import { join, parse, resolve } from 'path'
 
@@ -282,12 +282,12 @@ export const config: Config = {
           /**
            * Add stylesheets (.scss) and template (.html) files to the watcher.
            */
-          const styleFiles = await fg('src/**/*.scss', { cwd: __dirname })
+          const styleFiles = await glob('src/**/*.scss', { cwd: __dirname })
           for (const file of styleFiles) {
             this.addWatchFile(resolve(__dirname, file))
           }
 
-          const templateFiles = await fg('src/**/*.html', { cwd: __dirname })
+          const templateFiles = await glob('src/**/*.html', { cwd: __dirname })
           for (const file of templateFiles) {
             this.addWatchFile(resolve(__dirname, file))
           }
@@ -307,7 +307,7 @@ export const config: Config = {
            * an autocomplete (see apps/toky/app/preview-sidebar.tsx). Copied into `www/` below so
            * it's fetchable from the running dev-server, same as the pages themselves.
            */
-          const visualHtmlFiles = await fg(
+          const visualHtmlFiles = await glob(
             [
               'src/blocks/**/*.visual.html',
               'src/blocks/**/*.style.html',
@@ -318,7 +318,7 @@ export const config: Config = {
               'src/components/**/*.visual.html',
               'src/components/**/*.style.html',
             ],
-            { cwd: __dirname },
+            { cwd: __dirname, posix: true },
           )
           const visualPages = visualHtmlFiles.map(f => `/${f.replace(/^src\//, '')}`).sort()
 

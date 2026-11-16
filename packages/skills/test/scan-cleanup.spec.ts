@@ -47,6 +47,21 @@ describe('scanCleanup', () => {
     })
   })
 
+  it('refuses while an HTMLBal*Element type is the only legacy reference left', () => {
+    const root = createScratchDir()
+    writeManifest(root, { dependencies: { '@baloise/ds-angular': '19.0.0' } })
+    write(
+      root,
+      'src/field.directive.ts',
+      'export class FieldDirective {\n  constructor(private el: ElementRef<HTMLBalInputElement>) {}\n}\n',
+    )
+
+    expect(scanCleanup(root)).toEqual({
+      status: 'incomplete',
+      outstanding: { suggested: [{ name: 'input', total: 1 }], notYet: [], types: [], hidden: [] },
+    })
+  })
+
   it('refuses while a legacy type namespace is still imported', () => {
     const root = createScratchDir()
     writeManifest(root, { dependencies: { '@baloise/ds-angular': '19.0.0' } })
@@ -583,6 +598,17 @@ describe('scanCleanup', () => {
           usedBy: ['tsconfig.json:3', 'tsconfig.json:4'],
         },
       ],
+    })
+  })
+
+  it('reads a nested source folder named like build output and refuses while it still has a bal-* tag', () => {
+    const root = createScratchDir()
+    writeManifest(root, { dependencies: { '@baloise/ds-angular': '19.0.0' } })
+    write(root, 'src/app/coverage/coverage.component.html', '<bal-button>Go</bal-button>\n')
+
+    expect(scanCleanup(root)).toEqual({
+      status: 'incomplete',
+      outstanding: { suggested: [{ name: 'button', total: 1 }], notYet: [], types: [], hidden: [] },
     })
   })
 

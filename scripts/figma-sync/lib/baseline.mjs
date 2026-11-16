@@ -8,7 +8,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import { pathKey } from './alias.mjs'
-import { flattenVariableId, isPushableToken } from './figma-value.mjs'
+import { flattenVariableId } from './figma-value.mjs'
 
 /** Tolerant of a missing file — there is no baseline yet on a repo's first-ever sync. */
 export function loadSyncStateFile(path) {
@@ -69,7 +69,6 @@ export function buildSyncState({ existingState, baseTokens, mergeCommitSha, sync
   }
 
   for (const token of baseTokens) {
-    if (!isPushableToken(token)) continue
     if (!token.variableId) {
       throw new Error(
         `buildSyncState: token ${pathKey(token.path)} has no variableId — patch ids before building the baseline.`,

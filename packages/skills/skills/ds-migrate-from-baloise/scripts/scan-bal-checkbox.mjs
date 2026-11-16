@@ -2,7 +2,14 @@
 import { realpathSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { lineAt, lineText, readTag, scanSourceFilesWithSetValue, toSnippet } from './source-scan.mjs'
+import {
+  lineAt,
+  lineText,
+  readTag,
+  scanSourceFilesWithSetValue,
+  toSnippet,
+  unwrapElementTypes,
+} from './source-scan.mjs'
 
 const USAGE_RE =
   /<\/?bal-(?:checkbox(?:-group)?|check|switch)(?![\w-])|<\/?Bal(?:Checkbox(?:Group)?|Check|Switch)\b|\bBalEvents\.BalCheckbox[A-Z]\w*|\bBalCheckbox(?:Group)?CustomEvent\b|\bBal(?:Checkbox(?:Group)?|Check|Switch)\b|\bBalCheckboxBundle\b|\bnewBalCheckboxOption\b/g
@@ -57,8 +64,9 @@ function group(found) {
 
 function collect(file, text, masked, found) {
   USAGE_RE.lastIndex = 0
+  const usage = unwrapElementTypes(masked)
   let match
-  while ((match = USAGE_RE.exec(masked)) !== null) {
+  while ((match = USAGE_RE.exec(usage)) !== null) {
     const index = match.index
     const raw = match[0].startsWith('<') ? readTag(text, index) : lineText(text, index)
     found.push({ file, index, line: lineAt(text, index), snippet: toSnippet(raw), ...flags(raw, text, masked, index) })
