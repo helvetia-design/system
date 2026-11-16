@@ -127,10 +127,10 @@
 
 :host(.is-variant-dots) .dots {
   order: 2;
-  max-width: 88px;
   min-width: 63px;
   min-height: 2rem;
   margin: 0 20px 0 !important;
+  padding-inline: var(--ds-alias-space-padding-xs);
   background: var(--_pagination-dots-background);
   border-radius: var(--_pagination-dots-radius);
 
