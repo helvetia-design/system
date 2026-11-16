@@ -1,21 +1,27 @@
-import { readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 
-export const SKIPPED_DIRS = new Set([
-  'node_modules',
+// Tool folders are never source, wherever they sit, and stay skipped at any depth.
+export const TOOL_DIRS = new Set(['node_modules', '.angular', '.git', '.claude', '.nx'])
+// Build-output names double as ordinary source folder names (e.g. an Angular `coverage.component`
+// folder), so these are only build output directly beside the `package.json` that produces them.
+export const BUILD_OUTPUT_DIRS = new Set([
   'dist',
   'build',
   'out',
-  '.next',
-  '.angular',
-  '.git',
-  '.claude',
   'coverage',
-  '.nx',
+  '.next',
   '.nuxt',
   '.output',
   'storybook-static',
 ])
+
+/** Whether a directory named `name` directly inside `parentDir` should be skipped while walking `root`. */
+export function isSkippedDir(name, parentDir, root) {
+  if (TOOL_DIRS.has(name)) return true
+  if (!BUILD_OUTPUT_DIRS.has(name)) return false
+  return parentDir === root || existsSync(join(parentDir, 'package.json'))
+}
 export const SOURCE_EXTENSIONS = new Set([
   '.ts',
   '.tsx',
@@ -54,11 +60,7 @@ export function scanSourceFiles(rootDir, collect, { extensions = SOURCE_EXTENSIO
     const target = resolvePath(root, path)
     if (target.real === root) {
       walk(root, root, collectOnce, extensions)
-    } else if (
-      !target.real ||
-      isAbsolute(target.rel) ||
-      target.rel.split('/').some(part => part === '..' || SKIPPED_DIRS.has(part))
-    ) {
+    } else if (!target.real || isAbsolute(target.rel) || hasSkippedSegment(root, target.rel)) {
       unmatched.add(target.rel)
     } else if (statSync(target.real).isDirectory()) {
       walk(root, target.real, collectOnce, extensions)
@@ -69,6 +71,15 @@ export function scanSourceFiles(rootDir, collect, { extensions = SOURCE_EXTENSIO
     }
   }
   return [...unmatched].sort()
+}
+
+function hasSkippedSegment(root, relPath) {
+  let dir = root
+  for (const part of relPath.split('/')) {
+    if (part === '..' || isSkippedDir(part, dir, root)) return true
+    dir = join(dir, part)
+  }
+  return false
 }
 
 function resolvePath(root, path) {
@@ -99,7 +110,7 @@ function walk(rootDir, dir, collect, extensions) {
     const entryPath = canonicalChild(rootDir, join(dir, entry.name))
     if (!entryPath) continue
     if (entry.isDirectory()) {
-      if (SKIPPED_DIRS.has(entry.name)) continue
+      if (isSkippedDir(entry.name, dir, rootDir)) continue
       walk(rootDir, entryPath, collect, extensions)
       continue
     }

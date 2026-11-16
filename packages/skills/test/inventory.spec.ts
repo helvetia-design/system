@@ -4,7 +4,11 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 import { diff, inventory } from '../harness/inventory.mjs'
-import { SKIPPED_DIRS, SOURCE_EXTENSIONS } from '../skills/ds-migrate-from-baloise/scripts/source-scan.mjs'
+import {
+  BUILD_OUTPUT_DIRS,
+  SOURCE_EXTENSIONS,
+  TOOL_DIRS,
+} from '../skills/ds-migrate-from-baloise/scripts/source-scan.mjs'
 
 const scratches: string[] = []
 
@@ -103,7 +107,8 @@ describe('inventory', () => {
         match => match[1],
       )
 
-    expect(list('SKIP_DIRS').sort()).toEqual([...SKIPPED_DIRS].sort())
+    expect(list('TOOL_DIRS').sort()).toEqual([...TOOL_DIRS].sort())
+    expect(list('BUILD_OUTPUT_DIRS').sort()).toEqual([...BUILD_OUTPUT_DIRS].sort())
     expect(list('EXTENSIONS')).toEqual(expect.arrayContaining([...SOURCE_EXTENSIONS]))
   })
 
