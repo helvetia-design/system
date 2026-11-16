@@ -192,14 +192,6 @@ export function resolvedTypeForToken(token) {
   return isLineHeightNumberToken(token) ? 'STRING' : resolvedTypeFor(token.type)
 }
 
-// Token-aware variant of figmaValueFor — a LineHeight `number` token's literal is scaled to a
-// percentage string, every other token follows its `$type`.
-export function figmaLiteralValueFor(token, literalValue) {
-  return isLineHeightNumberToken(token)
-    ? figmaLineHeightPercentFor(literalValue)
-    : figmaValueFor(token.type, literalValue)
-}
-
 /**
  * @param {string} dtcgType
  * @param {unknown} literalValue already-resolved (non-reference) `$value`
@@ -318,6 +310,12 @@ export const SHADOW_SUB_PROPERTY_RESOLVED_TYPE = {
 // lossy-but-visible fallback), so there's no unsyncable shadow shape left to exclude here.
 export function isSyncableShadowToken(token) {
   return token.type === 'shadow'
+}
+
+// Whether this token can have a Figma identity at all — every type otherwise handled here, plus
+// every shadow shape (isSyncableShadowToken is now unconditional for `shadow`).
+export function isPushableToken(token) {
+  return token.type !== 'shadow' || isSyncableShadowToken(token)
 }
 
 /**

@@ -129,7 +129,7 @@ describe('findConflicts', () => {
     const conflicts = findConflicts({
       existingState: state({ kind: 'literal', value: 1.3 }),
       currentBaseTokens: [lineHeightToken],
-      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: 130 } } },
+      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: '130%' } } },
       modeId,
     })
     expect(conflicts).toEqual([])
@@ -145,11 +145,11 @@ describe('findConflicts', () => {
     const conflicts = findConflicts({
       existingState: state({ kind: 'literal', value: 1.3 }),
       currentBaseTokens: [lineHeightToken],
-      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: 150 } } },
+      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: '150%' } } },
       modeId,
     })
     expect(conflicts).toHaveLength(1)
-    expect(conflicts[0]).toMatchObject({ baselineValue: 130, githubValue: 140, figmaValue: 150 })
+    expect(conflicts[0]).toMatchObject({ baselineValue: '130%', githubValue: '140%', figmaValue: '150%' })
   })
 
   function colorToken(components, alpha = 1) {
