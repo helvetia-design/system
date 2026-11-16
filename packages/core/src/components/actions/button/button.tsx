@@ -512,7 +512,7 @@ export class Button implements DsComponentInterface {
               part="icon-right"
               class="icon-right"
               name={this.iconRight}
-              size={'sm'}
+              size={size}
               turn={this.iconTurn}
               inverted={this.isIconInverted}
             />

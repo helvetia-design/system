@@ -214,7 +214,7 @@ nested:
         size: 'follows button size: sm 14 (Icon/Size/SM), base 16 (Icon/Size/Base), lg 32 (Icon/Size/LG)'
       - codeProp: iconRight # → `show icon right` + INSTANCE_SWAP `icon right`
         acceptsBrandIcon: false
-        size: 'always 14 (Icon/Size/SM)'
+        size: 'follows button size, same as icon: sm 14 (Icon/Size/SM), base 16 (Icon/Size/Base), lg 32 (Icon/Size/LG)'
     colorSource:
       # both slots; button.style.scss:109/127/136/558 set --icon-color = the label text token.
       # ds-icon's `inverted` prop (button.tsx:487) has no visible effect: public --icon-color wins over --mod-icon-color.
