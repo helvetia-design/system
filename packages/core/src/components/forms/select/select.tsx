@@ -307,6 +307,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
 
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: MouseEvent) {
+    this.picker?.rememberDocumentClick(ev)
     if ((this.disabled || this.readonly) && ev.target === this.el) {
       stopEventBubbling(ev)
     }
