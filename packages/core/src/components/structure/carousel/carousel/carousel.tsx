@@ -524,6 +524,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
           'is-slide': isSlide,
           'is-tile': !isSlide,
           'has-overflow': this.canScrollLeft || this.canScrollRight,
+          'has-large-arrows': showLargeArrows,
           'can-scroll-left': this.canScrollLeft,
           'can-scroll-right': this.canScrollRight,
         }}
