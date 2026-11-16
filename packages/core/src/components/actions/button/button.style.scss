@@ -421,16 +421,19 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'link');
   :host(.is-square:not(.is-sm, .is-lg)) {
     @include shape-square();
     --icon-size: var(--ds-icon-size-md);
+    --icon-inner-size: var(--ds-icon-size-md);
   }
 
   :host(.is-square.is-sm) {
     @include shape-square(sm);
     --icon-size: var(--ds-icon-size-sm);
+    --icon-inner-size: var(--ds-icon-size-sm);
   }
 
   :host(.is-square.is-lg) {
     @include shape-square(lg);
     --icon-size: var(--ds-icon-size-md);
+    --icon-inner-size: var(--ds-icon-size-md);
   }
 }
 
@@ -438,18 +441,21 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'link');
   &.is-square:not(.is-sm, .is-small, .is-lg, .is-large) {
     @include shape-square();
     --icon-size: var(--ds-icon-size-md);
+    --icon-inner-size: var(--ds-icon-size-md);
   }
 
   &.is-square.is-sm,
   &.is-square.is-small {
     @include shape-square(sm);
     --icon-size: var(--ds-icon-size-sm);
+    --icon-inner-size: var(--ds-icon-size-sm);
   }
 
   &.is-square.is-lg,
   &.is-square.is-large {
     @include shape-square(lg);
     --icon-size: var(--ds-icon-size-md);
+    --icon-inner-size: var(--ds-icon-size-md);
   }
 }
 

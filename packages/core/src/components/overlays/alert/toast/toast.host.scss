@@ -108,6 +108,7 @@
   ds-icon:not([name]) {
     // Deliberate reuse: the default status icon uses ds-icon's lg size
     --icon-size: var(--ds-icon-size-lg);
+    --icon-inner-size: var(--ds-icon-size-lg);
   }
 
   #icon {
