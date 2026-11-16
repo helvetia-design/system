@@ -5,6 +5,7 @@
  */
 import { ZipArchive } from 'archiver'
 import { copy } from 'fs-extra'
+import { glob } from 'glob'
 import { execSync } from 'node:child_process'
 import { createWriteStream, readFileSync, writeFileSync } from 'node:fs'
 import { mkdir, open } from 'node:fs/promises'
@@ -31,7 +32,6 @@ console.log(`
 // ============================================================================
 async function indexMdxFiles() {
   console.log('🔍 Indexing MDX files for story mapping...')
-  const glob = (await import('fast-glob')).default
   // Use Storybook's own slugifier so the generated map always matches the real
   // story IDs it builds from each file's <Meta title>. Reimplementing the
   // slugification by hand (from the file path, or a hand-rolled sanitizer) drifts
@@ -45,6 +45,7 @@ async function indexMdxFiles() {
     const mdxFiles = await glob(['**/*.mdx'], {
       cwd: join(docsRoot, 'src'),
       ignore: ['node_modules/**', '.storybook/**'],
+      posix: true,
     })
 
     const storyPathMap = {}

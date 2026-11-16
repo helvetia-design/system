@@ -1,4 +1,4 @@
-import { getAppRoot, getRootElement } from '../helpers'
+import { getAppRoot, getRootElement, waitForDesignSystem } from '../helpers'
 
 const createDoc = (...tags: string[]) => {
   const elements = Object.fromEntries(tags.map(tag => [tag, { tag }]))
@@ -50,5 +50,18 @@ describe('getAppRoot', () => {
     const doc = createDoc('ds-app')
 
     expect(getAppRoot(doc)).toEqual({ tag: 'ds-app' })
+  })
+})
+
+describe('waitForDesignSystem', () => {
+  test('applies the config to ds-* descendants only', async () => {
+    const dsButton = { tagName: 'DS-BUTTON', configChanged: vi.fn() }
+    const other = { tagName: 'DIV', configChanged: vi.fn() }
+    const el = { children: [], querySelectorAll: () => [dsButton, other] }
+
+    await waitForDesignSystem(el, { animated: true } as any)
+
+    expect(dsButton.configChanged).toHaveBeenCalledWith({ animated: true })
+    expect(other.configChanged).not.toHaveBeenCalled()
   })
 })

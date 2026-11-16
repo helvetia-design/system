@@ -18,7 +18,6 @@ import {
   figmaShadowSubValuesFor,
   figmaTypographySubValuesFor,
   isDeviceEligibleResponsiveDimensionToken,
-  isPushableToken,
   isSyncableBorderToken,
   isSyncableResponsiveDimensionToken,
   isSyncableShadowToken,
@@ -93,7 +92,6 @@ function singleAliasTargetId(targetVariableId) {
 export function assignVariableIds(baseTokens, existingNameIndex = new Map(), existingResponsiveNameIndex = new Map()) {
   const idByPath = new Map()
   for (const token of baseTokens) {
-    if (!isPushableToken(token)) continue
     const key = pathKey(token.path)
 
     if (isSyncableShadowToken(token)) {
@@ -215,7 +213,7 @@ function isTempId(id) {
 export function committedVariableIds(baseTokens) {
   const ids = []
   for (const token of baseTokens) {
-    if (!isPushableToken(token) || !token.variableId) continue
+    if (!token.variableId) continue
     if (isCompositeVariableIdSet(token.variableId)) {
       ids.push(...Object.values(token.variableId).filter(Boolean))
     } else {
@@ -248,7 +246,6 @@ export function buildCreatePassPayload({
   const seenVariableIds = new Set()
 
   for (const token of baseTokens) {
-    if (!isPushableToken(token)) continue
     const key = pathKey(token.path)
     const variableId = idByPath.get(key)
 
@@ -370,8 +367,6 @@ export function buildCreatePassPayload({
   for (const [brandName, tokens] of Object.entries(brandTokensByName)) {
     const modeId = modeIdByBrand[brandName]
     for (const token of tokens) {
-      if (!isPushableToken(token)) continue
-
       // Resolved from its per-breakpoint mobile/tablet/desktop values regardless of what the
       // token's own top-level $value looks like — a responsive dimension token's $value can itself
       // be a reference (mirroring mobile) while still carrying per-breakpoint overrides, so this
@@ -481,8 +476,6 @@ export function buildAliasPassPayload({
   for (const [brandName, tokens] of Object.entries(brandTokensByName)) {
     const modeId = modeIdByBrand[brandName]
     for (const token of tokens) {
-      if (!isPushableToken(token)) continue
-
       // Handled separately from the rest of this loop (which keys off `token.value.kind ===
       // 'reference'`, never true for a responsive dimension token's own top-level $value — decision
       // 4 keeps it a literal mirroring mobile) — a responsive dimension token's own variableId is a
@@ -505,7 +498,6 @@ export function buildAliasPassPayload({
           // — a breakpoint referencing another composite (shadow/border/typography/responsive
           // dimension) token has no single id to alias against unless it's itself Device-eligible,
           // so it's left unsynced rather than miswritten.
-          if (!isPushableToken(target)) continue
           const targetVariableId = idByPath.get(pathKey(target.path))
           const aliasId = singleAliasTargetId(targetVariableId)
           if (!aliasId) continue
@@ -523,11 +515,6 @@ export function buildAliasPassPayload({
       const target = resolveAliasTarget(token, tokenIndex)
 
       if (isSyncableShadowToken(token)) {
-        // The target must itself be a syncable (single-layer) shadow token
-        // — if it isn't, it has no idByPath entry to alias against, so this
-        // reference is left unsynced too, same "not eligible" policy as the
-        // literal case.
-        if (!isPushableToken(target)) continue
         const variableId = idByPath.get(pathKey(token.path))
         const targetVariableId = idByPath.get(pathKey(target.path))
         for (const sub of SHADOW_SUB_PROPERTIES) {
@@ -541,9 +528,6 @@ export function buildAliasPassPayload({
       }
 
       if (isSyncableBorderToken(token)) {
-        // Same "target must itself be syncable" policy as shadow's — border has no unsyncable
-        // shape today, but a future brand-level exception should fail the same safe way.
-        if (!isPushableToken(target)) continue
         const variableId = idByPath.get(pathKey(token.path))
         const targetVariableId = idByPath.get(pathKey(target.path))
         for (const sub of BORDER_SUB_PROPERTIES) {
@@ -557,8 +541,6 @@ export function buildAliasPassPayload({
       }
 
       if (isSyncableTypographyToken(token)) {
-        // Same "target must itself be syncable" policy as shadow's/border's.
-        if (!isPushableToken(target)) continue
         const variableId = idByPath.get(pathKey(token.path))
         const targetVariableId = idByPath.get(pathKey(target.path))
         for (const sub of TYPOGRAPHY_SUB_PROPERTIES) {
@@ -625,7 +607,6 @@ export function buildDescriptionUpdatePayload({ baseTokens, idByPath, remoteVari
   }
 
   for (const token of baseTokens) {
-    if (!isPushableToken(token)) continue
     const key = pathKey(token.path)
     const variableId = idByPath.get(key)
     const description = token.description ?? ''
@@ -682,7 +663,6 @@ export function buildNameUpdatePayload({ baseTokens, idByPath, remoteVariablesBy
   }
 
   for (const token of baseTokens) {
-    if (!isPushableToken(token)) continue
     const key = pathKey(token.path)
     const variableId = idByPath.get(key)
 
@@ -750,6 +730,6 @@ export function resolveTempIds(idByPath, tempIdToRealId) {
  */
 export function collectNewlyCreatedIds(baseTokens, idByPath) {
   return baseTokens
-    .filter(token => isPushableToken(token) && !token.variableId)
+    .filter(token => !token.variableId)
     .map(token => ({ path: token.path, variableId: idByPath.get(pathKey(token.path)) }))
 }
