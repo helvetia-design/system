@@ -248,12 +248,6 @@ export function isSyncableShadowToken(token) {
   return token.type === 'shadow'
 }
 
-// Whether this token can have a Figma identity at all — every type otherwise handled here, plus
-// every shadow shape (isSyncableShadowToken is now unconditional for `shadow`).
-export function isPushableToken(token) {
-  return token.type !== 'shadow' || isSyncableShadowToken(token)
-}
-
 /**
  * `border` doesn't fit figmaValueFor's one-DTCG-value -> one-Figma-value shape either — Figma has
  * no border-object variable type, so a border token needs 3 separate Figma variables (color,

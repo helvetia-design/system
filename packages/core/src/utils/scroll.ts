@@ -1,30 +1,6 @@
 import { dsBrowser } from './browser'
 
 export class ScrollHandler {
-  static disableSmoothScrolling() {
-    this.setScrollBehavior('auto')
-  }
-
-  static enableSmoothScrolling() {
-    this.setScrollBehavior('smooth')
-  }
-
-  private static setScrollBehavior(behavior: 'auto' | 'smooth') {
-    if (dsBrowser.hasDocument) {
-      const doc = document
-      const body = document.body
-
-      body.style.scrollBehavior = behavior
-
-      const html = doc.firstChild?.nextSibling as HTMLElement
-      const styles = getComputedStyle(html)
-
-      if (styles.scrollBehavior === 'smooth') {
-        html.style.scrollBehavior = behavior
-      }
-    }
-  }
-
   // Shared across all instances so stacked overlays (drawer -> modal, etc.) lock/unlock once as a group.
   private static lockCount = 0
   private static x: number | undefined = undefined
