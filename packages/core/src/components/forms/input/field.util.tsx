@@ -68,9 +68,9 @@ export const Field: FunctionalComponent<FieldProps> = (props, children) => {
         {/* Input Control                            */}
         {/* ---------------------------------------- */}
         <div id="container" part="control">
-          <slot name="start" part="start"></slot>
+          <slot name="start" {...{ part: 'start' }}></slot>
           {children}
-          <slot name="end" part="end"></slot>
+          <slot name="end" {...{ part: 'end' }}></slot>
           {/* ---------------------------------------- */}
           {/* Loading Indicator                        */}
           {/* ---------------------------------------- */}
