@@ -2,6 +2,7 @@
   "enabledPlugins": {
     "andrej-karpathy-skills@karpathy-skills": true,
     "ponytail@ponytail": true,
-    "mattpocock-skills@mattpocock": true
+    "mattpocock-skills@mattpocock": true,
+    "claude-mem@thedotmack": true
   }
 }
