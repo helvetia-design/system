@@ -279,10 +279,13 @@ values**; clone a prototype and change only text and positions.
 **Special case — asset components** (open-ended content prop such as icon `name`, later brand
 icons): build the wrapper `COMPONENT_SET` + Instance Swap library per
 `conventions/content-selection-and-mitigations.md`, and show the wrapper set in the labeled `Sets`
-stack as usual. These components also get a separate "🖼️ \<Plural noun\> names" browsing section
-for the content axis, below `Component Sets` in the documentation frame. Its layout isn't defined
-in the template yet: on the first asset component, **stop and ask the user** how it should look
-before building it, then record the answer here.
+stack as usual. These components also get a "🖼️ \<Plural noun\> names" browsing section for the
+content axis. The template has no placeholder for it: insert a `Section` instance (`Flat`) last
+in the `Documentation` column, after Measurements, set its nested `Title` to `kind=names`, set
+`layoutSizingHorizontal = 'FILL'`, and change the `Title` instance's text to `🖼️ <Plural noun>
+names` (`🖼️ Icon names`). Never detach it. The slot's content isn't defined yet: on the first
+asset component, **stop and ask the user** how it should look before building it, then record the
+answer here.
 
 **Hard rules (check before asking for approval):** default variant in the top-left cell and first
 in layer order · `state` on the column axis · remaining options ordered per convention · every
@@ -347,7 +350,7 @@ transition: null }` (instant). Both triggers revert by themselves on mouse-leave
 
 ### Variations
 
-The last section of the `Documentation` column shows every `show <name>` layer turned on, so
+The second section of the `Documentation` column, right after Copy me, shows every `show <name>` layer turned on, so
 Phase 4 can check it against the visual test snapshots. Built from the mapping file's confirmed
 `variations:`, after the labeled sets and their text properties, booleans and reactions are final.
 

@@ -31,7 +31,7 @@ have produced, and closes with an explicit `Next:` pointer to the following file
    frame) from the `🗂️ Template / Category` Figma page and fill its header, then build the real
    Figma `COMPONENT_SET` inside that frame incrementally (the confirmed default variant first,
    then the rest as a labeled, fixed-grid set the user approves), then fill "🔀 Variations", the
-   last section of the left column (every `show <name>` layer turned on). Hard stop before Phase 4
+   second section of the left column, right after Copy me (every `show <name>` layer turned on). Hard stop before Phase 4
    until every variation has its visual test snapshot.
 4. [`PHASE-4-VALIDATE.md`](PHASE-4-VALIDATE.md) — read-only check of the built header, prop/state
    mapping, token bindings and set layout against the plan and template; writes
@@ -40,10 +40,10 @@ have produced, and closes with an explicit `Next:` pointer to the following file
    (max 3 iterations, then hard stop).
 6. [`PHASE-6-DOCUMENT-COPY-ME.md`](PHASE-6-DOCUMENT-COPY-ME.md) — build "👉 Copy me", the first
    section of the left column.
-7. [`PHASE-7-DOCUMENT-ANATOMY.md`](PHASE-7-DOCUMENT-ANATOMY.md) — build "🏗️ Anatomy", the second
-   section of the left column (the placeholder is deleted when the component has no `@part` tags).
-8. [`PHASE-8-DOCUMENT-MEASUREMENTS.md`](PHASE-8-DOCUMENT-MEASUREMENTS.md) — build "📏 Measurements", the third section of
-   the left column (above Variations): a drawing, a sizes table and, for content-driven components, a behavior
+7. [`PHASE-7-DOCUMENT-ANATOMY.md`](PHASE-7-DOCUMENT-ANATOMY.md) — build "📐 Anatomy", the
+   section after Variations (the placeholder is deleted when the component has no `@part` tags).
+8. [`PHASE-8-DOCUMENT-MEASUREMENTS.md`](PHASE-8-DOCUMENT-MEASUREMENTS.md) — build "📏 Measurements", the last section of
+   the left column: a drawing, a sizes table and, for content-driven components, a behavior
    card; this is the last phase.
 
 ### Graph

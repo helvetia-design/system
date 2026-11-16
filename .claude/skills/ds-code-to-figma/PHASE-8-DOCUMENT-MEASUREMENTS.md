@@ -2,8 +2,8 @@
 
 ## Objective
 
-Fill in the third section of the `Documentation` column: "📏 Measurements", above the Variations
-section Phase 3 already filled. It renders the measurements
+Fill in the last section of the `Documentation` column: "📏 Measurements", after Anatomy (only an
+asset component's Names section, inserted in Phase 3, follows it). It renders the measurements
 triage confirmed in Phase 1 step 6 — no new analysis happens here.
 
 Build this right after Anatomy (or right after Copy me, if the Anatomy placeholder was deleted). This
@@ -11,7 +11,7 @@ is the last phase of the skill.
 
 ## Inputs
 
-- "🏗️ Anatomy" (or "👉 Copy me", if the Anatomy placeholder was deleted), built and confirmed in
+- "📐 Anatomy" (or "👉 Copy me", if the Anatomy placeholder was deleted), built and confirmed in
   [`PHASE-7-DOCUMENT-ANATOMY.md`](PHASE-7-DOCUMENT-ANATOMY.md).
 - `<name>.figma.md`'s `measurements:` (`drawnOption`, `options`, `behavior`, `rows`) — the confirmed
   triage from Phase 1 step 6. **If `measurements:` still uses the old flat per-option list** (`base:` /
@@ -22,6 +22,8 @@ is the last phase of the skill.
 - `conventions/measurements.md` — kinds, colors, line styles, placement, section layout. The source of
   truth for how every row looks.
 - `conventions/document-sections.md` — `Section` / `Preview` mechanics and "Sizing".
+- `PHASE-3-BUILD.md`'s cloned frame — its `kind=measurements` placeholder holds the worked
+  example this phase edits (`drawn-spec`, `sizes-table`, `behavior`).
 - `conventions/build-mechanics.md` — especially "Color and paint".
 - `🧰 Annotations` page, node `2046:5` — the `Spec/*` annotation components.
 
@@ -65,19 +67,25 @@ tree explains it.
 
 ### 1. Structure
 
-Fill the `Section` placeholder whose `Title` is `kind=measurements` (`Flat`; 🛑 hard stop if missing) —
-don't create a new one, and never move it or append anything after the Variations section below it. Inside its slot, stack up to three nested `Default` `Preview`s, in the
-order from `conventions/measurements.md` → "Section layout": **Drawing**, **Sizes table**,
-**Behavior** (only when `measurements.behavior` exists).
+**Edit the template's worked example in place — clone, never build.** Fill the `Section`
+placeholder whose `Title` is `kind=measurements` (`Flat`) — don't create a new one, and never move
+it. Its slot already holds the three
+cards as nested `Default` `Preview`s, in the order from `conventions/measurements.md` → "Section
+layout":
 
-Every nested `Preview` gets `layoutSizingHorizontal = 'FILL'` after it's appended, and ends up
-`layoutSizingVertical = 'HUG'` (see "Sizing" in `conventions/document-sections.md`). Content you
-put into a `Preview` slot is an auto-layout frame that is `FILL` wide and `HUG` high — never a
-literal width: a frame wider than the slot gets centered and clips its left edge. The one fixed
-height is the drawing's `stage`, which is calculated (step 2). Each card has a
-short title text (`Drawing — base · secondary`, `Sizes`, `Behavior`) bound to
-`🔗 Alias/🔤 Text/Color/Primary` (`VariableID:137:288`), per `conventions/build-mechanics.md` →
-"Color and paint".
+| Card        | Content frame | Layer names touched                                                                                                                        |
+| ----------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Drawing     | `drawn-spec`  | `title`, `stage` (`Component`, hidden `caption` + example `Spec/*` markers)                                                                |
+| Sizes table | `sizes-table` | `title`, `table` › `header` (`number`, `Property`, one cell per option), `row-<n>` (`number` › `Spec/Marker`, property, cells), `footnote` |
+| Behavior    | `behavior`    | `title`, `columns` › `stretched` (`Component`, `label`)                                                                                    |
+
+🛑 **Hard stop** if the placeholder or any layer in this table is missing — list what's missing and
+ask the user to fix the template; never fall back to building the card. Sizing, fonts, colors
+(text fills bound to `🔗 Alias/🔤 Text/Color/Primary`), gaps and paddings all come from the clone;
+this skill writes no fill, font or spacing value here. Change only text, component swaps and
+properties, counts (clone a prototype, delete the unused ones) and the drawing's calculated
+positions and `stage` height. Delete the Behavior card's `Preview` when `measurements.behavior`
+doesn't exist.
 
 Use the default set's instances only, never an `…Inverted` set — an inverted split changes
 colors, not geometry, so its numbers would only repeat.
@@ -90,20 +98,29 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
 
 ### 2. Drawing
 
-1. A `stage` frame (no auto-layout, so markers can sit at calculated positions). Row 1: the
-   **main** instance — the default set's `drawnOption` variant in the `drawnColor` option (see
-   `conventions/measurements.md` → "Border visibility"), in the `drawnState` if set (else default
-   state; see "Shape visibility"), with the same content as Copy me — centered. Row 2: one **extra** instance per distinct `instance` value in `measurements.rows`
-   (`focus`: the `focus` state; `min-content`: shortest realistic label, e.g. `OK`), same
-   `drawnColor`, side by side with 120px between them, centered under the main instance, each with
-   a caption under it (`Focus`, `Min content`). The card title names the option and color
+1. **Clear the example.** Delete every `Spec/*` marker in `stage`; keep `Component` (the template's
+   example instance), the hidden `caption` prototype and `stage` itself (no auto-layout, so
+   markers sit at calculated positions; `FILL` wide, fixed height).
+2. **Main instance.** `swapComponent` the cloned `Component` to the default set's `drawnOption`
+   variant in the `drawnColor` option (see `conventions/measurements.md` → "Border visibility"),
+   in the `drawnState` if set (else default state; see "Shape visibility"), with the same content
+   as Copy me, centered; rename it after the set. Set the card `title` to the option and color
    (`Drawing — base · secondary`).
-   Leave enough room around each instance for its markers and resize the stage to fit everything,
-   so nothing is clipped.
-2. Number every shown row in `measurements.rows` order (`size → spacing → shape → type`): the Sizes table
+3. **Extra instances.** One per distinct `instance` value in `measurements.rows` (`focus`: the
+   `focus` state; `min-content`: shortest realistic label, e.g. `OK`): clone the main instance and
+   swap or set it, same `drawnColor`, side by side with 120px between them, centered under the
+   main instance. Each gets a caption under it (`Focus`, `Min content`): clone the hidden
+   `caption` prototype, make the clone visible, set its text and name it `caption-<instance>`.
+   Delete the prototype afterwards — also when there are no extra instances.
+4. **`stage` height.** Leave enough room around each instance for its markers and resize the
+   stage's height to fit everything (only the height — its width stays `FILL`), so nothing is
+   clipped.
+5. Number every shown row in `measurements.rows` order (`size → spacing → shape → type`): the Sizes table
    reads 1, 2, 3, … top to bottom, and every number appears exactly once on the drawing.
-3. Place each row's marker on its `instance`, per `conventions/measurements.md` → "Kinds and visual
-   vocabulary". Every marker gets `Value` = the value and `Number` = the row number:
+6. Place each row's marker on its `instance`, per `conventions/measurements.md` → "Kinds and visual
+   vocabulary": an instance of the `Spec/*` main component from step 0 (`createInstance()`, then
+   the variant via `setProperties`) — never a drawn shape, never a detached instance. Every marker
+   gets `Value` = the value and `Number` = the row number:
    - **width / height** → `Spec/Dimension` outside the instance (`side=top` for widths,
      `side=left` for heights), its ticks 4px from the instance (`side=top`: instance
      `y = top − 4 − 17`; `side=left`: `x = left − 4 − 24`), `style=dashed` and `Value`
@@ -122,7 +139,7 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
      `side=bottom` under it, a column gap (vertical layout) `side=right` beside it. Inset
      the hatch vertically by the border like the padding tint. Gap pills usually collide with the
      padding pills: use `label=callout` and resize the instance's height so its pill sits one pill
-     row below the padding pills (4px between the rows) — see step 5.
+     row below the padding pills (4px between the rows) — see step 8.
    - **icon / glyph size** → `Spec/Icon size` resized to the nested part's absolute bounds and
      placed exactly on it — it carries no text, so the icon stays visible through it — plus a
      `Spec/Dimension` (`side=top`, `kind=size`) above the instance with the part's width and the
@@ -148,9 +165,9 @@ width / 2`), `y = box bottom − 3.5` (2px padding + half the dot), height up to
      `<size> / <weight> / <line-height>` (`16 / 700 / 1.3`).
    - **hit area** → `Spec/Outline` around the hit area.
    - **context-dependent** rows draw the `drawnOption`'s Desktop value; the table carries all modes.
-4. Layer order on the stage: the instance, then every padding tint and gap hatch, then all
+7. Layer order on the stage: the instances, then every padding tint and gap hatch, then all
    other markers — a tint drawn later covers bubbles and labels.
-5. Leaders point away from the center; markers should not overlap each other or another
+8. Leaders point away from the center; markers should not overlap each other or another
    instance — resolve overlaps per `conventions/measurements.md` → "Overlaps". Sides follow
    the "Placement" table there: widths on top, heights on the left, horizontal padding and row
    gaps below, vertical padding and column gaps on the right, radius on a free corner (top-right
@@ -164,24 +181,26 @@ width / 2`), `y = box bottom − 3.5` (2px padding + half the dot), height up to
 
 ### 3. Sizes table
 
-An auto-layout frame (vertical, `FILL` wide, `HUG` high) of row frames (horizontal, `FILL` wide).
-Bind every text fill to `🔗 Alias/🔤 Text/Color/Primary`, and use the documentation text style the
-other cards use.
+Edit the cloned `table` in place; the `title` (`Sizes`) and `footnote` stay where they are. Load
+each text node's current fonts before setting `characters`.
 
-- **Header row**: empty number cell, `Property`, then one cell per entry in `measurements.options`, in
-  that order — the code default first, like the component set (`base · sm · lg`) — or the
-  component name when `options` is empty.
-- **One row per `rows` entry with `show` `drawn` or `table`**, in `rows` order: `Spec/Marker`
-  (number from step 2 + kind color),
-  the `property`, then one cell per option with the token's last two path segments and px
-  (`Size/Base · 48`). The full token name goes into the cell's text node name, so it's visible on
-  selection without widening the table.
-- **Same value for every option** → one cell spanning the option columns (a single `FILL` text).
-  When the token differs per option but the px doesn't (`Size/SM/Gap`, `Size/Base/Gap`, …), write
-  the shared part with `*` (`*/Gap · 8`).
+- **Header row** (`header`): keep `number` (empty) and `Property`. Clone the first option cell
+  once per entry in `measurements.options`, in that order — the code default first, like the
+  component set (`base · sm · lg`) — delete the unused ones, and set each cell's text and layer
+  name to the option. When `options` is empty, keep one cell with the component name.
+- **One row per `rows` entry with `show` `drawn` or `table`**, in `rows` order: clone `row-1` for
+  every row and delete the template's other rows, then rename them `row-1`, `row-2`, … Per row:
+  set `Spec/Marker`'s `kind` and `Number` (the number from Drawing step 5), the property text (and its
+  layer name), and one cell per option with the token's last two path segments and px
+  (`Size/Base · 48`). Clone or delete option cells so every row has as many as the header. The
+  full token name goes into the cell's layer name, so it's visible on selection without widening
+  the table.
+- **Same value for every option** → delete every option cell but the first; it is `FILL` and spans
+  the option columns (the template's `row-3`). When the token differs per option but the px
+  doesn't (`Size/SM/Gap`, `Size/Base/Gap`, …), write the shared part with `*` (`*/Gap · 8`).
 - **A row with no token** shows `no token` in place of the token (`no token · 2 + 3`).
-- Under the table, one footnote line with what the type cells abbreviate (font family, `size /
-weight / line-height`) and the unit (`Values in px.`).
+- `footnote`: set its text to what the type cells abbreviate (font family, `size / weight /
+line-height`) and the unit (`Values in px.`).
 - **Context-dependent** cells list each mode: `M 16 · T 16 · D 24`.
 - **Type** rows show size, then weight and line-height: `Size/Base · 16 / 700 / 1.3`.
 - Column widths come from the content: the number column is fixed (20), the property column is
@@ -191,18 +210,20 @@ weight / line-height`) and the unit (`Values in px.`).
 
 ### 4. Behavior
 
-Only when `measurements.behavior` exists. One **stretched** instance of the `drawnOption` variant with a
-label text under it (the min-content case lives in the drawing):
+Only when `measurements.behavior` exists; otherwise delete this card's `Preview`.
+Edit the cloned `stretched` in `columns`: one **stretched** instance of the `drawnOption` variant
+with a label text under it (the min-content case lives in the drawing):
 
-- 2–3× the default text. For `width: fill`, set the instance to `FILL` inside a frame that is wider
-  than its hug width. For `overflow: wrap`, set the instance's label text node to
-  `textAutoResize = 'HEIGHT'` and `layoutSizingHorizontal = 'FILL'`, then resize the instance to a
-  fixed width below its content width (`220`) and set its height back to `HUG` — without the label
-  changes the text is clipped instead of wrapped. For `overflow: truncate`, give it a fixed width
-  below its content width so the ellipsis shows (only when the Figma component's text node
-  supports truncation; otherwise show `wrap` content and note it in the label).
-- Label: `Hug ↔` / `Fill ↔` and `Truncates` / `Wraps`, from `measurements.behavior`. When a prop switches
-  the behavior, add it in brackets: `Hug ↔ (wide: Fill)`, `Wraps (no-wrap: Truncates)`.
+- `swapComponent` the cloned `Component` to the `drawnOption` variant, 2–3× the default text. For
+  `width: fill`, set the instance to `FILL` inside a frame that is wider than its hug width. For
+  `overflow: wrap`, set the instance's label text node to `textAutoResize = 'HEIGHT'` and
+  `layoutSizingHorizontal = 'FILL'`, then resize the instance to a fixed width below its content
+  width (`220`) and set its height back to `HUG` — without the label changes the text is clipped
+  instead of wrapped. For `overflow: truncate`, give it a fixed width below its content width so
+  the ellipsis shows (only when the Figma component's text node supports truncation; otherwise
+  show `wrap` content and note it in the label).
+- `label`: `Hug ↔` / `Fill ↔` and `Truncates` / `Wraps`, from `measurements.behavior`. When a prop
+  switches the behavior, add it in brackets: `Hug ↔ (wide: Fill)`, `Wraps (no-wrap: Truncates)`.
 
 ### 5. Confirm
 
@@ -225,6 +246,9 @@ into `<name>.figma.md`'s `measurements:` (`show`, `reason`), so a re-run produce
   every step of "Overlaps" is a line crossing a line only — never covering a pill or its number —
   and was mentioned to the user.
 - Every nested `Preview` is `FILL` wide and `HUG` high; nothing is clipped.
+- Every card comes from the cloned template placeholder; none of the template's example content
+  is left (example markers, rows, option cells, the `Component` placeholder instance, the hidden
+  `caption` prototype).
 - Measurements shows the default set's instances only, never an `…Inverted` set.
 - The section has been iterated on and confirmed with the user in Figma.
 
