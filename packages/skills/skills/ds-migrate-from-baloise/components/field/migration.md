@@ -61,7 +61,7 @@ Apply every rule in `shared/field.md` to each remaining `bal-field`. That file c
 
 ### Types
 
-`ds-form` and `ds-form-col` are CSS classes, so they have no event or element types. A handler typed `BalEvents.BalField*` or `BalFieldCustomEvent` has no target type, and neither has a ref typed `HTMLBalField*Element` or `HTMLBalFormGridElement` or `HTMLBalFormColElement`. Leave them in place and report them. The scan lists the `BalEvents.*` and `Bal*CustomEvent` types. It does not list `BalProps.*` or `HTMLBal*Element`, so search for them yourself in each file with a finding.
+`ds-form` and `ds-form-col` are CSS classes, so they have no event or element types. A handler typed `BalEvents.BalField*` or `BalFieldCustomEvent` has no target type, and neither has a ref typed `HTMLBalField*Element` or `HTMLBalFormGridElement` or `HTMLBalFormColElement`. Leave them in place and report them. The scan lists the `BalEvents.*` and `Bal*CustomEvent` types. It lists the `HTMLBal*Element` types too. It does not list `BalProps.*`, so search for them yourself in each file with a finding.
 
 ## 4. Report
 

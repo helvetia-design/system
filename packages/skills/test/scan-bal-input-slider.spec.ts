@@ -229,7 +229,7 @@ describe('scanBalInputSlider', () => {
     )
 
     expect(scanBalInputSlider(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -239,6 +239,7 @@ describe('scanBalInputSlider', () => {
             { line: 6, snippet: 'detail?: BalEvents.BalInputSliderChangeDetail' },
             { line: 7, snippet: 'both(a: BalEvents.BalInputSliderBlur, b: BalInputSliderCustomEvent<number>) {}' },
             { line: 7, snippet: 'both(a: BalEvents.BalInputSliderBlur, b: BalInputSliderCustomEvent<number>) {}' },
+            { line: 9, snippet: 'el?: HTMLBalInputSliderElement' },
           ],
         },
       ],

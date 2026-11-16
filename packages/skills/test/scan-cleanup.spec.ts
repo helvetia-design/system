@@ -47,6 +47,21 @@ describe('scanCleanup', () => {
     })
   })
 
+  it('refuses while an HTMLBal*Element type is the only legacy reference left', () => {
+    const root = createScratchDir()
+    writeManifest(root, { dependencies: { '@baloise/ds-angular': '19.0.0' } })
+    write(
+      root,
+      'src/field.directive.ts',
+      'export class FieldDirective {\n  constructor(private el: ElementRef<HTMLBalInputElement>) {}\n}\n',
+    )
+
+    expect(scanCleanup(root)).toEqual({
+      status: 'incomplete',
+      outstanding: { suggested: [{ name: 'input', total: 1 }], notYet: [], types: [], hidden: [] },
+    })
+  })
+
   it('refuses while a legacy type namespace is still imported', () => {
     const root = createScratchDir()
     writeManifest(root, { dependencies: { '@baloise/ds-angular': '19.0.0' } })

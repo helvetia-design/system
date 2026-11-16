@@ -6,7 +6,7 @@ Both legacy tags are migrated together, not separately. `bal-segment-item` finds
 
 Apply `shared/field.md` in the Rewrite step to every migrated `ds-segment` that sits inside a `bal-field`, in the same pass. It moves the label, description and message of the wrapper onto the control and removes the wrapper tags. A `bal-field` around a control that is still a legacy `bal-*` tag stays unchanged. `components/field/migration.md` migrates `bal-form-grid`, `bal-form-col` and every `bal-field` that is left.
 
-The scan also lists `BalSegmentBundle` and the `BalEvents.BalSegment*` and `BalSegment*CustomEvent` types. It does not match the ambient `HTMLBalSegmentElement`, `HTMLBalSegmentItemElement` or `BalProps.BalSegment*` types. Search for them yourself in each file with a finding. `SKILL.md` "Legacy types and bundles" says how to rewrite all of them.
+The scan also lists `BalSegmentBundle` and the `BalEvents.BalSegment*` and `BalSegment*CustomEvent` types. It lists the `HTMLBalSegmentElement` and `HTMLBalSegmentItemElement` types too. It does not match `BalProps.BalSegment*`. Search for them yourself in each file with a finding. `SKILL.md` "Legacy types and bundles" says how to rewrite all of them.
 
 ## 1. Scan
 

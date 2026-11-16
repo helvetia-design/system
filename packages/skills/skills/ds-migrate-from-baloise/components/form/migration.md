@@ -16,7 +16,7 @@ node <this-skill-directory>/scripts/scan-bal-form.mjs <project-root>
 
 The script prints one JSON object. `total` is the number of findings. `files` groups them by path. Each finding has `line` and `snippet`.
 
-The scan finds the tag and the `BalForm` binding. It does not list `BalFormBundle`, which is a multi-family bundle and stays. It does not find the ambient `HTMLBalFormElement` type or calls of `scrollToFirstInvalidField()`. Search for both yourself in each file with a finding and in the same-basename `.ts` beside every `.html` finding.
+The scan finds the tag and the `BalForm` binding. It does not list `BalFormBundle`, which is a multi-family bundle and stays. It lists the `HTMLBalFormElement` type too. It does not find calls of `scrollToFirstInvalidField()`. Search for them yourself in each file with a finding and in the same-basename `.ts` beside every `.html` finding.
 
 Show that list to the user grouped by file (path, line, snippet) and end with the total count.
 

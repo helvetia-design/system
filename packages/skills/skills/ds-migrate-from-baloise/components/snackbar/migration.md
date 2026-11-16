@@ -181,7 +181,7 @@ Needs your attention when found:
 9. Every `create` that now returns an id.
 10. Every dropped `icon` on `create`. The icon now comes from `color`.
 11. Every dropped `setQueue`. There is no queue-limit API. Also name every method left empty, flagged "now does nothing", with its callers.
-12. Every ambient type reference `BalProps.BalSnackbar*`, `BalEvents.BalSnackbar*` and `HTMLBalSnackbarElement`. The scan cannot see them. Grep for them and rename by hand. The scan does list `Components.BalSnackbar`, because it matches the bare `BalSnackbar` symbol. Treat it as a type reference too.
+12. Every ambient type reference `BalProps.BalSnackbar*` and `BalEvents.BalSnackbar*`. The scan cannot see them. Grep for them and rename by hand. It does list `HTMLBalSnackbarElement`. The scan does list `Components.BalSnackbar`, because it matches the bare `BalSnackbar` symbol. Treat it as a type reference too.
 13. One-time note: the role changed from `alertdialog` to `status`.
 14. Every legacy `bal-snackbar__*` class and `data-testid="bal-snackbar-close"` and `"bal-snackbar-action"` selector. They no longer match, because `ds-snackbar` uses shadow DOM.
 15. Every `create` that got `heading: ''`.

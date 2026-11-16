@@ -228,7 +228,7 @@ describe('scanBalNumberInput', () => {
     )
 
     expect(scanBalNumberInput(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -238,6 +238,7 @@ describe('scanBalNumberInput', () => {
             { line: 6, snippet: 'detail?: BalEvents.BalNumberInputChangeDetail' },
             { line: 7, snippet: 'both(a: BalEvents.BalNumberInputBlur, b: BalNumberInputCustomEvent<number>) {}' },
             { line: 7, snippet: 'both(a: BalEvents.BalNumberInputBlur, b: BalNumberInputCustomEvent<number>) {}' },
+            { line: 9, snippet: 'el?: HTMLBalNumberInputElement' },
           ],
         },
       ],

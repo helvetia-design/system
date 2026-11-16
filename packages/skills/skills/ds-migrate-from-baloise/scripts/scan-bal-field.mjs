@@ -2,7 +2,7 @@
 import { realpathSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { lineAt, lineText, readTag, scanSourceFiles, toSnippet } from './source-scan.mjs'
+import { lineAt, lineText, readTag, scanSourceFiles, toSnippet, unwrapElementTypes } from './source-scan.mjs'
 
 const USAGE_RE =
   /<\/?bal-(?:field(?:-(?:label|control|message|hint))?|form-(?:grid|col)|ng-error)(?![\w-])|<\/?Bal(?:Field(?:Label|Control|Message|Hint)?|Form(?:Grid|Col))\b|\bBalEvents\.Bal(?:Field|FormGrid|FormCol)[A-Z]\w*|\bBal(?:Field(?:Label|Control|Message|Hint)?|Form(?:Grid|Col))(?:CustomEvent)?\b|\bBal(?:Field|FormGrid)Bundle\b|\bBalNgError\w*|\binvalidateOn(?=\s*:)/g
@@ -42,8 +42,9 @@ function group(found) {
 
 function collect(file, text, masked, found) {
   USAGE_RE.lastIndex = 0
+  const usage = unwrapElementTypes(masked)
   let match
-  while ((match = USAGE_RE.exec(masked)) !== null) {
+  while ((match = USAGE_RE.exec(usage)) !== null) {
     const index = match.index
     const raw = match[0].startsWith('<') ? readTag(text, index) : lineText(text, index)
     found.push({ file, index, line: lineAt(text, index), snippet: toSnippet(raw) })
