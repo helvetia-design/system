@@ -319,6 +319,8 @@ describe('scanBalButton', () => {
     const root = createScratchDir()
     for (const dir of SKIP_DIRS) {
       write(root, join(dir, 'ignored.html'), '<bal-button></bal-button>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, join('src', dir, 'nested.tsx'), '<BalButton />\n')
     }
 

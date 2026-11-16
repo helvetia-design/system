@@ -586,6 +586,17 @@ describe('scanCleanup', () => {
     })
   })
 
+  it('reads a nested source folder named like build output and refuses while it still has a bal-* tag', () => {
+    const root = createScratchDir()
+    writeManifest(root, { dependencies: { '@baloise/ds-angular': '19.0.0' } })
+    write(root, 'src/app/coverage/coverage.component.html', '<bal-button>Go</bal-button>\n')
+
+    expect(scanCleanup(root)).toEqual({
+      status: 'incomplete',
+      outstanding: { suggested: [{ name: 'button', total: 1 }], notYet: [], types: [], hidden: [] },
+    })
+  })
+
   it('classifies YAML lines and treats # lines as commented', () => {
     const root = createScratchDir()
     writeManifest(root, { dependencies: { '@baloise/ds-fonts': '19.0.0', '@baloise/ds-core': '19.0.0' } })

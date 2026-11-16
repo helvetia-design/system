@@ -80,6 +80,38 @@ describe('scanSourceFiles with paths', () => {
 
     expect(scanFiles(root, ['.'])).toEqual({ files: ['src/a.ts'], unmatched: [] })
   })
+
+  it('skips a build-output-named folder at the scan root even with no package.json there', () => {
+    const root = createScratchDir()
+    write(root, 'dist/bundle.html', '')
+    write(root, 'src/a.html', '')
+
+    expect(scanFiles(root, ['dist', 'src'])).toEqual({ files: ['src/a.html'], unmatched: ['dist'] })
+  })
+
+  it('reads a nested folder named like build output that sits beside no package.json', () => {
+    const root = createScratchDir()
+    write(root, 'package.json', '{}')
+    write(root, 'src/app/coverage/coverage.component.html', '')
+    write(root, 'dist/bundle.html', '')
+
+    expect(scanFiles(root, ['src/app/coverage', 'dist'])).toEqual({
+      files: ['src/app/coverage/coverage.component.html'],
+      unmatched: ['dist'],
+    })
+  })
+
+  it('skips a build-output-named folder nested beside its own package.json', () => {
+    const root = createScratchDir()
+    write(root, 'packages/widget/package.json', '{}')
+    write(root, 'packages/widget/dist/bundle.html', '')
+    write(root, 'packages/widget/src/a.html', '')
+
+    expect(scanFiles(root, ['packages/widget'])).toEqual({
+      files: ['packages/widget/src/a.html'],
+      unmatched: [],
+    })
+  })
 })
 
 describe.each(SCANNERS)('scan-bal-%s with paths', slug => {
