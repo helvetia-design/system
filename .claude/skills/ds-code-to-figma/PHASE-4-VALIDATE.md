@@ -134,7 +134,7 @@ Labels`, set, `Grid`). Below the set, the set's fill covers every divider.
      `Alias/Surface/Primary`, per `conventions/page-structure.md`). A light or missing background is a
      `fail`.
      e. **Variations structure** (`PHASE-3-BUILD.md` → "Variations"): the `kind=variations`
-     `Section` is the last in the `Documentation` column, with one `Preview` per covered set (none
+     `Section` comes right after the `kind=copy-me` section in the `Documentation` column, with one `Preview` per covered set (none
      for an `…Inverted` set) and one instance per expected variation. Each instance's
      `componentProperties` match its caption (booleans and dependent-axis options) and everything
      else stays at the default variant. A `width` / `height` override on a `HUG` instance is not a

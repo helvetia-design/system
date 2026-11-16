@@ -117,6 +117,9 @@ batch and grouping sign-off happen once for the whole family; Phases 6–8 run f
 - 🛑 **Annotation component missing** (step 0): a `Spec/*` component or variant from the table in
   `PHASE-8-DOCUMENT-MEASUREMENTS.md` isn't on `🧰 Annotations` — list what's missing and ask the user to
   add it; never draw a one-off marker by hand.
+- 🛑 **Template layer missing** (step 1): the `kind=measurements` placeholder or a layer from its
+  layer-name table (`drawn-spec`, `sizes-table`, `behavior` and their children) is missing — list
+  what's missing and ask the user to fix the template; never build the card.
 - 🛑 **Old `measurements:` format**: the mapping file still has the flat per-option list — re-run Phase 1
   step 6 (measurements triage) first.
 - 🟡 **Iteration before moving on**: confirm Measurements with the user before finishing the skill.

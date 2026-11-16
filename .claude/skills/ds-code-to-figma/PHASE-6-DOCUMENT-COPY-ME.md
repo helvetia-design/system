@@ -28,8 +28,8 @@ Build this right after [`PHASE-4-VALIDATE.md`](PHASE-4-VALIDATE.md) returns `pas
 
 **Fill the `Section` placeholder whose `Title` is `kind=copy-me` (`Default` variant) in the cloned frame's `body` ›
 `Documentation` column** — don't create a new `Section`. It is the first one in the column; hard stop if no `kind=copy-me` placeholder exists
-(see `conventions/document-sections.md`). The Variations section at the bottom is already filled
-(Phase 3): don't move it or append anything after it. Insert one **instance** of the default variant **directly into the `Preview`'s slot** — no further nesting — the single
+(see `conventions/document-sections.md`). The Variations section right below it is already filled
+(Phase 3): don't move it. Insert one **instance** of the default variant **directly into the `Preview`'s slot** — no further nesting — the single
 "drag this into your design" example. Use a Figma `INSTANCE` (`variant.createInstance()`) of the
 finished component-set variant — never the variant node itself. Override nothing: every property,
 `show <name>` booleans and text properties included (they show their sentence-case defaults), keeps the set's default, so Copy me shows exactly what the

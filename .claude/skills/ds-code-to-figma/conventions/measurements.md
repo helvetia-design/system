@@ -166,7 +166,7 @@ count, not just pills. To resolve an overlap, try in order:
 1. Shift the pill ("Dimension pill placement" above).
 2. Move the marker to another side or corner (a pill-shaped radius ring covers a whole end, so
    put it on the end no leader leaves from).
-3. Lengthen the leader or enlarge the stage.
+3. Lengthen the leader or make the stage taller (its width is `FILL`).
 
 If an overlap remains, keep it minimal: a line may cross another line, but nothing may cover a
 pill or its number. Mention the remaining overlap to the user when confirming the section.

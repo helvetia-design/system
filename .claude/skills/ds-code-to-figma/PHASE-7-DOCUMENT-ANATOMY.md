@@ -2,7 +2,7 @@
 
 ## Objective
 
-Fill in the second section of the `Documentation` column: "🏗️ Anatomy". When the
+Fill in the Anatomy section of the `Documentation` column, after Variations: "📐 Anatomy". When the
 component's `<name>.figma.md` has no `anatomy:` list (no `@part` tags found in Phase 1), **delete
 the cloned frame's Anatomy `Section` placeholder** (the one with `Title` `kind=anatomy` in
 `body` › `Documentation`) so no empty Anatomy frame is left behind, then go straight to
@@ -74,12 +74,12 @@ the `Anatomy/Legend item` component is missing.
    `Part`, `Description` (look the keys up by prefix; they carry a `#<id>` suffix). Never detach
    or restyle an instance. Name each instance `<letter> · <part>`.
 
-The `kind=anatomy` placeholder already sits between Copy me and Measurements in the cloned frame
-(Variations, filled in Phase 3, is last), so nothing is appended or moved. Iterate on it with the user in Figma before moving on.
+The `kind=anatomy` placeholder already sits between Variations (filled in Phase 3; Copy me when
+Phase 3 deleted it) and Measurements in the cloned frame, so nothing is appended or moved. Iterate on it with the user in Figma before moving on.
 
 ## Output
 
-- The cloned frame's `kind=anatomy` `Section` placeholder filled as "🏗️ Anatomy" — or, when the component
+- The cloned frame's `kind=anatomy` `Section` placeholder filled as "📐 Anatomy" — or, when the component
   has no `anatomy:` list, that placeholder deleted (no Anatomy frame at all).
 
 ## Completion Criteria
