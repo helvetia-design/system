@@ -126,7 +126,7 @@ export class Button implements DsComponentInterface {
    */
   @Prop()
   @Type('string')
-  readonly download: string = ''
+  readonly download?: string
 
   /**
    * If `true` adds a box shadow to improve readability on image background
