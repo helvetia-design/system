@@ -66,7 +66,7 @@ The **Components** step offers three modes for identifying which components to m
 
 - **Manual** — pick one migration and run it everywhere.
 - **Detect** — suggests what it finds in use, with counts, plus a `not yet` list of what it cannot cover.
-- **Scope** — every `bal-*` component in the files or folders you name. Suits most migrations: components nest, and a migrated parent around an unmigrated child breaks quietly, so a batch migrates them together and orders parents before leaves.
+- **Scope** — every `bal-*` component in the files or folders you name. Suits most migrations: components nest, and a migrated container around an unmigrated child breaks quietly, so a batch migrates them together and takes the containers first.
 
 Whichever mode you pick, the run has four phases:
 
@@ -80,8 +80,17 @@ Whichever mode you pick, the run has four phases:
 </video>
 
 <p style={{ marginTop: '0.5rem', marginBottom: '2rem', fontSize: '0.875rem', opacity: 0.7 }}>
-  One component end to end: <strong>Detect</strong> suggests what is in use, <code>text</code> is
-  picked, the offer to migrate the rest as a batch is declined, and the run finishes.
+  One component with <strong>Detect</strong>: <code>text</code> is picked, and the offer to migrate
+  the rest as a batch is declined.
+</p>
+
+<video controls preload="metadata" playsInline width="100%" style={{ borderRadius: '8px' }}>
+  <source src="/assets/videos/scope_batch_migration_edited.mp4" type="video/mp4" />
+</video>
+
+<p style={{ marginTop: '0.5rem', marginBottom: '2rem', fontSize: '0.875rem', opacity: 0.7 }}>
+  A whole folder with <strong>Scope</strong>: every <code>bal-*</code> component in it migrated as
+  one batch, containers before the components inside them.
 </p>
 
 ## The report
