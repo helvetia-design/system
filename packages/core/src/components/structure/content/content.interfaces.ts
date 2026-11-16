@@ -1,4 +1,4 @@
-export const CONTENT_DIRECTIONS = ['column', 'row'] as const
+export const CONTENT_DIRECTIONS = ['column', 'row', 'column-reverse', 'row-reverse'] as const
 export const CONTENT_SPACES = ['none', '3xs', '2xs', 'xs', 'sm', 'base'] as const
 export const CONTENT_ALIGNMENTS = ['start', 'center', 'end'] as const
 export const CONTENT_TEXT_ALIGNMENTS = ['left', 'center', 'right'] as const
