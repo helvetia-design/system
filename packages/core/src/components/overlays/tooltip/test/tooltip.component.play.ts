@@ -62,4 +62,53 @@ test.describe('component', () => {
     await page.mouse.move(128, 128)
     await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'true')
   })
+
+  test('should stop the previous position tracker before starting a new one on hover then focus', async ({ page }) => {
+    const trigger = page.locator('#my-trigger')
+
+    await page.evaluate(() => {
+      ;(window as any).__listenerDelta = 0
+      const originalAdd = window.addEventListener.bind(window)
+      const originalRemove = window.removeEventListener.bind(window)
+      window.addEventListener = ((...args: any[]) => {
+        ;(window as any).__listenerDelta++
+        return (originalAdd as any)(...args)
+      }) as any
+      window.removeEventListener = ((...args: any[]) => {
+        ;(window as any).__listenerDelta--
+        return (originalRemove as any)(...args)
+      }) as any
+    })
+
+    // Simulates hovering the trigger, which starts a position tracker.
+    await trigger.hover()
+    const deltaAfterHover = await page.evaluate(() => (window as any).__listenerDelta)
+    expect(deltaAfterHover).toBeGreaterThan(0)
+
+    // Simulates focusing the still-hovered trigger, which starts a second tracker.
+    await trigger.focus()
+    const deltaAfterFocus = await page.evaluate(() => (window as any).__listenerDelta)
+
+    // The tracker started on hover must be stopped before the one from focus starts,
+    // so the net number of listeners left on window stays the same.
+    expect(deltaAfterFocus).toBe(deltaAfterHover)
+  })
+
+  test('should remove its trigger listeners on disconnect', async ({ page }) => {
+    const removedListenerTypes = await page.evaluate(() => {
+      const trigger = document.querySelector('#my-trigger') as HTMLElement
+      const calls: string[] = []
+      const originalRemoveEventListener = trigger.removeEventListener.bind(trigger)
+      trigger.removeEventListener = (type: string, ...rest: any[]) => {
+        calls.push(type)
+        return (originalRemoveEventListener as any)(type, ...rest)
+      }
+
+      document.querySelector('ds-tooltip')?.remove()
+
+      return calls
+    })
+
+    expect(removedListenerTypes.sort()).toEqual(['blur', 'focus', 'mouseenter', 'mouseleave'])
+  })
 })
