@@ -161,3 +161,22 @@ test.describe('navigation variant', () => {
     await tabs.assertTabNotSelected('second')
   })
 })
+
+test.describe('without ResizeObserver', () => {
+  test('renders without throwing', async ({ page }) => {
+    await page.addInitScript(() => {
+      delete (window as any).ResizeObserver
+    })
+    const errors: string[] = []
+    page.on('pageerror', error => errors.push(error.message))
+    page.on('console', message => {
+      if (message.type() === 'error') errors.push(message.text())
+    })
+
+    await page.mount(`<ds-tabs>${PANELS}</ds-tabs>`)
+    const tabs = new DsTabs(page.locator('ds-tabs'))
+
+    await tabs.assertTabSelected('a')
+    expect(errors).toEqual([])
+  })
+})
