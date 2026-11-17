@@ -111,7 +111,12 @@ the measurements triage (6) are presented **once for the whole family** (`conven
    here:** record them as `nested:` entries with `subComponent: true` and `relation`, key `null`
    until Phase 3 builds them — never a hard stop. Also record each code `@slot` that takes
    sub-component instances under `slots:` (default fill proposed in Phase 2;
-   `conventions/families.md` §4). Mark every nested `ds-icon` /
+   `conventions/families.md` §4), and each **open slot** — a declared `@slot` that takes any
+   content and renders inside a part (`ds-input`'s `start` / `end` in `control`): its part, its
+   position among the part's children and the content the JSDoc, stories and visual tests put in
+   it (icon, tag, button), for the preferred instances. A text-only slot is a text property
+   instead (above); `label` / `description` / `invalid-text` slots that only override a text prop
+   are covered by that text property. Mark every nested `ds-icon` /
    `ds-brand-icon` as an **icon slot** (see `conventions/content-selection-and-mitigations.md` →
    "Icon slots in a parent component"): record the code prop driving it, its color source per variant and state (as `colorSource`,
    `examples/mapping-file-format.md`), whether `ds-brand-icon`

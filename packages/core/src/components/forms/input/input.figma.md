@@ -41,10 +41,9 @@ anatomy:
 # The component's own class JSDoc previously declared orphaned `@part prefix`/`@part suffix` tags
 # (no matching part="..." anywhere in the render tree) and omitted inner/label/control/description
 # (which do render). Fixed directly in input.tsx's JSDoc as part of this phase (user-approved).
-# `<slot name="start">`/`<slot name="end">` in field.util.tsx render real content (see props: suffix
-# usage below, and the visual.html "Suffix"/"Slots" sections) but carry no `part="..."` attribute
-# and aren't declared as `@slot` tags on ds-input either — pre-existing gap, out of this skill's
-# @part-only cross-check scope; flagging here, not fixing.
+# `<slot name="start">`/`<slot name="end">` in field.util.tsx sit inside `control` (C). Declared as
+# `@slot start` / `@slot end` on ds-input since 12.11.2026 (#215) — modeled as open slots under
+# `slots:` below, not as parts.
 
 props:
   - name: value
@@ -302,10 +301,47 @@ variations: # only show booleans that default to false; show label defaults to t
             snapshot: input-basic,
             nodeId: 'I6013:685;2192:7515;2192:5066;6013:688;2192:7499;6013:726',
           } # "Label 2" case: placeholder + description
+        - {
+            caption: 'show start',
+            props: { show start: true },
+            snapshot: input-suffix, # 2nd case: tag in start (Figma: Icon)
+            nodeId: 'I6013:685;2192:7515;2192:5066;6013:688;2192:7499;6103:1288',
+          } # slot filled with an Icon instance
+        - {
+            caption: 'show end',
+            props: { show end: true },
+            snapshot: input-suffix, # 3rd case: button in end (Figma: Icon)
+            nodeId: 'I6013:685;2192:7515;2192:5066;6013:688;2192:7499;6103:1310',
+          }
+        - {
+            caption: 'all on',
+            props: { show description: true, show start: true, show end: true },
+            snapshot: input-slots, # start + end tags + description slot
+            nodeId: 'I6013:685;2192:7515;2192:5066;6013:688;2192:7499;6103:1330',
+          }
+slots: # open slots (16.11.2026) — any content; the docs' "Suffix" / "Slots" stories put a tag or a button there, a UX designer confirmed icons as the main use
+  - codeSlot: start
+    figmaSlot: start
+    part: control
+    position: first # before the value / placeholder text
+    content: open
+    preferred: [Icon, Button] # Icon 6bc4d6dfbe3e8e31328a08c7a259cdd8469140f5, Button 8956ebb803a4c6fe3749f84119915335d0d43ade; no Tag set in Figma yet
+    defaultFill: empty
+    figmaPropertyKey: 'start#6102:0'
+    showPropertyKey: 'show start#6102:209'
+  - codeSlot: end
+    figmaSlot: end
+    part: control
+    position: after placeholder # after the value / placeholder text, before the loading spinner
+    content: open
+    preferred: [Icon, Button]
+    defaultFill: empty
+    figmaPropertyKey: 'end#6102:418'
+    showPropertyKey: 'show end#6102:627'
 nested:
   - childTag: ds-spinner
     childMappingFile: ../../indicators/spinner/spinner.figma.md
-    usage: 'shown in `control` in place of the end slot when loading=true (field.util.tsx)'
+    usage: 'shown in `control` after the end slot when loading=true (field.util.tsx renders both — the `loading` JSDoc says it replaces the end slot content, but nothing hides it)'
     fixedProps: { variation: circle, size: sm, color: 'primary (or inverted when disabled)' }
     figmaComponentKey:
       primary: 934b454440ea10dbf007b22f710e8aac8f0ce0a5 # spinner.figma.md figmaSets.circlePrimary (SpinnerCircle)
@@ -668,18 +704,19 @@ Default variant (top-left cell): `required=true, color=primary, state=default`.
 - **`suffix` prop**: appends into the `input` part's own displayed text after blur
   (`getFormattedValue()`), not a separate part — consistent with the prefix/suffix JSDoc tags
   having no real DOM counterpart.
-- **`<slot name="start">`/`<slot name="end">`** in `field.util.tsx` render real content (see the
-  "Suffix"/"Slots" sections of `test/input.visual.html`) but have no `part="..."` attribute and
-  aren't declared as `@slot` tags on `ds-input` either. Out of this skill's `@part`-only
-  cross-check scope — flagged here for awareness, not fixed.
+- **`start` / `end` slots** (16.11.2026): declared as `@slot` since 12.11.2026 (#215) and built as
+  open native Figma slots inside `control` — see `slots:`. The `suffix` prop is unrelated (text
+  appended to the value).
+- **`loading` vs. the end slot (code finding, 16.11.2026):** the `loading` JSDoc says the spinner
+  "replaces the end slot content", but `field.util.tsx` renders the end slot and the spinner, and
+  no style hides the slot. Figma follows what code renders (both); fix either the JSDoc or the code.
 - **`type` prop**: its 16 options mostly switch _native_ browser-rendered sub-widgets (date
   picker, color swatch, range slider, file picker button) that a static Figma component can't
-  reproduce. Treated as non-visual; Phase 2 should decide whether any option needs a distinct
-  Figma representation (likely none).
+  reproduce. Treated as non-visual — decided in Phase 2 (`figmaPropertyType: none`).
 - **`color` vs. `invalid`**: `color="danger"` and `invalid=true` both toggle the same `.is-danger`
-  CSS class — the two props produce an identical visual. How Phase 2 combines them into Figma
-  variant axes (merge vs. keep separate with a documented precedence) is an open decision for that
-  phase, not resolved here.
+  CSS class — the two props produce an identical visual. Decided: Phase 2 first folded `invalid`
+  into `color`; the component-state migration (11.11.2026) made it its own `invalid` variant again
+  (see `componentStates:`).
 - **Hardcoded literals without token bindings** (`min-height: 3rem`, `padding-inline: 0.5rem`,
   `gap: 0.25rem` ×2) were resolved with the user during this phase — see `tokens:` entries with
   `cssVar: null` above for the decisions and rationale. The missing dedicated Form/Control

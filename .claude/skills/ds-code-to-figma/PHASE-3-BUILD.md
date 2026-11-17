@@ -323,6 +323,31 @@ Every `figmaPropertyType: text` prop from the mapping file becomes a `TEXT` comp
    `instance.setProperties({ [key]: 'Tab 1' })`, never by editing `characters`.
 6. Generated text stays a plain text node with no reference.
 
+### Slots
+
+Every `slots:` entry becomes one native `SLOT` component property on the set, shared by every
+variant (mechanics: `conventions/build-mechanics.md` → "Slots").
+
+1. After `combineAsVariants()`, add it on the set with
+   `set.addComponentProperty('<figmaSlot>', 'SLOT', '')`. Store the returned key. Set the preferred instances with
+   `set.editComponentProperty(key, { preferredValues: [{ type: 'COMPONENT_SET', key }] })`, in
+   the mapping file's order.
+2. **Open slot only:** add a `show <figmaSlot>` boolean on the set, default `false`
+   (`set.addComponentProperty('show start', 'BOOLEAN', false)`). An empty Figma slot keeps a size
+   and takes the part's gap; an empty code slot takes no space, so the slot is hidden until a
+   designer turns it on.
+3. On **every** variant, add an empty frame named after the slot at its code position inside the
+   part (`start` first in `control`, `end` after the value / placeholder text, before a loading
+   spinner): horizontal auto-layout, centered, no fill, `resize` to the main content's size
+   (16 × 16 for an icon), then `HUG` both ways, so a shown but empty slot keeps that size. Bind it:
+   `frame.componentPropertyReferences = { slotContentId: key, visible: showKey }` (`visible` only
+   for an open slot). It turns into a `SLOT` node. The part's own gap and padding space it — the
+   skill writes no spacing here.
+4. Default fill: the confirmed `defaultFill` (family slots), or empty for an open slot. Fill a
+   slot in an instance by `appendChild`, never with `setProperties`; turn on its `show` boolean
+   first, or the slot isn't reachable.
+5. Add slots before the grid layout (step 4 of "Labeled component set"), like text properties.
+
 ### Interactions
 
 When the set has a `state` axis, wire the interaction states as prototype reactions on the
@@ -424,9 +449,10 @@ re-set all three hyperlinks, unconditionally, even if they look correct. A human
   every family member's mapping file.
 - The Variations section holds one `Preview` per covered set and one instance per confirmed
   variation (or its placeholder was deleted), and its node ids are in `variations:`.
+- Every `slots:` entry is a native `SLOT` on every variant, with its preferred instances and
+  default fill.
 - For a family: every sub-component set was built before the sets that instantiate it, each with
-  its own confirmed first variant; every `slots:` entry is a native `SLOT` with its preferred
-  instances and default fill; every `drivenBy` prop matches its owner variant.
+  its own confirmed first variant; every `drivenBy` prop matches its owner variant.
 
 ## Next Phase
 

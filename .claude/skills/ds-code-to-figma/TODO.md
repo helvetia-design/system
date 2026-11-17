@@ -44,6 +44,7 @@
 - [x] Move Pagination to the new `Button` set (10.11.2026): all 52 instances swapped, carets via `icon` swap, `pagination.figma.md` + validation (4b/4c/6) updated, `3048:2541` deleted (user OK). `3532:1427` already gone. Found: swapping a glyph via `icon` drops the vector fill binding (it sat on the default `check` glyph's vector), so it had to be re-bound on 4 base-tier carets. Any swap in the `Button` set has the same issue.
 - [x] Pagination doc frame (seen 10.11.2026): `Bubu` (`4563:6887`) — a copy of the old `Pagination/Default` set (old `state` model, published, 0 instances) — sits in the `Pagination` stack's `Column + Box` under the real set. Deleted 11.11.2026 (user's call; 0 instances). ~~`Sets` clips `PaginationDotsRow`~~ fixed 11.11.2026: `Component Sets` was fixed at 850px; set to `FILL` (the `Documentation` column is taller).
 - [x] Variations before Anatomy (16.11.2026): template frames reordered to Copy me → Variations → Anatomy → Measurements (Names, asset components only, last); phase docs, SKILL.md and `conventions/document-sections.md` updated. Built frames reordered too (Button, Input, Spinner; Close, Badge, Pagination have no Variations section).
+- [ ] Logo: Figma defaults to helvetia, while code defaults to baloise. Animation (Lottie) is out of scope.
 
 # Components to test
 
