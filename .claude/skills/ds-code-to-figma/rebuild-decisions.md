@@ -130,10 +130,18 @@ danger · warning · inverted · disabled`. `disabled` wins over `inverted` in c
 - **`show label` default on**, unlike the code default `label=''`: every real input has a label.
 - **`required`** → an `optional` toggle (default off) on the generated " (optional)" text, not a
   variant axis (Gery's request, rule in `PHASE-2-PROPOSE.md`). Halves the set to 104 variants.
-- **Component states:** `invalid`, `loading` and `disabled` are `true` / `false` variants;
-  `invalid` and `loading` stay interactive in code, so they cross with the interaction states;
-  `disabled` doesn't. `invalid=true` shows the `invalid text` node with a fixed `alert` glyph
-  (nested directly, `base` 16px, measured) instead of `description`.
+- **Gery's rebuild notes (TODO, 17.11.2026):**
+  - **`loading` → a `loading` toggle** on the spinner's visibility (default off), not a variant
+    axis — same rule as `optional` (`PHASE-2-PROPOSE.md`).
+  - **No `disabled` + `loading` combination,** and **`loading` only when filled** (`filled=true`):
+    the toggle exists on those variants only, or is hidden elsewhere — confirm how in Phase 2.
+  - **`value` and `placeholder` don't wrap** — single line, truncated like the native input.
+  - **`warning` and `danger` are out of scope** for the `color` axis.
+- **Component states (previous build):** `invalid`, `loading` and `disabled` were `true` / `false`
+  variants; `invalid` and `loading` stay interactive in code, so they crossed with the interaction
+  states; `disabled` doesn't. `invalid=true` shows the `invalid text` node with a fixed `alert`
+  glyph (nested directly, `base` 16px, measured) instead of `description`. `loading` now becomes a
+  toggle (above).
 - **Slots:** `start` / `end` open slots in `control` with `show start` / `show end` (default off),
   preferred Icon and Button; `end` sits before the loading spinner (code renders both — the
   `loading` JSDoc saying it replaces the end slot is wrong).
