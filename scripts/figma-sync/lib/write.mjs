@@ -11,13 +11,13 @@ import {
   BORDER_SUB_PROPERTIES,
   BORDER_SUB_PROPERTY_RESOLVED_TYPE,
   BORDER_SUB_PROPERTY_SUFFIX,
-  figmaBorderSubValuesFor,
+  figmaBorderSubEntriesFor,
   figmaResponsiveDimensionDeviceVariableName,
   figmaResponsiveDimensionSubEntriesFor,
   figmaLiteralValueFor,
   flattenVariableId,
   figmaShadowSubValuesFor,
-  figmaTypographySubValuesFor,
+  figmaTypographySubEntriesFor,
   isDeviceEligibleResponsiveDimensionToken,
   isPushableToken,
   isSyncableBorderToken,
@@ -37,8 +37,10 @@ import {
   TYPOGRAPHY_SUB_PROPERTY_SUFFIX,
 } from './figma-value.mjs'
 
+// Figma rejects "." in a variable name (e.g. a Size token literally named "0.875") even though "/"
+// is fine — it's the path's own group separator — so only "." gets swapped, per segment, for "_".
 export function figmaVariableName(path) {
-  return path.join('/')
+  return path.map(segment => segment.replaceAll('.', '_')).join('/')
 }
 
 export function figmaShadowSubVariableName(path, subProperty) {
@@ -374,9 +376,10 @@ export function buildCreatePassPayload({
   }
 
   // Border/typography sub-values may be references (docs/plans/border-token-type-plan.md
-  // decision 4, docs/plans/typography-token-type-plan.md decision 4), so
-  // figmaBorderSubValuesFor/figmaTypographySubValuesFor need the full Base token index to follow
-  // them to a literal — unlike shadow's, whose sub-values are always inline literals.
+  // decision 4, docs/plans/typography-token-type-plan.md decision 4) — figmaBorderSubEntriesFor/
+  // figmaTypographySubEntriesFor tag each as reference-or-literal rather than following it, but
+  // still need this index: letterSpacing's percentage always needs its fontSize literal (via
+  // resolveLiteral), and the alias pass below looks up a reference sub-value's target token here.
   const tokenIndex = buildTokenIndex(baseTokens)
 
   const variableModeValues = []
@@ -414,18 +417,22 @@ export function buildCreatePassPayload({
 
       if (isSyncableBorderToken(token)) {
         const variableId = idByPath.get(pathKey(token.path))
-        const subValues = figmaBorderSubValuesFor(token.value.value, tokenIndex)
+        const subEntries = figmaBorderSubEntriesFor(token.value.value)
         for (const sub of BORDER_SUB_PROPERTIES) {
-          variableModeValues.push({ variableId: variableId[sub], modeId, value: subValues[sub] })
+          const entry = subEntries[sub]
+          if (entry.kind === 'reference') continue // pass 2
+          variableModeValues.push({ variableId: variableId[sub], modeId, value: entry.value })
         }
         continue
       }
 
       if (isSyncableTypographyToken(token)) {
         const variableId = idByPath.get(pathKey(token.path))
-        const subValues = figmaTypographySubValuesFor(token.value.value, tokenIndex)
+        const subEntries = figmaTypographySubEntriesFor(token.value.value, tokenIndex)
         for (const sub of TYPOGRAPHY_SUB_PROPERTIES) {
-          variableModeValues.push({ variableId: variableId[sub], modeId, value: subValues[sub] })
+          const entry = subEntries[sub]
+          if (entry.kind === 'reference') continue // pass 2
+          variableModeValues.push({ variableId: variableId[sub], modeId, value: entry.value })
         }
         continue
       }
@@ -514,6 +521,69 @@ export function buildAliasPassPayload({
           // — a breakpoint referencing another composite (shadow/border/typography/responsive
           // dimension) token has no single id to alias against unless it's itself Device-eligible,
           // so it's left unsynced rather than miswritten.
+          const targetVariableId = idByPath.get(pathKey(target.path))
+          const aliasId = singleAliasTargetId(targetVariableId)
+          if (!aliasId) continue
+          variableModeValues.push({
+            variableId: variableId[sub],
+            modeId,
+            value: { type: 'VARIABLE_ALIAS', id: aliasId },
+          })
+        }
+        continue
+      }
+
+      // Handled separately from the rest of this loop for the same reason as the responsive
+      // dimension block above — a border token's own top-level $value is an object ({color, width,
+      // style}, each possibly a `{reference}` string), never itself a `{reference}` string, so
+      // `token.value.kind` is always 'literal' here and would otherwise never reach the generic
+      // `token.value.kind === 'reference'` branch below. (A border token that IS itself a whole-
+      // composite reference — e.g. `Zurich.Border.Composite.Grey` aliasing the entirety of
+      // `Alias.Border.Composite.Grey` — has `token.value.kind === 'reference'` and is handled by
+      // that generic branch instead, via its own isSyncableBorderToken check.)
+      if (isSyncableBorderToken(token) && token.value.kind === 'literal') {
+        const variableId = idByPath.get(pathKey(token.path))
+        const subEntries = figmaBorderSubEntriesFor(token.value.value)
+        for (const sub of BORDER_SUB_PROPERTIES) {
+          const entry = subEntries[sub]
+          if (entry.kind !== 'reference') continue
+          const target = tokenIndex.get(pathKey(entry.path))
+          if (!target) {
+            throw new Error(
+              `Token ${pathKey(token.path)}'s ${sub} references ${pathKey(entry.path)}, which does not exist.`,
+            )
+          }
+          // Same "target must resolve to a single Figma variable" policy as the generic case below.
+          const targetVariableId = idByPath.get(pathKey(target.path))
+          const aliasId = singleAliasTargetId(targetVariableId)
+          if (!aliasId) continue
+          variableModeValues.push({
+            variableId: variableId[sub],
+            modeId,
+            value: { type: 'VARIABLE_ALIAS', id: aliasId },
+          })
+        }
+        continue
+      }
+
+      // Handled separately from the rest of this loop for the same reason as border's own block
+      // above — a typography token's own top-level $value is an object, never itself a
+      // `{reference}` string, so `token.value.kind` is always 'literal' here. letterSpacing is
+      // excluded (never tagged 'reference' by figmaTypographySubEntriesFor): it's always a
+      // percentage derived from two inputs (its own dimension and the composite's fontSize), not a
+      // 1:1 copy of another variable's value, so there's no single Figma variable it could alias.
+      if (isSyncableTypographyToken(token) && token.value.kind === 'literal') {
+        const variableId = idByPath.get(pathKey(token.path))
+        const subEntries = figmaTypographySubEntriesFor(token.value.value, tokenIndex)
+        for (const sub of TYPOGRAPHY_SUB_PROPERTIES) {
+          const entry = subEntries[sub]
+          if (entry.kind !== 'reference') continue
+          const target = tokenIndex.get(pathKey(entry.path))
+          if (!target) {
+            throw new Error(
+              `Token ${pathKey(token.path)}'s ${sub} references ${pathKey(entry.path)}, which does not exist.`,
+            )
+          }
           const targetVariableId = idByPath.get(pathKey(target.path))
           const aliasId = singleAliasTargetId(targetVariableId)
           if (!aliasId) continue
