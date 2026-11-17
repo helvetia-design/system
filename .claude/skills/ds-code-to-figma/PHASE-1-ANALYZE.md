@@ -13,6 +13,8 @@ the measurements triage (6) are presented **once for the whole family** (`conven
 - Design tokens: `packages/tokens/tokens/Base.tokens.json`
 - Figma Variables: `.claude/skills/ds-code-to-figma/references/figma-tokens/Base.tokens.json`
 - Any nested DS components' already-written `<child>.figma.md` files
+- [`rebuild-decisions.md`](rebuild-decisions.md) — the component's section, if it has one:
+  decisions from earlier runs to apply instead of asking again (re-ask only where the code changed)
 - The component's `*.visual.html` under `test/`, rendered by the dev server (step 6)
 
 ## References
