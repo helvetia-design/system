@@ -58,9 +58,8 @@ danger · warning · inverted · disabled`. `disabled` wins over `inverted` in c
 
 ## Logo
 
-- **`brand` is a top-level split:** Helvetia and Baloise are different artwork. **Helvetia is
-  listed first and is the Figma default** (user decision), although code defaults to `baloise`
-  through the global config.
+- **`brand` is a top-level split:** Helvetia and Baloise are different artwork. Helvetia first and
+  the default — code matches since 17.11.2026 (`LOGO_BRANDS = ['helvetia', 'baloise']`).
 - `animated`, `color` (`primary · inverted`) and `size` (`sm · base · lg`) are variant axes;
   `animated=true` shows the static idle frame — the Lottie animation is out of scope.
 - The width is calculated from the height by a fixed aspect ratio in code, so it's not a
