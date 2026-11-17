@@ -52,6 +52,44 @@
     margin-bottom: 1rem;
   }
 
+  // Badge and positioned tags nested in the header anchor to the card (the header is not positioned),
+  // matching the placement they get as the card's first child.
+  & > .ds-badge,
+  & > ds-badge,
+  ::slotted(ds-badge) {
+    --badge-position: absolute;
+    --badge-top: 0;
+    --badge-right: 0;
+    transform: translate(50%, -50%);
+  }
+
+  & > .ds-tag.is-left,
+  & > ds-tag[position='left'],
+  ::slotted(ds-tag[position='left']) {
+    --tag-position: absolute;
+    --tag-top: 0;
+    --tag-left: var(--_card-pl);
+    transform: translateY(-50%);
+  }
+
+  & > .ds-tag.is-center,
+  & > ds-tag[position='center'],
+  ::slotted(ds-tag[position='center']) {
+    --tag-position: absolute;
+    --tag-top: 0;
+    --tag-left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  & > .ds-tag.is-right,
+  & > ds-tag[position='right'],
+  ::slotted(ds-tag[position='right']) {
+    --tag-position: absolute;
+    --tag-top: 0;
+    --tag-right: var(--_card-pr);
+    transform: translateY(-50%);
+  }
+
   .ds-title,
   .ds-heading,
   ds-card-title {
