@@ -14,6 +14,9 @@ html,
   font-size: var(--ds-body-font-font-size);
   font-weight: var(--ds-body-font-font-weight);
   line-height: var(--ds-body-font-line-height);
+  letter-spacing: var(--ds-body-font-letter-spacing);
+  text-decoration: var(--ds-body-font-text-decoration);
+  text-transform: var(--ds-body-font-text-transform);
 
   text-rendering: optimizeLegibility;
   text-size-adjust: 100%;
@@ -50,6 +53,8 @@ textarea {
   font-size: var(--ds-body-font-font-size);
   font-weight: var(--ds-body-font-font-weight);
   line-height: var(--ds-body-font-line-height);
+  letter-spacing: var(--ds-body-font-letter-spacing);
+  text-transform: var(--ds-body-font-text-transform);
 }
 
 body {
@@ -58,6 +63,9 @@ body {
   font-size: var(--ds-body-font-font-size);
   font-weight: var(--ds-body-font-font-weight);
   line-height: var(--ds-body-font-line-height);
+  letter-spacing: var(--ds-body-font-letter-spacing);
+  text-decoration: var(--ds-body-font-text-decoration);
+  text-transform: var(--ds-body-font-text-transform);
   -webkit-overflow-scrolling: auto;
 }
 

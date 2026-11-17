@@ -608,7 +608,8 @@
         "is-tertiary-green",
         "is-tertiary-purple",
         "is-tertiary-red",
-        "is-tertiary-yellow"
+        "is-tertiary-yellow",
+        "is-text"
       ],
       "buttons": ["are-small", "has-addons"],
       "control": ["has-icons-right", "is-expanded", "is-loading"],

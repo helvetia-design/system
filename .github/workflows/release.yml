@@ -36,7 +36,6 @@ jobs:
       - uses: ./.github/workflows/actions/setup-environment
         with:
           token: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
-          npm-token: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -52,7 +51,7 @@ jobs:
 
       - name: Read current version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        uses: martinbeentjes/npm-get-version-action@3cf273023a0dda27efcd3164bdfb51908dd46a5b # v1.3.1
         with:
           path: packages/core
 
@@ -112,7 +111,7 @@ jobs:
       # bundled inside the npm packages it depends on.
       - name: Submit SBOM to GitHub dependency graph
         if: ${{ !inputs.dry-run }}
-        uses: advanced-security/spdx-dependency-submission-action@v0.4.0
+        uses: advanced-security/spdx-dependency-submission-action@b009efcf8b9d562a4569d2028c276522232e631f # v0.4.0
         with:
           token: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
           filePath: '.'
@@ -121,13 +120,15 @@ jobs:
       - name: Publish
         if: ${{ !inputs.dry-run }}
         run: pnpm -r publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       # Runs after Publish so a failed publish leaves no release commit or tag behind and the
       # workflow can simply be re-run (`pnpm -r publish` skips versions already on npm).
       # Only the listed files are committed — the SBOM edits to package.json stay out of git.
       - name: Commit release
         if: ${{ !inputs.dry-run }}
-        uses: EndBug/add-and-commit@v11
+        uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8 # v11.1.1
         with:
           add: "['pnpm-lock.yaml', 'CHANGELOG.md']"
           message: ':bookmark: release: ${{ steps.package-version.outputs.current-version }}'

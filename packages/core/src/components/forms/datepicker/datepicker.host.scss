@@ -4,6 +4,7 @@
 @use '../../../vars' as vars;
 @use '../form/form.mixin' as form;
 @use '../input/input.mixin' as input;
+@use '../../../typography' as typo;
 @use '../../actions/close/close.mixin' as close-mx;
 @use '../../actions/button/button.mixin' as button-mx;
 
@@ -13,10 +14,13 @@
  *
  * @prop --datepicker-color: Text color inside the date input field.
  * @prop --datepicker-placeholder: Placeholder text color.
- * @prop --datepicker-family: Font family of the date input text.
- * @prop --datepicker-weight: Font weight of the date input text.
- * @prop --datepicker-size: Font size of the date input text.
+ * @prop --datepicker-font-family: Font family of the date input text.
+ * @prop --datepicker-font-weight: Font weight of the date input text.
+ * @prop --datepicker-font-size: Font size of the date input text.
  * @prop --datepicker-line-height: Line height of the date input text.
+ * @prop --datepicker-letter-spacing: Letter spacing of the date input text.
+ * @prop --datepicker-text-decoration: Text decoration of the date input text.
+ * @prop --datepicker-text-transform: Text transform of the date input text.
  * @prop --form-container-background: Background color of the input container.
  * @prop --form-container-border-color: Border color of the input container.
  * @prop --form-container-border-width: Border width of the input container.
@@ -28,18 +32,25 @@
  * @prop --form-container-active-border: Container border color when active.
  * @prop --form-container-focus-border: Container border color when focused.
  * @prop --form-label-color: Text color of the label.
- * @prop --form-label-family: Font family of the label.
- * @prop --form-label-weight: Font weight of the label.
- * @prop --form-label-size: Font size of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
  * @prop --form-label-line-height: Line height of the label.
+ * @prop --form-label-letter-spacing: Letter spacing of the label.
+ * @prop --form-label-text-decoration: Text decoration of the label.
+ * @prop --form-label-text-transform: Text transform of the label.
  * @prop --form-description-color: Text color of the description.
- * @prop --form-description-family: Font family of the description.
- * @prop --form-description-weight: Font weight of the description.
- * @prop --form-description-size: Font size of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
  * @prop --form-description-line-height: Line height of the description.
+ * @prop --form-description-letter-spacing: Letter spacing of the description.
+ * @prop --form-description-text-decoration: Text decoration of the description.
+ * @prop --form-description-text-transform: Text transform of the description.
  * @prop --datepicker-trigger-icon-color-hover: Trigger icon color on hover.
  * @prop --datepicker-trigger-icon-color-active: Trigger icon color when active/pressed.
  * @prop --datepicker-trigger-icon-color-disabled: Trigger icon color when disabled.
+ * @prop --datepicker-trigger-radius: Border radius of the trigger button.
  * @prop --datepicker-focus-color: Focus ring color for the trigger, calendar nav buttons and day cells.
  * @prop --datepicker-popup-shadow: Box shadow of the calendar popup.
  * @prop --datepicker-calendar-text-color: Text color of the calendar (weekdays, current date).
@@ -50,6 +61,9 @@
  * @prop --datepicker-calendar-shadow: Box shadow of the calendar.
  * @prop --datepicker-calendar-color-inner-border: Border color of the calendar navigation.
  * @prop --datepicker-calendar-disabled-color: Text color of dates outside the selectable range.
+ * @prop --datepicker-calendar-border-width: Border width used inside the calendar (nav, current-date cell).
+ * @prop --datepicker-calendar-padding: Padding of the calendar popup.
+ * @prop --datepicker-calendar-day-gap: Gap between day cells in the calendar grid.
  * @prop --datepicker-calendar-day-background-hover: Background color of a day cell on hover.
  * @prop --datepicker-calendar-day-background-active: Background color of a day cell when active/pressed.
  * @prop --datepicker-calendar-day-background-selected: Background color of the selected day cell.
@@ -64,6 +78,8 @@
  * @prop --datepicker-calendar-nav-color-active: Navigation button color when active/pressed.
  * @prop --datepicker-calendar-nav-radius: Border radius of the calendar navigation buttons.
  * @prop --datepicker-calendar-nav-color-disabled: Navigation button color when disabled.
+ * @prop --datepicker-calendar-nav-gap: Gap between icon and label inside a nav button.
+ * @prop --datepicker-calendar-nav-action-margin: Left margin of the next/previous nav action group.
  */
 
 :host {
@@ -77,6 +93,7 @@
   @include vars.local(datepicker-trigger-icon-color-hover, var(--ds-datepicker-trigger-color-hover));
   @include vars.local(datepicker-trigger-icon-color-active, var(--ds-datepicker-trigger-color-active));
   @include vars.local(datepicker-trigger-icon-color-disabled, var(--ds-datepicker-trigger-color-disabled));
+  @include vars.local(datepicker-trigger-radius, var(--ds-datepicker-trigger-radius));
   @include vars.local(datepicker-focus-color, var(--ds-alias-interaction-focus-color-base));
 
   @include vars.local(datepicker-popup-shadow, var(--ds-datepicker-popup-shadow));
@@ -89,22 +106,25 @@
   @include vars.local(datepicker-calendar-shadow, var(--ds-datepicker-calendar-shadow));
   @include vars.local(datepicker-calendar-color-inner-border, var(--ds-datepicker-calendar-color-inner-border));
   @include vars.local(datepicker-calendar-disabled-color, var(--ds-datepicker-calendar-color-disabled));
+  @include vars.local(datepicker-calendar-border-width, var(--ds-datepicker-calendar-border-width));
+  @include vars.local(datepicker-calendar-padding, var(--ds-datepicker-calendar-padding));
+  @include vars.local(datepicker-calendar-day-gap, var(--ds-datepicker-calendar-day-gap));
 
   @include vars.local(
     datepicker-calendar-day-background-hover,
-    var(--ds-datepicker-calendar-color-day-hover-background)
+    var(--ds-datepicker-calendar-day-hover-color-background)
   );
   @include vars.local(
     datepicker-calendar-day-background-active,
-    var(--ds-datepicker-calendar-color-day-active-background)
+    var(--ds-datepicker-calendar-day-active-color-background)
   );
   @include vars.local(
     datepicker-calendar-day-background-selected,
-    var(--ds-datepicker-calendar-color-day-selected-background)
+    var(--ds-datepicker-calendar-day-selected-color-background)
   );
   @include vars.local(
     datepicker-calendar-day-background-selected-hover,
-    var(--ds-datepicker-calendar-color-day-selected-hover-background)
+    var(--ds-datepicker-calendar-day-selected-hover-color-background)
   );
   @include vars.local(datepicker-calendar-color-current-date, var(--ds-datepicker-calendar-color-current-date));
   @include vars.local(datepicker-calendar-day-weight, var(--ds-datepicker-calendar-day-weight-base));
@@ -112,11 +132,13 @@
   @include vars.local(datepicker-calendar-day-name-family, var(--ds-datepicker-calendar-day-name-family));
   @include vars.local(datepicker-calendar-day-name-weight, var(--ds-datepicker-calendar-day-name-weight));
 
-  @include vars.local(datepicker-calendar-nav-color, var(--ds-datepicker-calendar-nav-color-base));
-  @include vars.local(datepicker-calendar-nav-color-hover, var(--ds-datepicker-calendar-nav-color-hover));
-  @include vars.local(datepicker-calendar-nav-color-active, var(--ds-datepicker-calendar-nav-color-active));
+  @include vars.local(datepicker-calendar-nav-color, var(--ds-datepicker-calendar-color-nav-base));
+  @include vars.local(datepicker-calendar-nav-color-hover, var(--ds-datepicker-calendar-color-nav-hover));
+  @include vars.local(datepicker-calendar-nav-color-active, var(--ds-datepicker-calendar-color-nav-active));
   @include vars.local(datepicker-calendar-nav-radius, var(--ds-datepicker-calendar-nav-radius));
-  @include vars.local(datepicker-calendar-nav-color-disabled, var(--ds-datepicker-calendar-nav-color-disabled));
+  @include vars.local(datepicker-calendar-nav-color-disabled, var(--ds-datepicker-calendar-color-nav-disabled));
+  @include vars.local(datepicker-calendar-nav-gap, var(--ds-datepicker-calendar-nav-gap));
+  @include vars.local(datepicker-calendar-nav-action-margin, var(--ds-datepicker-calendar-nav-action-margin));
 }
 
 /**
@@ -155,7 +177,8 @@
     @include font-smoothing();
     @include print-hidden();
 
-    border-radius: var(--ds-alias-radius-base);
+    border-radius: var(--_datepicker-trigger-radius);
+    // ds-token-check: intentional — native button background reset
     background: transparent;
     width: 1.5rem;
     height: 1.5rem;
@@ -239,6 +262,7 @@
       opacity 0.2s,
       -webkit-transform 0.2s;
 
+    // ds-token-check: intentional — open/closed visibility toggle, not a themeable opacity
     opacity: 1;
     transform: scaleY(1);
     transform-origin: center top;
@@ -263,21 +287,21 @@
 
 :host(.is-danger) {
   --mod-form-container-border: var(--ds-form-danger-container-border);
-  --mod-form-description-color: var(--ds-form-danger-description-color);
+  --mod-form-description-color: var(--ds-form-danger-color-description);
   --mod-form-container-hover-border: var(--ds-form-danger-container-border);
   --mod-form-container-active-border: var(--ds-form-danger-container-border);
 }
 
 :host(.is-success) {
   --mod-form-container-border: var(--ds-form-success-container-border);
-  --mod-form-description-color: var(--ds-form-success-description-color);
+  --mod-form-description-color: var(--ds-form-success-color-description);
   --mod-form-container-hover-border: var(--ds-form-success-container-border);
   --mod-form-container-active-border: var(--ds-form-success-container-border);
 }
 
 :host(.is-warning) {
   --mod-form-container-border: var(--ds-form-warning-container-border);
-  --mod-form-description-color: var(--ds-form-warning-description-color);
+  --mod-form-description-color: var(--ds-form-warning-color-description);
   --mod-form-container-hover-border: var(--ds-form-warning-container-border);
   --mod-form-container-active-border: var(--ds-form-warning-container-border);
 }
@@ -299,11 +323,14 @@
 
   --mod-form-container-background: var(--ds-form-disabled-container-background);
   --mod-form-container-border: var(--ds-form-disabled-container-border);
-  --mod-form-label-color: var(--ds-form-disabled-label-color);
-  --mod-form-description-color: var(--ds-form-disabled-description-color);
+  --mod-form-label-color: var(--ds-form-disabled-color-label);
+  --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
-  --mod-date-color: var(--ds-form-disabled-control-value-color);
-  --mod-date-placeholder: var(--ds-form-disabled-control-placeholder-color);
+  --mod-date-color: var(--ds-form-disabled-control-color-value);
+  --mod-date-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(datepicker, 'form-disabled-control-typo');
 }
 
 /**
@@ -320,8 +347,8 @@
 
   --adp-cell-background-color-in-range: unset; // needed because of ardp behavior
   --adp-hover-color: unset; // needed because of ardp behavior
-  --adp-cell-border-width: 2px;
-  --adp-padding: 0.5rem;
+  --adp-cell-border-width: var(--_datepicker-calendar-border-width);
+  --adp-padding: var(--_datepicker-calendar-padding);
   --adp-width: 264px;
 
   --adp-color: var(--_datepicker-calendar-text-color);
@@ -359,7 +386,11 @@
   }
 
   .air-datepicker-nav {
-    border-width: 2px;
+    border-width: var(--_datepicker-calendar-border-width);
+  }
+
+  .sr-only {
+    @include sr-only;
   }
 
   .air-datepicker-nav--title:not(.-disabled-) button,
@@ -367,7 +398,7 @@
     @include button-mx.reset-button;
 
     display: flex;
-    gap: 0.5rem;
+    gap: var(--_datepicker-calendar-nav-gap);
     align-items: center;
     justify-content: center;
     height: 2rem;
@@ -415,7 +446,7 @@
   }
 
   .air-datepicker-nav--action {
-    margin-left: 0.5rem;
+    margin-left: var(--_datepicker-calendar-nav-action-margin);
   }
 
   .air-datepicker-nav--title {
@@ -428,12 +459,12 @@
   }
 
   .air-datepicker-body--cells.-days- {
-    gap: 0.25rem;
+    gap: var(--_datepicker-calendar-day-gap);
   }
 
   .air-datepicker-body--day-name {
     font-weight: var(--_datepicker-calendar-day-name-weight);
-    font-size: 1rem;
+    font-size: var(--_datepicker-calendar-size);
     text-transform: none;
     font-family: var(--_datepicker-calendar-day-name-family);
   }
@@ -449,7 +480,7 @@
   }
 
   .air-datepicker-cell.-day-.-current-:not(.-disabled-) {
-    border: 2px solid var(--_datepicker-calendar-color-current-date);
+    border: var(--_datepicker-calendar-border-width) solid var(--_datepicker-calendar-color-current-date);
   }
 
   .air-datepicker-cell.-day-.-selected-:not(.-disabled-) {

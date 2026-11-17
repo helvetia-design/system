@@ -40,8 +40,12 @@ import { HTMLStencilElement } from '@stencil/core/internal'
  * Pagination provides navigation controls for moving between pages of content with customizable size, alignment, and layout.
  *
  * @slot - Optional custom content or labels.
- * @part pagination - The pagination container element.
- * @part item - Each pagination button or control item.
+ * @part navigation - The nav landmark wrapping all pagination controls.
+ * @part previous - The button that navigates to the previous page.
+ * @part next - The button that navigates to the next page.
+ * @part list - The list containing the page and ellipsis items.
+ * @part page - Each page number button.
+ * @part ellipsis - The ellipsis item shown when pages are collapsed.
  */
 @Component({
   tag: 'ds-pagination',
@@ -304,7 +308,7 @@ export class Pagination implements DsComponentInterface, DsBreakpointObserver {
     const hasBasicNavigationButtons = !hasValue(this.variant) || (isVariantDots && this.totalPages <= 5)
 
     const DotsWithText: FunctionalComponent = () => (
-      <span class="dots">
+      <span class="dots is-counter">
         <strong>{this.value}</strong>
         <span>/</span>
         <span>{this.totalPages}</span>

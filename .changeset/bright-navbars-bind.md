@@ -1,0 +1,5 @@
+---
+'@helvetia-design/core': minor
+---
+
+**tokens**: Style app-navbar through own Component tokens for container padding and max-widths, sidebar z-index, backdrop color/opacity, panel shadow and border, sidebar item divider/focus radius, sidebar actions margin, brand focus padding and desktop menu underline (`--ds-app-navbar-default-container-max-width-*`, `--ds-app-navbar-default-sidebar-*`, `--ds-app-navbar-default-menu-item-underline-*`, …). Title, sidebar item and menu item typography now come from composite `Typo` tokens (`--ds-app-navbar-default-title-typo-*`, `-sidebar-item-typo-*`, `-menu-item-typo-base|selected-*`), replacing the standalone font leaves. `--ds-app-navbar-light-background` is renamed to `--ds-app-navbar-light-layout-background`; `--ds-app-navbar-*-sidebar-panel-border-top` is split into `-border-width` / `-border-color`. Adds Alias tokens `--ds-alias-border-width-hairline`, `--ds-alias-space-margin-xl`, `--ds-alias-size-control-fixed` and `--ds-alias-size-icon-sm`. Fix the desktop menu underline referencing a non-existent token, which made the hover/selected indicator invisible — it now renders at 2px.

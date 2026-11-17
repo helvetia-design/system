@@ -1,4 +1,4 @@
-import SlimSelect from 'slim-select'
+import SlimSelect, { type CloseInfo } from 'slim-select'
 import type { Option, Optgroup } from 'slim-select/dist/store'
 import type { DsLanguage } from '@global'
 import { i18nDsSelect } from './select.i18n'
@@ -67,6 +67,7 @@ export class SelectPickerController {
   private typeAheadLastTime = 0
   private lastPointerX: number | undefined
   private lastPointerY: number | undefined
+  private lastDocumentClick: MouseEvent | undefined
 
   constructor(config: SelectPickerConfig) {
     this.config = config
@@ -115,6 +116,10 @@ export class SelectPickerController {
     if (searchInput) searchInput.placeholder = i18nDsSelect[language].searchPlaceholder
   }
 
+  rememberDocumentClick(ev: MouseEvent) {
+    this.lastDocumentClick = ev
+  }
+
   destroy() {
     this.slimSelect?.destroy()
     this.slimSelect = undefined
@@ -159,6 +164,7 @@ export class SelectPickerController {
           this.highlightOnOpen()
           this.config.onOpen()
         },
+        beforeClose: (info: CloseInfo) => this.allowClose(info),
         afterClose: () => this.config.onClose(),
       },
     })
@@ -171,6 +177,15 @@ export class SelectPickerController {
     this.fixHoverHighlight()
     this.fixValueDeleteFocus()
     this.highlightFirstOption()
+  }
+
+  // Under reduced motion slim-select attaches its outside-click listener during the opening click, whose target
+  // shadow DOM retargets to the host. The host records every document click, so the real path is checked here.
+  private allowClose(info: CloseInfo): boolean {
+    if (info.source !== 'outside' || !this.slimSelect) return true
+    const path = this.lastDocumentClick?.composedPath() ?? []
+    const { main, content } = this.slimSelect.render
+    return !path.includes(main.main) && !path.includes(content.main)
   }
 
   // slim-select never auto-highlights an option: arrow keys are the only built-in trigger.

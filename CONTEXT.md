@@ -29,6 +29,7 @@ Every decision in this system adheres to these principles (from ARCHITECTURE.md)
 
 - Changes are merged into `next` branch
 - **Changesets** (`.changeset/*.md` files) document changes as `patch` | `minor` | `major`
+- All `@helvetia-design/*` packages are a fixed version group (`.changeset/config.json`) and release together under one version with one changelog — so every changeset's frontmatter always targets `@helvetia-design/core`, never another package. The **scope** (e.g. `core`, `styles`, or a component name like `pagination`) only becomes the bold label on the changelog line; it never changes which package is bumped. Created via `scripts/create-changeset.mjs` (driven non-interactively by the `ds-changeset` skill).
 - **Changeset Release PR** aggregates all changesets and bumps version
 - **npm publish** happens automatically when Release PR is merged
 - **LTS support** — `main` branch is a parallel long-term support release line

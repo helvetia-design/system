@@ -1,9 +1,9 @@
 import { test } from '@helvetia-design/playwright'
 
 const ITEMS = `
-  <ds-carousel-item name="s1"><div style="height:150px;background:#4a5568">Slide 1</div></ds-carousel-item>
-  <ds-carousel-item name="s2"><div style="height:150px;background:#2d3748">Slide 2</div></ds-carousel-item>
-  <ds-carousel-item name="s3"><div style="height:150px;background:#1a202c">Slide 3</div></ds-carousel-item>
+  <ds-carousel-item name="s1"><div style="height:150px;color:#fff;background:#4a5568">Slide 1</div></ds-carousel-item>
+  <ds-carousel-item name="s2"><div style="height:150px;color:#fff;background:#2d3748">Slide 2</div></ds-carousel-item>
+  <ds-carousel-item name="s3"><div style="height:150px;color:#fff;background:#1a202c">Slide 3</div></ds-carousel-item>
 `
 
 const PRODUCT_ITEMS = `
@@ -13,8 +13,6 @@ const PRODUCT_ITEMS = `
 `
 
 test.describe('a11y — image variant', () => {
-  test.skip(true, 'Contrast issue tracked in https://github.com/helvetia-design/system/issues/2189')
-
   test('basic with dots', async ({ page, a11y }) => {
     await page.mount(`<ds-carousel label="Image gallery">${ITEMS}</ds-carousel>`)
     await a11y('ds-carousel')

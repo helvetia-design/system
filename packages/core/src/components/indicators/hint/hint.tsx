@@ -233,6 +233,7 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
     return (
       <Host>
         <button
+          id="trigger"
           part="trigger"
           type="button"
           aria-expanded={String(this.isOpen)}
@@ -243,6 +244,7 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
         >
           <ds-icon name="info-circle" aria-hidden="true" />
         </button>
+        <ds-tooltip reference="trigger">{triggerLabel}</ds-tooltip>
         {this.isTouch ? (
           <ds-drawer
             ref={el => (this.drawerEl = el as HTMLDsDrawerElement)}

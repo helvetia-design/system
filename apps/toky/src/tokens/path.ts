@@ -54,8 +54,13 @@ export function parseTokenPath(input: string): string[] {
     .filter(Boolean)
 }
 
+// A numeric size value using '_' as a decimal separator, e.g. "0_875" or
+// "1_5" — Figma variable names can't contain '.', so these are the
+// legitimate spelling of 0.875/1.5 and must not be flagged as non-PascalCase.
+const NUMERIC_UNDERSCORE_RE = /^[0-9]+_[0-9]+$/
+
 export function isValidSegmentName(segment: string): boolean {
-  return SEGMENT_NAME_RE.test(segment)
+  return SEGMENT_NAME_RE.test(segment) || NUMERIC_UNDERSCORE_RE.test(segment)
 }
 
 // Every segment of a dot-joined token name that isn't a valid PascalCase/

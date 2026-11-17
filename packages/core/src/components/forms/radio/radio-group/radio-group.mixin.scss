@@ -3,11 +3,11 @@
 @mixin style($selector: '#container') {
   #{$selector} {
     display: grid;
-    gap: 0.25rem;
+    gap: var(--ds-radio-group-gap-stacked);
 
     @include tablet() {
       display: flex;
-      gap: 1rem;
+      gap: var(--ds-radio-group-gap-inline);
     }
   }
 }
@@ -16,12 +16,12 @@
   @if $wrapper == ':host' {
     :host(.is-vertical) #{$selector} {
       display: grid;
-      gap: 0.25rem;
+      gap: var(--ds-radio-group-gap-stacked);
     }
   } @else {
     #{$selector}.is-vertical {
       display: grid;
-      gap: 0.25rem;
+      gap: var(--ds-radio-group-gap-stacked);
     }
   }
 }

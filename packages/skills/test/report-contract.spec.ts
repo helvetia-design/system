@@ -36,7 +36,7 @@ const expectedCounts: Record<string, { attention: number; coverage: number }> = 
   'badge': { attention: 3, coverage: 3 },
   'button': { attention: 13, coverage: 4 },
   'card': { attention: 9, coverage: 3 },
-  'carousel': { attention: 21, coverage: 6 },
+  'carousel': { attention: 22, coverage: 7 },
   'checkbox': { attention: 17, coverage: 2 },
   'close': { attention: 2, coverage: 1 },
   'content': { attention: 4, coverage: 2 },
@@ -64,7 +64,7 @@ const expectedCounts: Record<string, { attention: number; coverage: number }> = 
   'pagination': { attention: 6, coverage: 4 },
   'popup': { attention: 18, coverage: 5 },
   'progress-bar': { attention: 6, coverage: 3 },
-  'radio': { attention: 14, coverage: 2 },
+  'radio': { attention: 15, coverage: 2 },
   'segment': { attention: 8, coverage: 0 },
   'select': { attention: 12, coverage: 1 },
   'shape': { attention: 4, coverage: 1 },
@@ -198,6 +198,25 @@ describe('Report items the issue requires by name', () => {
     expect(lineOf('| `bal-accordion` bound `active`')).toContain('`[open]="x"`')
   })
 
+  it('carousel wraps an item in a link or button only when it has both color and label', () => {
+    const migration = read('components/carousel/migration.md')
+    const lineOf = (start: string) => singleLine(migration, start)
+
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('const isProduct = !!this.color && !!this.label;')
+    expect(lineOf('When the item does not have both `color` and `label`')).toContain('add no wrapper')
+    expect(lineOf('When the item has both `color` and `label` but no `href`')).toContain('`<button>`')
+    expect(lineOf('| `balNavigate`')).toContain('button-wrapped product tile included')
+    expect(lineOf('| `label`')).toContain('On every other item')
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('so does an attribute bound to an expression')
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain("`label` defaults to `''`")
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('report the item')
+    itemNumbers('carousel', [
+      'product tile rewritten into a wrapped `<button>`',
+      'from an item without both `color` and `label`',
+      'bound to an expression, whose runtime value the migration cannot read',
+    ])
+  })
+
   it('radio writes tile layout on the group, tile colour as attribute, and removes bal-radio-icon from tiles', () => {
     const migration = read('components/radio/migration.md')
     const lineOf = (start: string) => singleLine(migration, start)
@@ -210,13 +229,43 @@ describe('Report items the issue requires by name', () => {
     expect(colSizeRow).toContain('`[attr.col-size*]`')
     expect(colorRow).toContain('Never write the `tileColor` property')
     expect(lineOf('| `"tile"`')).toContain('`tile` on `ds-radio-group`')
-    expect(lineOf('| `"button"`')).toContain('`tile` + `hideTrigger` on `ds-radio-group`')
-    expect(migration).toContain('add `tile` and `hideTrigger` to the group only')
+    expect(lineOf('| `"tile"`')).toContain('plus `hideTrigger` when no child tile body has a `bal-radio-icon`')
+    expect(lineOf('| `"button"`')).toContain('`tile` on `ds-radio-group`')
+    expect(lineOf('| `"button"`')).not.toContain('hideTrigger')
+    expect(migration).not.toMatch(
+      /`tile`\s*(\+|and|plus)\s*`hideTrigger`[^.]*`"button"`|`"button"`[^.|]*`tile`\s*(\+|and|plus)\s*`hideTrigger`/,
+    )
+
+    const buttonShape = section(migration, '### Shape: `interface="button"` becomes `tile`')
+
+    expect(buttonShape).toContain('add `tile` to the group only')
+    expect(buttonShape).toContain('Do not add `hideTrigger`')
+    expect(buttonShape).not.toMatch(/`tile`\s*(\+|and|plus)\s*`hideTrigger`/)
+
+    const iconShape = section(migration, '### Shape: round icon and `hideTrigger`')
+
+    expect(iconShape).toContain('Decide `hideTrigger` before you delete any `bal-radio-icon`')
+    expect(iconShape).toContain('Never add `hideTrigger` for `"button"`')
+    expect(iconShape).toContain('No child showed the icon: add `hideTrigger` to the group.')
+    expect(iconShape).toContain('Every child showed the icon: write no `hideTrigger`.')
+    expect(iconShape).toContain('write no `hideTrigger` and report the group')
+    expect(iconShape).toContain('when its own `interface` is not `tile` inside a group whose own `interface` is unset')
+    expect(iconShape).toContain("unless an option's `html` contains `bal-radio-icon`")
+    expect(iconShape).toContain('A standalone `bal-radio` follows the same rule')
+    expect(migration.indexOf('### Shape: round icon and `hideTrigger`')).toBeLessThan(
+      migration.indexOf('### Tags and imports'),
+    )
+    expect(migration).toContain('inside a migrated `<ds-radio>`, after the `hideTrigger` decision')
+    expect(singleLine(migration, '2. ')).toContain('only some children showed it')
     expect(migration).toContain('Delete every `<bal-radio-icon>` inside a migrated `<ds-radio>`')
     expect(migration).toContain('Remove `BalRadioIcon` from the `@baloise/ds-react` import')
     expect(migration).not.toContain('exactly as it is')
 
-    const numbers = itemNumbers('radio', ['removed from a tile', 'differs from its siblings or from the group'])
+    const numbers = itemNumbers('radio', [
+      'removed from a tile',
+      'differs from its siblings or from the group',
+      'got `hideTrigger`',
+    ])
 
     expect(new Set(numbers).size).toBe(numbers.length)
   })

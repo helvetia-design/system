@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Control Mixins
@@ -12,62 +13,81 @@
 @mixin vars($wrapper: ':host') {
   #{$wrapper} {
     // layout
-    @include vars.local(checkbox-gap, 0.5rem);
-    @include vars.local(checkbox-min-height, 3rem);
-    @include vars.local(checkbox-label-base-color, inherit);
-    @include vars.local(checkbox-label-hover-color, var(--ds-global-color-sky-5));
-    @include vars.local(checkbox-label-active-color, var(--ds-global-color-primary-6));
+    @include vars.local(checkbox-gap, var(--ds-checkbox-gap));
+    @include vars.local(checkbox-min-height, var(--ds-checkbox-min-height));
+    @include vars.local(checkbox-py, var(--ds-checkbox-padding-block));
+    @include vars.local(checkbox-label-base-color, var(--ds-checkbox-label-color-base));
+    @include vars.local(checkbox-label-hover-color, var(--ds-checkbox-label-color-hover));
+    @include vars.local(checkbox-label-active-color, var(--ds-checkbox-label-color-active));
     @include vars.local(checkbox-label-disabled-color, var(--ds-checkbox-label-color-disabled));
+    @include typo.local(checkbox-label, 'checkbox-label-typo');
 
     // dimensions
-    @include vars.local(checkbox-size, 1.5rem);
-    @include vars.local(checkbox-border-width, var(--ds-alias-border-width-base));
-    @include vars.local(checkbox-radius, var(--ds-alias-radius-base));
+    @include vars.local(checkbox-size, var(--ds-checkbox-size));
+    @include vars.local(checkbox-border-width, var(--ds-checkbox-border-width));
+    @include vars.local(checkbox-radius, var(--ds-checkbox-radius));
 
     // Tile
-    @include vars.local(checkbox-tile-radius, var(--ds-alias-radius-base));
-    @include vars.local(checkbox-tile-p, 1rem);
-    @include vars.local(checkbox-tile-border-width, var(--ds-alias-border-width-base));
+    @include vars.local(checkbox-tile-radius, var(--ds-checkbox-tile-radius));
+    @include vars.local(checkbox-tile-p, var(--ds-checkbox-tile-padding));
+    @include vars.local(checkbox-tile-border-width, var(--ds-checkbox-tile-border-width));
+    @include vars.local(checkbox-tile-gutter, var(--ds-checkbox-tile-gutter));
 
+    // ds-token-check: intentional — a resting tile shows the surface it sits on; only its
+    // hover/active/checked fills are themeable
     @include vars.local(checkbox-tile-base-background-color, inherit);
-    @include vars.local(checkbox-tile-base-border-color, var(--ds-global-color-grey-3));
+    @include vars.local(checkbox-tile-base-border-color, var(--ds-checkbox-tile-color-border-base));
 
-    @include vars.local(checkbox-tile-hover-background-color, var(--ds-global-color-grey-0));
-    @include vars.local(checkbox-tile-hover-border-color, var(--ds-global-color-sky-5));
+    @include vars.local(checkbox-tile-hover-background-color, var(--ds-checkbox-tile-color-background-hover));
+    @include vars.local(checkbox-tile-hover-border-color, var(--ds-checkbox-tile-color-border-hover));
 
-    @include vars.local(checkbox-tile-active-background-color, var(--ds-global-color-grey-0));
-    @include vars.local(checkbox-tile-active-border-color, var(--ds-global-color-primary-6));
+    @include vars.local(checkbox-tile-active-background-color, var(--ds-checkbox-tile-color-background-active));
+    @include vars.local(checkbox-tile-active-border-color, var(--ds-checkbox-tile-color-border-active));
+
+    @include vars.local(checkbox-tile-disabled-color-icon, var(--ds-checkbox-tile-color-icon-disabled));
 
     // unchecked base
+    // ds-token-check: intentional — an unchecked box is unfilled in every brand
     @include vars.local(checkbox-unchecked-base-color-background, transparent);
-    @include vars.local(checkbox-unchecked-base-color-border, var(--ds-global-color-primary-5));
+    @include vars.local(checkbox-unchecked-base-color-border, var(--ds-checkbox-unchecked-color-border-base));
 
     // unchecked hover
-    @include vars.local(checkbox-unchecked-hover-color-background, var(--ds-global-color-grey-1));
-    @include vars.local(checkbox-unchecked-hover-color-border, var(--ds-global-color-sky-5));
+    @include vars.local(checkbox-unchecked-hover-color-background, var(--ds-checkbox-unchecked-color-background-hover));
+    @include vars.local(checkbox-unchecked-hover-color-border, var(--ds-checkbox-unchecked-color-border-hover));
 
     // unchecked active/pressed
-    @include vars.local(checkbox-unchecked-active-color-background, var(--ds-global-color-grey-2));
-    @include vars.local(checkbox-unchecked-active-color-border, var(--ds-global-color-primary-6));
+    @include vars.local(
+      checkbox-unchecked-active-color-background,
+      var(--ds-checkbox-unchecked-color-background-active)
+    );
+    @include vars.local(checkbox-unchecked-active-color-border, var(--ds-checkbox-unchecked-color-border-active));
 
     // unchecked disabled
     @include vars.local(
       checkbox-unchecked-disabled-color-background,
-      var(--ds-checkbox-unchecked-color-disabled-background)
+      var(--ds-checkbox-unchecked-color-background-disabled)
     );
+    @include vars.local(checkbox-unchecked-disabled-color-border, var(--ds-checkbox-unchecked-color-border-disabled));
 
     // checked base
-    @include vars.local(checkbox-checked-base-color-background, var(--ds-global-color-primary-5));
-    @include vars.local(checkbox-checked-base-color-border, var(--ds-global-color-primary-5));
-    @include vars.local(checkbox-checked-base-color-icon, var(--ds-global-color-white));
+    @include vars.local(checkbox-checked-base-color-background, var(--ds-checkbox-checked-color-background-base));
+    @include vars.local(checkbox-checked-base-color-border, var(--ds-checkbox-checked-color-border-base));
+    @include vars.local(checkbox-checked-base-color-icon, var(--ds-checkbox-checked-color-icon-base));
 
     // checked hover
-    @include vars.local(checkbox-checked-hover-color-background, var(--ds-global-color-sky-5));
-    @include vars.local(checkbox-checked-hover-color-border, var(--ds-global-color-sky-5));
+    @include vars.local(checkbox-checked-hover-color-background, var(--ds-checkbox-checked-color-background-hover));
+    @include vars.local(checkbox-checked-hover-color-border, var(--ds-checkbox-checked-color-border-hover));
 
     // checked active/pressed
-    @include vars.local(checkbox-checked-active-color-background, var(--ds-global-color-primary-6));
-    @include vars.local(checkbox-checked-active-color-border, var(--ds-global-color-primary-6));
+    @include vars.local(checkbox-checked-active-color-background, var(--ds-checkbox-checked-color-background-active));
+    @include vars.local(checkbox-checked-active-color-border, var(--ds-checkbox-checked-color-border-active));
+
+    // checked disabled
+    @include vars.local(
+      checkbox-checked-disabled-color-background,
+      var(--ds-checkbox-checked-color-background-disabled)
+    );
+    @include vars.local(checkbox-checked-disabled-color-border, var(--ds-checkbox-checked-color-border-disabled));
   }
 }
 
@@ -81,10 +101,9 @@
   cursor: pointer;
   user-select: none;
   color: var(--_checkbox-label-base-color);
-  font-family: var(--ds-alias-text-family-text);
-  line-height: var(--ds-alias-text-line-height-text);
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  @include typo.apply(checkbox-label);
+  padding-top: var(--_checkbox-py);
+  padding-bottom: var(--_checkbox-py);
   min-height: var(--_checkbox-min-height);
 
   @include hover() {
@@ -142,7 +161,7 @@
   }
 
   #{$wrapper} input[type='checkbox']:focus-visible {
-    @include focus-shadow();
+    @include focus-shadow(var(--ds-checkbox-focus-color));
   }
 
   // Unchecked hover
@@ -183,6 +202,7 @@
   #{$wrapper} input[type='checkbox']::after {
     display: block;
     content: '';
+    // ds-token-check: intentional — ratio-based glyph geometry, brand-invariant
     width: 100%;
     height: 100%;
     mask-size: 70%;
@@ -191,12 +211,14 @@
     transition:
       opacity 0.3s ease-in-out,
       transform 0.3s ease-in-out;
+    // ds-token-check: intentional — animation endpoints, not themeable values
     opacity: 0;
     transform: translateY(-0.5rem);
   }
 
   #{$wrapper} input[type='checkbox']:checked::after {
     background-color: var(--_checkbox-checked-base-color-icon);
+    // ds-token-check: intentional — animation endpoints, not themeable values
     opacity: 1;
     transform: translateY(0);
     mask-image: url("data:image/svg+xml,<svg viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' clip-rule='evenodd' d='M13.637 1.19792C14.0627 1.54974 14.1227 2.18006 13.7708 2.60579L5.73084 12.335L5.72842 12.3379C5.54554 12.5575 5.31602 12.7336 5.05655 12.8534C4.79707 12.9731 4.51417 13.0336 4.22842 13.0302L4.22752 13.0302C3.93709 13.0266 3.65125 12.9573 3.39146 12.8274C3.13254 12.6979 2.9062 12.5117 2.72931 12.2826C2.72871 12.2818 2.72812 12.281 2.72752 12.2802L0.210633 9.04426C-0.128437 8.60831 -0.0499029 7.98003 0.386044 7.64096C0.821992 7.30189 1.45027 7.38043 1.78934 7.81638L4.25291 10.9838L12.2291 1.33176C12.5809 0.906034 13.2113 0.846112 13.637 1.19792Z'/></svg>");
@@ -206,23 +228,24 @@
 // --- State helpers ---
 
 @mixin _invalid-vars() {
-  --mod-checkbox-label-base-color: var(--ds-global-color-danger-4);
-  --mod-checkbox-label-hover-color: var(--ds-global-color-danger-5);
-  --mod-checkbox-label-active-color: var(--ds-global-color-danger-6);
+  --mod-checkbox-label-base-color: var(--ds-checkbox-invalid-color-label-base);
+  --mod-checkbox-label-hover-color: var(--ds-checkbox-invalid-color-label-hover);
+  --mod-checkbox-label-active-color: var(--ds-checkbox-invalid-color-label-active);
 
+  // ds-token-check: intentional — an unchecked box is unfilled in every brand
   --mod-checkbox-unchecked-base-color-background: transparent;
-  --mod-checkbox-unchecked-base-color-border: var(--ds-alias-border-color-danger);
-  --mod-checkbox-unchecked-hover-color-background: var(--ds-global-color-grey-2);
-  --mod-checkbox-unchecked-hover-color-border: var(--ds-alias-border-color-danger-hover);
-  --mod-checkbox-unchecked-active-color-background: var(--ds-global-color-grey-2);
-  --mod-checkbox-unchecked-active-color-border: var(--ds-alias-border-color-danger-active);
+  --mod-checkbox-unchecked-base-color-border: var(--ds-checkbox-invalid-unchecked-color-border-base);
+  --mod-checkbox-unchecked-hover-color-background: var(--ds-checkbox-invalid-unchecked-color-background-hover);
+  --mod-checkbox-unchecked-hover-color-border: var(--ds-checkbox-invalid-unchecked-color-border-hover);
+  --mod-checkbox-unchecked-active-color-background: var(--ds-checkbox-invalid-unchecked-color-background-active);
+  --mod-checkbox-unchecked-active-color-border: var(--ds-checkbox-invalid-unchecked-color-border-active);
 
-  --mod-checkbox-checked-base-color-background: var(--ds-alias-border-color-danger);
-  --mod-checkbox-checked-base-color-border: var(--ds-alias-border-color-danger);
-  --mod-checkbox-checked-hover-color-background: var(--ds-alias-border-color-danger-hover);
-  --mod-checkbox-checked-hover-color-border: var(--ds-alias-border-color-danger-hover);
-  --mod-checkbox-checked-active-color-background: var(--ds-alias-border-color-danger-active);
-  --mod-checkbox-checked-active-color-border: var(--ds-alias-border-color-danger-active);
+  --mod-checkbox-checked-base-color-background: var(--ds-checkbox-invalid-checked-color-background-base);
+  --mod-checkbox-checked-base-color-border: var(--ds-checkbox-invalid-checked-color-border-base);
+  --mod-checkbox-checked-hover-color-background: var(--ds-checkbox-invalid-checked-color-background-hover);
+  --mod-checkbox-checked-hover-color-border: var(--ds-checkbox-invalid-checked-color-border-hover);
+  --mod-checkbox-checked-active-color-background: var(--ds-checkbox-invalid-checked-color-background-active);
+  --mod-checkbox-checked-active-color-border: var(--ds-checkbox-invalid-checked-color-border-active);
 }
 
 @mixin _disabled-vars() {
@@ -233,9 +256,9 @@
   --mod-checkbox-label-active-color: var(--_checkbox-label-disabled-color);
 
   --mod-checkbox-unchecked-base-color-background: var(--_checkbox-unchecked-disabled-color-background);
-  --mod-checkbox-unchecked-base-color-border: var(--ds-alias-border-color-disabled);
-  --mod-checkbox-checked-base-color-background: var(--ds-alias-border-color-disabled);
-  --mod-checkbox-checked-base-color-border: var(--ds-alias-border-color-disabled);
+  --mod-checkbox-unchecked-base-color-border: var(--_checkbox-unchecked-disabled-color-border);
+  --mod-checkbox-checked-base-color-background: var(--_checkbox-checked-disabled-color-background);
+  --mod-checkbox-checked-base-color-border: var(--_checkbox-checked-disabled-color-border);
 }
 
 // Invalid declared first, disabled declared second — disabled wins when both classes are present.

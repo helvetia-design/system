@@ -384,7 +384,7 @@ describe('carousel migration.md', () => {
       'variant="tile"',
       'aspectRatio',
       'navigation',
-      '<button type={elementType}',
+      "Set `type` to the item's `elementType`",
       'color="white"',
       'ds-brand-icon',
       'slot as plain text',

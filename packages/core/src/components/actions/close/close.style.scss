@@ -17,11 +17,6 @@
 
 //
 // Size Variants
-.ds-close.is-sm {
-  --mod-close-p: var(--ds-close-padding-sm);
-  --mod-close-size-icon: var(--ds-close-size-sm);
-}
-
 .ds-close.is-md {
   --mod-close-p: var(--ds-close-padding-md);
   --mod-close-size-icon: var(--ds-close-size-md);

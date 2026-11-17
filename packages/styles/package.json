@@ -36,11 +36,11 @@
   },
   "devDependencies": {
     "@helvetia-design/tokens": "0.1.0",
-    "autoprefixer": "10.6.1",
-    "cssnano": "9.6.0",
-    "postcss": "8.5.29",
+    "autoprefixer": "10.6.2",
+    "cssnano": "9.9.0",
+    "postcss": "8.5.32",
     "sass": "catalog:",
     "tsx": "catalog:",
-    "unocss": "66.10.5"
+    "unocss": "66.12.0"
   }
 }

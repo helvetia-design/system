@@ -10,20 +10,6 @@
 @use '../form/form.mixin' as form;
 @use '../input/input.mixin' as input;
 
-/**
- * Variables
- * --------------------------------
- * Define here the css variables for the component to be able to use it in host or non-host mode
- * These variables can be used in the component styles below and later on be overridden in themes.
- *
- * @prop --select-family - Font family of the select control.
- * @prop --select-weight - Font weight of the select control.
- * @prop --select-line-height - Line height of the select control.
- * @prop --select-size - Font size of the select control.
- * @prop --select-color - Text color of the select control value.
- * @prop --select-placeholder - Text color of the select placeholder text.
- */
-
 .ds-select {
   @include input.vars('select');
 }
@@ -42,10 +28,11 @@
       min-width: 0;
       outline: none;
       appearance: none;
+      // ds-token-check: intentional — native <select> background reset, not a themeable value
       background: transparent;
       border: none;
-      height: 1.5rem;
-      padding-inline-end: 1.5rem;
+      height: var(--ds-select-control-height);
+      padding-inline-end: var(--ds-select-control-icon-space);
       font: inherit;
       cursor: pointer;
 

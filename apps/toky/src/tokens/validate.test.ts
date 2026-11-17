@@ -214,4 +214,62 @@ describe('validateWorkingTokens', () => {
     ]
     expect(validateWorkingTokens(items)).toEqual([])
   })
+
+  describe('typography letterSpacing / textDecoration / textTransform', () => {
+    const complete = {
+      fontFamily: '{A.Family}',
+      fontSize: '{A.Size}',
+      fontWeight: '{A.Weight}',
+      lineHeight: 1.5,
+      letterSpacing: '{A.LetterSpacing}',
+      textDecoration: '{A.TextDecoration.None}',
+      textTransform: '{A.TextTransform.None}',
+    }
+
+    it('accepts a typography token carrying all three', () => {
+      const items = [working('a', { name: 'Typo.Body', type: 'typography', rawValue: complete })]
+      expect(validateWorkingTokens(items)).toEqual([])
+    })
+
+    it('flags a typography token missing them, naming each', () => {
+      const { letterSpacing, textDecoration, ...rest } = complete
+      void letterSpacing
+      void textDecoration
+      const items = [working('a', { name: 'Typo.Body', type: 'typography', rawValue: rest })]
+      expect(validateWorkingTokens(items)).toContainEqual({
+        tokenKey: 'a',
+        message: 'Typography is missing letter spacing, text decoration.',
+        severity: 'error',
+      })
+    })
+
+    it('does not require them on a whole-token typography reference', () => {
+      const items = [
+        working('a', { name: 'Typo.Body', type: 'typography', rawValue: complete }),
+        working('b', {
+          name: 'Typo.Alias',
+          type: 'typography',
+          rawValue: undefined,
+          referenceTarget: '🌐 Global.Typo.Body',
+        }),
+      ]
+      expect(validateWorkingTokens(items).filter(e => e.tokenKey === 'b' && /missing/.test(e.message))).toEqual([])
+    })
+
+    it('rejects a textDecoration keyword outside the allowed set (no overline)', () => {
+      const items = [working('a', { name: 'Deco.Over', type: 'textDecoration', rawValue: 'overline' })]
+      expect(validateWorkingTokens(items)).toContainEqual({
+        tokenKey: 'a',
+        message: 'textDecoration must be one of: none, underline, line-through.',
+        severity: 'error',
+      })
+    })
+
+    it('accepts every allowed textTransform keyword', () => {
+      for (const keyword of ['none', 'uppercase', 'lowercase', 'capitalize']) {
+        const items = [working('a', { name: 'Case.X', type: 'textTransform', rawValue: keyword })]
+        expect(validateWorkingTokens(items)).toEqual([])
+      }
+    })
+  })
 })
