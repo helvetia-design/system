@@ -13,8 +13,8 @@ name: 📸 Screenshots
 # 1. Extracts component names from the comment
 # 2. Splits comma-separated names and trims whitespace
 # 3. Generates Playwright testMatch patterns for each component
-# 4. Runs visual tests across Desktop Chrome and Mobile Chrome
-# 5. Commits updated screenshots to the branch
+# 4. Runs visual tests across Desktop Chrome and Mobile Chrome (untrusted PR code, read-only token)
+# 5. Commits updated screenshots to the branch (separate job, no PR code executed)
 
 on:
   issue_comment:
@@ -22,13 +22,9 @@ on:
   pull_request:
     types: [opened, closed]
 
-# `issue_comment` runs the workflow file from the default branch with the repository default token
-# permissions, which are read-only. The progress/result comments and the screenshot commit both
-# need write access, so grant it explicitly.
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+# `issue_comment` runs the workflow file from the default branch. Permissions are granted per job so
+# the job running PR code only gets a read-only token; the bot PAT is only used in the commit job.
+permissions: {}
 
 jobs:
   assembleInformation:
@@ -41,12 +37,16 @@ jobs:
        github.event.comment.author_association == 'MEMBER')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    permissions:
+      issues: write
+      pull-requests: write
     env:
       HUSKY: 0
       CI: true
     outputs:
       action: ${{ steps.action.outputs.url }}
       branch: ${{ steps.branch.outputs.branch }}
+      repo: ${{ steps.branch.outputs.repo }}
       command: ${{ steps.command.outputs.result }}
       specs: ${{ steps.specs.outputs.result }}
     steps:
@@ -103,11 +103,28 @@ jobs:
 
       - name: Get Branch Name
         id: branch
+        env:
+          PR_URL: ${{ github.event.issue.pull_request.url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          COMMITS_URL="${{ github.event.issue.pull_request.url }}"
-          BRANCH=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $COMMITS_URL | jq -r '.head.ref')
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          PR=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$PR_URL")
+          echo "branch=$(jq -r '.head.ref' <<< "$PR")" >> $GITHUB_OUTPUT
+          echo "repo=$(jq -r '.head.repo.full_name' <<< "$PR")" >> $GITHUB_OUTPUT
 
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          edit-mode: replace
+          body: |
+            **📸 Update Screenshots in Progress...**
+
+            Specs: `${{ steps.command.outputs.result }}`
+
+            [Check out the action on GitHub ↗︎](${{ steps.action.outputs.url }})
+
+  # Runs untrusted PR code (install, build, Playwright): read-only token, no persisted credentials,
+  # no PAT and no dependency cache (a cache saved from an `issue_comment` run is scoped to main).
   updateScreenshots:
     name: 📸 Update Screenshots
     if: |
@@ -119,6 +136,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     needs: [assembleInformation]
+    permissions:
+      contents: read
     env:
       HUSKY: 0
       CI: true
@@ -126,6 +145,8 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.59.1-noble
       options: --user 1001
+    outputs:
+      changed: ${{ steps.collect.outputs.changed }}
     steps:
       - name: Show inputs from pree job
         env:
@@ -139,30 +160,20 @@ jobs:
           echo "Specs: $SPECS"
           echo "Action: $ACTION"
 
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
-        with:
-          comment-id: ${{ github.event.comment.id }}
-          edit-mode: replace
-          body: |
-            **📸 Update Screenshots in Progress...**
-
-            Specs: `${{ needs.assembleInformation.outputs.command }}`
-
-            [Check out the action on GitHub ↗︎](${{ needs.assembleInformation.outputs.action }})
-
       - name: Check out code
         uses: actions/checkout@v7
         with:
-          ref: ${{ needs.assembleInformation.outputs.branch }}
-          token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
-          fetch-depth: 2
+          # The PR head as GitHub stores it, so fork PRs test the fork's code, not a same-named base branch.
+          ref: refs/pull/${{ github.event.issue.number }}/head
+          persist-credentials: false
 
-      - uses: ./.github/workflows/actions/setup-environment
+      - name: Setup pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
         with:
-          token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
-          branch: ${{ needs.assembleInformation.outputs.branch }}
-          action: ${{ needs.assembleInformation.outputs.action }}
+          node-version: 24
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -231,12 +242,84 @@ jobs:
           TAG: ${{ needs.assembleInformation.outputs.command }}
         run: pnpm exec playwright test --config=playwright.visual.config.mts --update-snapshots
 
+      - name: Collect changed screenshots
+        id: collect
+        run: |
+          mkdir -p "$RUNNER_TEMP/screenshots"
+          git ls-files -z --modified --others --exclude-standard -- 'packages/core/src/*.png' \
+            | xargs -0 -r cp --parents -t "$RUNNER_TEMP/screenshots"
+          if [ -n "$(ls -A "$RUNNER_TEMP/screenshots")" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Upload screenshots
+        if: steps.collect.outputs.changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots
+          path: ${{ runner.temp }}/screenshots
+          retention-days: 1
+
+  # Never executes PR code: only copies snapshot PNGs from the artifact into the branch and pushes.
+  commitScreenshots:
+    name: 💾 Commit Screenshots
+    if: always() && needs.assembleInformation.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    needs: [assembleInformation, updateScreenshots]
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Check test job and PR origin
+        env:
+          TEST_RESULT: ${{ needs.updateScreenshots.result }}
+          HEAD_REPO: ${{ needs.assembleInformation.outputs.repo }}
+          BASE_REPO: ${{ github.repository }}
+          BRANCH: ${{ needs.assembleInformation.outputs.branch }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "$TEST_RESULT" != "success" ]; then
+            echo "::error::Update Screenshots job did not succeed ($TEST_RESULT)"
+            exit 1
+          fi
+          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "::error::Refusing to push screenshots for a PR from another repository ($HEAD_REPO)"
+            exit 1
+          fi
+          if [ "$BRANCH" = "$DEFAULT_BRANCH" ]; then
+            echo "::error::Refusing to push screenshots to the default branch"
+            exit 1
+          fi
+
+      - name: Check out code
+        if: needs.updateScreenshots.outputs.changed == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.assembleInformation.outputs.branch }}
+          token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
+
+      - name: Download screenshots
+        if: needs.updateScreenshots.outputs.changed == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          name: screenshots
+          path: ${{ runner.temp }}/screenshots
+
+      # The artifact was produced by untrusted code: only take regular PNG files inside snapshot folders.
+      - name: Apply screenshots
+        if: needs.updateScreenshots.outputs.changed == 'true'
+        working-directory: ${{ runner.temp }}/screenshots
+        run: |
+          find packages/core/src -type f -path '*-snapshots/*.png' -print0 \
+            | xargs -0 -r cp --parents -t "$GITHUB_WORKSPACE"
+
       - name: Commit screenshots
+        if: needs.updateScreenshots.outputs.changed == 'true'
         uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8 # v11.1.1
         with:
+          add: packages/core/src
+          author_name: Helvetia Design System
+          author_email: design-system@helvetia.ch
           message: 'chore: update screenshots for ${{ needs.assembleInformation.outputs.command }}'
-        env:
-          GITHUB_TOKEN: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
 
       - name: Create comment
         if: success()
