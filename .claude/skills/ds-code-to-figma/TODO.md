@@ -49,55 +49,55 @@
 
 # Components to test
 
-| Status | Component                        | Category   | Nested                                | Gap | Figma |
-| ------ | -------------------------------- | ---------- | ------------------------------------- | --- | ----- |
-| ⬜     | Icon<br>Set color with variables | Media      | -                                     | ✅  | ⬜    |
-| ⬜     | Brand Icon                       | Media      | -                                     | ✅  | ⬜    |
-| ⬜     | Logo                             | Media      | -                                     | ✅  | ⬜    |
-| ⛔     | Shape                            | Media      | -                                     | ⛔  | ⛔    |
-| ⬜     | Spinner                          | Indicators | -                                     | ✅  | ⬜    |
-| ⬜     | Progress Bar                     | Indicators | -                                     | ✅  | ⬜    |
-| ⬜     | Label                            | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Input                            | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Textarea                         | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Toggle                           | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Radio                            | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Checkbox                         | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Slider                           | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Select                           | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Number Input                     | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Phone Input                      | Forms      | -                                     | ✅  | ⬜    |
-| ⬜     | Steps                            | Navigation | -                                     | ✅  | ⬜    |
-| ⬜     | Tooltip                          | Overlays   | -                                     | ✅  | ⬜    |
-| ⬜     | Sheet                            | Overlays   | -                                     | ✅  | ⬜    |
-| ⬜     | Divider                          | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | Text                             | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | Heading                          | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | Stack                            | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | Content                          | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | Data                             | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | List                             | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | Root                             | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | Card                             | Structure  | -                                     | ✅  | ⬜    |
-| ⬜     | Button                           | Actions    | Brand Icon, Icon, Spinner             | ✅  | ⬜    |
-| ⬜     | Badge                            | Indicators | Icon                                  | ✅  | ⬜    |
-| ⬜     | Segment                          | Forms      | Icon                                  | ✅  | ⬜    |
-| ⬜     | Datepicker                       | Forms      | Icon                                  | ✅  | ⬜    |
-| ⬜     | App Navbar                       | Navigation | Icon                                  | ✅  | ⬜    |
-| ⬜     | Tabs                             | Navigation | Icon                                  | ✅  | ⬜    |
-| ⬜     | Accordion                        | Structure  | Icon                                  | ✅  | ⬜    |
-| ⬜     | App Footer                       | Structure  | Divider, Icon, Logo                   | ✅  | ⬜    |
-| ⬜     | Close                            | Actions    | Button                                | ✅  | ⬜    |
-| ⬜     | Counter                          | Forms      | Button                                | ✅  | ⬜    |
-| ⬜     | File Upload                      | Forms      | Button, Content, Icon, Spinner, Stack | ✅  | ⬜    |
-| ⬜     | Pagination                       | Navigation | Icon, Button                          | ✅  | ⬜    |
-| ⬜     | Modal                            | Overlays   | Close                                 | ✅  | ⬜    |
-| ⬜     | Drawer                           | Overlays   | Close                                 | ✅  | ⬜    |
-| ⬜     | Popup                            | Overlays   | Close                                 | ✅  | ⬜    |
-| ⬜     | Notification                     | Overlays   | Close                                 | ✅  | ⬜    |
-| ⬜     | Tag                              | Indicators | Close                                 | ✅  | ⬜    |
-| ⬜     | Toast                            | Overlays   | Button, Close, Icon                   | ✅  | ⬜    |
-| ⬜     | Snackbar                         | Overlays   | Brand Icon, Button, Close, Icon       | ✅  | ⬜    |
-| ⬜     | Carousel                         | Structure  | Icon, Pagination                      | ✅  | ⬜    |
-| ⬜     | Hint                             | Indicators | Icon, Button, Close, Drawer, Popup    | ✅  | ⬜    |
-| ⬜     | Alert                            | Overlays   | Snackbar, Toast                       | ✅  | ⬜    |
+| Status | Component                              | Category   | Nested                                | Gap | Figma |
+| ------ | -------------------------------------- | ---------- | ------------------------------------- | --- | ----- |
+| ⬜     | Icon<br>Set color with variables       | Media      | -                                     | ✅  | ⬜    |
+| ⬜     | Brand Icon<br>Set color with variables | Media      | -                                     | ✅  | ⬜    |
+| ⬜     | Logo                                   | Media      | -                                     | ✅  | ⬜    |
+| ⛔     | Shape                                  | Media      | -                                     | ⛔  | ⛔    |
+| ⬜     | Spinner                                | Indicators | -                                     | ✅  | ⬜    |
+| ⬜     | Progress Bar                           | Indicators | -                                     | ✅  | ⬜    |
+| ⬜     | Label                                  | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Input<br>Required als show&hide        | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Textarea                               | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Toggle                                 | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Radio                                  | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Checkbox                               | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Slider                                 | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Select                                 | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Number Input                           | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Phone Input                            | Forms      | -                                     | ✅  | ⬜    |
+| ⬜     | Steps                                  | Navigation | -                                     | ✅  | ⬜    |
+| ⬜     | Tooltip                                | Overlays   | -                                     | ✅  | ⬜    |
+| ⬜     | Sheet                                  | Overlays   | -                                     | ✅  | ⬜    |
+| ⬜     | Divider                                | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | Text                                   | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | Heading                                | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | Stack                                  | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | Content                                | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | Data                                   | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | List                                   | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | Root                                   | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | Card                                   | Structure  | -                                     | ✅  | ⬜    |
+| ⬜     | Button                                 | Actions    | Brand Icon, Icon, Spinner             | ✅  | ⬜    |
+| ⬜     | Badge                                  | Indicators | Icon                                  | ✅  | ⬜    |
+| ⬜     | Segment                                | Forms      | Icon                                  | ✅  | ⬜    |
+| ⬜     | Datepicker                             | Forms      | Icon                                  | ✅  | ⬜    |
+| ⬜     | App Navbar                             | Navigation | Icon                                  | ✅  | ⬜    |
+| ⬜     | Tabs                                   | Navigation | Icon                                  | ✅  | ⬜    |
+| ⬜     | Accordion                              | Structure  | Icon                                  | ✅  | ⬜    |
+| ⬜     | App Footer                             | Structure  | Divider, Icon, Logo                   | ✅  | ⬜    |
+| ⬜     | Close                                  | Actions    | Button                                | ✅  | ⬜    |
+| ⬜     | Counter                                | Forms      | Button                                | ✅  | ⬜    |
+| ⬜     | File Upload                            | Forms      | Button, Content, Icon, Spinner, Stack | ✅  | ⬜    |
+| ⬜     | Pagination                             | Navigation | Icon, Button                          | ✅  | ⬜    |
+| ⬜     | Modal                                  | Overlays   | Close                                 | ✅  | ⬜    |
+| ⬜     | Drawer                                 | Overlays   | Close                                 | ✅  | ⬜    |
+| ⬜     | Popup                                  | Overlays   | Close                                 | ✅  | ⬜    |
+| ⬜     | Notification                           | Overlays   | Close                                 | ✅  | ⬜    |
+| ⬜     | Tag                                    | Indicators | Close                                 | ✅  | ⬜    |
+| ⬜     | Toast                                  | Overlays   | Button, Close, Icon                   | ✅  | ⬜    |
+| ⬜     | Snackbar                               | Overlays   | Brand Icon, Button, Close, Icon       | ✅  | ⬜    |
+| ⬜     | Carousel                               | Structure  | Icon, Pagination                      | ✅  | ⬜    |
+| ⬜     | Hint                                   | Indicators | Icon, Button, Close, Drawer, Popup    | ✅  | ⬜    |
+| ⬜     | Alert                                  | Overlays   | Snackbar, Toast                       | ✅  | ⬜    |
