@@ -8,9 +8,9 @@ explicit user confirmation on.
 ## Inputs
 
 - The confirmed `<name>.figma.md` — variant grouping and grid sketch from Phase 2.
-- `figma.config.json`'s `componentLibraryFileKey`.
+- `figma.config.json`'s `componentLibraryFileKey` and `foundationLibraryFileKey`.
 - The component's name, category folder, JSDoc lead, and `packages/core/package.json` `version`.
-- Every resolved Figma variable id from Phase 1 (`tokens:` list) and every nested DS component's
+- Every Foundation variable name from Phase 1 (`tokens:` list) and every nested DS component's
   Figma component key (Phase 1, step 4).
 
 ## References
@@ -42,11 +42,12 @@ runs once, for the whole frame; step 7 writes back into every member's mapping f
    `<Component> Documentation` › `body` › `Component Sets` › `Sets` (from step 2). Never build it
    on a scratch page, at the page root, or off-canvas and move it in later. Wire up:
    - The component's shape/layout.
-   - Every styled value bound to its resolved Figma variable from Phase 1 (never a literal).
-     **Bind directly by id** — `figma.variables.getVariableByIdAsync(figmaVariableId)` using the
-     id `<name>.figma.md`'s `tokens:` list already recorded from `css-token-lookup.mjs` — never
-     re-resolve a token by searching Figma's variable collections by name at build time; that
-     search was already done once, locally, in Phase 1.
+   - Every styled value bound to its Foundation variable from Phase 1 (never a literal).
+     **Import by key, then bind** — `figma.variables.importVariableByKeyAsync(key)` with the key
+     for the `figmaVariable` name, from the name → key map read once per run from the Foundation
+     file (`conventions/tokens-and-props.md` → "Binding Foundation variables"). Never bind to a
+     variable of the component file's own local collections, and never by an id from
+     `Base.tokens.json`.
    - **Create every bound paint from the variable's resolved value** —
      `variable.resolveForConsumer(node).value`, alpha included — **before**
      `setBoundVariableForPaint`. Never a placeholder colour: the master keeps rendering the
@@ -72,10 +73,10 @@ runs once, for the whole frame; step 7 writes back into every member's mapping f
      | `lineHeight`     | `Alias/Text/LineHeight/*` — STRING (`"150%"`)     | No: "variable of resolved type 'STRING' cannot be bound". |
      | `textDecoration` | `Alias/Text/TextDecoration/*` — STRING (`"NONE"`) | No: not a bindable text field.                            |
 
-     For the two that cannot be bound: walk the variable's `VARIABLE_ALIAS` chain via
-     `getVariableByIdAsync` to the literal, then set it as a **literal, unbound** value —
+     For the two that cannot be bound: read the imported variable's value with
+     `variable.resolveForConsumer(node).value`, then set it as a **literal, unbound** value —
      `lineHeight = { unit: 'PERCENT', value: parseFloat("150%") }`, `textDecoration = "NONE"`.
-     Record each in `<name>.figma.md`'s tokens list with its `figmaVariableId` and as an exception
+     Record each in `<name>.figma.md`'s tokens list with its `figmaVariable` and as an exception
      (resolved but intentionally unbound, with the reason), not as a hard stop — the token exists
      and its value is applied, it's just not a live binding. `letterSpacing` binds as `PIXELS`,
      which is right for the current `0` tokens; for a non-zero token, compare the bound pixel
@@ -91,40 +92,16 @@ runs once, for the whole frame; step 7 writes back into every member's mapping f
      property write on that node then requires that exact font to be loaded first
      (`figma.loadFontAsync`), even if a different font (e.g. Inter) was loaded earlier in the
      same script — load the _resolved_ font family, not just a default.
-   - **Responsive (`device:`) bindings — check for an already-synced routing variable before
-     hand-creating one.** For every entry in `<name>.figma.md`'s `device:` section (from Phase 1
-     step 5a):
-     1. Re-run the _bare_ (non-breakpoint-suffixed) CSS var through `css-token-lookup.mjs` (same
-        tool as Phase 1 step 5). **If its `variableId` object already has a `device` key**, the
-        token is already "Device-eligible" (MVP-scoped) and `scripts/figma-sync` already manages
-        a real routing variable for it in `Design Responsive Tokens` — fetch it directly via
-        `getVariableByIdAsync(variableId.device)` and bind to that. Don't hand-create a duplicate.
-        As of this writing no `Component.*` token is Device-eligible yet (only `Device.*` layer
-        tokens are, e.g. `Device.Space.*`) — this case is a check for future-proofing, not
-        something to assume absent.
-     2. **Otherwise** (today's common case for a component-level responsive binding, e.g.
-        `ds-logo`'s `Component.Logo.Size.Base`), look up a hand-built routing variable by its
-        exact deterministic name (e.g. `🧩 Component/Logo/Size/Base/Device`) in `Design
-Responsive Tokens` first — **reuse it if it already exists** rather than creating a
-        duplicate (this makes a later rebuild of the same component idempotent). If reusing,
-        verify its Mobile/Tablet/Desktop mode values still resolve (via `getVariableByIdAsync`,
-        walking any `VARIABLE_ALIAS` chain) to the exact real per-breakpoint ids recorded in
-        `device:` — if they've drifted, fix the alias rather than trusting the name match alone.
-     3. If no routing variable exists yet (neither the Device-eligible id nor a hand-built one),
-        create it in `Design Responsive Tokens` (same collection, so it inherits the
-        Mobile/Tablet/Desktop modes already defined there) and set each mode's value to a
-        `VARIABLE_ALIAS` pointing at the real per-breakpoint id Phase 1 resolved for that mode
-        (via the breakpoint-suffixed CSS var lookup, e.g. `--ds-logo-size-base-mobile`) —
-        including the fall-through case (e.g. Tablet aliasing to the same id as Mobile when code
-        has no distinct tablet override).
-     4. Bind the node's property (height/width/padding/gap/whatever `device:` recorded) to this
-        routing variable **once**, via `setBoundVariable`/`setRangeBoundVariable` as normal —
-        never bind directly to one of the three real per-breakpoint variables. The file's own
-        Mobile/Tablet/Desktop mode switcher then changes the rendered value natively; don't create
-        a `device` crossed variant property or separate instances per breakpoint.
-     5. Flag the risk noted in `device:` (hand-created, not sync-managed) in `<name>.figma.md` if
-        it isn't already recorded there from Phase 1 — skip this for the Device-eligible case in
-        step 1, which carries no such risk.
+   - **Responsive (`device:`) bindings.** For every entry in `<name>.figma.md`'s `device:` section
+     (from Phase 1 step 5a), import the routing variable `<path>/Device` from Foundation's
+     `Design Responsive Tokens` by key and bind the node's property (height / width / padding /
+     gap / whatever `device:` recorded) to it **once** — never to one of the three
+     per-breakpoint variables. The file's Mobile / Tablet / Desktop mode switcher then changes the
+     rendered value natively; don't create a `device` variant property or separate instances per
+     breakpoint. Before binding, check its three mode values resolve to the per-breakpoint
+     variables recorded in `device:`; a mismatch is a hard stop. **Never create a variable** —
+     a missing routing variable was already listed in Phase 1 (stop and list); if one is missing
+     at build time, stop and list it the same way.
 4. **Stop and have the user confirm this one variant directly in Figma** — give them the node link
    (`https://www.figma.com/design/<fileKey>?node-id=<id>`) and wait. Don't send a screenshot as
    the checkpoint. This catches a structural mistake (wrong variable bound, wrong nested
@@ -441,10 +418,11 @@ re-set all three hyperlinks, unconditionally, even if they look correct. A human
   was fanned out.
 - The finished labeled component set(s) satisfy the hard rules above and were approved by the user
   in Figma before Phase 4.
-- Every styled value is bound to a real Figma variable id — never a literal — except the
-  documented `lineHeight`/`textDecoration` exceptions (resolved value, intentionally unbound).
-- Every `device:` responsive binding resolved to a routing variable (reused or newly created, per
-  the steps above), never bound directly to one of the three per-breakpoint variables.
+- Every styled value is bound to a Foundation library variable — never a literal, never a local
+  variable of the component file — except the documented `lineHeight`/`textDecoration`
+  exceptions (resolved value, intentionally unbound).
+- Every `device:` responsive binding is bound to its Foundation `<path>/Device` routing variable,
+  never directly to one of the three per-breakpoint variables; no variable was created.
 - The category page and the component's documentation frame exist, cloned from
   `🗂️ Template / Category` (no styling values written by this skill), with the header filled,
   `review-status` at `status=review` and all three links hyperlinked.

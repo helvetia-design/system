@@ -11,7 +11,8 @@ the measurements triage (6) are presented **once for the whole family** (`conven
 - Component source: `packages/core/src/components/<category>/<name>/<name>.tsx`
 - Component styles: `<name>.host.scss`
 - Design tokens: `packages/tokens/tokens/Base.tokens.json`
-- Figma Variables: `.claude/skills/ds-code-to-figma/references/figma-tokens/Base.tokens.json`
+- Figma Variables: the Foundation library file (`figma.config.json` → `foundationLibraryFileKey`),
+  read once per run for the variable names (step 5)
 - Any nested DS components' already-written `<child>.figma.md` files
 - [`rebuild-decisions.md`](rebuild-decisions.md) — the component's section, if it has one:
   decisions from earlier runs to apply instead of asking again (re-ask only where the code changed)
@@ -21,9 +22,7 @@ the measurements triage (6) are presented **once for the whole family** (`conven
 
 - [`examples/mapping-file-format.md`](examples/mapping-file-format.md) — mapping-file schema
 - `SKILL.md` — Prerequisites section
-- `scripts/figma-sync/lib/css-token-lookup.mjs` — local CSS-var → Figma variable id resolver
-- `docs/adr/0017-direct-commit-variableid-backfill.md` — why variable ids already live in
-  `Base.tokens.json`
+- `scripts/figma-sync/lib/css-token-lookup.mjs` — local CSS-var → token path resolver
 - `packages/styles/src/scss/mixins/breakpoint.mixin.scss` — full breakpoint mixin set, for detecting responsive bindings
 - `conventions/measurements.md` — groups and rules for the measurements triage (step 6)
 - `conventions/families.md` — family resolution (step 0), merged anatomy, family measurements triage
@@ -140,16 +139,9 @@ the measurements triage (6) are presented **once for the whole family** (`conven
        the same props (default state). Record the matching snapshot name, or `missing`.
        Write it to the draft's `variations:` (`examples/mapping-file-format.md`).
 5. For every value the component's SCSS binds to a CSS custom property (`var(--ds-...)`),
-   resolve it to the matching Figma variable **id** — resolve this entirely locally, no Figma
-   call needed for the common case.
-   - **Every token this repo has already pushed to Figma carries its real Figma variable id
-     right in `packages/tokens/tokens/Base.tokens.json`**, under
-     `$extensions["com.figma.variableId"]` — that's what `scripts/figma-sync` writes back after
-     a push (`docs/adr/0017-direct-commit-variableid-backfill.md`). There is no need to
-     enumerate Figma's `Design Tokens`/`Design Responsive Tokens` collections (1,900+ variables)
-     through `use_figma` to answer "does a variable exist for this CSS var" — the answer is
-     already sitting in this repo's own JSON, and a live enumeration is slow, burns a large
-     amount of context on a big collection, and risks a truncated/partial result on a large read.
+   resolve it to the matching **token name** — the name is the same in the repo and in the
+   Foundation library (`figma.config.json` → `foundationLibraryFileKey`), so it's the link Phase 3
+   binds by. Resolve it locally, no Figma call needed for the common case.
    - **Resolve with `scripts/figma-sync/lib/css-token-lookup.mjs`** (pure Node, no Figma call):
      ```bash
      node scripts/figma-sync/lib/css-token-lookup.mjs packages/tokens/tokens/Base.tokens.json \
@@ -158,22 +150,27 @@ the measurements triage (6) are presented **once for the whole family** (`conven
      ```
      Pass every `--ds-*` var found in the component's SCSS as its own `--var`. Each result is
      `null` (no token exists under that name — see the hard-stop rule below) or
-     `{ path, cssVar, variableId, figmaScopes, type, description }`, where `variableId` is the
-     real `VariableID:...` string to bind against in Phase 3 — write it straight into
-     `<name>.figma.md`'s `tokens:` list (see [`examples/mapping-file-format.md`](examples/mapping-file-format.md)), no further lookup
-     needed. A breakpoint-suffixed var (`--ds-logo-size-base-mobile`/`-tablet`/`-desktop`)
-     resolves to that one breakpoint's own id directly; the bare, un-suffixed var resolves to the
-     full `{ mobile, tablet, desktop[, device] }` object — see `PHASE-3-BUILD.md` step 3's
-     responsive-binding mechanics for what `device` is and when it's present.
+     `{ path, cssVar, variableId, figmaScopes, type, description }`. The Figma variable name is
+     `path` joined with `/` (`🔗 Alias/🔤 Text/Color/Primary`) — write it into `<name>.figma.md`'s
+     `tokens:` list as `figmaVariable` (see [`examples/mapping-file-format.md`](examples/mapping-file-format.md)).
+     **Ignore `variableId`:** the ids in `Base.tokens.json` belong to the Core file's old local
+     token copy, not to Foundation. A responsive token has one variable per breakpoint, named
+     `<path>/Mobile`, `<path>/Tablet`, `<path>/Desktop` (the bare var resolves to the
+     `{ mobile, tablet, desktop[, device] }` object; see 5a).
+   - **Check the names exist in Foundation** — one read-only `use_figma` call on the Foundation
+     file per run: list its local variables' names (`figma.variables.getLocalVariablesAsync()`)
+     and look up every name this component needs. Don't search from the Core file: its library
+     listing (`teamLibrary.getVariablesInLibraryCollectionAsync`) and `search_design_system`
+     return no Foundation variables, although the variables are published and importable by key.
+     A name the repo has but Foundation doesn't is a **hard stop** (the token isn't synced yet):
+     list them and ask the user to run the token sync.
    - **This still requires `search_design_system`/`get_variable_defs`/live enumeration for
      exactly one case: a value with no CSS-var binding at all** (a hardcoded literal in the
      component's `.tsx`, or an inherited attribute the component's own code never sets — see step 3) that you need to find an _existing_ token for by browsing, since there's no `--ds-*` name
-     to look up. Even then, remember those two tools only search/read **published libraries** —
-     the real token variables are **local** to the component-library file, pushed directly by
-     `scripts/figma-sync`, so a live Figma search can return misleading look-alike results from
-     an unrelated published library (e.g. old sandbox files with similar naming). Prefer browsing
-     `Base.tokens.json` itself (it's just JSON) for a token with the right semantic value before
-     reaching for a Figma-side search.
+     to look up. Browse `Base.tokens.json` itself (it's just JSON) for a token with the right
+     semantic value. Never take a match from another published library: the Core file still
+     subscribes to the previous design system's libraries (`🧩 Components`, `🎨 Colors`, …), whose
+     look-alike names aren't our tokens.
    - **Any CSS var that resolves to `null`** (a real `--ds-*` var in the component's SCSS with no
      matching entry in `Base.tokens.json` at all — a token that was renamed, or never
      synced) **is a hard stop.** Report it immediately — do not guess, do not push a hardcoded
@@ -217,12 +214,15 @@ Tokens` collection has exactly those three. Any other mixin (`desktop-lg`, `desk
      - Record every responsive binding found in the draft's `device:` section — see
        [`examples/mapping-file-format.md`](examples/mapping-file-format.md). A component with no breakpoint-driven token differences has no
        `device:` section at all, same as `anatomy:`/`states:` being omitted when not applicable.
-       Resolve each mode's real variable id by running the breakpoint-suffixed CSS var (e.g.
-       `--ds-logo-size-base-mobile`) through `css-token-lookup.mjs` from step 5 above — same one
-       call, no separate lookup mechanism for this case.
-     - Phase 3 is what actually creates/reuses the Figma routing variable and binds nodes to it —
-       this step only needs to identify and record which bindings are responsive and what each
-       mode's real token is.
+       Record each mode's variable name (`<path>/Mobile`, `/Tablet`, `/Desktop`, from the
+       breakpoint-suffixed CSS var through `css-token-lookup.mjs` in step 5).
+     - **The routing variable** (`<path>/Device` in Foundation's `Design Responsive Tokens`) is
+       what Phase 3 binds the node to. Check it in the same Foundation read as step 5. **Missing
+       → hard stop, stop and list** (user decision, 17.11.2026): tokens only come from the repo
+       through the token sync, so the skill never creates a variable in Foundation or in the
+       Core file. List each missing routing variable with its name and the Mobile / Tablet /
+       Desktop variables it should point to, and ask the user to add it through the token
+       pipeline. Today only `📱 Device/*` tokens have one.
    - 5b. Before writing the draft file, build an explicit **completeness checklist**: list every
      node the Figma build will need (every text-bearing part, every filled/stroked shape, every
      spacing gap) and, for each one, every visual attribute it needs (text: family, size, weight,
@@ -319,7 +319,7 @@ A draft mapping file `<name>.figma.md`, written per
   text-only slot) and every generated text marked
 - Lettered anatomy (`@part` tags cross-checked against `render()`)
 - Interaction and component states from `<name>.host.scss`
-- Resolved token/variable id for every CSS-var binding, including responsive `device:` bindings
+- The Foundation variable name for every CSS-var binding, including responsive `device:` bindings
 - Nested DS component references (their Figma component keys)
 - The `variations:` list per covered set, with each entry's snapshot case or `missing`
 - The completeness checklist
@@ -332,8 +332,10 @@ A draft mapping file `<name>.figma.md`, written per
 - Every public prop is extracted and typed; every parent-set prop carries `drivenBy`.
 - Every `@part` tag matches a real `part="..."` attribute in `render()` (or the mismatch was
   resolved with the user).
-- Every CSS-var token resolves to a real Figma variable id, or was explicitly flagged as a hard
-  stop and resolved with the user — none left as a guess or silent default.
+- Every CSS-var token resolves to a variable name that exists in Foundation, or was explicitly
+  flagged as a hard stop and resolved with the user — none left as a guess or silent default.
+- Every responsive binding's `<path>/Device` routing variable exists in Foundation, or is listed
+  as missing for the token pipeline.
 - Responsive (device-mode) bindings are identified and recorded under `device:`.
 - The completeness checklist has no unresolved gaps.
 - Every measured size is in the measurements triage with a group and a proposal, and the user confirmed

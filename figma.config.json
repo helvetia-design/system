@@ -1,3 +1,8 @@
 {
-  "componentLibraryFileKey": "NzMFv5HwO14Mmro8bWyvlO"
+  "componentLibraryFileKey": "NzMFv5HwO14Mmro8bWyvlO",
+  "foundationLibraryFileKey": "teReC9YAGxUi246itZEIkl",
+  "foundationVariableCollections": {
+    "Design Tokens": "b563ad0f28e332283dfe9f2cd63bb13bcc7cc7a0",
+    "Design Responsive Tokens": "fd26ad11f2d134526a3ddd91fa28feb3282de628"
+  }
 }

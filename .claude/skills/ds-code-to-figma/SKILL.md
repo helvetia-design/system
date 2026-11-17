@@ -170,6 +170,10 @@ reusing existing components, since the same discipline applies here.
 - `figma.config.json` at the repo root must have a real `componentLibraryFileKey` (not the
   `REPLACE_WITH_FIGMA_FILE_KEY` placeholder). If it's still the placeholder, stop and ask the
   user for the file key before doing anything else.
+- **Tokens live in the Foundation library**, not in the component file: `figma.config.json` →
+  `foundationLibraryFileKey` and `foundationVariableCollections`. Components bind to Foundation
+  variables, imported by key (`conventions/tokens-and-props.md` → "Binding Foundation
+  variables"). The Foundation library must be published and added to the component file.
 - The target component must already exist in code (`packages/core/src/components/<category>/<name>/`).
 - If the family uses a **nested component** (an independent DS component from another family, e.g.
   a button using an icon), the nested component's own `<child>.figma.md` must already exist and

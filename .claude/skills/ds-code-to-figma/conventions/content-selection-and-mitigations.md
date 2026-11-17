@@ -68,7 +68,7 @@ property, never an exposed nested instance, never a separate set per icon.
   looks right on navy parents. Phase 1 records, per variant and state, where the code takes the
   icon color from: the parent's `--icon-color` (usually its text token), `ds-icon`'s `color` /
   `inverted` / `disabled` props, or nothing (Icon primary), as the slot's `colorSource`. Phase 3
-  binds the vector fill to exactly that on every variant; Phase 4 compares variable ids against it.
+  binds the vector fill to exactly that on every variant; Phase 4 compares the bound variables by name against it.
 - **Build order:** read the glyph and its vector **before** binding `visible` to a `show` boolean
   that defaults to false: the hidden layer's children can't be read afterwards.
 

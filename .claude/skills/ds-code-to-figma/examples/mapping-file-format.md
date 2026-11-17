@@ -94,33 +94,27 @@ props:
   responsiveBindings:
   - cssVar: [--ds-logo-size-base-mobile, --ds-logo-size-base-desktop] # every real --ds-* token
     # involved across the component's breakpoints, in mobile→desktop order
-    routingVariable: 🧩 Component/Logo/Size/Base/Device # created/reused by Phase 3 in the file's
-    # `Design Responsive Tokens` collection; deterministic name, see PHASE-3-BUILD.md
+    routingVariable: 🧩 Component/Logo/Size/Base/Device # in Foundation's `Design Responsive
+    # Tokens`, created by the token sync — never by this skill; missing = stop and list (Phase 1 step 5a)
     modes:
     mobile: 🧩 Component/Logo/Size/Base/Mobile # real scripts/figma-sync-managed variable this
     # mode's alias points at
     tablet: 🧩 Component/Logo/Size/Base/Mobile # falls through to Mobile's token — code has no
     # @include tablet override for this property, so Tablet renders the same as Mobile
     desktop: 🧩 Component/Logo/Size/Base/Desktop
-    risk: "Hand-created by this skill, not emitted by scripts/figma-sync — if the underlying
-    per-breakpoint variables are ever renamed/removed, this alias goes stale with no automatic
-    fix. Feeding this pattern into the sync pipeline itself is real follow-up work, not yet done."
+    exists: true # false → listed for the token pipeline, the component waits
     tokens:
-- cssVar: --ds-alias-background-color-sky
-  figmaVariable: Alias/Background Color/Sky
-  figmaVariableId: VariableID:137:83 # from css-token-lookup.mjs — see PHASE-1-ANALYZE.md step 5.
-  # Phase 3 binds directly against this id (getVariableByIdAsync), never a name search.
+- cssVar: --ds-alias-surface-sky
+  figmaVariable: 🔗 Alias/🎨 Surface/Sky # token path joined with / — the Foundation variable name
+  # (PHASE-1-ANALYZE.md step 5). Phase 3 imports it from Foundation by key and binds it.
   resolved: true
 - cssVar: --ds-spinner-color-one-off
   figmaVariable: null
-  figmaVariableId: null
   resolved: false
   resolution: "<decision made with the user — pick a token or accept hardcoded>"
 - cssVar: [--ds-logo-size-base-mobile, --ds-logo-size-base-desktop]
   figmaVariable: 🧩 Component/Logo/Size/Base/Device # see device: above — responsive, not a
   # single static token
-  figmaVariableId: null # the routing/Device variable is hand-created by Phase 3, not resolved by
-  # css-token-lookup.mjs — see device: above and PHASE-3-BUILD.md step 3
   resolved: true
   measurements: # confirmed measurements triage (PHASE-1-ANALYZE.md step 6), rendered by Phase 8. Rules:
   # conventions/measurements.md
