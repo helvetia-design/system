@@ -213,6 +213,25 @@ variations:
           nodeId: null
 ```
 
+## Slots field
+
+Drafted in Phase 1 (step 4), confirmed in Phase 2. One entry per open slot — a declared `@slot`
+that takes any content inside a part (`PHASE-3-BUILD.md` → "Slots"). Family slots that take
+sub-component instances use the same key, see "Family fields".
+
+```yaml
+slots:
+  - codeSlot: start
+    figmaSlot: start # lowercase
+    part: control # the frame it sits in
+    position: first # first | after <layer> | last — its place among the part's children
+    content: open # any content; icons are the main use
+    preferred: [Icon, Button] # DS sets the docs / tests put there, main use first
+    defaultFill: empty
+    figmaPropertyKey: null # filled in by Phase 3 (start#123:4)
+    showPropertyKey: null # the `show start` boolean, filled in by Phase 3
+```
+
 ## Family fields
 
 Only for a family with sub-components (`../conventions/families.md`). A family of one has none of
@@ -232,7 +251,7 @@ nested:
     subComponent: true
     relation: contained
     figmaComponentKey: null
-slots: # one per code @slot that takes sub-component instances — in the file of the component that declares the @slot
+slots: # family slots: one per code @slot that takes sub-component instances — in the file of the component that declares the @slot (open slots: see "Slots field")
   - codeSlot: tab # '' for the default slot
     figmaSlot: tabs # lowercase
     preferred: [Tab] # TabsInverted's slot prefers TabInverted

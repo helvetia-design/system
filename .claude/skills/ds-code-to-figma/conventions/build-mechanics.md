@@ -5,14 +5,18 @@ phase or section. See `../CONVENTIONS.md` for the index.
 
 ## Platform limits
 
-- **A real `SLOT` node cannot be created from scratch via the Plugin API** — `figma.createSlot`
-  doesn't exist. The only way to get a genuine `SLOT`-typed node is to `clone()` one off an
-  existing slotted component (e.g. `Preview`'s own slot) — but a cloned slot's `layoutMode` (and
-  likely other slot-specific structural properties) silently fails to persist when set
-  afterward, even with no thrown error. Reuse an existing, already-correctly-configured slotted
-  component instead of trying to fabricate a new slot shape; if a slot needs a different internal
-  layout, put a plain auto-layout frame _inside_ the existing slot rather than reconfiguring the
-  slot itself.
+- **Slots** (checked 16.11.2026 on a scratch set). In a component set, add the property once on
+  the set — `set.addComponentProperty('<name>', 'SLOT', '')` — and bind a frame in each variant
+  with `frame.componentPropertyReferences = { slotContentId: key }`; the frame becomes a `SLOT`
+  node, also when nested inside another frame (`control`). On a single component,
+  `component.createSlot()` does both; the slot can then be moved into a nested frame. Preferred
+  instances: `set.editComponentProperty(key, { preferredValues: [{ type: 'COMPONENT_SET', key }] })`.
+  `setProperties` can't set a slot: fill it in an instance with `appendChild`. `slot.clone()`
+  returns a plain frame. Not allowed: `GRID` layout on a slot, a slot nested inside another slot.
+  An empty slot keeps a size (100 × 100 by default) and takes the parent's gap; a hidden slot
+  can't be found in an instance — bind a boolean to its `visible` and turn it on first.
+  Cloning a slot off an existing slotted component (e.g. `Preview`) loses slot settings like
+  `layoutMode` — don't build slots that way.
 - **Figma hard-rejects moving a subtree that itself contains `SLOT` instances into _another_
   slot's contents** — `Cannot move node. Node is not allowed SLOT node`. A documentation frame is
   already 2 slot-levels deep internally (Anatomy/Measurements each nest a `Preview` inside a `Preview`)

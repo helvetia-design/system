@@ -87,6 +87,8 @@ the owner, e.g. `ButtonGroup`'s slot holds `Button` instances).
   each instance's text property (`setProperties`), never by editing `characters`.
 - Record it under `slots:` in the mapping file of the component that owns the slot
   (`../examples/mapping-file-format.md`).
+- Build mechanics are the same as for an open slot outside a family: `../PHASE-3-BUILD.md` →
+  "Slots".
 
 ## 5. Anatomy
 

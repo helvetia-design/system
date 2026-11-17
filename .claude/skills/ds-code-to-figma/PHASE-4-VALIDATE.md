@@ -76,10 +76,11 @@ worst of all reports (`fail` > `blocked` > `pass`) and decides [Next Phase](#nex
    sub-component's own mapping file recorded in Phase 3 (the `…Inverted` set inside an
    `…Inverted` owner set). A nested non-slot instance whose text the parent passes in has
    `isExposedInstance = true`; every other nested instance and every icon slot has `false`.
-   d. **Family only:** every `slots:` entry is a native `SLOT` on every variant, with the recorded
-   preferred instances and the confirmed default fill (count, non-default props, text); every
-   `drivenBy` prop on every sub-component instance matches the owner variant it sits in (e.g.
-   every `Tab` inside `Tabs vertical=true` has `vertical=true`).
+   d. Every `slots:` entry is a native `SLOT` on every variant, at its recorded position in its
+   part, with the recorded preferred instances and the confirmed default fill (count, non-default
+   props, text; empty for an open slot). **Family only:** every `drivenBy` prop on every
+   sub-component instance matches the owner variant it sits in (e.g. every `Tab` inside
+   `Tabs vertical=true` has `vertical=true`).
    c. Every icon slot and fixed icon (`conventions/content-selection-and-mitigations.md` → "Fixed icons": same checks, minus the swap property and preferred values) from the mapping file is a directly nested glyph library instance (no Icon wrapper); every icon slot has its `INSTANCE_SWAP` property (lowercase name,
    bound on every variant), the right `preferredValues` (icon library, plus brand-icon library
    where applicable), and no exposed nested instance properties. The glyph's size and vector fill

@@ -140,3 +140,20 @@ all 208 (clones lose references).
 | 5c  | Ordering                       | pass   | First layer and top-left cell `color=primary, required=true, state=default, filled=false, disabled=false, loading=false, invalid=false`; 0 variants off-centre.                                                                                                                                                                                          |
 | 6b  | Screenshot                     | pass   | `4276:53`: all 13 columns and 16 rows visible after the HUG width fix.                                                                                                                                                                                                                                                                                   |
 | —   | Instances                      | pass   | 12 / 12 on normal `primary` variants, unchanged.                                                                                                                                                                                                                                                                                                         |
+
+## Re-check: open slots `start` / `end` (16.11.2026, on main)
+
+Added in place (`PHASE-3-BUILD.md` → "Slots"): set properties `start#6102:0` / `end#6102:418`
+(`SLOT`, preferred Icon, Button) and `show start#6102:209` / `show end#6102:627` (`BOOLEAN`,
+default `false`). Only the checks the change touches.
+
+| #   | Check                     | Result | Evidence                                                                                                                                                                                                                           |
+| --- | ------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4d  | Slots                     | pass   | 208 / 208 variants: `start` (`SLOT`) first in `control`, `end` (`SLOT`) right after `placeholder` (before `spinner` on 64 / 64 `loading=true`); `slotContentId` and `visible` bound; hidden by default; empty. 0 variants resized. |
+| 4d  | Preferred instances       | pass   | Both slots: Icon (`6bc4d6df…`), Button (`8956ebb8…`). No Tag set in Figma yet.                                                                                                                                                     |
+| 5e  | Variations structure      | pass   | 4 entries: `show description`, `show start`, `show end`, `all on`; each instance's `show` booleans match its caption, default variant otherwise; slots filled with an Icon. Entries row wraps (`FILL`, one per row).               |
+| 6e  | `show start` / `show end` | pass   | vs `input-suffix` (tag in start / button in end): content right after the left padding, 4px gap, text; end content at the right edge. Content differs (Icon in Figma).                                                             |
+| 6e  | `all on`                  | pass   | vs `input-slots`: start and end content on both sides of the text, description below.                                                                                                                                              |
+
+**Verdict: `pass`.** Code finding, not a Figma check: the `loading` JSDoc says the spinner replaces
+the end slot content, but both render (`input.figma.md` → Notes).
