@@ -23,10 +23,20 @@ details.ds-accordion {
 
   /* Default marker variant */
   @include vars.local(accordion-marker-icon, var(--accordion-marker-chevron));
-  @include vars.local(accordion-marker-size, 1rem);
+  @include vars.local(accordion-marker-size, var(--ds-accordion-marker-size));
+  @include vars.local(accordion-marker-width, var(--ds-accordion-marker-width));
+
+  @include vars.local(accordion-summary-color, var(--ds-accordion-summary-color-base));
+  @include vars.local(accordion-summary-gap, var(--ds-accordion-summary-gap));
+  @include vars.local(accordion-summary-font-family, var(--ds-accordion-summary-typo-font-family));
+  @include vars.local(accordion-summary-font-weight, var(--ds-accordion-summary-typo-font-weight));
+  @include vars.local(accordion-summary-font-line-height, var(--ds-accordion-summary-typo-line-height));
+  @include vars.local(accordion-summary-font-size, var(--ds-accordion-summary-typo-font-size));
   @include vars.local(accordion-summary-color-hover, var(--ds-accordion-summary-color-hover));
   @include vars.local(accordion-summary-color-active, var(--ds-accordion-summary-color-active));
   @include vars.local(accordion-radius, var(--ds-accordion-radius));
+  @include vars.local(accordion-button-end-offset, var(--ds-accordion-button-end-offset-base));
+  @include vars.local(accordion-button-end-offset-sm, var(--ds-accordion-button-end-offset-sm));
 }
 
 /**
@@ -48,7 +58,13 @@ details.ds-accordion > summary:not(.ds-button) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: var(--_accordion-summary-gap);
+
+  color: var(--_accordion-summary-color);
+  font-family: var(--_accordion-summary-font-family);
+  font-weight: var(--_accordion-summary-font-weight);
+  line-height: var(--_accordion-summary-font-line-height);
+  font-size: var(--_accordion-summary-font-size);
 
   @include hover {
     &:hover,
@@ -94,6 +110,34 @@ details.ds-accordion > summary:not(.ds-button) {
 }
 
 //
+// Summary as a title
+details.ds-accordion.is-title {
+  --mod-accordion-summary-font-family: var(--ds-accordion-summary-title-typo-font-family);
+  --mod-accordion-summary-font-weight: var(--ds-accordion-summary-title-typo-font-weight);
+  --mod-accordion-summary-font-line-height: var(--ds-accordion-summary-title-typo-line-height);
+}
+
+details.ds-accordion.is-h1 {
+  --mod-accordion-summary-font-size: var(--ds-accordion-summary-level-1-font-size);
+}
+
+details.ds-accordion.is-h2 {
+  --mod-accordion-summary-font-size: var(--ds-accordion-summary-level-2-font-size);
+}
+
+details.ds-accordion.is-h3 {
+  --mod-accordion-summary-font-size: var(--ds-accordion-summary-level-3-font-size);
+}
+
+details.ds-accordion.is-h4 {
+  --mod-accordion-summary-font-size: var(--ds-accordion-summary-level-4-font-size);
+}
+
+details.ds-accordion.is-h5 {
+  --mod-accordion-summary-font-size: var(--ds-accordion-summary-level-5-font-size);
+}
+
+//
 // Marker styles
 details.ds-accordion > summary {
   /* Hide the native disclosure triangle */
@@ -115,8 +159,9 @@ details.ds-accordion {
     content: '';
     flex: 0 0 auto;
     min-width: var(--_accordion-marker-size);
-    width: 1.5rem;
+    width: var(--_accordion-marker-width);
     height: var(--_accordion-marker-size);
+    // ds-token-check: intentional — mask tint follows the summary text color
     background-color: currentcolor;
     mask-image: var(--_accordion-marker-icon);
     mask-repeat: no-repeat;
@@ -127,10 +172,12 @@ details.ds-accordion {
   }
 
   &[open]:not(.has-marker-plus, .has-marker-plus-minus) > summary::after {
+    // ds-token-check: intentional — fixed marker geometry, not brand-themeable
     transform: rotate(180deg);
   }
 
   &.has-marker-plus[open] > summary::after {
+    // ds-token-check: intentional — fixed marker geometry, not brand-themeable
     transform: rotate(45deg);
   }
 
@@ -215,11 +262,11 @@ details.ds-accordion {
  * Uses :has() to reserve space so the summary is visible even when closed.
  */
 details.ds-accordion:has(> summary.ds-button.at-end) {
-  padding-bottom: 3rem;
+  padding-bottom: var(--_accordion-button-end-offset);
 }
 
 details.ds-accordion:has(> summary.ds-button.is-sm.at-end) {
-  padding-bottom: 2rem;
+  padding-bottom: var(--_accordion-button-end-offset-sm);
 }
 
 details.ds-accordion > summary.ds-button.at-end {
@@ -231,11 +278,11 @@ details.ds-accordion > summary.ds-button.at-end {
 
 /* Keep content from being covered by the bottom-positioned summary */
 details.ds-accordion:has(> summary.ds-button.at-end) > summary.ds-button.at-end ~ * {
-  padding-bottom: 3rem;
+  padding-bottom: var(--_accordion-button-end-offset);
 }
 
 details.ds-accordion:has(> summary.ds-button.is-sm.at-end) > summary.ds-button.is-sm.at-end ~ * {
-  padding-bottom: 2rem;
+  padding-bottom: var(--_accordion-button-end-offset-sm);
 }
 
 /* Optional: show different summary text based on open/closed (CSS-only)

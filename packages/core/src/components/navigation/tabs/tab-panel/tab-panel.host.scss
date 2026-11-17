@@ -8,7 +8,7 @@
  */
 
 :host {
-  @include vars.local(tab-panel-p, var(--ds-tab-panel-padding));
+  @include vars.local(tab-panel-p, var(--ds-tab-panel-padding-y) var(--ds-tab-panel-padding-x));
 
   display: none;
 }

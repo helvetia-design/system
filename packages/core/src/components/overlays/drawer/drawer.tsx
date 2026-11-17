@@ -12,6 +12,7 @@ import { DrawerPresentDetail, DrawerDismissDetail, DRAWER_CONTAINERS, DrawerCont
  * @slot - The drawer content.
  * @part dialog - The native dialog element.
  * @part close  - The optional close button (visible when closable).
+ * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by `--drawer-close-inset` from the container's top-end corner.
  */
 @Component({
   tag: 'ds-drawer',

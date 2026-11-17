@@ -4,6 +4,7 @@
 @include hybrid.host-base(card-content, block);
 
 :host {
+  // Intentional: rich-text content uses the shared typography.content() scale, not Card-owned tokens.
   @include typography.content();
 
   color: var(--_card-color-text);

@@ -23,6 +23,7 @@ import { withValueAccessor } from './value-accessor'
  */
 @Component({
   selector: 'ds-checkbox-group',
+  host: { 'data-ds-form-control': '' },
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: DsCheckboxGroupInputs,

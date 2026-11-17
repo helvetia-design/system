@@ -18,6 +18,7 @@ vite.config.ts.**.mjs
 .playwright-mcp
 Base.tokens.json.backup
 debug.js
+*.token-check.md
 tsconfig.tsbuildinfo
 *.tsbuildinfo
 

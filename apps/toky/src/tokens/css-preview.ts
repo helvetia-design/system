@@ -15,7 +15,7 @@ export interface PreviewToken {
   value: string | null
 }
 
-// A typography token maps to 4 CSS custom properties, not 1 (see typographyValueToCss's own
+// A typography token maps to 7 CSS custom properties, not 1 (see typographyValueToCss's own
 // comment) — pushes 0 entries (unresolvable value, e.g. a dangling reference) or 4, never a
 // partial set, so the preview never applies fontFamily without a matching fontSize.
 //
@@ -32,7 +32,7 @@ function pushTypographyPreviewTokens(tokens: PreviewToken[], path: string[], res
   }
 }
 
-// Deleting a typography token has to clear all 4 of its custom properties, not just the base name
+// Deleting a typography token has to clear all 7 of its custom properties, not just the base name
 // (which was never itself a declared property — see pushTypographyPreviewTokens).
 function pushTypographyDeleteTokens(tokens: PreviewToken[], path: string[]): void {
   for (const suffix of Object.values(TYPOGRAPHY_CSS_SUFFIXES)) {

@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 $use-host: false !default;
 $name: table;
@@ -10,9 +11,34 @@ $css-selector: ('.ds-table');
  * --------------------------------
  * Define here the css variables for the component to be able to use it in host or non-host mode
  * These variables can be used in the component styles below and later on be overridden in themes.
+ *
+ * @prop --table-font-family: Font family of table cells.
+ * @prop --table-font-weight: Font weight of table cells.
+ * @prop --table-font-size: Font size of table cells.
+ * @prop --table-line-height: Line height of table cells.
+ * @prop --table-letter-spacing: Letter spacing of table cells.
+ * @prop --table-text-decoration: Text decoration of table cells.
+ * @prop --table-text-transform: Text transform of table cells.
+ * @prop --table-head-font-family: Font family of table head cells.
+ * @prop --table-head-font-weight: Font weight of table head cells.
+ * @prop --table-head-font-size: Font size of table head cells.
+ * @prop --table-head-line-height: Line height of table head cells.
+ * @prop --table-head-letter-spacing: Letter spacing of table head cells.
+ * @prop --table-head-text-decoration: Text decoration of table head cells.
+ * @prop --table-head-text-transform: Text transform of table head cells.
+ * @prop --table-color: Text color of table cells.
+ * @prop --table-cell-border: Border of table cells.
+ * @prop --table-cell-px: Horizontal padding of table cells.
+ * @prop --table-cell-py: Vertical padding of table cells.
+ * @prop --table-head-border: Border of table head cells.
+ * @prop --table-row-background-active: Row background color when active.
+ * @prop --table-row-background-hover: Row background color on hover.
+ * @prop --table-row-background-striped: Row background color for striped rows.
  */
 
 @include vars.hybrid($name, $css-selector, $use-host) {
+  @include typo.local(table, 'table-font');
+  @include typo.local(table-head, 'table-head-font');
   @include vars.local(table-color, var(--ds-table-color));
 
   @include vars.local(table-cell-border, var(--ds-table-cell-border));
@@ -39,10 +65,7 @@ $css-selector: ('.ds-table');
   display: table !important;
   border-spacing: 0;
   margin: 0;
-  font-family: var(--ds-table-font-font-family);
-  font-size: var(--ds-table-font-font-size);
-  font-weight: var(--ds-table-font-font-weight);
-  line-height: var(--ds-table-font-line-height);
+  @include typo.apply(table);
   color: var(--_table-color);
 
   td,
@@ -93,10 +116,7 @@ $css-selector: ('.ds-table');
       border-bottom: var(--_table-head-border);
     }
     th {
-      font-family: var(--ds-table-head-font-font-family);
-      font-size: var(--ds-table-head-font-font-size);
-      font-weight: var(--ds-table-head-font-font-weight);
-      line-height: var(--ds-table-head-font-line-height);
+      @include typo.apply(table-head);
     }
   }
   tbody {

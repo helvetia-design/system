@@ -1,9 +1,66 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
+@use './vars' as vars;
+
+// Typography mixin family — wires all seven parts of one typography token (family, size,
+// weight, line height, letter spacing, text decoration, text transform) to a text part.
+// $name is the local var/prop prefix (e.g. 'button-size-base-label'), $token the typography
+// token's CSS var path (e.g. 'button-size-base-label-typo', read as --ds-#{$token}-font-family …).
+$_parts:
+  'font-family', 'font-size', 'font-weight', 'line-height', 'letter-spacing', 'text-decoration', 'text-transform';
+$_inline-parts: 'font-weight', 'letter-spacing', 'text-decoration', 'text-transform';
+
+@mixin local($name, $token) {
+  @each $part in $_parts {
+    @include vars.local(#{$name}-#{$part}, var(--ds-#{$token}-#{$part}));
+  }
+}
+
+// $inline: true applies only the parts an inline text part (e.g. a link in running text)
+// does not inherit from its surrounding text — family, size and line height stay inherited.
+@mixin apply($name, $inline: false) {
+  $parts: $_parts;
+  @if $inline {
+    $parts: $_inline-parts;
+  }
+
+  @each $part in $parts {
+    #{$part}: var(--_#{$name}-#{$part});
+  }
+}
+
+@mixin mod($name, $token) {
+  @each $part in $_parts {
+    --mod-#{$name}-#{$part}: var(--ds-#{$token}-#{$part});
+  }
+}
+
+// Same token wiring as `apply`, but writes the literal CSS properties straight from the
+// token instead of through the --_/--mod- cascade. Use this when the override is applied on
+// a different element (e.g. a different shadow tree, or slotted content) than the one where
+// `local` declared the --_ variables — --mod- set there can't reach a --_ fallback already
+// resolved on an ancestor.
+@mixin apply-token($token, $inline: false) {
+  $parts: $_parts;
+  @if $inline {
+    $parts: $_inline-parts;
+  }
+
+  @each $part in $parts {
+    #{$part}: var(--ds-#{$token}-#{$part});
+  }
+}
 
 @mixin content($margin: true) {
-  font-family: var(--ds-alias-text-family-text);
-  font-weight: var(--ds-alias-text-weight-regular);
+  // Body text — all seven parts of the shared Text.Typo.Paragraph token.
+  font-family: var(--ds-text-typo-paragraph-font-family);
+  font-size: var(--ds-text-typo-paragraph-font-size);
+  font-weight: var(--ds-text-typo-paragraph-font-weight);
+  line-height: var(--ds-text-typo-paragraph-line-height);
+  letter-spacing: var(--ds-text-typo-paragraph-letter-spacing);
+  text-decoration: var(--ds-text-typo-paragraph-text-decoration);
+  text-transform: var(--ds-text-typo-paragraph-text-transform);
 
+  // Single-property part modifier — emphasis changes only weight (ADR-0037 decision 12).
   strong,
   b {
     font-weight: var(--ds-alias-text-weight-bold);
@@ -33,6 +90,9 @@
     [role='heading'][aria-level='#{$i}'] {
       font-size: var(--ds-heading-level-#{$i}-font-size);
       line-height: var(--ds-heading-level-#{$i}-line-height);
+      letter-spacing: var(--ds-heading-level-#{$i}-letter-spacing);
+      text-decoration: var(--ds-heading-level-#{$i}-text-decoration);
+      text-transform: var(--ds-heading-level-#{$i}-text-transform);
     }
   }
 

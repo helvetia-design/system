@@ -6,6 +6,12 @@
  * @prop --sheet-radius: Border radius of the sheet panel corners (defaults to large radius).
  * @prop --sheet-shadow: Box shadow of the sheet panel (defaults to base shadow).
  * @prop --sheet-position-bottom: Distance from the bottom of the viewport (defaults to the sheet token value).
+ * @prop --sheet-z-index: Stacking level of the sheet (defaults to the sticky z-index).
+ * @prop --sheet-margin-inline: Inline margin between the sheet panel and the viewport edges.
+ * @prop --sheet-padding: Inner padding of the sheet panel.
+ * @prop --sheet-width-default: Max width of the sheet panel in its default size.
+ * @prop --sheet-width-fluid: Max width of the sheet panel when `container-size="fluid"`.
+ * @prop --sheet-width-compact: Max width of the sheet panel when `container-size="compact"`.
  */
 
 // ─── Variables ────────────────────────────────────────────────────────────────
@@ -15,6 +21,12 @@
   @include vars.local(sheet-radius, var(--ds-sheet-radius));
   @include vars.local(sheet-shadow, var(--ds-sheet-shadow));
   @include vars.local(sheet-position-bottom, var(--ds-sheet-position-bottom));
+  @include vars.local(sheet-z-index, var(--ds-sheet-z-index));
+  @include vars.local(sheet-margin-inline, var(--ds-sheet-margin-inline));
+  @include vars.local(sheet-padding, var(--ds-sheet-padding));
+  @include vars.local(sheet-width-default, var(--ds-sheet-width-default));
+  @include vars.local(sheet-width-fluid, var(--ds-sheet-width-fluid));
+  @include vars.local(sheet-width-compact, var(--ds-sheet-width-compact));
 
   display: block;
   position: fixed;
@@ -22,32 +34,29 @@
   left: 0;
   right: 0;
   width: 100%;
-  z-index: var(--ds-alias-z-index-sticky);
+  z-index: var(--_sheet-z-index);
 }
 
 // ─── Container ───────────────────────────────────────────────────────────────
 
 :host .ds-container {
-  margin: 0 var(--ds-device-container-space);
-  max-width: var(--ds-alias-container-width-default);
+  margin-block: 0;
+  margin-inline: var(--_sheet-margin-inline);
+  max-width: var(--_sheet-width-default);
 
   @include desktop {
-    margin: 0 auto;
+    margin-inline: auto;
   }
   background-color: var(--_sheet-background);
   border-radius: var(--_sheet-radius);
   box-shadow: var(--_sheet-shadow);
-  padding: 1rem;
-
-  @include tablet {
-    padding: 1rem 1.5rem;
-  }
+  padding: var(--_sheet-padding);
 
   &.is-fluid {
-    max-width: var(--ds-alias-container-width-fluid);
+    max-width: var(--_sheet-width-fluid);
   }
 
   &.is-compact {
-    max-width: var(--ds-alias-container-width-compact);
+    max-width: var(--_sheet-width-compact);
   }
 }

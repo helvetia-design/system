@@ -2,15 +2,16 @@ import { describe, expect, it } from 'vitest'
 import { buildTokenIndex } from '../lib/alias.mjs'
 import { buildNameIndex, findCollectionAndModes, findResponsiveCollectionAndModes } from '../lib/figma.mjs'
 import {
-  figmaBorderSubValuesFor,
+  figmaBorderSubEntriesFor,
   figmaLineHeightPercentFor,
   figmaResponsiveDimensionSubEntriesFor,
   figmaShadowSubValuesFor,
-  figmaTypographySubValuesFor,
+  figmaTypographySubEntriesFor,
   figmaValueFor,
   flattenVariableId,
   isLineHeightNumberToken,
   resolvedTypeFor,
+  resolvedTypeForToken,
 } from '../lib/figma-value.mjs'
 import {
   assignVariableIds,
@@ -24,6 +25,7 @@ import {
   figmaShadowSubVariableName,
   figmaTypographySubVariableName,
   figmaVariableName,
+  findResolvedTypeMismatches,
   resolveTempIds,
 } from '../lib/write.mjs'
 
@@ -124,10 +126,21 @@ describe('isLineHeightNumberToken / figmaLineHeightPercentFor', () => {
     expect(isLineHeightNumberToken({ type: 'string', path: ['🌐 Global', 'LineHeight'] })).toBe(false)
   })
 
-  it("scales a raw CSS-style multiplier ×100 into Figma's percentage convention", () => {
-    expect(figmaLineHeightPercentFor(1)).toBe(100)
-    expect(figmaLineHeightPercentFor(1.3)).toBe(130)
-    expect(figmaLineHeightPercentFor(2)).toBe(200)
+  it("converts a raw CSS-style multiplier into Figma's percentage string", () => {
+    expect(figmaLineHeightPercentFor(1)).toBe('100%')
+    expect(figmaLineHeightPercentFor(1.3)).toBe('130%')
+    expect(figmaLineHeightPercentFor(1.5)).toBe('150%')
+    expect(figmaLineHeightPercentFor(2)).toBe('200%')
+  })
+
+  it('drops float noise instead of leaking it into the string', () => {
+    expect(figmaLineHeightPercentFor(1.15)).toBe('115%')
+    expect(figmaLineHeightPercentFor(1.3333)).toBe('133.33%')
+  })
+
+  it('maps a LineHeight number token to a STRING variable, any other number token to FLOAT', () => {
+    expect(resolvedTypeForToken({ type: 'number', path: ['🌐 Global', 'LineHeight', '2'] })).toBe('STRING')
+    expect(resolvedTypeForToken({ type: 'number', path: ['🔗 Alias', 'Opacity', 'Half'] })).toBe('FLOAT')
   })
 
   it('throws on a non-number value', () => {
@@ -216,59 +229,53 @@ describe('flattenVariableId', () => {
   })
 })
 
-describe('figmaBorderSubValuesFor', () => {
-  // Unlike shadow, a border token's color/width/style are each a {reference} string pointing at
-  // a real primitive token — figmaBorderSubValuesFor needs a tokenIndex to resolve them.
-  const colorToken = {
-    path: ['Alias', 'Border', 'Color', 'Grey'],
-    type: 'color',
-    value: {
-      kind: 'literal',
-      value: { colorSpace: 'srgb', components: [0.816, 0.816, 0.816], alpha: 1, hex: '#D0D0D0' },
-    },
-  }
-  const widthToken = {
-    path: ['Alias', 'Border', 'Width', 'Base'],
-    type: 'dimension',
-    value: { kind: 'literal', value: { value: 0.125, unit: 'rem' } },
-  }
-  const styleToken = {
-    path: ['Alias', 'Border', 'Style', 'Solid'],
-    type: 'string',
-    value: { kind: 'literal', value: 'solid' },
-  }
-  const tokenIndex = buildTokenIndex([colorToken, widthToken, styleToken])
-
+describe('figmaBorderSubEntriesFor', () => {
+  // Unlike shadow, a border token's color/width/style are each typically a {reference} string
+  // pointing at a real primitive token — figmaBorderSubEntriesFor tags each as 'reference' (so
+  // write.mjs's pass 2 can alias straight to that primitive's own variable) rather than resolving
+  // it to a literal.
   const borderValue = {
     color: '{Alias.Border.Color.Grey}',
     width: '{Alias.Border.Width.Base}',
     style: '{Alias.Border.Style.Solid}',
   }
 
-  it('decomposes a border value into 3 Figma-ready sub-values, resolving references and converting width to px', () => {
-    expect(figmaBorderSubValuesFor(borderValue, tokenIndex)).toEqual({
-      color: { r: 0.816, g: 0.816, b: 0.816, a: 1 },
-      width: 2,
-      style: 'solid',
+  it('tags a {reference}-string sub-value as a reference, without resolving it', () => {
+    expect(figmaBorderSubEntriesFor(borderValue)).toEqual({
+      color: { kind: 'reference', path: ['Alias', 'Border', 'Color', 'Grey'] },
+      width: { kind: 'reference', path: ['Alias', 'Border', 'Width', 'Base'] },
+      style: { kind: 'reference', path: ['Alias', 'Border', 'Style', 'Solid'] },
+    })
+  })
+
+  it('tags an already-literal sub-value as a literal, converting width to px', () => {
+    expect(
+      figmaBorderSubEntriesFor({
+        color: { colorSpace: 'srgb', components: [0.816, 0.816, 0.816], alpha: 1, hex: '#D0D0D0' },
+        width: { value: 0.125, unit: 'rem' },
+        style: 'solid',
+      }),
+    ).toEqual({
+      color: { kind: 'literal', value: { r: 0.816, g: 0.816, b: 0.816, a: 1 } },
+      width: { kind: 'literal', value: 2 },
+      style: { kind: 'literal', value: 'solid' },
     })
   })
 
   it('returns null for a malformed value (missing sub-value)', () => {
-    expect(figmaBorderSubValuesFor({ color: borderValue.color, width: borderValue.width }, tokenIndex)).toBeNull()
+    expect(figmaBorderSubEntriesFor({ color: borderValue.color, width: borderValue.width })).toBeNull()
   })
 
-  it('returns null when style does not resolve to a string', () => {
-    const numericStyleToken = { path: ['Alias', 'Bad'], type: 'number', value: { kind: 'literal', value: 5 } }
-    const badIndex = buildTokenIndex([colorToken, widthToken, numericStyleToken])
-    expect(figmaBorderSubValuesFor({ ...borderValue, style: '{Alias.Bad}' }, badIndex)).toBeNull()
+  it('returns null when a literal style is not a string', () => {
+    expect(figmaBorderSubEntriesFor({ ...borderValue, style: 5 })).toBeNull()
   })
 })
 
-describe('figmaTypographySubValuesFor', () => {
+describe('figmaTypographySubEntriesFor', () => {
   // fontFamily/fontWeight are always {reference} strings (docs/plans/typography-token-type-
-  // plan.md decision 4) — figmaTypographySubValuesFor needs a tokenIndex to resolve them.
-  // fontSize/lineHeight are free literal-or-reference; this fixture exercises both shapes (fontSize
-  // a literal, lineHeight a reference) since resolveLiteral is a no-op passthrough for a literal.
+  // plan.md decision 4) — tagged 'reference' rather than resolved, same policy as border's
+  // sub-values. fontSize/lineHeight are free literal-or-reference; this fixture exercises both
+  // shapes (fontSize a literal, lineHeight a reference).
   const familyToken = {
     path: ['Global', 'Font', 'Family', 'Heading'],
     type: 'fontFamily',
@@ -284,37 +291,108 @@ describe('figmaTypographySubValuesFor', () => {
     type: 'number',
     value: { kind: 'literal', value: 1.3 },
   }
-  const tokenIndex = buildTokenIndex([familyToken, weightToken, lineHeightToken])
+  const letterSpacingToken = {
+    path: ['Global', 'Font', 'LetterSpacing', '0'],
+    type: 'dimension',
+    value: { kind: 'literal', value: { value: 0, unit: 'rem' } },
+  }
+  const decorationToken = {
+    path: ['Global', 'Font', 'TextDecoration', 'None'],
+    type: 'textDecoration',
+    value: { kind: 'literal', value: 'none' },
+  }
+  const transformToken = {
+    path: ['Global', 'Font', 'TextTransform', 'Uppercase'],
+    type: 'textTransform',
+    value: { kind: 'literal', value: 'uppercase' },
+  }
+  const tokenIndex = buildTokenIndex([
+    familyToken,
+    weightToken,
+    lineHeightToken,
+    letterSpacingToken,
+    decorationToken,
+    transformToken,
+  ])
 
   const typographyValue = {
     fontFamily: '{Global.Font.Family.Heading}',
     fontSize: { value: 16, unit: 'px' },
     fontWeight: '{Global.Font.Weight.700}',
     lineHeight: '{Global.Font.LineHeight.2}',
+    letterSpacing: '{Global.Font.LetterSpacing.0}',
+    textDecoration: '{Global.Font.TextDecoration.None}',
+    textTransform: '{Global.Font.TextTransform.Uppercase}',
   }
 
-  it('decomposes a typography value into 4 Figma-ready sub-values, resolving references', () => {
-    expect(figmaTypographySubValuesFor(typographyValue, tokenIndex)).toEqual({
-      fontFamily: 'BaloiseCreateHeadline',
-      fontSize: 16,
-      fontWeight: 'Bold',
-      lineHeight: 130,
+  it('tags each {reference}-string sub-value as a reference, except letterSpacing (always computed) and the literal fontSize', () => {
+    expect(figmaTypographySubEntriesFor(typographyValue, tokenIndex)).toEqual({
+      fontFamily: { kind: 'reference', path: ['Global', 'Font', 'Family', 'Heading'] },
+      fontSize: { kind: 'literal', value: 16 },
+      fontWeight: { kind: 'reference', path: ['Global', 'Font', 'Weight', '700'] },
+      lineHeight: { kind: 'reference', path: ['Global', 'Font', 'LineHeight', '2'] },
+      letterSpacing: { kind: 'literal', value: '0%' },
+      textDecoration: { kind: 'reference', path: ['Global', 'Font', 'TextDecoration', 'None'] },
+      textTransform: { kind: 'reference', path: ['Global', 'Font', 'TextTransform', 'Uppercase'] },
     })
+  })
+
+  it('expresses a non-zero letter-spacing as a percentage of the literal font size, always as a literal', () => {
+    // 0.2rem = 3.2px, against a 16px font = 20%
+    const value = { ...typographyValue, letterSpacing: { value: 0.2, unit: 'rem' } }
+    expect(figmaTypographySubEntriesFor(value, tokenIndex).letterSpacing).toEqual({ kind: 'literal', value: '20%' })
+  })
+
+  it("uses the referenced responsive font size's desktop breakpoint, not its mobile-mirroring $value", () => {
+    const responsiveSize = {
+      path: ['Device', 'Text', 'Size', 'SM'],
+      type: 'dimension',
+      value: { kind: 'literal', value: { value: 12, unit: 'px' } }, // mirrors mobile
+      responsive: {
+        mobile: { value: 12, unit: 'px' },
+        tablet: { value: 14, unit: 'px' },
+        desktop: { value: 32, unit: 'px' },
+      },
+    }
+    const index = buildTokenIndex([...tokenIndex.values(), responsiveSize])
+    const value = { ...typographyValue, fontSize: '{Device.Text.Size.SM}', letterSpacing: { value: 0.2, unit: 'rem' } }
+    // 3.2px / 32px (desktop) = 10%, not 3.2 / 12 = 26.6667%
+    expect(figmaTypographySubEntriesFor(value, index).letterSpacing).toEqual({ kind: 'literal', value: '10%' })
   })
 
   it('returns null for a malformed value (missing sub-value)', () => {
     expect(
-      figmaTypographySubValuesFor(
+      figmaTypographySubEntriesFor(
         { fontFamily: typographyValue.fontFamily, fontSize: typographyValue.fontSize },
         tokenIndex,
       ),
     ).toBeNull()
   })
 
-  it('returns null when lineHeight does not resolve to a number', () => {
+  it.each(['letterSpacing', 'textDecoration', 'textTransform'])(
+    'returns null when the required %s sub-value is missing',
+    field => {
+      expect(figmaTypographySubEntriesFor({ ...typographyValue, [field]: undefined }, tokenIndex)).toBeNull()
+    },
+  )
+
+  it('returns null when a literal lineHeight does not resolve to a number', () => {
+    expect(figmaTypographySubEntriesFor({ ...typographyValue, lineHeight: 'not-a-number' }, tokenIndex)).toBeNull()
+  })
+
+  it('tags even a reference to a non-LineHeight-shaped token as a reference, untyped-checked here (same single-hop-trust policy as border)', () => {
     const stringLineHeightToken = { path: ['Global', 'Bad'], type: 'string', value: { kind: 'literal', value: 'nope' } }
-    const badIndex = buildTokenIndex([familyToken, weightToken, stringLineHeightToken])
-    expect(figmaTypographySubValuesFor({ ...typographyValue, lineHeight: '{Global.Bad}' }, badIndex)).toBeNull()
+    const badIndex = buildTokenIndex([
+      familyToken,
+      weightToken,
+      stringLineHeightToken,
+      letterSpacingToken,
+      decorationToken,
+      transformToken,
+    ])
+    expect(
+      figmaTypographySubEntriesFor({ ...typographyValue, lineHeight: '{Global.Bad}' }, badIndex).lineHeight,
+    ).toEqual({ kind: 'reference', path: ['Global', 'Bad'] })
   })
 })
 
@@ -357,7 +435,7 @@ describe('LineHeight number token push (two-pass write payload)', () => {
   }
   const tokens = [lineHeightToken, opacityToken]
 
-  it("writes a LineHeight number token's mode-value scaled ×100, but leaves a same-type Opacity token unscaled", () => {
+  it("writes a LineHeight number token's mode-value as a percentage string, but leaves a same-type Opacity token unscaled", () => {
     const idByPath = assignVariableIds(tokens)
     const { variableModeValues } = buildCreatePassPayload({
       baseTokens: tokens,
@@ -367,7 +445,7 @@ describe('LineHeight number token push (two-pass write payload)', () => {
       modeIdByBrand: { Base: 'm-base' },
     })
     const byId = Object.fromEntries(variableModeValues.map(v => [v.variableId, v.value]))
-    expect(byId[idByPath.get('🌐 Global.🔤 Font.LineHeight.2')]).toBe(130)
+    expect(byId[idByPath.get('🌐 Global.🔤 Font.LineHeight.2')]).toBe('130%')
     expect(byId[idByPath.get('🔗 Alias.🌫️ Opacity.Half')]).toBe(0.5)
   })
 })
@@ -624,7 +702,7 @@ describe('border push (two-pass write payload)', () => {
     expect(figmaBorderSubVariableName(borderToken.path, 'width')).toBe('Alias/Border/Composite/Grey/BorderWidth')
   })
 
-  it('pass 1 writes 3 literal mode-values for a border token, resolving its referenced color/width/style', () => {
+  it("pass 1 writes no mode-values for the composite's own sub-properties, since color/width/style are each a single-hop reference deferred to pass 2's alias binding", () => {
     const idByPath = assignVariableIds(borderBaseTokens)
     const { variableModeValues } = buildCreatePassPayload({
       baseTokens: borderBaseTokens,
@@ -635,14 +713,21 @@ describe('border push (two-pass write payload)', () => {
     })
 
     const byId = Object.fromEntries(variableModeValues.map(v => [v.variableId, v.value]))
-    expect(byId['temp-Alias.Border.Composite.Grey-color']).toEqual({ r: 0.816, g: 0.816, b: 0.816, a: 1 })
-    expect(byId['temp-Alias.Border.Composite.Grey-width']).toBe(2)
-    expect(byId['temp-Alias.Border.Composite.Grey-style']).toBe('solid')
+    expect(byId['temp-Alias.Border.Composite.Grey-color']).toBeUndefined()
+    expect(byId['temp-Alias.Border.Composite.Grey-width']).toBeUndefined()
+    expect(byId['temp-Alias.Border.Composite.Grey-style']).toBeUndefined()
+    // The primitives themselves are plain (non-composite) tokens — still written as literals here.
+    expect(byId['temp-Alias.Border.Color.Grey']).toEqual({ r: 0.816, g: 0.816, b: 0.816, a: 1 })
+    expect(byId['temp-Alias.Border.Width.Base']).toBe(2)
+    expect(byId['temp-Alias.Border.Style.Solid']).toBe('solid')
   })
 
-  it('pass 2 writes 3 alias mode-values for a border reference, each pointing at the matching sub-property of the target', () => {
+  it("pass 2 writes an alias mode-value per sub-property for both the composite's own color/width/style references and a border token that references the whole composite", () => {
     const idByPath = assignVariableIds(borderBaseTokens)
     resolveTempIds(idByPath, {
+      'temp-Alias.Border.Color.Grey': 'real-color-prim',
+      'temp-Alias.Border.Width.Base': 'real-width-prim',
+      'temp-Alias.Border.Style.Solid': 'real-style-prim',
       'temp-Alias.Border.Composite.Grey-color': 'real-c',
       'temp-Alias.Border.Composite.Grey-width': 'real-w',
       'temp-Alias.Border.Composite.Grey-style': 'real-s',
@@ -658,9 +743,12 @@ describe('border push (two-pass write payload)', () => {
       modeIdByBrand: { Base: 'm-base' },
     })
 
-    expect(variableModeValues).toHaveLength(3)
-    const widthAlias = variableModeValues.find(v => v.variableId === 'real-alias-w')
-    expect(widthAlias.value).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-w' })
+    expect(variableModeValues).toHaveLength(6)
+    const byVariableId = Object.fromEntries(variableModeValues.map(v => [v.variableId, v.value]))
+    expect(byVariableId['real-c']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-color-prim' })
+    expect(byVariableId['real-w']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-width-prim' })
+    expect(byVariableId['real-s']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-style-prim' })
+    expect(byVariableId['real-alias-w']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-w' })
   })
 
   it('collectNewlyCreatedIds returns the whole 3-id object as one entry for a border token', () => {
@@ -694,6 +782,21 @@ describe('typography push (two-pass write payload)', () => {
     type: 'number',
     value: { kind: 'literal', value: 1.3 },
   }
+  const letterSpacingPrimitive = {
+    path: ['Global', 'Font', 'LetterSpacing', '0'],
+    type: 'dimension',
+    value: { kind: 'literal', value: { value: 0, unit: 'rem' } },
+  }
+  const decorationPrimitive = {
+    path: ['Global', 'Font', 'TextDecoration', 'None'],
+    type: 'textDecoration',
+    value: { kind: 'literal', value: 'none' },
+  }
+  const transformPrimitive = {
+    path: ['Global', 'Font', 'TextTransform', 'None'],
+    type: 'textTransform',
+    value: { kind: 'literal', value: 'none' },
+  }
   const typographyToken = {
     path: ['Global', 'Font', 'Typography', 'Test'],
     type: 'typography',
@@ -704,6 +807,9 @@ describe('typography push (two-pass write payload)', () => {
         fontSize: { value: 16, unit: 'px' },
         fontWeight: '{Global.Font.Weight.700}',
         lineHeight: '{Global.Font.LineHeight.2}',
+        letterSpacing: '{Global.Font.LetterSpacing.0}',
+        textDecoration: '{Global.Font.TextDecoration.None}',
+        textTransform: '{Global.Font.TextTransform.None}',
       },
     },
   }
@@ -716,21 +822,27 @@ describe('typography push (two-pass write payload)', () => {
     familyPrimitive,
     weightPrimitive,
     lineHeightPrimitive,
+    letterSpacingPrimitive,
+    decorationPrimitive,
+    transformPrimitive,
     typographyToken,
     typographyRefToken,
   ]
 
-  it('assigns 4 temp sub-ids to a never-synced typography token', () => {
+  it('assigns 7 temp sub-ids to a never-synced typography token', () => {
     const idByPath = assignVariableIds(typographyBaseTokens)
     expect(idByPath.get('Global.Font.Typography.Test')).toEqual({
       fontFamily: 'temp-Global.Font.Typography.Test-fontFamily',
       fontSize: 'temp-Global.Font.Typography.Test-fontSize',
       fontWeight: 'temp-Global.Font.Typography.Test-fontWeight',
       lineHeight: 'temp-Global.Font.Typography.Test-lineHeight',
+      letterSpacing: 'temp-Global.Font.Typography.Test-letterSpacing',
+      textDecoration: 'temp-Global.Font.Typography.Test-textDecoration',
+      textTransform: 'temp-Global.Font.Typography.Test-textTransform',
     })
   })
 
-  it('pass 1 creates 4 named sub-variables for a temp typography token, with the right resolvedType each', () => {
+  it('pass 1 creates 7 named sub-variables for a temp typography token, with the right resolvedType each', () => {
     const idByPath = assignVariableIds(typographyBaseTokens)
     const { variables } = buildCreatePassPayload({
       baseTokens: typographyBaseTokens,
@@ -746,14 +858,25 @@ describe('typography push (two-pass write payload)', () => {
       'Global/Font/Typography/Test/FontSize',
       'Global/Font/Typography/Test/FontWeight',
       'Global/Font/Typography/Test/LineHeight',
+      'Global/Font/Typography/Test/LetterSpacing',
+      'Global/Font/Typography/Test/TextDecoration',
+      'Global/Font/Typography/Test/TextTransform',
     ])
-    expect(typographyVariables.map(v => v.resolvedType)).toEqual(['STRING', 'FLOAT', 'STRING', 'FLOAT'])
+    expect(typographyVariables.map(v => v.resolvedType)).toEqual([
+      'STRING',
+      'FLOAT',
+      'STRING',
+      'STRING',
+      'STRING',
+      'STRING',
+      'STRING',
+    ])
     expect(figmaTypographySubVariableName(typographyToken.path, 'fontSize')).toBe(
       'Global/Font/Typography/Test/FontSize',
     )
   })
 
-  it('pass 1 writes 4 literal mode-values for a typography token, resolving its referenced fontFamily/fontWeight/lineHeight', () => {
+  it("pass 1 writes only fontSize (literal) and letterSpacing (always computed); fontFamily/fontWeight/lineHeight/textDecoration/textTransform are single-hop references deferred to pass 2's alias binding", () => {
     const idByPath = assignVariableIds(typographyBaseTokens)
     const { variableModeValues } = buildCreatePassPayload({
       baseTokens: typographyBaseTokens,
@@ -764,23 +887,37 @@ describe('typography push (two-pass write payload)', () => {
     })
 
     const byId = Object.fromEntries(variableModeValues.map(v => [v.variableId, v.value]))
-    expect(byId['temp-Global.Font.Typography.Test-fontFamily']).toBe('BaloiseCreateHeadline')
+    expect(byId['temp-Global.Font.Typography.Test-fontFamily']).toBeUndefined()
     expect(byId['temp-Global.Font.Typography.Test-fontSize']).toBe(16)
-    expect(byId['temp-Global.Font.Typography.Test-fontWeight']).toBe('Bold')
-    expect(byId['temp-Global.Font.Typography.Test-lineHeight']).toBe(130)
+    expect(byId['temp-Global.Font.Typography.Test-fontWeight']).toBeUndefined()
+    expect(byId['temp-Global.Font.Typography.Test-lineHeight']).toBeUndefined()
+    expect(byId['temp-Global.Font.Typography.Test-letterSpacing']).toBe('0%')
+    expect(byId['temp-Global.Font.Typography.Test-textDecoration']).toBeUndefined()
+    expect(byId['temp-Global.Font.Typography.Test-textTransform']).toBeUndefined()
   })
 
-  it('pass 2 writes 4 alias mode-values for a typography reference, each pointing at the matching sub-property of the target', () => {
+  it("pass 2 writes an alias mode-value per referenced sub-property for both the composite's own fontFamily/fontWeight/lineHeight/textDecoration/textTransform and a typography token that references the whole composite", () => {
     const idByPath = assignVariableIds(typographyBaseTokens)
     resolveTempIds(idByPath, {
+      'temp-Global.Font.Family.Heading': 'real-family-prim',
+      'temp-Global.Font.Weight.700': 'real-weight-prim',
+      'temp-Global.Font.LineHeight.2': 'real-lineheight-prim',
+      'temp-Global.Font.TextDecoration.None': 'real-decoration-prim',
+      'temp-Global.Font.TextTransform.None': 'real-transform-prim',
       'temp-Global.Font.Typography.Test-fontFamily': 'real-ff',
       'temp-Global.Font.Typography.Test-fontSize': 'real-fs',
       'temp-Global.Font.Typography.Test-fontWeight': 'real-fw',
       'temp-Global.Font.Typography.Test-lineHeight': 'real-lh',
+      'temp-Global.Font.Typography.Test-letterSpacing': 'real-ls',
+      'temp-Global.Font.Typography.Test-textDecoration': 'real-td',
+      'temp-Global.Font.Typography.Test-textTransform': 'real-tt',
       'temp-Zurich.Font.Typography.Test-fontFamily': 'real-alias-ff',
       'temp-Zurich.Font.Typography.Test-fontSize': 'real-alias-fs',
       'temp-Zurich.Font.Typography.Test-fontWeight': 'real-alias-fw',
       'temp-Zurich.Font.Typography.Test-lineHeight': 'real-alias-lh',
+      'temp-Zurich.Font.Typography.Test-letterSpacing': 'real-alias-ls',
+      'temp-Zurich.Font.Typography.Test-textDecoration': 'real-alias-td',
+      'temp-Zurich.Font.Typography.Test-textTransform': 'real-alias-tt',
     })
 
     const { variableModeValues } = buildAliasPassPayload({
@@ -790,27 +927,103 @@ describe('typography push (two-pass write payload)', () => {
       modeIdByBrand: { Base: 'm-base' },
     })
 
-    expect(variableModeValues).toHaveLength(4)
-    const fontSizeAlias = variableModeValues.find(v => v.variableId === 'real-alias-fs')
-    expect(fontSizeAlias.value).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-fs' })
+    expect(variableModeValues).toHaveLength(12)
+    const byVariableId = Object.fromEntries(variableModeValues.map(v => [v.variableId, v.value]))
+    expect(byVariableId['real-ff']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-family-prim' })
+    expect(byVariableId['real-fw']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-weight-prim' })
+    expect(byVariableId['real-lh']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-lineheight-prim' })
+    expect(byVariableId['real-td']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-decoration-prim' })
+    expect(byVariableId['real-tt']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-transform-prim' })
+    expect(byVariableId['real-alias-fs']).toEqual({ type: 'VARIABLE_ALIAS', id: 'real-fs' })
   })
 
-  it('collectNewlyCreatedIds returns the whole 4-id object as one entry for a typography token', () => {
+  it('collectNewlyCreatedIds returns the whole 7-id object as one entry for a typography token', () => {
     const idByPath = assignVariableIds(typographyBaseTokens)
     resolveTempIds(idByPath, {
       'temp-Global.Font.Typography.Test-fontFamily': 'real-ff',
       'temp-Global.Font.Typography.Test-fontSize': 'real-fs',
       'temp-Global.Font.Typography.Test-fontWeight': 'real-fw',
       'temp-Global.Font.Typography.Test-lineHeight': 'real-lh',
+      'temp-Global.Font.Typography.Test-letterSpacing': 'real-ls',
+      'temp-Global.Font.Typography.Test-textDecoration': 'real-td',
+      'temp-Global.Font.Typography.Test-textTransform': 'real-tt',
     })
 
     const created = collectNewlyCreatedIds([typographyToken], idByPath)
     expect(created).toEqual([
       {
         path: typographyToken.path,
-        variableId: { fontFamily: 'real-ff', fontSize: 'real-fs', fontWeight: 'real-fw', lineHeight: 'real-lh' },
+        variableId: {
+          fontFamily: 'real-ff',
+          fontSize: 'real-fs',
+          fontWeight: 'real-fw',
+          lineHeight: 'real-lh',
+          letterSpacing: 'real-ls',
+          textDecoration: 'real-td',
+          textTransform: 'real-tt',
+        },
       },
     ])
+  })
+
+  describe('a typography token committed before letterSpacing/textDecoration/textTransform existed', () => {
+    const legacyIds = { fontFamily: 'ff', fontSize: 'fs', fontWeight: 'fw', lineHeight: 'lh' }
+    const legacyToken = { ...typographyToken, variableId: legacyIds }
+
+    it('keeps its 4 existing ids and mints temp ids for only the 3 new sub-properties', () => {
+      const idByPath = assignVariableIds([legacyToken])
+      expect(idByPath.get('Global.Font.Typography.Test')).toEqual({
+        ...legacyIds,
+        letterSpacing: 'temp-Global.Font.Typography.Test-letterSpacing',
+        textDecoration: 'temp-Global.Font.Typography.Test-textDecoration',
+        textTransform: 'temp-Global.Font.Typography.Test-textTransform',
+      })
+    })
+
+    it('pass 1 creates exactly the 3 missing variables', () => {
+      const tokens = [...typographyBaseTokens.slice(0, 6), legacyToken]
+      const idByPath = assignVariableIds(tokens)
+      const { variables } = buildCreatePassPayload({
+        baseTokens: tokens,
+        brandTokensByName: { Base: tokens },
+        idByPath,
+        collectionId: 'coll-1',
+        modeIdByBrand: { Base: 'm-base' },
+      })
+      const created = variables.filter(v => v.name.startsWith('Global/Font/Typography/Test/'))
+      expect(created.map(v => v.name)).toEqual([
+        'Global/Font/Typography/Test/LetterSpacing',
+        'Global/Font/Typography/Test/TextDecoration',
+        'Global/Font/Typography/Test/TextTransform',
+      ])
+    })
+
+    it('collectNewlyCreatedIds reports it, with the completed 7-id set', () => {
+      const idByPath = assignVariableIds([legacyToken])
+      resolveTempIds(idByPath, {
+        'temp-Global.Font.Typography.Test-letterSpacing': 'real-ls',
+        'temp-Global.Font.Typography.Test-textDecoration': 'real-td',
+        'temp-Global.Font.Typography.Test-textTransform': 'real-tt',
+      })
+      expect(collectNewlyCreatedIds([legacyToken], idByPath)).toEqual([
+        {
+          path: legacyToken.path,
+          variableId: { ...legacyIds, letterSpacing: 'real-ls', textDecoration: 'real-td', textTransform: 'real-tt' },
+        },
+      ])
+    })
+
+    it('collectNewlyCreatedIds ignores a fully-synced typography token', () => {
+      const full = {
+        ...legacyIds,
+        letterSpacing: 'ls',
+        textDecoration: 'td',
+        textTransform: 'tt',
+      }
+      const synced = { ...typographyToken, variableId: full }
+      const idByPath = assignVariableIds([synced])
+      expect(collectNewlyCreatedIds([synced], idByPath)).toEqual([])
+    })
   })
 })
 
@@ -1540,6 +1753,10 @@ describe('figmaVariableName', () => {
   it('joins the token path with "/", matching Figma variable naming', () => {
     expect(figmaVariableName(['🔗 Alias', 'Color', 'Background'])).toBe('🔗 Alias/Color/Background')
   })
+
+  it('replaces "." within a segment, which Figma rejects as an invalid name character', () => {
+    expect(figmaVariableName(['🌐 Global', '📏 Dimension', 'Size', '0.875'])).toBe('🌐 Global/📏 Dimension/Size/0_875')
+  })
 })
 
 describe('buildNameIndex', () => {
@@ -1598,5 +1815,53 @@ describe('assignVariableIds path/name fallback match (docs/adr/0001-figma-variab
     expect(collectNewlyCreatedIds([unsynced], idByPath)).toEqual([
       { path: unsynced.path, variableId: 'VariableID:9:9' },
     ])
+  })
+})
+
+describe('findResolvedTypeMismatches', () => {
+  const lineHeightToken = {
+    path: ['🌐 Global', '🔤 Font', 'LineHeight', '2'],
+    type: 'number',
+    value: { kind: 'literal', value: 1.3 },
+    variableId: 'VariableID:lh',
+  }
+  const opacityToken = {
+    path: ['🔗 Alias', '🌫️ Opacity', 'Half'],
+    type: 'number',
+    value: { kind: 'literal', value: 0.5 },
+    variableId: 'VariableID:op',
+  }
+
+  it('flags a LineHeight token whose existing Figma variable is still a FLOAT', () => {
+    const remote = { 'VariableID:lh': { resolvedType: 'FLOAT' }, 'VariableID:op': { resolvedType: 'FLOAT' } }
+    const mismatches = findResolvedTypeMismatches([lineHeightToken, opacityToken], remote)
+    expect(mismatches).toEqual([{ token: lineHeightToken, ids: ['VariableID:lh'] }])
+  })
+
+  it('flags nothing once the LineHeight variable is already a STRING', () => {
+    const remote = { 'VariableID:lh': { resolvedType: 'STRING' }, 'VariableID:op': { resolvedType: 'FLOAT' } }
+    expect(findResolvedTypeMismatches([lineHeightToken, opacityToken], remote)).toEqual([])
+  })
+
+  it("recreates all of a typography token's sub-variables together when only lineHeight mismatches", () => {
+    const typography = {
+      path: ['🌐 Global', '🔤 Font', 'Typography', 'Test'],
+      type: 'typography',
+      value: { kind: 'literal', value: {} },
+      variableId: { fontFamily: 'f', fontSize: 's', fontWeight: 'w', lineHeight: 'l' },
+    }
+    const remote = {
+      f: { resolvedType: 'STRING' },
+      s: { resolvedType: 'FLOAT' },
+      w: { resolvedType: 'STRING' },
+      l: { resolvedType: 'FLOAT' },
+    }
+    const [mismatch] = findResolvedTypeMismatches([typography], remote)
+    expect(mismatch.ids).toEqual(['f', 's', 'w', 'l'])
+  })
+
+  it('ignores a token with no variableId or no matching remote variable', () => {
+    expect(findResolvedTypeMismatches([{ ...lineHeightToken, variableId: undefined }], {})).toEqual([])
+    expect(findResolvedTypeMismatches([lineHeightToken], {})).toEqual([])
   })
 })

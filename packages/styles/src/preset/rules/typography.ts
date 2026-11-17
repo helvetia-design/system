@@ -11,6 +11,9 @@ import { flattenTokens, type RuleMetadata } from '../utils'
  *  - 🔗 Alias › 🔤 Text › Family     → font-family-* classes
  *  - 🔗 Alias › 🔤 Text › Weight     → font-weight-* classes
  *  - 🔗 Alias › 🔤 Text › LineHeight → line-height-* classes
+ *  - 🔗 Alias › 🔤 Text › LetterSpacing → letter-spacing-* classes
+ *  - 🔗 Alias › 🔤 Text › TextDecoration → text-decoration-* classes
+ *  - 🔗 Alias › 🔤 Text › TextTransform → text-transform-* classes
  *
  * Static (non-token) classes: text-align-*, text-transform, white-space-*, text-overflow-*
  */
@@ -100,7 +103,31 @@ export function buildTypographyRules(tokensJsonPath: string): {
     addRule(className, { 'line-height': `var(--${token.name}) !important` }, token.name)
   }
 
-  // 6. Static (non-token) typography classes
+  // 6. Letter-spacing tokens
+  const letterSpacingTokens = flattenTokens((textAlias['LetterSpacing'] ?? {}) as Record<string, unknown>)
+  for (const token of letterSpacingTokens) {
+    const segment = token.name.replace('ds-alias-text-letter-spacing-', '')
+    const className = `letter-spacing-${segment}`
+    addRule(className, { 'letter-spacing': `var(--${token.name}) !important` }, token.name)
+  }
+
+  // 7. Text-decoration tokens
+  const decorationTokens = flattenTokens((textAlias['TextDecoration'] ?? {}) as Record<string, unknown>)
+  for (const token of decorationTokens) {
+    const segment = token.name.replace('ds-alias-text-text-decoration-', '')
+    const className = `text-decoration-${segment}`
+    addRule(className, { 'text-decoration': `var(--${token.name}) !important` }, token.name)
+  }
+
+  // 8. Text-transform tokens
+  const transformTokens = flattenTokens((textAlias['TextTransform'] ?? {}) as Record<string, unknown>)
+  for (const token of transformTokens) {
+    const segment = token.name.replace('ds-alias-text-text-transform-', '')
+    const className = `text-transform-${segment}`
+    addRule(className, { 'text-transform': `var(--${token.name}) !important` }, token.name)
+  }
+
+  // 9. Static (non-token) typography classes
   const staticRules: Rule[] = [
     ['text-align-left', { 'text-align': 'left !important' }],
     ['text-align-center', { 'text-align': 'center !important' }],

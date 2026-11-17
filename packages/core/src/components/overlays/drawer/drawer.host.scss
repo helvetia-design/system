@@ -6,17 +6,29 @@
  * @prop --drawer-radius: Border radius of the drawer top corners.
  * @prop --drawer-max-height: Maximum height of the drawer panel.
  * @prop --drawer-p: Padding inside the drawer panel.
+ * @prop --drawer-backdrop-background: Background color of the native backdrop.
  * @prop --drawer-backdrop-opacity: Opacity of the native backdrop.
+ * @prop --drawer-backdrop-filter: Backdrop filter of the native backdrop.
+ * @prop --drawer-close-inset: Offset of the close button from the top and end edge of the container.
+ * @prop --drawer-width-default: Max width of the container for the `default` variant.
+ * @prop --drawer-width-fluid: Max width of the container for the `fluid` variant.
+ * @prop --drawer-width-compact: Max width of the container for the `compact` variant.
  */
 
 // ─── Variables ────────────────────────────────────────────────────────────────
 
 :host {
-  @include vars.local(drawer-background, var(--ds-drawer-background));
+  @include vars.local(drawer-background, var(--ds-drawer-color-background));
   @include vars.local(drawer-radius, var(--ds-drawer-radius));
   @include vars.local(drawer-max-height, var(--ds-drawer-max-height));
   @include vars.local(drawer-p, var(--ds-drawer-padding));
-  @include vars.local(drawer-backdrop-opacity, var(--ds-backdrop-opacity));
+  @include vars.local(drawer-backdrop-background, var(--ds-drawer-backdrop-color-background));
+  @include vars.local(drawer-backdrop-opacity, var(--ds-drawer-backdrop-opacity));
+  @include vars.local(drawer-backdrop-filter, var(--ds-drawer-backdrop-filter));
+  @include vars.local(drawer-close-inset, var(--ds-drawer-close-inset));
+  @include vars.local(drawer-width-default, var(--ds-drawer-width-default));
+  @include vars.local(drawer-width-fluid, var(--ds-drawer-width-fluid));
+  @include vars.local(drawer-width-compact, var(--ds-drawer-width-compact));
 
   display: contents;
 }
@@ -38,6 +50,7 @@
   align-items: center;
 
   // Animation initial state — must come after all: unset.
+  // ds-token-check: intentional — open/closed visibility toggle
   opacity: 0;
   transform: translateY(100%);
   pointer-events: none;
@@ -46,6 +59,7 @@
 // ─── Animation ────────────────────────────────────────────────────────────────
 
 :host(.is-open) dialog {
+  // ds-token-check: intentional — open/closed visibility toggle
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -61,6 +75,9 @@
 
 :host dialog::backdrop {
   @include backdrop();
+  // Keeps the mixin's 50% alpha; opacity is applied on top.
+  background-color: color-mix(in srgb, var(--_drawer-backdrop-background) 50%, transparent);
+  backdrop-filter: var(--_drawer-backdrop-filter);
   opacity: var(--_drawer-backdrop-opacity);
 }
 
@@ -68,8 +85,8 @@
 
 :host .ds-container ds-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: var(--_drawer-close-inset);
+  inset-inline-end: var(--_drawer-close-inset);
 }
 
 // ─── Container ───────────────────────────────────────────────────────────────
@@ -77,19 +94,20 @@
 :host .ds-container {
   flex: 1;
   width: 100%;
+  // ds-token-check: intentional — horizontal centering of the width-limited container
   margin: 0 auto;
-  max-width: var(--ds-alias-container-width-default);
+  max-width: var(--_drawer-width-default);
   background: var(--_drawer-background);
   border-radius: var(--_drawer-radius) var(--_drawer-radius) 0 0;
   padding: var(--_drawer-p);
   position: relative;
 
   &.is-fluid {
-    max-width: var(--ds-alias-container-width-fluid);
+    max-width: var(--_drawer-width-fluid);
   }
 
   &.is-compact {
-    max-width: var(--ds-alias-container-width-compact);
+    max-width: var(--_drawer-width-compact);
   }
 }
 

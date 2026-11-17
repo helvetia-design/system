@@ -40,6 +40,7 @@ import { type IconColor } from '../../media/brand-icon/brand-icon.interfaces'
  * @part icon - The leading icon wrapper (or the brand icon wrapper when `brandIcon` is set).
  * @part label - The text label wrapper (`<span>`).
  * @part icon-right - The trailing icon wrapper.
+ * @attachment ds-badge top-right - Optional badge in the default slot, pinned just outside the button's top-right corner.
  */
 @Component({
   tag: 'ds-button',
@@ -155,13 +156,6 @@ export class Button implements DsComponentInterface {
   @Prop()
   @Type('boolean')
   readonly flat: boolean = false
-
-  /**
-   * If `true` the button is outlined
-   */
-  @Prop()
-  @Type('boolean')
-  readonly outlined: boolean = false
 
   /**
    * If `true` the button is inverted
@@ -518,7 +512,7 @@ export class Button implements DsComponentInterface {
               part="icon-right"
               class="icon-right"
               name={this.iconRight}
-              size={'sm'}
+              size={size}
               turn={this.iconTurn}
               inverted={this.isIconInverted}
             />

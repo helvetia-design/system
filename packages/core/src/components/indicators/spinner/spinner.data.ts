@@ -1,4 +1,4 @@
-export const SpinnerAnimationData = (color = '#151f6d') => ({
+export const SpinnerAnimationData = (color = '#000d6e') => ({
   v: '5.8.1',
   fr: 25,
   ip: 0,

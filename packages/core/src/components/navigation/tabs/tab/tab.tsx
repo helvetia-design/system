@@ -7,6 +7,7 @@ import { Logger, type LogInstance, Required, Type } from '@utils'
  * Tab renders a single tab button inside a ds-tabs group, supporting both the panels and navigation variants.
  *
  * @slot - The tab label, or an <a> element in navigation mode.
+ * @attachment ds-badge top-right size=sm - Optional small badge in the default slot, centered vertically on the top-right of the label. Only `size="sm"` is positioned.
  */
 @Component({
   tag: 'ds-tab',

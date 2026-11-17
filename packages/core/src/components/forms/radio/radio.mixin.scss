@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Control Mixins
@@ -12,58 +13,73 @@
 @mixin vars($wrapper: ':host') {
   #{$wrapper} {
     // layout
-    @include vars.local(radio-gap, 0.5rem);
-    @include vars.local(radio-label-base-color, inherit);
-    @include vars.local(radio-label-hover-color, var(--ds-global-color-sky-5));
-    @include vars.local(radio-label-active-color, var(--ds-global-color-primary-6));
+    @include vars.local(radio-gap, var(--ds-radio-gap));
+    @include vars.local(radio-min-height, var(--ds-radio-min-height));
+    @include vars.local(radio-py, var(--ds-radio-padding-block));
+    @include vars.local(radio-label-base-color, var(--ds-radio-label-color-base));
+    @include vars.local(radio-label-hover-color, var(--ds-radio-label-color-hover));
+    @include vars.local(radio-label-active-color, var(--ds-radio-label-color-active));
     @include vars.local(radio-label-disabled-color, var(--ds-radio-label-color-disabled));
+    @include typo.local(radio-label, 'radio-label-typo');
 
     // dimensions
-    @include vars.local(radio-size, 1.5rem);
-    @include vars.local(radio-border-width, var(--ds-alias-border-width-base));
-    @include vars.local(radio-radius, var(--ds-alias-radius-rounded));
+    @include vars.local(radio-size, var(--ds-radio-size));
+    @include vars.local(radio-dot-size, var(--ds-radio-dot-size));
+    @include vars.local(radio-border-width, var(--ds-radio-border-width));
+    @include vars.local(radio-radius, var(--ds-radio-radius));
 
     // Tile
-    @include vars.local(radio-tile-radius, var(--ds-alias-radius-base));
-    @include vars.local(radio-tile-p, 1rem);
-    @include vars.local(radio-tile-border-width, var(--ds-alias-border-width-base));
+    @include vars.local(radio-tile-radius, var(--ds-radio-tile-radius));
+    @include vars.local(radio-tile-p, var(--ds-radio-tile-padding));
+    @include vars.local(radio-tile-border-width, var(--ds-radio-tile-border-width));
+    @include vars.local(radio-tile-gutter, var(--ds-radio-tile-gutter));
 
+    // ds-token-check: intentional — a resting tile shows the surface it sits on; only its
+    // hover/active/checked fills are themeable
     @include vars.local(radio-tile-base-background-color, inherit);
-    @include vars.local(radio-tile-base-border-color, var(--ds-global-color-grey-3));
+    @include vars.local(radio-tile-base-border-color, var(--ds-radio-tile-color-border-base));
 
-    @include vars.local(radio-tile-hover-background-color, var(--ds-global-color-grey-0));
-    @include vars.local(radio-tile-hover-border-color, var(--ds-global-color-sky-5));
+    @include vars.local(radio-tile-hover-background-color, var(--ds-radio-tile-color-background-hover));
+    @include vars.local(radio-tile-hover-border-color, var(--ds-radio-tile-color-border-hover));
 
-    @include vars.local(radio-tile-active-background-color, var(--ds-global-color-grey-0));
-    @include vars.local(radio-tile-active-border-color, var(--ds-global-color-primary-6));
+    @include vars.local(radio-tile-active-background-color, var(--ds-radio-tile-color-background-active));
+    @include vars.local(radio-tile-active-border-color, var(--ds-radio-tile-color-border-active));
+
+    @include vars.local(radio-tile-disabled-color-icon, var(--ds-radio-tile-color-icon-disabled));
 
     // unchecked base
+    // ds-token-check: intentional — an unchecked control is unfilled in every brand
     @include vars.local(radio-unchecked-base-color-background, transparent);
-    @include vars.local(radio-unchecked-base-color-border, var(--ds-global-color-primary-5));
+    @include vars.local(radio-unchecked-base-color-border, var(--ds-radio-unchecked-color-border-base));
 
     // unchecked hover
-    @include vars.local(radio-unchecked-hover-color-background, var(--ds-global-color-grey-1));
-    @include vars.local(radio-unchecked-hover-color-border, var(--ds-global-color-sky-5));
+    @include vars.local(radio-unchecked-hover-color-background, var(--ds-radio-unchecked-color-background-hover));
+    @include vars.local(radio-unchecked-hover-color-border, var(--ds-radio-unchecked-color-border-hover));
 
     // unchecked active/pressed
-    @include vars.local(radio-unchecked-active-color-background, var(--ds-global-color-grey-2));
-    @include vars.local(radio-unchecked-active-color-border, var(--ds-global-color-primary-6));
+    @include vars.local(radio-unchecked-active-color-background, var(--ds-radio-unchecked-color-background-active));
+    @include vars.local(radio-unchecked-active-color-border, var(--ds-radio-unchecked-color-border-active));
 
     // unchecked disabled
-    @include vars.local(radio-unchecked-disabled-color-background, var(--ds-radio-unchecked-color-disabled-background));
+    @include vars.local(radio-unchecked-disabled-color-background, var(--ds-radio-unchecked-color-background-disabled));
+    @include vars.local(radio-unchecked-disabled-color-border, var(--ds-radio-unchecked-color-border-disabled));
 
     // checked base
-    @include vars.local(radio-checked-base-color-background, var(--ds-global-color-primary-5));
-    @include vars.local(radio-checked-base-color-border, var(--ds-global-color-primary-5));
-    @include vars.local(radio-checked-base-color-icon, var(--ds-global-color-white));
+    @include vars.local(radio-checked-base-color-background, var(--ds-radio-checked-color-background-base));
+    @include vars.local(radio-checked-base-color-border, var(--ds-radio-checked-color-border-base));
+    @include vars.local(radio-checked-base-color-icon, var(--ds-radio-checked-color-icon-base));
 
     // checked hover
-    @include vars.local(radio-checked-hover-color-background, var(--ds-global-color-sky-5));
-    @include vars.local(radio-checked-hover-color-border, var(--ds-global-color-sky-5));
+    @include vars.local(radio-checked-hover-color-background, var(--ds-radio-checked-color-background-hover));
+    @include vars.local(radio-checked-hover-color-border, var(--ds-radio-checked-color-border-hover));
 
     // checked active/pressed
-    @include vars.local(radio-checked-active-color-background, var(--ds-global-color-primary-6));
-    @include vars.local(radio-checked-active-color-border, var(--ds-global-color-primary-6));
+    @include vars.local(radio-checked-active-color-background, var(--ds-radio-checked-color-background-active));
+    @include vars.local(radio-checked-active-color-border, var(--ds-radio-checked-color-border-active));
+
+    // checked disabled
+    @include vars.local(radio-checked-disabled-color-background, var(--ds-radio-checked-color-background-disabled));
+    @include vars.local(radio-checked-disabled-color-border, var(--ds-radio-checked-color-border-disabled));
   }
 }
 
@@ -77,11 +93,10 @@
   cursor: pointer;
   user-select: none;
   color: var(--_radio-label-base-color);
-  font-family: var(--ds-alias-text-family-text);
-  line-height: var(--ds-alias-text-line-height-text);
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  min-height: 3rem;
+  @include typo.apply(radio-label);
+  padding-top: var(--_radio-py);
+  padding-bottom: var(--_radio-py);
+  min-height: var(--_radio-min-height);
 
   @include hover() {
     &:hover {
@@ -143,7 +158,7 @@
   }
 
   #{$wrapper} input[type='radio']:focus-visible {
-    @include focus-shadow();
+    @include focus-shadow(var(--ds-radio-focus-color));
   }
 
   // Unchecked hover
@@ -185,9 +200,11 @@
     content: '';
     display: block;
     border-radius: var(--_radio-radius);
+    // ds-token-check: intentional — dot grows from zero; animation endpoints
     height: 0;
     width: 0;
     position: absolute;
+    // ds-token-check: intentional — centering idiom, brand-invariant
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -201,8 +218,9 @@
 
   #{$wrapper} input[type='radio']:checked::after {
     background-color: var(--_radio-checked-base-color-icon);
-    height: 0.5rem;
-    width: 0.5rem;
+    height: var(--_radio-dot-size);
+    width: var(--_radio-dot-size);
+    // ds-token-check: intentional — animation endpoint, not a themeable opacity
     opacity: 1;
   }
 }
@@ -210,23 +228,24 @@
 // --- State helpers ---
 
 @mixin _invalid-vars() {
-  --mod-radio-label-base-color: var(--ds-global-color-danger-4);
-  --mod-radio-label-hover-color: var(--ds-global-color-danger-5);
-  --mod-radio-label-active-color: var(--ds-global-color-danger-6);
+  --mod-radio-label-base-color: var(--ds-radio-invalid-color-label-base);
+  --mod-radio-label-hover-color: var(--ds-radio-invalid-color-label-hover);
+  --mod-radio-label-active-color: var(--ds-radio-invalid-color-label-active);
 
+  // ds-token-check: intentional — an unchecked control is unfilled in every brand
   --mod-radio-unchecked-base-color-background: transparent;
-  --mod-radio-unchecked-base-color-border: var(--ds-alias-border-color-danger);
-  --mod-radio-unchecked-hover-color-background: var(--ds-global-color-danger-1);
-  --mod-radio-unchecked-hover-color-border: var(--ds-alias-border-color-danger-hover);
-  --mod-radio-unchecked-active-color-background: var(--ds-global-color-danger-1);
-  --mod-radio-unchecked-active-color-border: var(--ds-alias-border-color-danger-active);
+  --mod-radio-unchecked-base-color-border: var(--ds-radio-invalid-unchecked-color-border-base);
+  --mod-radio-unchecked-hover-color-background: var(--ds-radio-invalid-unchecked-color-background-hover);
+  --mod-radio-unchecked-hover-color-border: var(--ds-radio-invalid-unchecked-color-border-hover);
+  --mod-radio-unchecked-active-color-background: var(--ds-radio-invalid-unchecked-color-background-active);
+  --mod-radio-unchecked-active-color-border: var(--ds-radio-invalid-unchecked-color-border-active);
 
-  --mod-radio-checked-base-color-background: var(--ds-alias-border-color-danger);
-  --mod-radio-checked-base-color-border: var(--ds-alias-border-color-danger);
-  --mod-radio-checked-hover-color-background: var(--ds-alias-border-color-danger-hover);
-  --mod-radio-checked-hover-color-border: var(--ds-alias-border-color-danger-hover);
-  --mod-radio-checked-active-color-background: var(--ds-alias-border-color-danger-active);
-  --mod-radio-checked-active-color-border: var(--ds-alias-border-color-danger-active);
+  --mod-radio-checked-base-color-background: var(--ds-radio-invalid-checked-color-background-base);
+  --mod-radio-checked-base-color-border: var(--ds-radio-invalid-checked-color-border-base);
+  --mod-radio-checked-hover-color-background: var(--ds-radio-invalid-checked-color-background-hover);
+  --mod-radio-checked-hover-color-border: var(--ds-radio-invalid-checked-color-border-hover);
+  --mod-radio-checked-active-color-background: var(--ds-radio-invalid-checked-color-background-active);
+  --mod-radio-checked-active-color-border: var(--ds-radio-invalid-checked-color-border-active);
 }
 
 @mixin _disabled-vars() {
@@ -237,9 +256,9 @@
   --mod-radio-label-active-color: var(--_radio-label-disabled-color);
 
   --mod-radio-unchecked-base-color-background: var(--_radio-unchecked-disabled-color-background);
-  --mod-radio-unchecked-base-color-border: var(--ds-alias-border-color-disabled);
-  --mod-radio-checked-base-color-background: var(--ds-alias-border-color-disabled);
-  --mod-radio-checked-base-color-border: var(--ds-alias-border-color-disabled);
+  --mod-radio-unchecked-base-color-border: var(--_radio-unchecked-disabled-color-border);
+  --mod-radio-checked-base-color-background: var(--_radio-checked-disabled-color-background);
+  --mod-radio-checked-base-color-border: var(--_radio-checked-disabled-color-border);
 }
 
 // Invalid declared first, disabled declared second — disabled wins when both classes are present.

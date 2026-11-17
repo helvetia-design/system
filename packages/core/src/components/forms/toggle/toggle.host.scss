@@ -13,20 +13,27 @@
  * @prop --toggle-color-background: Background color of the toggle when off.
  * @prop --toggle-color-background-checked: Background color when toggle is on.
  * @prop --toggle-color-indicator: Color of the toggle indicator/circle.
- * @prop --toggle-border-radius: Border radius of the toggle switch.
- * @prop --toggle-label-color: Text color of the toggle label.
+ * @prop --toggle-radius: Border radius of the toggle switch.
+ * @prop --toggle-label-base-color: Text color of the toggle label.
  * @prop --toggle-label-font-size: Font size of the toggle label.
  * @prop --toggle-label-font-family: Font family of the toggle label.
  * @prop --toggle-label-font-weight: Font weight of the toggle label.
+ * @prop --toggle-label-line-height: Line height of the toggle label.
+ * @prop --toggle-label-letter-spacing: Letter spacing of the toggle label.
+ * @prop --toggle-label-text-decoration: Text decoration of the toggle label.
+ * @prop --toggle-label-text-transform: Text transform of the toggle label.
  * @prop --toggle-focus-color: Focus outline color of the toggle.
  * @prop --toggle-gap: Gap between toggle and label.
  * @prop --toggle-helper-color: Text color of helper text.
  * @prop --toggle-helper-font-size: Font size of helper text.
  * @prop --form-description-color: Text color of the invalid text below the toggle.
- * @prop --form-description-family: Font family of the invalid text below the toggle.
- * @prop --form-description-weight: Font weight of the invalid text below the toggle.
- * @prop --form-description-size: Font size of the invalid text below the toggle.
+ * @prop --form-description-font-family: Font family of the invalid text below the toggle.
+ * @prop --form-description-font-weight: Font weight of the invalid text below the toggle.
+ * @prop --form-description-font-size: Font size of the invalid text below the toggle.
  * @prop --form-description-line-height: Line height of the invalid text below the toggle.
+ * @prop --form-description-letter-spacing: Letter spacing of the invalid text below the toggle.
+ * @prop --form-description-text-decoration: Text decoration of the invalid text below the toggle.
+ * @prop --form-description-text-transform: Text transform of the invalid text below the toggle.
  */
 
 :host {
@@ -67,7 +74,7 @@
 }
 
 :host(.is-invalid) {
-  --mod-form-description-color: var(--ds-form-danger-description-color);
+  --mod-form-description-color: var(--ds-form-danger-color-description);
 }
 
 /**
