@@ -38,6 +38,8 @@ Done when the user has answered.
 
 Nothing is rewritten. Every `bal-nav`, its child tags, its imports and its types stay as they are. For every finding, read the whole element and collect what the report needs: the file and line, where the `options`, `logo` and `buttons` values come from, and every `balNavItemClick` handler.
 
+Angular splits a component across `x.component.html` and `x.component.ts`, and the class file often calls `configChanged()` through `@ViewChild` or `viewChild`, or holds the `balNavItemClick` handler, without ever naming the tag, so the scan cannot see it. For every `.html` finding, open the same-basename `.ts` file beside it and check it for `configChanged()` calls and for a `balNavItemClick` handler. React and plain HTML callers hold the element in a ref or a query result, so look for calls on that variable in the same file.
+
 ### Suggested replacement
 
 Rebuild the header by hand with `ds-app-navbar`:
