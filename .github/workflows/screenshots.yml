@@ -94,9 +94,12 @@ jobs:
             return 'none'
 
       - name: Get results
+        env:
+          COMMAND: ${{ steps.command.outputs.result }}
+          SPECS: ${{ steps.specs.outputs.result }}
         run: |
-          echo "${{ steps.command.outputs.result }}"
-          echo "${{ steps.specs.outputs.result }}"
+          echo "$COMMAND"
+          echo "$SPECS"
 
       - name: Get Branch Name
         id: branch
@@ -125,11 +128,16 @@ jobs:
       options: --user 1001
     steps:
       - name: Show inputs from pree job
+        env:
+          BRANCH: ${{ needs.assembleInformation.outputs.branch }}
+          COMMAND: ${{ needs.assembleInformation.outputs.command }}
+          SPECS: ${{ needs.assembleInformation.outputs.specs }}
+          ACTION: ${{ needs.assembleInformation.outputs.action }}
         run: |
-          echo "Branch from pree job: ${{ needs.assembleInformation.outputs.branch }}"
-          echo "Command: ${{ needs.assembleInformation.outputs.command }}"
-          echo "Specs: ${{ needs.assembleInformation.outputs.specs }}"
-          echo "Action: ${{ needs.assembleInformation.outputs.action }}"
+          echo "Branch from pree job: $BRANCH"
+          echo "Command: $COMMAND"
+          echo "Specs: $SPECS"
+          echo "Action: $ACTION"
 
       - name: Create comment
         uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
@@ -164,7 +172,7 @@ jobs:
 
       - name: Write visual config template
         run: |
-          cat > packages/core/playwright.visual.config.mts <<TS
+          cat > packages/core/playwright.visual.config.mts <<'TS'
           /**
           * This configuration is used to run visual tests for a specific
           * component (or components), as well as foundation-level visual
@@ -185,7 +193,7 @@ jobs:
           import { defineConfig, devices } from '@playwright/test'
           import baseConfig from './playwright.config'
 
-          const TAG = '${{ needs.assembleInformation.outputs.command }}'
+          const TAG = process.env.TAG ?? 'all'
           const components = TAG === 'all' ? ['all'] : TAG.split(',').map(t => t.trim())
           const componentsMatch = components.map(comp => comp === 'all' ? 'src/components/all/test/*visual.play.ts' : 'src/components/**/' + comp + '.visual.play.ts')
           const foundationMatch = components.map(comp => 'src/foundation/' + comp + '.visual.play.ts')
@@ -218,6 +226,9 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: packages/core
+        # Comment text reaches the config via env only, never via shell/source interpolation.
+        env:
+          TAG: ${{ needs.assembleInformation.outputs.command }}
         run: pnpm exec playwright test --config=playwright.visual.config.mts --update-snapshots
 
       - name: Commit screenshots

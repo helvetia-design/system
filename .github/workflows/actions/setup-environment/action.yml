@@ -26,9 +26,12 @@ runs:
     - name: Show inputs from previous job
       if: inputs.branch != ''
       shell: bash
+      env:
+        BRANCH: ${{ inputs.branch }}
+        ACTION: ${{ inputs.action }}
       run: |
-        echo "Branch from previous job: ${{ inputs.branch }}"
-        echo "Action: ${{ inputs.action }}"
+        echo "Branch from previous job: $BRANCH"
+        echo "Action: $ACTION"
 
     - name: Show current branch
       if: inputs.branch != ''
