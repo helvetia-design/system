@@ -23553,7 +23553,9 @@
           "setter": false,
           "oneOfValues": [
             "column",
-            "row"
+            "row",
+            "column-reverse",
+            "row-reverse"
           ]
         },
         {
@@ -80125,7 +80127,7 @@
       "path": "src/components/indicators/spinner/spinner.interfaces.ts"
     },
     "src/components/indicators/tag/tag.interfaces.ts::TagColor": {
-      "declaration": "\"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"purple\" | \"red\" | \"yellow\" | \"green\" | \"disabled\" | \"red-dark\" | \"yellow-dark\" | \"purple-dark\" | \"green-dark\" | \"green-light\" | \"red-light\" | \"purple-light\" | \"yellow-light\"",
+      "declaration": "\"primary\" | \"success\" | \"warning\" | \"danger\" | \"purple\" | \"red\" | \"yellow\" | \"green\" | \"info\" | \"disabled\" | \"red-dark\" | \"yellow-dark\" | \"purple-dark\" | \"green-dark\" | \"green-light\" | \"red-light\" | \"purple-light\" | \"yellow-light\"",
       "docstring": "",
       "path": "src/components/indicators/tag/tag.interfaces.ts"
     },
@@ -80325,7 +80327,7 @@
       "path": "src/components/overlays/modal/modal.interfaces.ts"
     },
     "src/components/overlays/notification/notification.interfaces.ts::NotificationColor": {
-      "declaration": "\"success\" | \"warning\" | \"danger\" | \"info\" | \"default\" | \"outline-purple\" | \"outline-green\" | \"outline-yellow\" | \"outline-red\" | \"outline-default\"",
+      "declaration": "\"success\" | \"warning\" | \"danger\" | \"default\" | \"info\" | \"outline-purple\" | \"outline-green\" | \"outline-yellow\" | \"outline-red\" | \"outline-default\"",
       "docstring": "",
       "path": "src/components/overlays/notification/notification.interfaces.ts"
     },
