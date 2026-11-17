@@ -12,7 +12,12 @@ env:
 jobs:
   snapshot:
     name: 🚚 Create Snapshot
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '/snapshot')
+    if: |
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/snapshot') &&
+      (github.event.comment.author_association == 'OWNER' ||
+       github.event.comment.author_association == 'COLLABORATOR' ||
+       github.event.comment.author_association == 'MEMBER')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -34,25 +39,23 @@ jobs:
             [Check out the release on GitHub ↗︎](${{ steps.action-url.outputs.url }})
 
       # github.event.issue.pull_request only carries URLs, not head/base info,
-      # so the PR's branch and latest commit have to come from the API.
+      # so the PR's latest commit has to come from the API.
       - name: Get PR info
         id: pr
-        run: |
-          PR_JSON=$(curl -s -H "Authorization: token ${{ secrets.DS_BOT_RELEASE_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}")
-          echo "branch=$(echo "$PR_JSON" | jq -r '.head.ref')" >> "$GITHUB_OUTPUT"
-          echo "sha=$(echo "$PR_JSON" | jq -r '.head.sha')" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "sha=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }} --jq .head.sha)" >> "$GITHUB_OUTPUT"
 
+      # Check out the exact sha so the snapshot version label matches the published code.
       - name: Check out code
         uses: actions/checkout@v7
         with:
-          ref: ${{ steps.pr.outputs.branch }}
+          ref: ${{ steps.pr.outputs.sha }}
           fetch-depth: 2
+          persist-credentials: false
 
+      # No tokens here: this job never pushes, and the npm token is scoped to the Publish step only.
       - uses: ./.github/workflows/actions/setup-environment
-        with:
-          token: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
-          npm-token: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -92,6 +95,8 @@ jobs:
 
       - name: Publish
         run: pnpm -r publish --no-git-checks --tag snapshot
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: Notify success
         if: success()
