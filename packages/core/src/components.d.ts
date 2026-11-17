@@ -1883,7 +1883,7 @@ export namespace Components {
          */
         "animated": boolean;
         /**
-          * Defines the brand of the logo. Default is 'baloise'.
+          * Defines the brand of the logo. Default is 'helvetia'.
          */
         "brand"?: LogoBrand;
         /**
@@ -7127,7 +7127,7 @@ declare namespace LocalJSX {
          */
         "animated"?: boolean;
         /**
-          * Defines the brand of the logo. Default is 'baloise'.
+          * Defines the brand of the logo. Default is 'helvetia'.
          */
         "brand"?: LogoBrand;
         /**

@@ -13,9 +13,6 @@
             ],
             "alpha": 1,
             "hex": "#FCEADD"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2760"
           }
         },
         "2": {
@@ -29,9 +26,6 @@
             ],
             "alpha": 1,
             "hex": "#F7C098"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2761"
           }
         },
         "3": {
@@ -45,9 +39,6 @@
             ],
             "alpha": 1,
             "hex": "#F4AB76"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2762"
           }
         },
         "4": {
@@ -61,9 +52,6 @@
             ],
             "alpha": 1,
             "hex": "#F19654"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2763"
           }
         },
         "5": {
@@ -77,9 +65,6 @@
             ],
             "alpha": 1,
             "hex": "#C17843"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2764"
           }
         },
         "6": {
@@ -93,9 +78,6 @@
             ],
             "alpha": 1,
             "hex": "#794B2A"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2765"
           }
         },
         "1B": {
@@ -109,9 +91,6 @@
             ],
             "alpha": 1,
             "hex": "#F9D5BB"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2766"
           }
         }
       },
@@ -127,9 +106,6 @@
             ],
             "alpha": 1,
             "hex": "#AEB8D2"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2723"
           }
         },
         "2": {
@@ -143,9 +119,6 @@
             ],
             "alpha": 1,
             "hex": "#8595BC"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2724"
           }
         },
         "3": {
@@ -159,9 +132,6 @@
             ],
             "alpha": 1,
             "hex": "#5D71A5"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2725"
           }
         },
         "4": {
@@ -175,9 +145,6 @@
             ],
             "alpha": 1,
             "hex": "#344E8F"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2726"
           }
         },
         "5": {
@@ -191,9 +158,6 @@
             ],
             "alpha": 1,
             "hex": "#2A3E72"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2727"
           }
         },
         "6": {
@@ -207,9 +171,6 @@
             ],
             "alpha": 1,
             "hex": "#1A2748"
-          },
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:2728"
           }
         }
       }
@@ -220,17 +181,11 @@
       "Color": {
         "Primary": {
           "$type": "color",
-          "$value": "{🌐 Global.🌈 Color.Black}",
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:288"
-          }
+          "$value": "{🌐 Global.🌈 Color.Black}"
         },
         "Hint": {
           "$type": "color",
-          "$value": "{🌐 Global.🌈 Color.Grey.5}",
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:292"
-          }
+          "$value": "{🌐 Global.🌈 Color.Grey.5}"
         }
       }
     },
@@ -239,17 +194,11 @@
         "Surface": {
           "Base": {
             "$type": "color",
-            "$value": "{🌐 Global.🌈 Color.Primary.4}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:137:504"
-            }
+            "$value": "{🌐 Global.🌈 Color.Primary.4}"
           },
           "Hover": {
             "$type": "color",
-            "$value": "{🌐 Global.🌈 Color.Primary.5}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:137:505"
-            }
+            "$value": "{🌐 Global.🌈 Color.Primary.5}"
           }
         }
       },
@@ -257,24 +206,15 @@
         "Background": {
           "Base": {
             "$type": "color",
-            "$value": "{🌐 Global.🌈 Color.Sky.4}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:137:465"
-            }
+            "$value": "{🌐 Global.🌈 Color.Sky.4}"
           },
           "Hover": {
             "$type": "color",
-            "$value": "{🌐 Global.🌈 Color.Sky.5}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:137:466"
-            }
+            "$value": "{🌐 Global.🌈 Color.Sky.5}"
           },
           "Active": {
             "$type": "color",
-            "$value": "{🌐 Global.🌈 Color.Sky.6}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:137:467"
-            }
+            "$value": "{🌐 Global.🌈 Color.Sky.6}"
           }
         }
       }
@@ -283,17 +223,11 @@
       "Color": {
         "Primary": {
           "$type": "color",
-          "$value": "{🌐 Global.🌈 Color.Primary.4}",
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:83"
-          }
+          "$value": "{🌐 Global.🌈 Color.Primary.4}"
         },
         "PrimaryHover": {
           "$type": "color",
-          "$value": "{🌐 Global.🌈 Color.Primary.5}",
-          "$extensions": {
-            "com.figma.variableId": "VariableID:137:84"
-          }
+          "$value": "{🌐 Global.🌈 Color.Primary.5}"
         }
       }
     }
@@ -304,28 +238,19 @@
         "Base": {
           "Radius": {
             "$type": "dimension",
-            "$value": "{🔗 Alias.🔵 Radius.Rounded}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:137:1260"
-            }
+            "$value": "{🔗 Alias.🔵 Radius.Rounded}"
           }
         },
         "SM": {
           "Radius": {
             "$type": "dimension",
-            "$value": "{🔗 Alias.🔵 Radius.Rounded}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:137:1269"
-            }
+            "$value": "{🔗 Alias.🔵 Radius.Rounded}"
           }
         },
         "LG": {
           "Radius": {
             "$type": "dimension",
-            "$value": "{🔗 Alias.🔵 Radius.Rounded}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:137:1278"
-            }
+            "$value": "{🔗 Alias.🔵 Radius.Rounded}"
           }
         }
       }
