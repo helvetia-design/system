@@ -2,17 +2,26 @@
 @use '../input/input.mixin' as input;
 @use '../form/form.mixin' as form;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
  * --------------------------------
  * Define here the css variables for the component to be able to use it in host or non-host mode.
  *
- * @prop --file-upload-label-family: Font family of the label text.
- * @prop --file-upload-label-weight: Font weight of the label text.
- * @prop --file-upload-label-size: Font size of the label text.
- * @prop --file-upload-label-line-height: Line height of the label text.
+ * @prop --file-upload-label-font-family: Font family of the drop-zone placeholder text.
+ * @prop --file-upload-label-font-weight: Font weight of the drop-zone placeholder text.
+ * @prop --file-upload-label-font-size: Font size of the drop-zone placeholder text.
+ * @prop --file-upload-label-line-height: Line height of the drop-zone placeholder text.
+ * @prop --file-upload-label-letter-spacing: Letter spacing of the drop-zone placeholder text.
+ * @prop --file-upload-label-text-decoration: Text decoration of the drop-zone placeholder text.
+ * @prop --file-upload-label-text-transform: Text transform of the drop-zone placeholder text.
  * @prop --file-upload-drop-zone-border-color: Border color of the drop zone.
+ * @prop --file-upload-drop-zone-border-width: Border width of the drop zone.
+ * @prop --file-upload-drop-zone-border-style: Border style of the drop zone.
+ * @prop --file-upload-drop-zone-radius: Corner radius of the drop zone.
+ * @prop --file-upload-drop-zone-gap: Gap inside the drop zone.
+ * @prop --file-upload-drop-zone-padding: Padding of the drop zone.
  * @prop --file-upload-drop-zone-background: Background color of the drop zone.
  * @prop --file-upload-drop-zone-hover-background: Background color on hover.
  * @prop --file-upload-drop-zone-hover-border-color: Border color on hover.
@@ -24,35 +33,77 @@
  * @prop --file-upload-drop-zone-disabled-background: Background color when disabled.
  * @prop --file-upload-drop-zone-disabled-border-color: Border color when disabled.
  * @prop --file-upload-drop-zone-disabled-text-color: Text color when disabled.
+ * @prop --file-upload-spinner-color: Color of the disabled-state spinner.
  * @prop --file-upload-file-list-background: Background color of file list items.
+ * @prop --file-upload-file-list-gap: Gap between file list items.
+ * @prop --file-upload-file-list-margin-block: Margin above/below the file list.
+ * @prop --file-upload-file-list-item-radius: Corner radius of a file list item.
+ * @prop --file-upload-file-list-item-padding-block: Block padding of a file list item.
+ * @prop --file-upload-file-list-item-padding-inline: Inline padding of a file list item.
  * @prop --file-upload-file-name-color: Text color of file names.
+ * @prop --file-upload-file-name-weight: Font weight of file names.
+ * @prop --file-upload-file-name-size: Font size of file names.
  * @prop --file-upload-file-size-color: Text color of file sizes.
+ * @prop --file-upload-file-size-size: Font size of file sizes.
  * @prop --file-upload-disabled-icon-color: Icon color when disabled.
  * @prop --file-upload-disabled-text-color: Text color when disabled.
+ * @prop --form-label-color: Text color of the field label.
+ * @prop --form-label-font-family: Font family of the field label.
+ * @prop --form-label-font-weight: Font weight of the field label.
+ * @prop --form-label-font-size: Font size of the field label.
+ * @prop --form-label-line-height: Line height of the field label.
+ * @prop --form-label-letter-spacing: Letter spacing of the field label.
+ * @prop --form-label-text-decoration: Text decoration of the field label.
+ * @prop --form-label-text-transform: Text transform of the field label.
+ * @prop --form-description-color: Text color of the field description.
+ * @prop --form-description-font-family: Font family of the field description.
+ * @prop --form-description-font-weight: Font weight of the field description.
+ * @prop --form-description-font-size: Font size of the field description.
+ * @prop --form-description-line-height: Line height of the field description.
+ * @prop --form-description-letter-spacing: Letter spacing of the field description.
+ * @prop --form-description-text-decoration: Text decoration of the field description.
+ * @prop --form-description-text-transform: Text transform of the field description.
  */
 
 :host {
-  @include vars.local(file-upload-label-family, var(--ds-alias-text-family-text));
-  @include vars.local(file-upload-label-weight, var(--ds-alias-text-weight-bold));
-  @include vars.local(file-upload-label-size, var(--ds-alias-text-size-base));
-  @include vars.local(file-upload-label-line-height, var(--ds-alias-text-line-height-text));
-  @include vars.local(file-upload-drop-zone-border-color, var(--ds-alias-border-color-grey));
-  @include vars.local(file-upload-drop-zone-background, var(--ds-alias-surface-transparent));
-  @include vars.local(file-upload-drop-zone-hover-background, var(--ds-alias-surface-grey-lighter));
-  @include vars.local(file-upload-drop-zone-hover-border-color, var(--ds-alias-border-color-primary));
-  @include vars.local(file-upload-drop-zone-hover-text-color, var(--ds-alias-text-color-primary-hover));
-  @include vars.local(file-upload-drop-zone-active-background, var(--ds-alias-surface-grey-light));
-  @include vars.local(file-upload-drop-zone-active-border-color, var(--ds-alias-border-color-primary));
-  @include vars.local(file-upload-drop-zone-active-text-color, var(--ds-alias-text-color-primary-active));
-  @include vars.local(file-upload-drop-zone-focus-border-color, var(--ds-alias-interaction-focus-color-border));
-  @include vars.local(file-upload-drop-zone-disabled-background, var(--ds-alias-surface-grey-light));
-  @include vars.local(file-upload-drop-zone-disabled-border-color, var(--ds-button-color-disabled-base-text));
-  @include vars.local(file-upload-drop-zone-disabled-text-color, var(--ds-button-color-disabled-base-text));
-  @include vars.local(file-upload-file-list-background, var(--ds-alias-surface-grey-light));
-  @include vars.local(file-upload-file-name-color, var(--ds-alias-text-color-primary));
-  @include vars.local(file-upload-file-size-color, var(--ds-alias-text-color-primary-light));
-  @include vars.local(file-upload-disabled-icon-color, var(--ds-button-color-disabled-base-text));
-  @include vars.local(file-upload-disabled-text-color, var(--ds-button-color-disabled-base-text));
+  @include typo.local(file-upload-label, 'file-upload-label-typo');
+  @include vars.local(file-upload-drop-zone-border-color, var(--ds-file-upload-drop-zone-border-color-base));
+  @include vars.local(file-upload-drop-zone-border-width, var(--ds-file-upload-drop-zone-border-width));
+  @include vars.local(file-upload-drop-zone-border-style, var(--ds-file-upload-drop-zone-border-style));
+  @include vars.local(file-upload-drop-zone-radius, var(--ds-file-upload-drop-zone-radius));
+  @include vars.local(file-upload-drop-zone-gap, var(--ds-file-upload-drop-zone-gap));
+  @include vars.local(file-upload-drop-zone-padding, var(--ds-file-upload-drop-zone-padding));
+  @include vars.local(file-upload-drop-zone-background, var(--ds-file-upload-drop-zone-background-color-base));
+  @include vars.local(file-upload-drop-zone-hover-background, var(--ds-file-upload-drop-zone-background-color-hover));
+  @include vars.local(file-upload-drop-zone-hover-border-color, var(--ds-file-upload-drop-zone-border-color-hover));
+  @include vars.local(file-upload-drop-zone-hover-text-color, var(--ds-file-upload-drop-zone-text-color-hover));
+  @include vars.local(file-upload-drop-zone-active-background, var(--ds-file-upload-drop-zone-background-color-active));
+  @include vars.local(file-upload-drop-zone-active-border-color, var(--ds-file-upload-drop-zone-border-color-active));
+  @include vars.local(file-upload-drop-zone-active-text-color, var(--ds-file-upload-drop-zone-text-color-active));
+  @include vars.local(file-upload-drop-zone-focus-border-color, var(--ds-file-upload-drop-zone-border-color-focus));
+  @include vars.local(
+    file-upload-drop-zone-disabled-background,
+    var(--ds-file-upload-drop-zone-background-color-disabled)
+  );
+  @include vars.local(
+    file-upload-drop-zone-disabled-border-color,
+    var(--ds-file-upload-drop-zone-border-color-disabled)
+  );
+  @include vars.local(file-upload-drop-zone-disabled-text-color, var(--ds-file-upload-drop-zone-text-color-disabled));
+  @include vars.local(file-upload-spinner-color, var(--ds-file-upload-spinner-color));
+  @include vars.local(file-upload-file-list-background, var(--ds-file-upload-file-list-background-color));
+  @include vars.local(file-upload-file-list-gap, var(--ds-file-upload-file-list-gap));
+  @include vars.local(file-upload-file-list-margin-block, var(--ds-file-upload-file-list-margin-block));
+  @include vars.local(file-upload-file-list-item-radius, var(--ds-file-upload-file-list-item-radius));
+  @include vars.local(file-upload-file-list-item-padding-block, var(--ds-file-upload-file-list-item-padding-block));
+  @include vars.local(file-upload-file-list-item-padding-inline, var(--ds-file-upload-file-list-item-padding-inline));
+  @include vars.local(file-upload-file-name-color, var(--ds-file-upload-file-name-text-color));
+  @include vars.local(file-upload-file-name-weight, var(--ds-file-upload-file-name-font-weight));
+  @include vars.local(file-upload-file-name-size, var(--ds-file-upload-file-name-font-size));
+  @include vars.local(file-upload-file-size-color, var(--ds-file-upload-file-size-text-color));
+  @include vars.local(file-upload-file-size-size, var(--ds-file-upload-file-size-font-size));
+  @include vars.local(file-upload-disabled-icon-color, var(--ds-file-upload-icon-color-disabled));
+  @include vars.local(file-upload-disabled-text-color, var(--ds-file-upload-file-list-text-color-disabled));
 
   @include input.vars('file-upload');
   @include form.vars-label();
@@ -83,11 +134,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: var(--_file-upload-drop-zone-gap);
   width: 100%;
-  padding: 1rem;
-  border: 2px dashed var(--_file-upload-drop-zone-border-color);
-  border-radius: var(--ds-alias-radius-base);
+  padding: var(--_file-upload-drop-zone-padding);
+  border: var(--_file-upload-drop-zone-border-width) var(--_file-upload-drop-zone-border-style)
+    var(--_file-upload-drop-zone-border-color);
+  border-radius: var(--_file-upload-drop-zone-radius);
   background-color: var(--_file-upload-drop-zone-background);
 
   @include hover {
@@ -119,7 +171,7 @@
     --icon-color: var(--_file-upload-drop-zone-disabled-text-color);
     cursor: default;
 
-    --_spinner-circle-background-color: var(--ds-global-color-grey-3);
+    --_spinner-circle-background-color: var(--_file-upload-spinner-color);
   }
 }
 
@@ -128,23 +180,22 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: var(--_file-upload-drop-zone-gap);
 
-  font-family: var(--ds-alias-text-family-text);
-  font-weight: var(--ds-alias-text-weight-bold);
-  font-size: var(--ds-alias-text-size-base);
+  @include typo.apply(file-upload-label);
   text-align: center;
 }
 
 :host #file-list {
-  margin-block: 1rem;
+  margin-block: var(--_file-upload-file-list-margin-block);
   display: grid;
-  gap: 0.5rem;
+  gap: var(--_file-upload-file-list-gap);
 }
 
 :host #file-list li {
-  padding: 0.5rem 1rem;
-  border-radius: var(--ds-alias-radius-base);
+  padding-block: var(--_file-upload-file-list-item-padding-block);
+  padding-inline: var(--_file-upload-file-list-item-padding-inline);
+  border-radius: var(--_file-upload-file-list-item-radius);
   background-color: var(--_file-upload-file-list-background);
 
   display: flex;
@@ -157,13 +208,13 @@
 
   .file-name {
     color: var(--_file-upload-file-name-color);
-    font-weight: var(--ds-alias-text-weight-bold);
-    font-size: var(--ds-alias-text-size-base);
+    font-weight: var(--_file-upload-file-name-weight);
+    font-size: var(--_file-upload-file-name-size);
   }
 
   .file-size {
     color: var(--_file-upload-file-size-color);
-    font-size: var(--ds-alias-text-size-xs);
+    font-size: var(--_file-upload-file-size-size);
   }
 }
 
@@ -188,28 +239,28 @@
 // Invalid or Color Danger
 // --------------------------------
 :host(.is-danger) {
-  --mod-file-upload-description-color: var(--ds-form-danger-description-color);
-  --mod-file-upload-drop-zone-border-color: var(--ds-alias-text-color-danger);
-  --mod-file-upload-drop-zone-hover-border-color: var(--ds-alias-text-color-danger);
-  --mod-file-upload-drop-zone-active-border-color: var(--ds-alias-text-color-danger);
+  --mod-file-upload-description-color: var(--ds-form-danger-color-description);
+  --mod-file-upload-drop-zone-border-color: var(--ds-file-upload-drop-zone-border-color-danger);
+  --mod-file-upload-drop-zone-hover-border-color: var(--ds-file-upload-drop-zone-border-color-danger);
+  --mod-file-upload-drop-zone-active-border-color: var(--ds-file-upload-drop-zone-border-color-danger);
 }
 
 //
 // Valid or Color Success
 // --------------------------------
 :host(.is-success) {
-  --mod-file-upload-description-color: var(--ds-form-success-description-color);
-  --mod-file-upload-drop-zone-border-color: var(--ds-alias-text-color-success);
-  --mod-file-upload-drop-zone-hover-border-color: var(--ds-alias-text-color-success);
-  --mod-file-upload-drop-zone-active-border-color: var(--ds-alias-text-color-success);
+  --mod-file-upload-description-color: var(--ds-form-success-color-description);
+  --mod-file-upload-drop-zone-border-color: var(--ds-file-upload-drop-zone-border-color-success);
+  --mod-file-upload-drop-zone-hover-border-color: var(--ds-file-upload-drop-zone-border-color-success);
+  --mod-file-upload-drop-zone-active-border-color: var(--ds-file-upload-drop-zone-border-color-success);
 }
 
 //
 // Color Warning
 // --------------------------------
 :host(.is-warning) {
-  --mod-file-upload-description-color: var(--ds-form-warning-description-color);
-  --mod-file-upload-drop-zone-border-color: var(--ds-alias-text-color-warning);
-  --mod-file-upload-drop-zone-hover-border-color: var(--ds-alias-text-color-warning);
-  --mod-file-upload-drop-zone-active-border-color: var(--ds-alias-text-color-warning);
+  --mod-file-upload-description-color: var(--ds-form-warning-color-description);
+  --mod-file-upload-drop-zone-border-color: var(--ds-file-upload-drop-zone-border-color-warning);
+  --mod-file-upload-drop-zone-hover-border-color: var(--ds-file-upload-drop-zone-border-color-warning);
+  --mod-file-upload-drop-zone-active-border-color: var(--ds-file-upload-drop-zone-border-color-warning);
 }

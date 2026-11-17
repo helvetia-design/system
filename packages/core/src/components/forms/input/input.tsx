@@ -54,9 +54,13 @@ import {
  * @slot invalid-text - Overrides the `invalidText` prop with custom markup, shown instead of the description when `invalid` is `true`.
  * @slot start - Content placed before the native input inside the field, for example an icon or a button.
  * @slot end - Content placed after the native input inside the field, for example an icon or a button.
+ * @part inner - The field's outer wrapper element.
+ * @part label - The field's label element.
+ * @part control - The wrapper around the native input and its start/end slots.
+ * @part start - The `start` slot element.
+ * @part end - The `end` slot element.
  * @part input - The native HTML input element.
- * @part prefix - The prefix wrapper (if used).
- * @part suffix - The suffix wrapper (if used).
+ * @part description - The description or invalid-text message element below the control.
  */
 @Component({
   tag: 'ds-input',

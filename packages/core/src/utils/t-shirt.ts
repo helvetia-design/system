@@ -14,6 +14,15 @@ export const TShirtSizesMapping = {
   '6xl': 'xxxxxx-large',
 } as const
 
+/**
+ * Deprecated doubled-letter spellings that predate the `2xl`/`2xs` scale.
+ * Kept so existing consumers keep rendering while they migrate.
+ */
+export const TShirtSizeAliases: Record<string, TShirtSizeShort> = {
+  xxs: '2xs',
+  xxl: '2xl',
+}
+
 export type TShirtSizeShort = keyof typeof TShirtSizesMapping
 export type TShirtSizeVerbose = (typeof TShirtSizesMapping)[TShirtSizeShort]
 
@@ -36,6 +45,13 @@ export const normalizeDeprecatedTShirtSize = <T extends string | undefined | nul
   if (short) {
     console.warn(`[bal] The t-shirt size "${size}" is deprecated. Please use the short value "${short}" instead.`)
     return short as T
+  }
+
+  // Map deprecated doubled-letter spellings like "xxl" to their scale counterparts.
+  const alias = TShirtSizeAliases[normalized]
+  if (alias) {
+    console.warn(`[bal] The t-shirt size "${size}" is deprecated. Please use the short value "${alias}" instead.`)
+    return alias as T
   }
 
   return size

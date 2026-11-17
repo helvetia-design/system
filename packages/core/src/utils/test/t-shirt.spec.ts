@@ -19,6 +19,8 @@ describe('normalizeDeprecatedTShirtSize', () => {
     ['large', 'lg'],
     ['x-large', 'xl'],
     ['xx-large', '2xl'],
+    ['xxs', '2xs'],
+    ['xxl', '2xl'],
   ])('maps the deprecated value "%s" to "%s" and warns', (verbose, short) => {
     expect(normalizeDeprecatedTShirtSize(verbose)).toBe(short)
     expect(console.warn).toHaveBeenCalledTimes(1)
@@ -31,7 +33,7 @@ describe('normalizeDeprecatedTShirtSize', () => {
   })
 
   test('passes unknown values through unchanged', () => {
-    expect(normalizeDeprecatedTShirtSize('xxl')).toBe('xxl')
+    expect(normalizeDeprecatedTShirtSize('xxxl')).toBe('xxxl')
   })
 
   test('returns empty values unchanged', () => {

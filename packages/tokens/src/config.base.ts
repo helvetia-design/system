@@ -25,6 +25,7 @@ export const BASE_CSS_TRANSFORMS = [
   'ds/size/round',
   'ds/size/rem',
   'ds/font-weight',
+  'ds/text-keyword',
   'ds/shadow',
   'ds/border',
   'ds/typography',
@@ -44,8 +45,8 @@ const config: Config = {
       // swapped for our own 'ds/shadow', and 'typography/css/shorthand', dropped entirely (not
       // swapped) — it collapses a typography token's $value into a single `font` shorthand
       // *string* before 'ds/typography' ever sees it, and there's no way to recover the original
-      // {fontFamily, fontSize, fontWeight, lineHeight} object from that string. This codebase wants
-      // 4 separate longhand custom properties per typography token, never a shorthand
+      // {fontFamily, ...} object from that string. This codebase wants
+      // 7 separate longhand custom properties per typography token, never a shorthand
       // (docs/plans/typography-token-type-plan.md decision 5) — verified directly, same as
       // shadow/border's own built-ins (the shorthand only became visible once a real
       // $type: "typography" token existed to trigger its filter).
@@ -91,6 +92,7 @@ const config: Config = {
         'ds/color/hex',
         'ds/size/rem',
         'ds/font-weight',
+        'ds/text-keyword',
         'ds/font-family',
         'size/rem',
         'ds/dimension',
@@ -136,6 +138,7 @@ const config: Config = {
         'ds/color/hex',
         'ds/size/rem',
         'ds/font-weight',
+        'ds/text-keyword',
         'ds/font-family',
         'size/rem',
         'ds/dimension',
@@ -165,6 +168,7 @@ const config: Config = {
         'ds/color/hex',
         'ds/size/rem',
         'ds/font-weight',
+        'ds/text-keyword',
         'ds/font-family',
         'size/rem',
         'ds/dimension',
@@ -192,6 +196,7 @@ const config: Config = {
         'ds/size/round',
         'ds/dimension/js',
         'ds/font-weight',
+        'ds/text-keyword',
         'ds/font-family',
         'ds/shadow',
         'ds/border',

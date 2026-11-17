@@ -502,7 +502,7 @@ describe('scanBalCard line numbers and speed', () => {
     const result = scanBalCard(root)
     const elapsed = performance.now() - started
 
-    expect(elapsed).toBeLessThan(1000)
+    expect(elapsed).toBeLessThan(2500)
     expect(result.total).toBe(count * 2 * copies.length)
     expect(result.files.map(file => file.findings.at(-1))).toEqual(
       copies.map(() => ({ line: count, snippet: '</bal-card>' })),

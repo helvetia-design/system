@@ -11,6 +11,8 @@
  * @prop --popup-backdrop-background: Background color of the optional full-screen backdrop.
  * @prop --popup-backdrop-opacity: Opacity of the optional full-screen backdrop.
  * @prop --popup-arrow-size: Size (width and height) of the arrow indicator.
+ * @prop --popup-close-inset: Offset of the close button from the top and end edge of the panel.
+ * @prop --popup-closable-padding-end: End padding of the panel when the close button is shown.
  */
 
 // ─── Variables ────────────────────────────────────────────────────────────────
@@ -23,9 +25,11 @@
   @include vars.local(popup-min-width, var(--ds-popup-min-width));
   @include vars.local(popup-max-width, none);
   @include vars.local(popup-z-index, var(--ds-popup-z-index));
-  @include vars.local(popup-backdrop-background, var(--ds-popup-backdrop-background));
+  @include vars.local(popup-backdrop-background, var(--ds-popup-backdrop-color-background));
   @include vars.local(popup-backdrop-opacity, var(--ds-popup-backdrop-opacity));
-  @include vars.local(popup-arrow-size, var(--ds-popup-arrow-size, 8px));
+  @include vars.local(popup-arrow-size, var(--ds-popup-arrow-size));
+  @include vars.local(popup-close-inset, var(--ds-popup-close-inset));
+  @include vars.local(popup-closable-padding-end, var(--ds-popup-closable-padding-end));
 
   display: contents;
 }
@@ -37,6 +41,7 @@
   inset: 0;
   z-index: calc(var(--_popup-z-index) - 1);
   background: var(--_popup-backdrop-background);
+  // ds-token-check: intentional — open/closed visibility toggle
   opacity: 0;
   pointer-events: none;
   transition: opacity 200ms ease;
@@ -64,6 +69,7 @@
   max-width: var(--_popup-max-width);
 
   // Hidden by default; made visible via is-open class.
+  // ds-token-check: intentional — open/closed visibility toggle
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -75,6 +81,7 @@
 }
 
 :host(.is-open) [part='panel'] {
+  // ds-token-check: intentional — open/closed visibility toggle
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -90,12 +97,12 @@
 
 [part='close'] {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: var(--_popup-close-inset);
+  inset-inline-end: var(--_popup-close-inset);
 }
 
 :host(.is-closable) [part='panel'] {
-  padding-right: calc(var(--_popup-p) + var(--_popup-p));
+  padding-inline-end: var(--_popup-closable-padding-end);
 }
 
 // ─── Arrow ────────────────────────────────────────────────────────────────────
@@ -105,6 +112,7 @@
   width: var(--_popup-arrow-size);
   height: var(--_popup-arrow-size);
   background: var(--_popup-background);
+  // ds-token-check: intentional — square rotated into diamond arrow
   transform: rotate(45deg);
   pointer-events: none;
 }

@@ -1,6 +1,9 @@
 import StyleDictionary from 'style-dictionary'
 import { copy, ensureDir, pathExists } from 'fs-extra'
+import { readFile } from 'fs/promises'
 import { resolve } from 'path'
+
+import { validateTypographyDeviceSize } from './validate-typography.js'
 
 console.log(`
 \x1b[35m┃\x1b[0m
@@ -17,6 +20,18 @@ registerCustomFormatters(StyleDictionary)
 
 import ConfigBase from './config.base.js'
 import { createBrandConfig } from './config.brand.js'
+
+// ADR-0037 decision 6 — every typography token's fontSize must resolve to a Device.Text.Size.*
+// token. Runs against the raw source before Style Dictionary resolves references away.
+const baseTokens = JSON.parse(await readFile('tokens/Base.tokens.json', 'utf-8'))
+const typographyViolations = validateTypographyDeviceSize(baseTokens)
+if (typographyViolations.length > 0) {
+  console.error('\x1b[31m✖ Typography fontSize must resolve to a Device.Text.Size.* token:\x1b[0m')
+  for (const { tokenPath, fontSize } of typographyViolations) {
+    console.error(`  - ${tokenPath}.fontSize: ${JSON.stringify(fontSize)}`)
+  }
+  process.exit(1)
+}
 
 // Base build
 const StyleDictionaryBase = new StyleDictionary(ConfigBase)

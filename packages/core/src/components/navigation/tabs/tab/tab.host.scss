@@ -1,4 +1,5 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
+@use '../../../../typography' as typo;
 
 // ─── Panels mode ────────────────────────────────────────────────────────────
 
@@ -16,18 +17,15 @@ a {
   position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: 2.5rem;
-  gap: 0.5rem;
+  min-height: var(--_tabs-tab-min-height);
+  gap: var(--_tabs-tab-gap);
   padding: var(--_tabs-tab-py) var(--_tabs-tab-px);
   background: none;
   border: none;
   cursor: pointer;
   text-decoration: none;
   color: var(--_tabs-tab-unselected-color-base);
-  font-family: var(--_tabs-tab-unselected-font-family);
-  font-size: var(--_tabs-tab-unselected-font-size);
-  font-weight: var(--_tabs-tab-unselected-font-weight);
-  line-height: var(--_tabs-tab-unselected-line-height);
+  @include typo.apply(tabs-tab-unselected);
   outline: none;
   white-space: nowrap;
   transition: color 120ms ease;
@@ -36,11 +34,11 @@ a {
     content: '';
     position: absolute;
     z-index: 1;
-    bottom: calc(-1 * var(--ds-alias-border-width-base));
+    bottom: calc(-1 * var(--_tabs-border-width));
     left: 0;
     right: 0;
     height: 0;
-    border-radius: 9999px;
+    border-radius: var(--_tabs-indicator-radius);
     border-bottom: var(--_tabs-indicator-unselected-base);
     transition: border-bottom-color 120ms ease;
   }
@@ -72,10 +70,7 @@ a {
 span.is-selected,
 a.is-selected {
   color: var(--_tabs-tab-selected-color-base);
-  font-family: var(--_tabs-tab-selected-font-family);
-  font-size: var(--_tabs-tab-selected-font-size);
-  font-weight: var(--_tabs-tab-selected-font-weight);
-  line-height: var(--_tabs-tab-selected-line-height);
+  @include typo.apply(tabs-tab-selected);
 
   @include hover {
     &:hover {
@@ -123,7 +118,7 @@ a ::slotted(ds-icon.is-filled:not(.is-auto)) {
 :host(.is-vertical) a::after {
   top: 0;
   bottom: 0;
-  left: calc(-1 * var(--ds-alias-border-width-base));
+  left: calc(-1 * var(--_tabs-border-width));
   right: auto;
   width: 0;
   height: auto;
@@ -149,8 +144,7 @@ a ::slotted(ds-icon.is-filled:not(.is-auto)) {
 
 :host(.is-inverted) span.is-selected,
 :host(.is-inverted) a.is-selected {
-  font-family: var(--ds-alias-text-family-heading);
-  font-weight: var(--_tabs-tab-selected-font-weight);
+  @include typo.apply(tabs-tab-inverted-selected);
 }
 
 // ─── Navigation mode ─────────────────────────────────────────────────────────
@@ -165,11 +159,11 @@ a ::slotted(ds-icon.is-filled:not(.is-auto)) {
     content: '';
     position: absolute;
     z-index: 1;
-    bottom: calc(-1 * var(--ds-alias-border-width-base));
+    bottom: calc(-1 * var(--_tabs-border-width));
     left: 0;
     right: 0;
     height: 0;
-    border-radius: 9999px;
+    border-radius: var(--_tabs-indicator-radius);
     border-bottom: var(--_tabs-indicator-unselected-base);
     transition: border-color 120ms ease;
   }
@@ -182,14 +176,11 @@ a ::slotted(ds-icon.is-filled:not(.is-auto)) {
 :host(.is-navigation) ::slotted(a) {
   display: inline-flex;
   align-items: center;
-  min-height: 2.5rem;
-  gap: 0.5rem;
+  min-height: var(--_tabs-tab-min-height);
+  gap: var(--_tabs-tab-gap);
   padding: var(--_tabs-tab-py) var(--_tabs-tab-px);
   color: var(--_tabs-tab-unselected-color-base);
-  font-family: var(--_tabs-tab-unselected-font-family);
-  font-size: var(--_tabs-tab-unselected-font-size);
-  font-weight: var(--_tabs-tab-unselected-font-weight);
-  line-height: var(--_tabs-tab-unselected-line-height);
+  @include typo.apply(tabs-tab-unselected);
   text-decoration: none;
   white-space: nowrap;
   transition: color 120ms ease;
@@ -204,23 +195,19 @@ a ::slotted(ds-icon.is-filled:not(.is-auto)) {
 :host(.is-navigation.is-selected) ::slotted(a),
 :host(.is-navigation) ::slotted([aria-current]) {
   color: var(--_tabs-tab-selected-color-base);
-  font-family: var(--_tabs-tab-selected-font-family);
-  font-size: var(--_tabs-tab-selected-font-size);
-  font-weight: var(--_tabs-tab-selected-font-weight);
-  line-height: var(--_tabs-tab-selected-line-height);
+  @include typo.apply(tabs-tab-selected);
 }
 
 :host(.is-navigation.is-inverted.is-selected) ::slotted(a),
 :host(.is-navigation.is-inverted) ::slotted([aria-current]) {
-  font-family: var(--ds-alias-text-family-heading);
-  font-weight: var(--_tabs-tab-selected-font-weight);
+  @include typo.apply(tabs-tab-inverted-selected);
 }
 
 // Vertical navigation — flip indicator to left
 :host(.is-navigation.is-vertical)::after {
   top: 0;
   bottom: 0;
-  left: calc(-1 * var(--ds-alias-border-width-base));
+  left: calc(-1 * var(--_tabs-border-width));
   right: auto;
   width: 0;
   height: auto;

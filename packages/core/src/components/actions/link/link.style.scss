@@ -11,6 +11,7 @@
 
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -21,8 +22,10 @@
  * @prop --link-color - Base text color of the link.
  * @prop --link-color-hover - Text color on hover state.
  * @prop --link-color-active - Text color on active/pressed state.
- * @prop --link-family - Font family of the link.
- * @prop --link-weight - Font weight of the link.
+ * @prop --link-font-weight - Font weight of the link.
+ * @prop --link-letter-spacing - Letter spacing of the link.
+ * @prop --link-text-decoration - Text decoration of the link.
+ * @prop --link-text-transform - Text transform of the link.
  * @prop --link-radius - Border radius of the link focus ring.
  * @prop --link-underline-width - Text decoration thickness (underline width).
  * @prop --link-underline-offset - Offset of the underline from text baseline.
@@ -36,8 +39,7 @@ a.is-link:not(.ds-button) {
   @include vars.local(link-color-hover, var(--ds-link-primary-hover));
   @include vars.local(link-color-active, var(--ds-link-primary-active));
 
-  @include vars.local(link-family, var(--ds-link-font-family));
-  @include vars.local(link-weight, var(--ds-link-font-weight));
+  @include typo.local(link, 'link-typo');
 
   @include vars.local(link-underline-width, var(--ds-link-underline-width));
   @include vars.local(link-underline-offset, var(--ds-link-underline-offset, 0.25rem));
@@ -57,12 +59,10 @@ a.is-link:not(.ds-button),
   hyphens: auto;
   margin: 0;
   overflow-wrap: break-word;
-  font-family: var(--_link-family);
-  font-weight: var(--_link-weight);
+  @include typo.apply(link, $inline: true);
   border-radius: var(--_link-radius);
 
   outline: none;
-  text-decoration: underline;
   text-underline-offset: var(--_link-underline-offset);
   text-decoration-thickness: var(--_link-underline-width);
 

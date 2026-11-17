@@ -15,20 +15,12 @@ const workspaceRoot = resolve(__dirname, '..')
 const BUMP_LEVELS = ['patch', 'minor', 'major']
 
 /**
- * Maps a scope choice to the package it should bump. Scopes without an entry here
- * (component tags like `slider`, or cross-cutting scopes like `a11y`/`deps`/`table`/`devkit`)
- * fall back to `@helvetia-design/core`, since that's where components/utilities actually live.
+ * All `@helvetia-design/*` packages are a fixed changeset group (see .changeset/config.json)
+ * and release together under one version with one changelog. Every changeset's frontmatter
+ * therefore always targets `@helvetia-design/core` — the scope choice only affects the bold
+ * label on the changelog line, never which package gets bumped.
  */
-const SCOPE_PACKAGE_MAP = {
-  core: '@helvetia-design/core',
-  angular: '@helvetia-design/angular',
-  styles: '@helvetia-design/styles',
-  tokens: '@helvetia-design/tokens',
-  react: '@helvetia-design/react',
-  assets: '@helvetia-design/assets',
-  testing: '@helvetia-design/playwright',
-  skills: '@helvetia-design/skills',
-}
+const CHANGESET_PACKAGE = '@helvetia-design/core'
 
 let cleanUp = () => Promise.resolve()
 
@@ -84,8 +76,7 @@ async function writeChangeset({ bumpLevel, scope, summary }) {
   }
 
   const label = cleanScopes.join('/')
-  const packages = [...new Set(cleanScopes.map(s => SCOPE_PACKAGE_MAP[s] ?? '@helvetia-design/core'))]
-  const frontmatter = packages.map(pkg => `'${pkg}': ${bumpLevel}`).join('\n')
+  const frontmatter = `'${CHANGESET_PACKAGE}': ${bumpLevel}`
   const content = `---
 ${frontmatter}
 ---

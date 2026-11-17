@@ -1,28 +1,57 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
  * ═══════════════════════════════════════════════════════════════════════════════
  * Define CSS custom properties that can be overridden by consumers.
  *
- * @prop --data-item-font-weight-label: Font weight of the label
+ * @prop --data-item-label-font-family: Font family of the label
+ * @prop --data-item-label-font-size: Font size of the label
+ * @prop --data-item-label-font-weight: Font weight of the label
+ * @prop --data-item-label-line-height: Line height of the label
+ * @prop --data-item-label-letter-spacing: Letter spacing of the label
+ * @prop --data-item-label-text-decoration: Text decoration of the label
+ * @prop --data-item-label-text-transform: Text transform of the label
+ * @prop --data-item-value-font-family: Font family of the value
+ * @prop --data-item-value-font-size: Font size of the value
+ * @prop --data-item-value-font-weight: Font weight of the value
+ * @prop --data-item-value-line-height: Line height of the value
+ * @prop --data-item-value-letter-spacing: Letter spacing of the value
+ * @prop --data-item-value-text-decoration: Text decoration of the value
+ * @prop --data-item-value-text-transform: Text transform of the value
  * @prop --data-item-color-text: Text color of the value
  * @prop --data-item-color-text-label: Text color of the label
  * @prop --data-item-color-text-required: Color of the required indicator
  * @prop --data-item-color-text-disabled: Text color when disabled
  * @prop --data-item-border-bottom: Bottom border
+ * @prop --data-item-gap: Gap between label and value columns
+ * @prop --data-item-padding-block: Vertical padding of the row
+ * @prop --data-item-gap-label: Gap between label text and required indicator
+ * @prop --data-item-gap-value: Gap between value content and edit button
+ * @prop --data-item-gap-stacked: Gap between label and value in the stacked layout
+ * @prop --data-item-padding-stacked: Padding in the stacked layout
+ * @prop --data-item-min-height-horizontal: Minimum height inside a horizontal data list
  */
 
 :host {
   @include vars.base(data-item);
 
-  @include vars.local(data-item-font-weight-label, var(--ds-data-item-label-font-weight));
+  @include typo.local(data-item-label, 'data-item-label-typo');
+  @include typo.local(data-item-value, 'data-item-value-typo');
   @include vars.local(data-item-color-text, var(--ds-data-item-value-color));
   @include vars.local(data-item-color-text-label, var(--ds-data-item-label-color));
-  @include vars.local(data-item-color-text-required, var(--ds-data-item-color-required));
+  @include vars.local(data-item-color-text-required, var(--ds-data-item-required-color));
   @include vars.local(data-item-color-text-disabled, var(--ds-data-item-color-disabled));
   @include vars.local(data-item-border-bottom, var(--ds-data-item-border-bottom));
+  @include vars.local(data-item-gap, var(--ds-data-item-gap));
+  @include vars.local(data-item-padding-block, var(--ds-data-item-padding-block));
+  @include vars.local(data-item-gap-label, var(--ds-data-item-label-gap));
+  @include vars.local(data-item-gap-value, var(--ds-data-item-value-gap));
+  @include vars.local(data-item-gap-stacked, var(--ds-data-item-stacked-gap));
+  @include vars.local(data-item-padding-stacked, var(--ds-data-item-stacked-padding));
+  @include vars.local(data-item-min-height-horizontal, var(--ds-data-item-horizontal-min-height));
 
   border-bottom: var(--_data-item-border-bottom);
 }
@@ -44,9 +73,9 @@
 :host {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: var(--_data-item-gap);
   align-items: start;
-  padding: 0.5rem 0;
+  padding: var(--_data-item-padding-block) 0;
   min-height: auto;
 }
 
@@ -56,8 +85,8 @@
 
 .label-container {
   display: flex;
-  gap: 0.25rem;
-  font-weight: var(--_data-item-font-weight-label);
+  gap: var(--_data-item-gap-label);
+  @include typo.apply(data-item-label);
   color: var(--_data-item-color-text-label);
   margin: 0;
   padding: 0;
@@ -71,7 +100,8 @@
 .value-container {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--_data-item-gap-value);
+  @include typo.apply(data-item-value);
   color: var(--_data-item-color-text);
   flex: 1;
   min-width: 0;
@@ -110,12 +140,12 @@
 :host-context(ds-data[horizontal]) {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: var(--_data-item-gap-stacked);
+  padding: var(--_data-item-padding-stacked);
   border: none;
   align-items: flex-start;
   flex: 1;
-  min-height: 48px;
+  min-height: var(--_data-item-min-height-horizontal);
 
   .label-container {
     display: flex;
@@ -128,12 +158,13 @@
 }
 
 // Mobile: always use horizontal layout (stack label above value), keep borders if set
+// ds-token-check: intentional — layout breakpoint, not a themeable value
 @media (max-width: 767px) {
   :host {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.5rem;
+    gap: var(--_data-item-gap-stacked);
+    padding: var(--_data-item-padding-stacked);
     align-items: flex-start;
     flex: 1;
   }

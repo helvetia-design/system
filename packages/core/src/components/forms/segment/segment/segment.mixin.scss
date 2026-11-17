@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
+@use '../../../../typography' as typo;
 
 // SCSS variables used in both layout and the @for-loop transform.
 // Must be SCSS values (not CSS custom properties) because they are
@@ -25,19 +26,21 @@ $_max-items: 8;
     @include vars.local(segment-item-py, var(--ds-segment-item-padding-block));
     @include vars.local(segment-item-icon-size, var(--ds-segment-item-icon-size));
     @include vars.local(segment-item-icon-gap, var(--ds-segment-item-icon-gap));
-    @include vars.local(segment-item-font-weight, var(--ds-segment-item-font-weight));
-    @include vars.local(segment-description-font-size, var(--ds-segment-description-font-size));
-    @include vars.local(segment-description-font-weight, var(--ds-segment-description-font-weight));
+    @include typo.local(segment-item, 'segment-item-typo');
+    @include typo.local(segment-description, 'segment-description-typo');
+    @include vars.local(segment-content-gap, var(--ds-segment-content-gap));
+    @include vars.local(segment-item-vertical-gap, var(--ds-segment-item-vertical-gap));
 
-    @include vars.local(segment-item-unselected-color-base, var(--ds-segment-item-unselected-color-base));
-    @include vars.local(segment-item-unselected-color-hover, var(--ds-segment-item-unselected-color-hover));
-    @include vars.local(segment-item-unselected-color-active, var(--ds-segment-item-unselected-color-active));
+    @include vars.local(segment-item-unselected-color-base, var(--ds-segment-item-color-unselected-base));
+    @include vars.local(segment-item-unselected-color-hover, var(--ds-segment-item-color-unselected-hover));
+    @include vars.local(segment-item-unselected-color-active, var(--ds-segment-item-color-unselected-active));
 
-    @include vars.local(segment-item-selected-color-base, var(--ds-segment-item-selected-color-base));
-    @include vars.local(segment-item-selected-color-hover, var(--ds-segment-item-selected-color-hover));
-    @include vars.local(segment-item-selected-color-active, var(--ds-segment-item-selected-color-active));
+    @include vars.local(segment-item-selected-color-base, var(--ds-segment-item-color-selected-base));
+    @include vars.local(segment-item-selected-color-hover, var(--ds-segment-item-color-selected-hover));
+    @include vars.local(segment-item-selected-color-active, var(--ds-segment-item-color-selected-active));
     @include vars.local(segment-item-selected-background, var(--ds-segment-item-selected-background));
     @include vars.local(segment-divider-color, var(--ds-segment-divider-color));
+    @include vars.local(segment-divider-radius, var(--ds-segment-divider-radius));
   }
 }
 
@@ -77,14 +80,13 @@ $_max-items: 8;
       border-radius: inherit;
       cursor: pointer;
       user-select: none;
-      font-weight: var(--_segment-item-font-weight);
+      @include typo.apply(segment-item);
 
       color: var(--_segment-item-unselected-color-base);
       --icon-color: var(--_segment-item-unselected-color-base);
 
       .description {
-        font-size: var(--_segment-description-font-size);
-        font-weight: var(--_segment-description-font-weight);
+        @include typo.apply(segment-description);
         text-align: center;
       }
 
@@ -180,8 +182,9 @@ $_max-items: 8;
         top: 0;
         bottom: 0;
         width: 2px;
-        border-radius: 2px;
+        border-radius: var(--_segment-divider-radius);
         background-color: var(--_segment-divider-color);
+        // ds-token-check: intentional — binary visibility toggle, not a themeable opacity
         opacity: 1;
         transition: opacity 160ms ease;
         z-index: -1;
@@ -260,7 +263,7 @@ $_max-items: 8;
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      gap: 0.75rem;
+      gap: var(--_segment-item-vertical-gap);
       text-align: left;
       // Reserve space on the right for the icon; restore normal left padding.
       padding-inline-start: var(--_segment-item-px);
@@ -269,6 +272,7 @@ $_max-items: 8;
       );
 
       &:has(input:checked)::before {
+        // ds-token-check: intentional — binary visibility toggle, not a themeable opacity
         opacity: 1;
       }
 
@@ -353,21 +357,21 @@ $_max-items: 8;
 
 @mixin _invalid-vars() {
   // Form field label + description
-  --mod-segment-description-color: var(--ds-global-color-danger-4);
+  --mod-segment-description-color: var(--ds-alias-text-color-danger-dark);
 
   // Item text — unselected
-  --mod-segment-item-unselected-color-base: var(--ds-global-color-danger-4);
-  --mod-segment-item-unselected-color-hover: var(--ds-global-color-danger-5);
-  --mod-segment-item-unselected-color-active: var(--ds-global-color-danger-6);
+  --mod-segment-item-unselected-color-base: var(--ds-alias-text-color-danger-dark);
+  --mod-segment-item-unselected-color-hover: var(--ds-alias-text-color-danger);
+  --mod-segment-item-unselected-color-active: var(--ds-alias-text-color-danger-darker);
 
   // Item text — selected (white on danger pill)
-  --mod-segment-item-selected-color-base: var(--ds-global-color-white);
-  --mod-segment-item-selected-color-hover: var(--ds-global-color-white);
-  --mod-segment-item-selected-color-active: var(--ds-global-color-white);
+  --mod-segment-item-selected-color-base: var(--ds-alias-text-color-white);
+  --mod-segment-item-selected-color-hover: var(--ds-alias-text-color-white);
+  --mod-segment-item-selected-color-active: var(--ds-alias-text-color-white);
 
   // Sliding pill
-  --mod-segment-background: var(--ds-global-color-danger-1);
-  --mod-segment-item-selected-background: var(--ds-global-color-danger-4);
+  --mod-segment-background: var(--ds-alias-surface-danger-lighter);
+  --mod-segment-item-selected-background: var(--ds-alias-surface-danger-dark);
 }
 
 @mixin _disabled-vars() {
@@ -375,19 +379,19 @@ $_max-items: 8;
   pointer-events: none;
 
   // Form field label + description
-  --mod-segment-label-color: var(--ds-global-color-grey-5);
-  --mod-segment-description-color: var(--ds-global-color-grey-5);
+  --mod-segment-label-color: var(--ds-alias-text-color-grey);
+  --mod-segment-description-color: var(--ds-alias-text-color-grey);
 
   // Item text — all states flattened to grey
-  --mod-segment-item-unselected-color-base: var(--ds-global-color-grey-5);
-  --mod-segment-item-unselected-color-hover: var(--ds-global-color-grey-5);
-  --mod-segment-item-unselected-color-active: var(--ds-global-color-grey-5);
-  --mod-segment-item-selected-color-base: var(--ds-global-color-grey-6);
-  --mod-segment-item-selected-color-hover: var(--ds-global-color-grey-6);
-  --mod-segment-item-selected-color-active: var(--ds-global-color-grey-6);
+  --mod-segment-item-unselected-color-base: var(--ds-alias-text-color-grey);
+  --mod-segment-item-unselected-color-hover: var(--ds-alias-text-color-grey);
+  --mod-segment-item-unselected-color-active: var(--ds-alias-text-color-grey);
+  --mod-segment-item-selected-color-base: var(--ds-alias-text-color-disabled);
+  --mod-segment-item-selected-color-hover: var(--ds-alias-text-color-disabled);
+  --mod-segment-item-selected-color-active: var(--ds-alias-text-color-disabled);
 
   // Sliding pill
-  --mod-segment-item-selected-background: var(--ds-global-color-grey-3);
+  --mod-segment-item-selected-background: var(--ds-alias-surface-grey-dark);
 }
 
 // Field applies `is-danger` (not `is-invalid`) and `is-disabled`.

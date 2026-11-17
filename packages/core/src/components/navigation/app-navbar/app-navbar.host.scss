@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -8,20 +9,28 @@
  * These variables can be used in the component styles below and later on be overridden in themes.
  *
  * @prop --app-navbar-background: Background color of the app-navbar
- * @prop --app-navbar-p: Padding of the app-navbar
+ * @prop --app-navbar-p: Inline padding of the app-navbar container
  * @prop --app-navbar-height: Height of the app-navbar container
  * @prop --app-navbar-z-index: Stacking context of the app-navbar
  * @prop --app-navbar-shadow: Shadow of the app-navbar
+ * @prop --app-navbar-max-width: Max width of the content container (default container)
+ * @prop --app-navbar-max-width-fluid: Max width of the content container in fluid container mode
+ * @prop --app-navbar-max-width-compact: Max width of the content container in compact container mode
  *
  * Brand Slot Variables:
  * @prop --app-navbar-brand-gap: Gap between brand elements
  * @prop --app-navbar-brand-focus-radius: Border radius for brand focus indicator
+ * @prop --app-navbar-brand-focus-p: Padding that expands the brand focus indicator around the brand
  *
  * Title Slot Variables:
  * @prop --app-navbar-title-color: Text color of the title
  * @prop --app-navbar-title-font-family: Font family of the title
  * @prop --app-navbar-title-font-size: Font size of the title
  * @prop --app-navbar-title-font-weight: Font weight of the title
+ * @prop --app-navbar-title-line-height: Line height of the title
+ * @prop --app-navbar-title-letter-spacing: Letter spacing of the title
+ * @prop --app-navbar-title-text-decoration: Text decoration of the title
+ * @prop --app-navbar-title-text-transform: Text transform of the title
  *
  * Hamburger Button Variables (sizing only):
  * @prop --app-navbar-hamburger-width: Width of the hamburger button
@@ -40,9 +49,13 @@
  * @prop --app-navbar-sidebar-panel-background: Background color of the sidebar panel
  * @prop --app-navbar-sidebar-panel-shadow: Box shadow of the sidebar panel
  * @prop --app-navbar-sidebar-panel-border-top: Top border of the sidebar panel
+ * @prop --app-navbar-sidebar-panel-border-width: Width of the sidebar panel top border
+ * @prop --app-navbar-sidebar-panel-border-color: Color of the sidebar panel top border
+ * @prop --app-navbar-sidebar-z-index: Stacking context of the sidebar overlay
  * @prop --app-navbar-sidebar-content-gap: Gap between menu items in sidebar
  * @prop --app-navbar-sidebar-px: Horizontal padding of sidebar content
  * @prop --app-navbar-sidebar-py: Vertical padding of sidebar content
+ * @prop --app-navbar-sidebar-end-mt: Top margin of the sidebar menu-end section
  *
  * Menu Item Variables (Sidebar):
  * @prop --app-navbar-sidebar-item-min-height: Minimum height of menu items in sidebar
@@ -51,6 +64,10 @@
  * @prop --app-navbar-sidebar-item-font-size: Font size of menu items in sidebar
  * @prop --app-navbar-sidebar-item-font-weight: Font weight of menu items in sidebar
  * @prop --app-navbar-sidebar-item-font-family: Font family of menu items in sidebar
+ * @prop --app-navbar-sidebar-item-line-height: Line height of menu items in sidebar
+ * @prop --app-navbar-sidebar-item-letter-spacing: Letter spacing of menu items in sidebar
+ * @prop --app-navbar-sidebar-item-text-decoration: Text decoration of menu items in sidebar
+ * @prop --app-navbar-sidebar-item-text-transform: Text transform of menu items in sidebar
  * @prop --app-navbar-sidebar-item-color: Text color of menu items in sidebar
  * @prop --app-navbar-sidebar-item-background-active: Background of active menu items in sidebar
  * @prop --app-navbar-sidebar-item-background-hover: Background of menu items on hover in sidebar
@@ -58,6 +75,9 @@
  * @prop --app-navbar-sidebar-item-color-active: Text color of active menu items in sidebar
  * @prop --app-navbar-sidebar-item-divider-color: Color of divider below menu items
  * @prop --app-navbar-sidebar-item-divider-color-active: Color of divider for active menu items
+ * @prop --app-navbar-sidebar-item-divider-size: Thickness of divider below menu items
+ * @prop --app-navbar-sidebar-item-divider-radius: Border radius of divider below menu items
+ * @prop --app-navbar-sidebar-item-focus-radius: Border radius of the sidebar menu item focus indicator
  * @prop --app-navbar-sidebar-item-chevron-size: Size of the chevron indicator
  * @prop --app-navbar-sidebar-item-chevron-color: Color of the chevron indicator
  *
@@ -65,7 +85,14 @@
  * @prop --app-navbar-menu-gap: Gap between menu and actions sections
  * @prop --app-navbar-menu-start-gap: Gap between menu-start items on desktop
  * @prop --app-navbar-menu-item-color: Text color of menu items on desktop
+ * @prop --app-navbar-menu-item-font-family: Font family of menu items on desktop
  * @prop --app-navbar-menu-item-font-size: Font size of menu items on desktop
+ * @prop --app-navbar-menu-item-font-weight: Font weight of menu items on desktop
+ * @prop --app-navbar-menu-item-line-height: Line height of menu items on desktop
+ * @prop --app-navbar-menu-item-letter-spacing: Letter spacing of menu items on desktop
+ * @prop --app-navbar-menu-item-text-decoration: Text decoration of menu items on desktop
+ * @prop --app-navbar-menu-item-text-transform: Text transform of menu items on desktop
+ * @prop --app-navbar-menu-item-font-weight-active: Font weight of the selected/active desktop menu item — single-property part modifier.
  * @prop --app-navbar-menu-item-py: Vertical padding of desktop menu items
  * @prop --app-navbar-menu-item-px: Horizontal padding of desktop menu items
  * @prop --app-navbar-menu-item-border-radius: Border radius of desktop menu items
@@ -75,6 +102,7 @@
  * @prop --app-navbar-menu-item-color-active: Text color of selected desktop menu items on click
  * @prop --app-navbar-menu-item-underline-height: Height of the active indicator underline
  * @prop --app-navbar-menu-item-underline-border-radius: Border radius of the underline
+ * @prop --app-navbar-menu-item-underline-offset: Distance of the underline below the menu item
  * @prop --app-navbar-menu-item-transition-duration: Transition duration for menu items
  * @prop --app-navbar-menu-end-gap: Gap between menu-end items
  *
@@ -108,16 +136,18 @@
   @include vars.local(app-navbar-height, var(--ds-app-navbar-default-layout-height));
   @include vars.local(app-navbar-shadow, var(--ds-app-navbar-default-layout-shadow));
   @include vars.local(app-navbar-z-index, var(--ds-app-navbar-default-layout-z-index));
+  @include vars.local(app-navbar-max-width, var(--ds-app-navbar-default-container-max-width-default));
+  @include vars.local(app-navbar-max-width-fluid, var(--ds-app-navbar-default-container-max-width-fluid));
+  @include vars.local(app-navbar-max-width-compact, var(--ds-app-navbar-default-container-max-width-compact));
 
   // Brand slot
   @include vars.local(app-navbar-brand-gap, var(--ds-app-navbar-default-brand-gap));
   @include vars.local(app-navbar-brand-focus-radius, var(--ds-app-navbar-default-brand-focus-radius));
+  @include vars.local(app-navbar-brand-focus-p, var(--ds-app-navbar-default-brand-focus-padding));
 
   // Title slot
   @include vars.local(app-navbar-title-color, var(--ds-app-navbar-default-title-color));
-  @include vars.local(app-navbar-title-font-family, var(--ds-app-navbar-default-title-font-family));
-  @include vars.local(app-navbar-title-font-size, var(--ds-app-navbar-default-title-font-size));
-  @include vars.local(app-navbar-title-font-weight, var(--ds-app-navbar-default-title-font-weight));
+  @include typo.local(app-navbar-title, 'app-navbar-default-title-typo');
 
   // Hamburger button (sizing only; colors use button variables)
   @include vars.local(app-navbar-hamburger-width, var(--ds-app-navbar-default-hamburger-width));
@@ -133,21 +163,26 @@
   @include vars.local(app-navbar-sidebar-max-width, var(--ds-app-navbar-default-sidebar-max-width));
   @include vars.local(app-navbar-sidebar-slide-duration, var(--ds-app-navbar-default-sidebar-slide-duration));
   @include vars.local(app-navbar-sidebar-backdrop-color, var(--ds-app-navbar-default-sidebar-backdrop-color));
-  @include vars.local(app-navbar-sidebar-backdrop-opacity, var(--ds-global-elevation-opacity-50));
+  @include vars.local(app-navbar-sidebar-backdrop-opacity, var(--ds-app-navbar-default-sidebar-backdrop-opacity));
+  @include vars.local(app-navbar-sidebar-z-index, var(--ds-app-navbar-default-sidebar-z-index));
   @include vars.local(app-navbar-sidebar-panel-background, var(--ds-app-navbar-default-sidebar-panel-background));
   @include vars.local(app-navbar-sidebar-panel-shadow, var(--ds-app-navbar-default-sidebar-panel-shadow));
-  @include vars.local(app-navbar-sidebar-panel-border-top, var(--ds-app-navbar-default-sidebar-panel-border-top));
+  @include vars.local(app-navbar-sidebar-panel-border-width, var(--ds-app-navbar-default-sidebar-panel-border-width));
+  @include vars.local(app-navbar-sidebar-panel-border-color, var(--ds-app-navbar-default-sidebar-panel-border-color));
+  @include vars.local(
+    app-navbar-sidebar-panel-border-top,
+    var(--_app-navbar-sidebar-panel-border-width) solid var(--_app-navbar-sidebar-panel-border-color)
+  );
   @include vars.local(app-navbar-sidebar-content-gap, var(--ds-app-navbar-default-sidebar-content-gap));
   @include vars.local(app-navbar-sidebar-px, var(--ds-app-navbar-default-sidebar-content-padding-inline));
   @include vars.local(app-navbar-sidebar-py, var(--ds-app-navbar-default-sidebar-content-padding-block));
+  @include vars.local(app-navbar-sidebar-end-mt, var(--ds-app-navbar-default-sidebar-end-margin-top));
 
   // Sidebar menu items
   @include vars.local(app-navbar-sidebar-item-min-height, var(--ds-app-navbar-default-sidebar-item-min-height));
   @include vars.local(app-navbar-sidebar-item-py, var(--ds-app-navbar-default-sidebar-item-padding-block));
   @include vars.local(app-navbar-sidebar-item-px, var(--ds-app-navbar-default-sidebar-item-padding-inline));
-  @include vars.local(app-navbar-sidebar-item-font-size, var(--ds-app-navbar-default-sidebar-item-font-size));
-  @include vars.local(app-navbar-sidebar-item-font-weight, var(--ds-app-navbar-default-sidebar-item-font-weight));
-  @include vars.local(app-navbar-sidebar-item-font-family, var(--ds-app-navbar-default-sidebar-item-font-family));
+  @include typo.local(app-navbar-sidebar-item, 'app-navbar-default-sidebar-item-typo');
   @include vars.local(app-navbar-sidebar-item-color, var(--ds-app-navbar-default-sidebar-item-color-base));
   @include vars.local(
     app-navbar-sidebar-item-background-active,
@@ -166,12 +201,19 @@
   );
   @include vars.local(app-navbar-sidebar-item-chevron-size, var(--ds-app-navbar-default-sidebar-item-chevron-size));
   @include vars.local(app-navbar-sidebar-item-chevron-color, var(--ds-app-navbar-default-sidebar-item-chevron-color));
+  @include vars.local(app-navbar-sidebar-item-divider-size, var(--ds-app-navbar-default-sidebar-item-divider-size));
+  @include vars.local(app-navbar-sidebar-item-divider-radius, var(--ds-app-navbar-default-sidebar-item-divider-radius));
+  @include vars.local(app-navbar-sidebar-item-focus-radius, var(--ds-app-navbar-default-sidebar-item-focus-radius));
 
   // Menu (Desktop)
   @include vars.local(app-navbar-menu-gap, var(--ds-app-navbar-default-menu-gap));
   @include vars.local(app-navbar-menu-start-gap, var(--ds-app-navbar-default-menu-start-gap));
   @include vars.local(app-navbar-menu-item-color, var(--ds-app-navbar-default-menu-item-color-base));
-  @include vars.local(app-navbar-menu-item-font-size, var(--ds-app-navbar-default-menu-item-font-size));
+  @include typo.local(app-navbar-menu-item, 'app-navbar-default-menu-item-typo');
+  @include vars.local(
+    app-navbar-menu-item-font-weight-active,
+    var(--ds-app-navbar-default-menu-item-active-font-weight)
+  );
   @include vars.local(app-navbar-menu-item-py, var(--ds-app-navbar-default-menu-item-padding-block));
   @include vars.local(app-navbar-menu-item-px, var(--ds-app-navbar-default-menu-item-padding-inline));
   @include vars.local(app-navbar-menu-item-border-radius, var(--ds-app-navbar-default-menu-item-border-radius));
@@ -182,8 +224,12 @@
     var(--ds-app-navbar-default-menu-item-color-selected-hover)
   );
   @include vars.local(app-navbar-menu-item-color-active, var(--ds-app-navbar-default-menu-item-color-active));
-  @include vars.local(app-navbar-menu-item-underline-height, var(--ds-global-dimension-border-2));
-  @include vars.local(app-navbar-menu-item-underline-border-radius, var(--ds-alias-radius-rounded));
+  @include vars.local(app-navbar-menu-item-underline-height, var(--ds-app-navbar-default-menu-item-underline-height));
+  @include vars.local(
+    app-navbar-menu-item-underline-border-radius,
+    var(--ds-app-navbar-default-menu-item-underline-radius)
+  );
+  @include vars.local(app-navbar-menu-item-underline-offset, var(--ds-app-navbar-default-menu-item-underline-offset));
   @include vars.local(
     app-navbar-menu-item-transition-duration,
     var(--ds-app-navbar-default-menu-item-transition-duration)
@@ -261,17 +307,16 @@
   justify-content: flex-start;
   box-sizing: border-box;
   gap: var(--_app-navbar-container-gap);
-  padding-left: var(--ds-device-container-space);
-  padding-right: var(--ds-device-container-space);
+  padding-inline: var(--_app-navbar-p);
   width: 100%;
-  max-width: var(--ds-alias-container-width-default);
+  max-width: var(--_app-navbar-max-width);
 
   &.is-fluid {
-    max-width: var(--ds-alias-container-width-fluid);
+    max-width: var(--_app-navbar-max-width-fluid);
   }
 
   &.is-compact {
-    max-width: var(--ds-alias-container-width-compact);
+    max-width: var(--_app-navbar-max-width-compact);
   }
 }
 
@@ -314,6 +359,7 @@
   &::after {
     content: '';
     position: absolute;
+    // ds-token-check: intentional — collapsed focus placeholder
     width: 1px;
     height: 1px;
     border-radius: var(--_app-navbar-brand-focus-radius);
@@ -327,20 +373,18 @@
 
 ::slotted(a[slot='brand']:focus-visible) {
   &::after {
-    padding: 1rem;
+    padding: var(--_app-navbar-brand-focus-p);
     width: 100%;
     height: 100%;
     box-shadow:
-      var(--_app-navbar-focus-color-start) 0 0 0 2px,
-      var(--_app-navbar-focus-color-end) 0 0 0 5px !important;
+      var(--_app-navbar-focus-color-start) 0 0 0 calc(var(--ds-alias-interaction-focus-size-inner) * 1px),
+      var(--_app-navbar-focus-color-end) 0 0 0 calc(var(--ds-alias-interaction-focus-size-outer) * 1px) !important;
   }
 }
 
 ::slotted([slot='title']) {
   color: var(--_app-navbar-title-color);
-  font-family: var(--_app-navbar-title-font-family);
-  font-size: var(--_app-navbar-title-font-size);
-  font-weight: var(--_app-navbar-title-font-weight);
+  @include typo.apply(app-navbar-title);
 
   display: none;
 
@@ -388,8 +432,8 @@
 
   &:focus-visible {
     box-shadow:
-      var(--_app-navbar-focus-color-start) 0 0 0 2px,
-      var(--_app-navbar-focus-color-end) 0 0 0 5px !important;
+      var(--_app-navbar-focus-color-start) 0 0 0 calc(var(--ds-alias-interaction-focus-size-inner) * 1px),
+      var(--_app-navbar-focus-color-end) 0 0 0 calc(var(--ds-alias-interaction-focus-size-outer) * 1px) !important;
   }
 
   &:hover {
@@ -402,6 +446,7 @@
     color: var(--_app-navbar-button-color-text-active);
     background-color: var(--_app-navbar-button-color-background-active);
     --icon-color: var(--_app-navbar-button-color-text-active);
+    // ds-token-check: intentional — press feedback offset
     translate: 0 0.5px;
   }
 }
@@ -425,7 +470,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: var(--ds-alias-z-index-navigation);
+  z-index: var(--_app-navbar-sidebar-z-index);
   pointer-events: none;
 
   transition: visibility var(--_app-navbar-sidebar-slide-duration) ease;
@@ -449,13 +494,20 @@
  */
 
 #sidebar-backdrop {
-  @include backdrop();
+  background-color: color-mix(
+    in srgb,
+    var(--_app-navbar-sidebar-backdrop-color) calc(var(--_app-navbar-sidebar-backdrop-opacity) * 100%),
+    transparent
+  );
+  // ds-token-check: intentional — decorative blur, brand-invariant
+  backdrop-filter: blur(4px);
 
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  // ds-token-check: intentional — open/close fade
   opacity: 0;
   cursor: pointer;
   transition: opacity var(--_app-navbar-sidebar-slide-duration) ease;
@@ -482,7 +534,7 @@
   background-color: var(--_app-navbar-sidebar-panel-background);
   overflow-y: auto;
   outline: none;
-  box-shadow: var(--_app-navbar-shadow);
+  box-shadow: var(--_app-navbar-sidebar-panel-shadow);
   border-top: var(--_app-navbar-sidebar-panel-border-top);
 
   transform: translateX(100%);
@@ -514,9 +566,7 @@
     position: relative;
     color: var(--_app-navbar-sidebar-item-color);
     --icon-color: var(--_app-navbar-sidebar-item-color);
-    font-size: var(--_app-navbar-sidebar-item-font-size);
-    font-weight: var(--_app-navbar-sidebar-item-font-weight);
-    font-family: var(--_app-navbar-sidebar-item-font-family);
+    @include typo.apply(app-navbar-sidebar-item);
     text-decoration: none;
     min-height: var(--_app-navbar-sidebar-item-min-height);
     padding-block: var(--_app-navbar-sidebar-item-py);
@@ -542,8 +592,8 @@
       left: 0;
       bottom: 0;
       width: 100%;
-      height: var(--ds-divider-size);
-      border-radius: var(--ds-alias-radius-base);
+      height: var(--_app-navbar-sidebar-item-divider-size);
+      border-radius: var(--_app-navbar-sidebar-item-divider-radius);
       background-color: var(--_app-navbar-sidebar-item-divider-color);
 
       touch-action: manipulation;
@@ -607,13 +657,14 @@
   ::slotted(.ds-link[slot='menu-start']:focus-visible:not(:active)),
   ::slotted(a[slot='menu-start']:focus-visible:not(:active)) {
     &::before {
-      border-radius: var(--ds-alias-radius-base);
+      border-radius: var(--_app-navbar-sidebar-item-focus-radius);
+      // ds-token-check: intentional — hidden indicator state
       background-color: transparent;
       height: 100%;
       width: 100%;
       box-shadow:
-        var(--_app-navbar-focus-color-start) 0 0 0 2px,
-        var(--_app-navbar-focus-color-end) 0 0 0 5px !important;
+        var(--_app-navbar-focus-color-start) 0 0 0 calc(var(--ds-alias-interaction-focus-size-inner) * 1px),
+        var(--_app-navbar-focus-color-end) 0 0 0 calc(var(--ds-alias-interaction-focus-size-outer) * 1px) !important;
     }
   }
 
@@ -621,7 +672,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--_app-navbar-content-gap);
-    margin-top: var(--ds-global-dimension-space-32);
+    margin-top: var(--_app-navbar-sidebar-end-mt);
   }
 
   ::slotted(ds-button[slot='menu-end']),
@@ -658,7 +709,7 @@
       display: inline-flex;
       align-items: center;
       color: var(--_app-navbar-menu-item-color);
-      font-size: var(--_app-navbar-menu-item-font-size);
+      @include typo.apply(app-navbar-menu-item);
       border-radius: var(--_app-navbar-menu-item-border-radius);
       padding-inline: var(--_app-navbar-menu-item-px);
       padding-block: var(--_app-navbar-menu-item-py);
@@ -676,11 +727,12 @@
       &::after {
         content: '';
         position: absolute;
-        bottom: -0.5rem;
+        bottom: calc(-1 * var(--_app-navbar-menu-item-underline-offset));
         left: 0;
         right: 0;
         height: var(--_app-navbar-menu-item-underline-height);
         border-radius: var(--_app-navbar-menu-item-underline-border-radius);
+        // ds-token-check: intentional — hidden indicator state
         background-color: transparent;
         transition: background-color 120ms ease;
       }
@@ -688,9 +740,18 @@
 
     ::slotted([slot='menu-start'].is-active),
     ::slotted([slot='menu-start'][aria-current='page']) {
-      font-weight: var(--ds-alias-text-weight-bold);
+      font-weight: var(--_app-navbar-menu-item-font-weight-active);
       &::after {
         background-color: var(--_app-navbar-menu-item-color-selected);
+      }
+    }
+
+    ::slotted([slot='menu-start'].is-active:hover:not(:active)),
+    ::slotted([slot='menu-start'][aria-current='page']:hover:not(:active)) {
+      color: var(--_app-navbar-menu-item-color-selected-hover);
+      --icon-color: var(--_app-navbar-menu-item-color-selected-hover);
+      &::after {
+        background-color: var(--_app-navbar-menu-item-color-selected-hover);
       }
     }
 
@@ -723,8 +784,8 @@
     ::slotted(.ds-link[slot='menu-start']:focus-visible),
     ::slotted(a[slot='menu-start']:focus-visible) {
       box-shadow:
-        var(--_app-navbar-focus-color-start) 0 0 0 2px,
-        var(--_app-navbar-focus-color-end) 0 0 0 5px !important;
+        var(--_app-navbar-focus-color-start) 0 0 0 calc(var(--ds-alias-interaction-focus-size-inner) * 1px),
+        var(--_app-navbar-focus-color-end) 0 0 0 calc(var(--ds-alias-interaction-focus-size-outer) * 1px) !important;
     }
   }
 
@@ -792,7 +853,7 @@
 
 :host(.is-light) {
   --logo-color: var(--ds-app-navbar-light-title-color);
-  --mod-app-navbar-background: var(--ds-app-navbar-light-background);
+  --mod-app-navbar-background: var(--ds-app-navbar-light-layout-background);
   --mod-app-navbar-title-color: var(--ds-app-navbar-light-title-color);
 
   // Focus color overrides for light theme
@@ -803,8 +864,9 @@
   --mod-app-navbar-menu-item-color-hover: var(--ds-app-navbar-light-menu-item-color-hover);
   --mod-app-navbar-menu-item-color-active: var(--ds-app-navbar-light-menu-item-color-active);
   --mod-app-navbar-menu-item-color-selected: var(--ds-app-navbar-light-menu-item-color-selected);
+  --mod-app-navbar-menu-item-color-selected-hover: var(--ds-app-navbar-light-menu-item-color-selected-hover);
 
-  --mod-app-navbar-sidebar-panel-border-top: var(--ds-app-navbar-light-sidebar-panel-border-top);
+  --mod-app-navbar-sidebar-panel-border-color: var(--ds-app-navbar-light-sidebar-panel-border-color);
 
   // Button component overrides for light theme (applies to hamburger, action buttons, and menu-end buttons)
   --mod-app-navbar-button-color-text: var(--ds-app-navbar-light-button-color-text-base);

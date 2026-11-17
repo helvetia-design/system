@@ -16,16 +16,16 @@
  */
 
 :host {
-  --alert-container-top: 1rem;
+  --alert-container-top: var(--ds-alert-container-offset);
 
-  @include vars.local(alert-container-z-index, var(--ds-alias-z-index-toast));
+  @include vars.local(alert-container-z-index, var(--ds-alert-container-z-index));
 
   position: fixed;
   pointer-events: none;
 
   #wrapper {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--ds-alert-container-gap);
   }
 }
 
@@ -60,9 +60,9 @@
 :host(.is-snackbar) {
   z-index: calc(var(--_alert-container-z-index) - 1);
 
-  right: 1rem;
-  bottom: 1rem;
-  left: 1rem;
+  right: var(--ds-alert-container-offset);
+  bottom: var(--ds-alert-container-offset);
+  left: var(--ds-alert-container-offset);
 
   #wrapper {
     flex-direction: column-reverse;
@@ -82,9 +82,9 @@
       --snackbar-animation-end-transform: translateX(0);
 
       @include tablet {
-        min-width: 27.5rem;
-        max-width: 27.5rem;
-        width: 27.5rem;
+        min-width: var(--ds-snackbar-width);
+        max-width: var(--ds-snackbar-width);
+        width: var(--ds-snackbar-width);
       }
     }
   }

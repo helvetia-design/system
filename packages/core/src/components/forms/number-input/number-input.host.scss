@@ -1,6 +1,7 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../input/input.mixin' as input;
 @use '../form/form.mixin' as form;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -10,10 +11,13 @@
  *
  * @prop --input-color: Text color inside the number input field.
  * @prop --input-placeholder: Placeholder text color.
- * @prop --input-family: Font family of the input text.
- * @prop --input-weight: Font weight of the input text.
- * @prop --input-size: Font size of the input text.
+ * @prop --input-font-family: Font family of the input text.
+ * @prop --input-font-weight: Font weight of the input text.
+ * @prop --input-font-size: Font size of the input text.
  * @prop --input-line-height: Line height of the input text.
+ * @prop --input-letter-spacing: Letter spacing of the input text.
+ * @prop --input-text-decoration: Text decoration of the input text.
+ * @prop --input-text-transform: Text transform of the input text.
  * @prop --form-container-background: Background color of the input container.
  * @prop --form-container-border-color: Border color of the input container.
  * @prop --form-container-border-width: Border width of the input container.
@@ -25,14 +29,14 @@
  * @prop --form-container-active-border: Container border color when active.
  * @prop --form-container-focus-border: Container border color when focused.
  * @prop --form-label-color: Text color of the label.
- * @prop --form-label-family: Font family of the label.
- * @prop --form-label-weight: Font weight of the label.
- * @prop --form-label-size: Font size of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
  * @prop --form-label-line-height: Line height of the label.
  * @prop --form-description-color: Text color of the description.
- * @prop --form-description-family: Font family of the description.
- * @prop --form-description-weight: Font weight of the description.
- * @prop --form-description-size: Font size of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
  * @prop --form-description-line-height: Line height of the description.
  */
 
@@ -73,7 +77,7 @@
 // --------------------------------
 :host(.is-danger) {
   --mod-form-container-border: var(--ds-form-danger-container-border);
-  --mod-form-description-color: var(--ds-form-danger-description-color);
+  --mod-form-description-color: var(--ds-form-danger-color-description);
   --mod-form-container-hover-border: var(--ds-form-danger-container-border);
   --mod-form-container-active-border: var(--ds-form-danger-container-border);
 }
@@ -83,7 +87,7 @@
 // --------------------------------
 :host(.is-success) {
   --mod-form-container-border: var(--ds-form-success-container-border);
-  --mod-form-description-color: var(--ds-form-success-description-color);
+  --mod-form-description-color: var(--ds-form-success-color-description);
   --mod-form-container-hover-border: var(--ds-form-success-container-border);
   --mod-form-container-active-border: var(--ds-form-success-container-border);
 }
@@ -93,7 +97,7 @@
 // --------------------------------
 :host(.is-warning) {
   --mod-form-container-border: var(--ds-form-warning-container-border);
-  --mod-form-description-color: var(--ds-form-warning-description-color);
+  --mod-form-description-color: var(--ds-form-warning-color-description);
   --mod-form-container-hover-border: var(--ds-form-warning-container-border);
   --mod-form-container-active-border: var(--ds-form-warning-container-border);
 }
@@ -112,9 +116,12 @@
 
   --mod-form-container-background: var(--ds-form-disabled-container-background);
   --mod-form-container-border: var(--ds-form-disabled-container-border);
-  --mod-form-label-color: var(--ds-form-disabled-label-color);
-  --mod-form-description-color: var(--ds-form-disabled-description-color);
+  --mod-form-label-color: var(--ds-form-disabled-color-label);
+  --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
-  --mod-input-color: var(--ds-form-disabled-control-value-color);
-  --mod-input-placeholder: var(--ds-form-disabled-control-placeholder-color);
+  --mod-input-color: var(--ds-form-disabled-control-color-value);
+  --mod-input-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(input, 'form-disabled-control-typo');
 }

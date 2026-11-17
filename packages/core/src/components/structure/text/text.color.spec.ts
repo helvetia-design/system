@@ -2,8 +2,14 @@ import { resolveTextColor } from './text.color'
 
 describe('ds-text', () => {
   describe('resolveTextColor', () => {
-    test('paints disabled and ignores color, invalid, and inverted', () => {
-      expect(resolveTextColor({ disabled: true, invalid: true, inverted: true, color: 'primary' })).toBe('disabled')
+    test('paints disabled and ignores color and invalid', () => {
+      expect(resolveTextColor({ disabled: true, invalid: true, color: 'primary' })).toBe('disabled')
+    })
+
+    test('paints inverted-disabled when disabled and inverted are combined', () => {
+      expect(resolveTextColor({ disabled: true, invalid: true, inverted: true, color: 'primary' })).toBe(
+        'inverted-disabled',
+      )
     })
 
     test('paints invalid as danger and ignores color and inverted', () => {

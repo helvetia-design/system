@@ -8,18 +8,29 @@
  * These variables can be used in the component styles below and later on be overridden in themes.
  *
  * @prop --radio-size: Size of the radio button circle.
- * @prop --radio-color-border: Border color of the radio button.
- * @prop --radio-color-background: Background color of the radio button.
- * @prop --radio-color-background-checked: Background color when radio is checked.
- * @prop --radio-color-border-checked: Border color when radio is checked.
- * @prop --radio-label-color: Text color of the radio label.
+ * @prop --radio-dot-size: Diameter of the dot shown when the radio is selected.
+ * @prop --radio-radius: Border radius of the radio button.
+ * @prop --radio-border-width: Border width of the radio button.
+ * @prop --radio-unchecked-base-color-background: Background color of the unchecked radio.
+ * @prop --radio-unchecked-base-color-border: Border color of the unchecked radio.
+ * @prop --radio-checked-base-color-background: Background color when radio is checked.
+ * @prop --radio-checked-base-color-border: Border color when radio is checked.
+ * @prop --radio-checked-base-color-icon: Color of the selected dot.
+ * @prop --radio-label-base-color: Text color of the radio label.
  * @prop --radio-label-font-size: Font size of the radio label.
  * @prop --radio-label-font-family: Font family of the radio label.
  * @prop --radio-label-font-weight: Font weight of the radio label.
- * @prop --radio-focus-color: Focus outline color of the radio.
+ * @prop --radio-label-line-height: Line height of the radio label.
+ * @prop --radio-label-letter-spacing: Letter spacing of the radio label.
+ * @prop --radio-label-text-decoration: Text decoration of the radio label.
+ * @prop --radio-label-text-transform: Text transform of the radio label.
  * @prop --radio-gap: Gap between radio and label.
- * @prop --radio-helper-color: Text color of helper text.
- * @prop --radio-helper-font-size: Font size of helper text.
+ * @prop --radio-py: Vertical padding of the radio row.
+ * @prop --radio-min-height: Minimum height of the radio row.
+ * @prop --radio-tile-p: Padding inside a tile.
+ * @prop --radio-tile-radius: Border radius of a tile.
+ * @prop --radio-tile-border-width: Border width of a tile.
+ * @prop --radio-tile-gutter: Gutter between tile columns.
  */
 
 /**
@@ -64,6 +75,7 @@
     width: 100%;
     height: 100%;
     padding: var(--_radio-tile-p);
+    // ds-token-check: intentional — structural border-style, not a themeable value
     border-style: solid;
     border-width: var(--_radio-tile-border-width);
     border-radius: var(--_radio-tile-radius);
@@ -94,7 +106,7 @@
   }
 
   label:has(input[type='radio']:focus-visible) {
-    @include focus-shadow();
+    @include focus-shadow(var(--ds-radio-focus-color));
   }
 }
 
@@ -114,34 +126,21 @@
   right: var(--_radio-tile-p);
 }
 
+// A checked tile keeps one fill across base/hover/active, so each color variant needs a single token.
+@mixin _tile-checked-background($color) {
+  --mod-radio-tile-base-background-color: var(--ds-radio-tile-#{$color}-color-background);
+  --mod-radio-tile-hover-background-color: var(--ds-radio-tile-#{$color}-color-background);
+  --mod-radio-tile-active-background-color: var(--ds-radio-tile-#{$color}-color-background);
+}
+
 :host(.is-tile.hide-trigger.is-checked) {
-  --mod-radio-tile-base-background-color: var(--ds-global-color-primary-1);
-  --mod-radio-tile-hover-background-color: var(--ds-global-color-primary-1);
-  --mod-radio-tile-active-background-color: var(--ds-global-color-primary-1);
+  @include _tile-checked-background('default');
 }
 
-:host(.is-tile.has-tile-green.is-checked) {
-  --mod-radio-tile-base-background-color: var(--ds-global-color-green-1);
-  --mod-radio-tile-hover-background-color: var(--ds-global-color-green-1);
-  --mod-radio-tile-active-background-color: var(--ds-global-color-green-1);
-}
-
-:host(.is-tile.has-tile-red.is-checked) {
-  --mod-radio-tile-base-background-color: var(--ds-global-color-red-1);
-  --mod-radio-tile-hover-background-color: var(--ds-global-color-red-1);
-  --mod-radio-tile-active-background-color: var(--ds-global-color-red-1);
-}
-
-:host(.is-tile.has-tile-yellow.is-checked) {
-  --mod-radio-tile-base-background-color: var(--ds-global-color-yellow-1);
-  --mod-radio-tile-hover-background-color: var(--ds-global-color-yellow-1);
-  --mod-radio-tile-active-background-color: var(--ds-global-color-yellow-1);
-}
-
-:host(.is-tile.has-tile-purple.is-checked) {
-  --mod-radio-tile-base-background-color: var(--ds-global-color-purple-1);
-  --mod-radio-tile-hover-background-color: var(--ds-global-color-purple-1);
-  --mod-radio-tile-active-background-color: var(--ds-global-color-purple-1);
+@each $color in ('green', 'red', 'yellow', 'purple') {
+  :host(.is-tile.has-tile-#{$color}.is-checked) {
+    @include _tile-checked-background($color);
+  }
 }
 
 // Inherit the tile color into a nested `ds-brand-icon` unless it defines its own `color`.
@@ -156,76 +155,84 @@ $brand-icon-tile-colors: ('green', 'red', 'yellow', 'purple');
   }
 }
 
+// `ds-brand-icon` exposes its colors as `--mod-brand-icon-color-level-{1,2,3}` (see
+// `brand-icon.host.scss`) — tinting it needs all three levels, not a single color.
+@mixin _brand-icon-tint($color) {
+  --mod-brand-icon-color-level-1: #{$color};
+  --mod-brand-icon-color-level-2: #{$color};
+  --mod-brand-icon-color-level-3: #{$color};
+}
+
 :host(.is-tile.is-disabled) {
-  --icon-brand-color: var(--ds-global-color-grey-5);
+  @include _brand-icon-tint(var(--_radio-tile-disabled-color-icon));
 }
 
 :host(.is-tile.is-invalid) {
-  --mod-radio-tile-hover-background-color: var(--ds-global-color-danger-1);
-  --mod-radio-tile-active-background-color: var(--ds-global-color-danger-1);
+  --mod-radio-tile-hover-background-color: var(--ds-radio-invalid-tile-color-background-hover);
+  --mod-radio-tile-active-background-color: var(--ds-radio-invalid-tile-color-background-active);
 
-  --mod-radio-tile-hover-border-color: var(--ds-global-color-danger-5);
-  --mod-radio-tile-active-border-color: var(--ds-global-color-danger-6);
+  --mod-radio-tile-hover-border-color: var(--ds-radio-invalid-tile-color-border-hover);
+  --mod-radio-tile-active-border-color: var(--ds-radio-invalid-tile-color-border-active);
 
   label {
-    --icon-brand-color: var(--ds-global-color-danger-4);
+    @include _brand-icon-tint(var(--ds-radio-invalid-tile-color-icon-base));
 
     @include hover {
       &:hover {
-        --icon-brand-color: var(--ds-global-color-danger-5);
+        @include _brand-icon-tint(var(--ds-radio-invalid-tile-color-icon-hover));
       }
     }
 
     &:active {
-      --icon-brand-color: var(--ds-global-color-danger-6);
+      @include _brand-icon-tint(var(--ds-radio-invalid-tile-color-icon-active));
     }
   }
 }
 
 @include tablet {
   :host(.is-tile.has-cols-2) {
-    flex: 0 0 calc(50% - calc(var(--ds-device-space-base) * 1 / 2));
+    flex: 0 0 calc(50% - calc(var(--_radio-tile-gutter) * 1 / 2));
   }
   :host(.is-tile.has-cols-3) {
-    flex: 0 0 calc(33.3333333333% - calc(var(--ds-device-space-base) * 2 / 3));
+    flex: 0 0 calc(33.3333333333% - calc(var(--_radio-tile-gutter) * 2 / 3));
   }
   :host(.is-tile.has-cols-4) {
-    flex: 0 0 calc(25% - calc(var(--ds-device-space-base) * 3 / 4));
+    flex: 0 0 calc(25% - calc(var(--_radio-tile-gutter) * 3 / 4));
   }
 }
 
 @include mobile {
   :host(.is-tile.has-cols-2-mobile) {
-    flex: 0 0 calc(50% - calc(var(--ds-device-space-base) * 1 / 2));
+    flex: 0 0 calc(50% - calc(var(--_radio-tile-gutter) * 1 / 2));
   }
   :host(.is-tile.has-cols-3-mobile) {
-    flex: 0 0 calc(33.3333333333% - calc(var(--ds-device-space-base) * 2 / 3));
+    flex: 0 0 calc(33.3333333333% - calc(var(--_radio-tile-gutter) * 2 / 3));
   }
   :host(.is-tile.has-cols-4-mobile) {
-    flex: 0 0 calc(25% - calc(var(--ds-device-space-base) * 3 / 4));
+    flex: 0 0 calc(25% - calc(var(--_radio-tile-gutter) * 3 / 4));
   }
 }
 
 @include tablet {
   :host(.is-tile.has-cols-2-tablet) {
-    flex: 0 0 calc(50% - calc(var(--ds-device-space-base) * 1 / 2));
+    flex: 0 0 calc(50% - calc(var(--_radio-tile-gutter) * 1 / 2));
   }
   :host(.is-tile.has-cols-3-tablet) {
-    flex: 0 0 calc(33.3333333333% - calc(var(--ds-device-space-base) * 2 / 3));
+    flex: 0 0 calc(33.3333333333% - calc(var(--_radio-tile-gutter) * 2 / 3));
   }
   :host(.is-tile.has-cols-4-tablet) {
-    flex: 0 0 calc(25% - calc(var(--ds-device-space-base) * 3 / 4));
+    flex: 0 0 calc(25% - calc(var(--_radio-tile-gutter) * 3 / 4));
   }
 }
 
 @include desktop {
   :host(.is-tile.has-cols-2-desktop) {
-    flex: 0 0 calc(50% - calc(var(--ds-device-space-base) * 1 / 2));
+    flex: 0 0 calc(50% - calc(var(--_radio-tile-gutter) * 1 / 2));
   }
   :host(.is-tile.has-cols-3-desktop) {
-    flex: 0 0 calc(33.3333333333% - calc(var(--ds-device-space-base) * 2 / 3));
+    flex: 0 0 calc(33.3333333333% - calc(var(--_radio-tile-gutter) * 2 / 3));
   }
   :host(.is-tile.has-cols-4-desktop) {
-    flex: 0 0 calc(25% - calc(var(--ds-device-space-base) * 3 / 4));
+    flex: 0 0 calc(25% - calc(var(--_radio-tile-gutter) * 3 / 4));
   }
 }
