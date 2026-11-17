@@ -6,12 +6,15 @@ on:
   pull_request:
     types: [opened, closed]
 
+# All writes go through DS_BOT_GITHUB_TOKEN; the default token needs nothing.
+permissions: {}
+
 jobs:
   createIssueBranch:
     name: 📝 Create Issue Branch
     runs-on: ubuntu-24.04
     steps:
       - name: Create Issue Branch
-        uses: robvanderleek/create-issue-branch@main
+        uses: robvanderleek/create-issue-branch@dfe19372d9a9198999c0fd8a81f0dbe00951afd9 # v1.9.0
         env:
           GITHUB_TOKEN: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
