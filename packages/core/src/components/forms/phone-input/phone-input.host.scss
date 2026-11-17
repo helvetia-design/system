@@ -2,6 +2,7 @@
 @use '../../../vars' as vars;
 @use '../form/form.mixin' as form;
 @use '../input/input.mixin' as input;
+@use '../../../typography' as typo;
 
 $chevron-icon: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2010%2010'%3E%3Cpath%20fill='black'%20d='M5,7.874a1.238,1.238,0,0,1-.879-.364L.206,3.393A.75.75,0,1,1,1.294,2.36L4.819,6.072a.249.249,0,0,0,.362,0L8.706,2.36A.75.75,0,1,1,9.794,3.393L5.9,7.5A1.269,1.269,0,0,1,5,7.874Z'/%3E%3C/svg%3E");
 $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M2 6C2 3.79086 3.79086 2 6 2C8.20914 2 10 3.79086 10 6C10 8.20914 8.20914 10 6 10C3.79086 10 2 8.20914 2 6ZM6 0C2.68629 0 0 2.68629 0 6C0 9.31371 2.68629 12 6 12C7.29578 12 8.49562 11.5892 9.47642 10.8908L12.2929 13.7073C12.6834 14.0978 13.3166 14.0978 13.7071 13.7073C14.0976 13.3168 14.0976 12.6836 13.7071 12.2931L10.8907 9.47665C11.5892 8.49581 12 7.29588 12 6C12 2.68629 9.31371 0 6 0Z'/%3E%3C/svg%3E");
@@ -14,15 +15,29 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
  *
  * @prop --phone-input-color: Text color inside the number field.
  * @prop --phone-input-placeholder: Placeholder text color.
- * @prop --phone-input-family: Font family of the number field text.
- * @prop --phone-input-weight: Font weight of the number field text.
- * @prop --phone-input-size: Font size of the number field text.
+ * @prop --phone-input-font-family: Font family of the number field text.
+ * @prop --phone-input-font-weight: Font weight of the number field text.
+ * @prop --phone-input-font-size: Font size of the number field text.
  * @prop --phone-input-line-height: Line height of the number field text.
+ * @prop --phone-input-letter-spacing: Letter spacing of the number field text.
+ * @prop --phone-input-text-decoration: Text decoration of the number field text.
+ * @prop --phone-input-text-transform: Text transform of the number field text.
  * @prop --phone-input-flag-width: Width of the country flag.
  * @prop --phone-input-flag-height: Height of the country flag.
+ * @prop --phone-input-flag-radius: Border radius of the country flag.
  * @prop --phone-input-flag-empty-background: Background color of the flag placeholder when no country is selected.
  * @prop --phone-input-flag-empty-radius: Border radius of the flag placeholder when no country is selected.
  * @prop --phone-input-popup-width: Width of the country picker popup.
+ * @prop --phone-input-popup-z-index: Stack order of the country picker popup.
+ * @prop --phone-input-focus-ring-width: Width of the focus ring inset offset.
+ * @prop --phone-input-input-padding-x: Horizontal padding of the number input segment.
+ * @prop --phone-input-trigger-gap: Gap between the flag and calling code in the country trigger.
+ * @prop --phone-input-option-gap: Gap between the flag and name in a country option.
+ * @prop --phone-input-option-padding: Padding of a country option.
+ * @prop --phone-input-no-results-padding: Padding of the no-results message.
+ * @prop --phone-input-filter-icon-size: Size of the search icon in the country filter.
+ * @prop --phone-input-chevron-size: Size of the trigger chevron icon.
+ * @prop --phone-input-scrollbar-width: Width of the country list scrollbar.
  * @prop --phone-input-popup-background: Background color of the country picker popup.
  * @prop --phone-input-popup-shadow: Box shadow of the country picker popup.
  * @prop --phone-input-popup-padding: Padding of the country picker popup.
@@ -49,15 +64,21 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
  * @prop --form-container-active-border: Container border color when active.
  * @prop --form-container-focus-border: Container border color when focused.
  * @prop --form-label-color: Text color of the label.
- * @prop --form-label-family: Font family of the label.
- * @prop --form-label-weight: Font weight of the label.
- * @prop --form-label-size: Font size of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
  * @prop --form-label-line-height: Line height of the label.
+ * @prop --form-label-letter-spacing: Letter spacing of the label.
+ * @prop --form-label-text-decoration: Text decoration of the label.
+ * @prop --form-label-text-transform: Text transform of the label.
  * @prop --form-description-color: Text color of the description.
- * @prop --form-description-family: Font family of the description.
- * @prop --form-description-weight: Font weight of the description.
- * @prop --form-description-size: Font size of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
  * @prop --form-description-line-height: Line height of the description.
+ * @prop --form-description-letter-spacing: Letter spacing of the description.
+ * @prop --form-description-text-decoration: Text decoration of the description.
+ * @prop --form-description-text-transform: Text transform of the description.
  */
 
 :host {
@@ -68,11 +89,23 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
 
   @include input.vars('phone-input');
 
-  @include vars.local(phone-input-flag-width, calc(var(--ds-device-space-base) * 1.5));
-  @include vars.local(phone-input-flag-height, var(--ds-device-space-base));
+  @include vars.local(phone-input-flag-width, var(--ds-phone-input-flag-width));
+  @include vars.local(phone-input-flag-height, var(--ds-phone-input-flag-height));
+  @include vars.local(phone-input-flag-radius, var(--ds-phone-input-flag-radius));
   @include vars.local(phone-input-flag-empty-background, var(--ds-phone-input-flag-background-color-empty));
   @include vars.local(phone-input-flag-empty-radius, var(--ds-phone-input-flag-radius-empty));
+  // shortcut: 18.75rem has no matching Alias/Global scale step; revisit once tokens owner picks one
   @include vars.local(phone-input-popup-width, 18.75rem);
+  @include vars.local(phone-input-popup-z-index, var(--ds-phone-input-popup-z-index));
+  @include vars.local(phone-input-focus-ring-width, var(--ds-phone-input-focus-ring-width));
+  @include vars.local(phone-input-input-padding-x, var(--ds-phone-input-input-padding-x));
+  @include vars.local(phone-input-trigger-gap, var(--ds-phone-input-trigger-gap));
+  @include vars.local(phone-input-option-gap, var(--ds-phone-input-option-gap));
+  @include vars.local(phone-input-option-padding, var(--ds-phone-input-option-padding));
+  @include vars.local(phone-input-no-results-padding, var(--ds-phone-input-no-results-padding));
+  @include vars.local(phone-input-filter-icon-size, var(--ds-phone-input-filter-icon-size));
+  @include vars.local(phone-input-chevron-size, var(--ds-phone-input-chevron-size));
+  @include vars.local(phone-input-scrollbar-width, var(--ds-phone-input-scrollbar-width));
   @include vars.local(phone-input-popup-background, var(--ds-phone-input-popup-color-background));
   @include vars.local(phone-input-popup-shadow, var(--ds-select-content-shadow));
   @include vars.local(phone-input-popup-padding, var(--ds-phone-input-popup-padding));
@@ -84,7 +117,7 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
   @include vars.local(phone-input-scrollbar-border-width, var(--ds-phone-input-scrollbar-border-width));
   @include vars.local(phone-input-option-color, var(--ds-select-option-color-text-base));
   @include vars.local(phone-input-option-background, var(--ds-select-option-color-background-base));
-  @include vars.local(phone-input-option-hover-background, var(--ds-select-option-color-background-highlight));
+  @include vars.local(phone-input-option-hover-background, var(--ds-select-option-color-background-hover));
   @include vars.local(phone-input-option-selected-background, var(--ds-select-option-color-background-selected));
   @include vars.local(phone-input-option-border, var(--ds-select-option-color-border));
   @include vars.local(phone-input-option-radius, var(--ds-phone-input-option-radius));
@@ -125,7 +158,7 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
     align-self: stretch;
     display: flex;
     align-items: center;
-    padding-inline: 0.5rem;
+    padding-inline: var(--_phone-input-input-padding-x);
   }
 }
 
@@ -139,21 +172,19 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--_phone-input-trigger-gap);
     flex-shrink: 0;
     align-self: stretch;
     margin: 0;
-    padding-inline: calc(0.5rem + 2px);
+    padding-inline: calc(var(--_phone-input-trigger-gap) + var(--ds-alias-border-width-base) * 2);
     border: none;
     border-inline-end: var(--_form-container-border);
     border-radius: 0;
     outline: none;
+    // ds-token-check: intentional — transparent reset, not a themeable surface
     background: transparent;
     color: var(--_phone-input-color);
-    font-family: var(--_phone-input-family);
-    font-weight: var(--_phone-input-weight);
-    font-size: var(--_phone-input-size);
-    line-height: var(--_phone-input-line-height);
+    @include typo.apply(phone-input);
     cursor: pointer;
 
     &:disabled {
@@ -170,20 +201,20 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
     content: '';
     position: absolute;
     z-index: 1;
-    inset-block: calc(var(--ds-alias-border-width-base, 1px) * -1);
+    inset-block: calc(var(--_phone-input-focus-ring-width) * -1);
     pointer-events: none;
     border: var(--_form-container-focus-border);
   }
 
   #country-trigger:focus-visible::after {
-    inset-inline: calc(var(--ds-alias-border-width-base, 1px) * -1) 0;
+    inset-inline: calc(var(--_phone-input-focus-ring-width) * -1) 0;
     border-start-start-radius: var(--_form-container-radius);
     border-end-start-radius: var(--_form-container-radius);
     width: 100%;
   }
 
   #input-segment:has(#input:focus-visible)::after {
-    inset-inline: calc(var(--ds-alias-border-width-base, 1px) * -1);
+    inset-inline: calc(var(--_phone-input-focus-ring-width) * -1);
     border-start-end-radius: var(--_form-container-radius);
     border-end-end-radius: var(--_form-container-radius);
   }
@@ -192,7 +223,7 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
     display: block;
     width: var(--_phone-input-flag-width);
     height: var(--_phone-input-flag-height);
-    border-radius: 0.125rem;
+    border-radius: var(--_phone-input-flag-radius);
     flex-shrink: 0;
     overflow: hidden;
     background: var(--_form-container-background);
@@ -215,8 +246,8 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
 
   .chevron {
     display: block;
-    width: 0.75rem;
-    height: 0.75rem;
+    width: var(--_phone-input-chevron-size);
+    height: var(--_phone-input-chevron-size);
     flex-shrink: 0;
     mask-image: $chevron-icon;
     mask-size: 100%;
@@ -228,7 +259,7 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
 }
 
 :host(.is-open) {
-  z-index: var(--ds-alias-z-index-popup);
+  z-index: var(--_phone-input-popup-z-index);
 
   .chevron {
     transform: rotate(180deg);
@@ -240,8 +271,8 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
     content: '';
     position: absolute;
     z-index: 1;
-    inset-block: calc(var(--ds-alias-border-width-base, 1px) * -1);
-    inset-inline: calc(var(--ds-alias-border-width-base, 1px) * -1) 0;
+    inset-block: calc(var(--_phone-input-focus-ring-width) * -1);
+    inset-inline: calc(var(--_phone-input-focus-ring-width) * -1) 0;
     pointer-events: none;
     border: var(--_form-container-focus-border);
     border-start-start-radius: var(--_form-container-radius);
@@ -260,12 +291,12 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
     position: absolute;
     top: 100%;
     left: 0;
-    z-index: var(--ds-alias-z-index-popup);
+    z-index: var(--_phone-input-popup-z-index);
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     width: min(var(--_phone-input-popup-width), 100%);
-    max-height: 18.75rem;
+    max-height: var(--_phone-input-popup-width);
     background: var(--_phone-input-popup-background);
     box-shadow: var(--_phone-input-popup-shadow);
     overflow: hidden;
@@ -280,6 +311,7 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
       opacity 0.2s,
       -webkit-transform 0.2s;
 
+    // ds-token-check: intentional — show/hide toggle, not a themeable opacity
     opacity: 1;
     transform: scaleY(1);
     transform-origin: center top;
@@ -305,8 +337,8 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
       position: absolute;
       top: 50%;
       left: 0.5rem;
-      width: 14px;
-      height: 14px;
+      width: var(--_phone-input-filter-icon-size);
+      height: var(--_phone-input-filter-icon-size);
       transform: translateY(-50%);
       mask-image: $search-icon;
       mask-size: 100%;
@@ -320,15 +352,15 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
       box-sizing: border-box;
       width: 100%;
       margin: 0;
-      padding: 0.5rem 0.5rem 0.5rem calc(0.5rem + 14px + 0.5rem);
+      padding: 0.5rem 0.5rem 0.5rem calc(0.5rem + var(--_phone-input-filter-icon-size) + 0.5rem);
       border: none;
       border-radius: 0;
       outline: none;
       box-shadow: none;
+      // ds-token-check: intentional — transparent reset, not a themeable surface
       background: transparent;
       color: var(--_phone-input-color);
-      font-family: var(--_phone-input-family);
-      font-size: var(--_phone-input-size);
+      @include typo.apply(phone-input);
 
       @include input.placeholder {
         color: var(--_phone-input-filter-placeholder-color);
@@ -349,10 +381,11 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
     scrollbar-color: var(--_phone-input-scrollbar-color) transparent;
 
     &::-webkit-scrollbar {
-      width: 8px;
+      width: var(--_phone-input-scrollbar-width);
     }
 
     &::-webkit-scrollbar-track {
+      // ds-token-check: intentional — transparent reset, not a themeable surface
       background: transparent;
     }
 
@@ -367,8 +400,8 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
   .option {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
+    gap: var(--_phone-input-option-gap);
+    padding: var(--_phone-input-option-padding);
     background: var(--_phone-input-option-background);
     color: var(--_phone-input-option-color);
     cursor: pointer;
@@ -403,7 +436,7 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
   }
 
   .no-results {
-    padding: 0.5rem;
+    padding: var(--_phone-input-no-results-padding);
     color: var(--_phone-input-placeholder);
   }
 }
@@ -415,21 +448,21 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
 
 :host(.is-danger) {
   --mod-form-container-border: var(--ds-form-danger-container-border);
-  --mod-form-description-color: var(--ds-form-danger-description-color);
+  --mod-form-description-color: var(--ds-form-danger-color-description);
   --mod-form-container-hover-border: var(--ds-form-danger-container-border);
   --mod-form-container-active-border: var(--ds-form-danger-container-border);
 }
 
 :host(.is-success) {
   --mod-form-container-border: var(--ds-form-success-container-border);
-  --mod-form-description-color: var(--ds-form-success-description-color);
+  --mod-form-description-color: var(--ds-form-success-color-description);
   --mod-form-container-hover-border: var(--ds-form-success-container-border);
   --mod-form-container-active-border: var(--ds-form-success-container-border);
 }
 
 :host(.is-warning) {
   --mod-form-container-border: var(--ds-form-warning-container-border);
-  --mod-form-description-color: var(--ds-form-warning-description-color);
+  --mod-form-description-color: var(--ds-form-warning-color-description);
   --mod-form-container-hover-border: var(--ds-form-warning-container-border);
   --mod-form-container-active-border: var(--ds-form-warning-container-border);
 }
@@ -446,11 +479,14 @@ $search-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://w
 
   --mod-form-container-background: var(--ds-form-disabled-container-background);
   --mod-form-container-border: var(--ds-form-disabled-container-border);
-  --mod-form-label-color: var(--ds-form-disabled-label-color);
-  --mod-form-description-color: var(--ds-form-disabled-description-color);
+  --mod-form-label-color: var(--ds-form-disabled-color-label);
+  --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
-  --mod-phone-input-color: var(--ds-form-disabled-control-value-color);
-  --mod-phone-input-placeholder: var(--ds-form-disabled-control-placeholder-color);
+  --mod-phone-input-color: var(--ds-form-disabled-control-color-value);
+  --mod-phone-input-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(phone-input, 'form-disabled-control-typo');
 }
 
 @media (prefers-reduced-motion: reduce) {

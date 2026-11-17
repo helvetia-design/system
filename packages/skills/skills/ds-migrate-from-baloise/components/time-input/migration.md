@@ -28,7 +28,7 @@ node <this-skill-directory>/scripts/scan-bal-time-input.mjs <project-root>
 
 The script prints one JSON object. `total` is the number of findings. `files` groups them by path. Each finding has `line` and `snippet`.
 
-The scan also lists the `BalEvents.BalTimeInput*` and `BalTimeInputCustomEvent` types. It does not match the ambient `HTMLBalTimeInputElement` or `BalProps.*` types. Search for them yourself in each file with a finding. Legacy Angular has no `BalTimeInputBundle`. `BalFormBundle` and `BalComponentBundle` contain `BalTimeInput` and stay.
+The scan also lists the `BalEvents.BalTimeInput*` and `BalTimeInputCustomEvent` types. It lists the `HTMLBalTimeInputElement` type too. It does not match `BalProps.*` types. Search for them yourself in each file with a finding. Legacy Angular has no `BalTimeInputBundle`. `BalFormBundle` and `BalComponentBundle` contain `BalTimeInput` and stay.
 
 Show that list to the user grouped by file (path, line, snippet) and end with the total count.
 

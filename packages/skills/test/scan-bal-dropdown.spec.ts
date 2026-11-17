@@ -67,7 +67,7 @@ describe('scanBalDropdown', () => {
     })
   })
 
-  it('lists the dropdown, option and option-list tags but not longer names, the select option, or ambient types', () => {
+  it('lists the dropdown, option and option-list tags and their HTMLBal*Element types, but not longer names or the select option', () => {
     const root = createScratchDir()
     write(
       root,
@@ -100,7 +100,7 @@ describe('scanBalDropdown', () => {
     )
 
     expect(scanBalDropdown(root)).toEqual({
-      total: 6,
+      total: 9,
       files: [
         {
           file: 'index.html',
@@ -111,6 +111,14 @@ describe('scanBalDropdown', () => {
             { line: 3, snippet: '</bal-option>' },
             { line: 4, snippet: '</bal-option-list>' },
             { line: 5, snippet: '</bal-dropdown>' },
+          ],
+        },
+        {
+          file: 'types.ts',
+          findings: [
+            { line: 1, snippet: 'const el: HTMLBalDropdownElement | null = null' },
+            { line: 2, snippet: 'const opt: HTMLBalOptionElement | null = null' },
+            { line: 3, snippet: 'const list: HTMLBalOptionListElement | null = null' },
           ],
         },
       ],
@@ -320,7 +328,7 @@ describe('scanBalDropdown', () => {
 
     const line = (n: number, snippet: string) => ({ line: n, snippet })
     expect(scanBalDropdown(root)).toEqual({
-      total: 10,
+      total: 11,
       files: [
         {
           file: 'profile.component.ts',
@@ -335,6 +343,7 @@ describe('scanBalDropdown', () => {
             line(8, 'both(a: BalEvents.BalDropdownBlur, b: BalOptionCustomEvent<string>) {}'),
             line(8, 'both(a: BalEvents.BalDropdownBlur, b: BalOptionCustomEvent<string>) {}'),
             line(9, 'list(c: BalOptionListCustomEvent<void>) {}'),
+            line(11, 'el?: HTMLBalDropdownElement'),
           ],
         },
       ],

@@ -14,9 +14,9 @@ Org-owned fine-grained PATs also typically need approval under `helvetia-design`
 
 Bot PAT used for day-to-day repo automation.
 
-- **Used in:** `figma-sync.yml`, `prepare-release.yml`, `screenshots.yml`, `create-issue-branch.yml`, `figma-conflict-check.yml`, `dependency-audit.yml`
-- **Purpose:** checkout auth, `changesets/action` PR/ref creation, git commits (`EndBug/add-and-commit`), PR comments, issue-branch creation, Figma conflict-check API calls, creating draft Security Advisories from `pnpm audit` findings
-- **Required permissions:** fine-grained PAT scoped to `helvetia-design/system` with **Contents: Read and write**, **Pull requests: Read and write**, and **Repository security advisories: Read and write** (the last one is what `scripts/create-audit-advisory.mjs` needs to create/list draft advisories via `dependency-audit.yml`). Contents write is what `changesets/action` needs to create the `changeset-release/main` ref — see the "Resource not accessible by personal access token" failure this doc followed from. Also needs **branch-protection bypass rights on `main`**, per the comment at [`figma-sync.yml:45-47`](../.github/workflows/figma-sync.yml) and [`docs/adr/0017-direct-commit-variableid-backfill.md`](adr/0017-direct-commit-variableid-backfill.md) (the ADR describes the same exception for the `next` branch; the figma-sync workflow applies it to `main`), since most of this repo's automation otherwise requires PRs.
+- **Used in:** `figma-sync.yml`, `prepare-release.yml`, `screenshots.yml`, `create-issue-branch.yml`, `figma-conflict-check.yml`
+- **Purpose:** checkout auth, `changesets/action` PR/ref creation, git commits (`EndBug/add-and-commit`), PR comments, issue-branch creation, Figma conflict-check API calls
+- **Required permissions:** fine-grained PAT scoped to `helvetia-design/system` with **Contents: Read and write** and **Pull requests: Read and write**. Contents write is what `changesets/action` needs to create the `changeset-release/main` ref — see the "Resource not accessible by personal access token" failure this doc followed from. Also needs **branch-protection bypass rights on `main`**, per the comment at [`figma-sync.yml:45-47`](../.github/workflows/figma-sync.yml) and [`docs/adr/0017-direct-commit-variableid-backfill.md`](adr/0017-direct-commit-variableid-backfill.md) (the ADR describes the same exception for the `next` branch; the figma-sync workflow applies it to `main`), since most of this repo's automation otherwise requires PRs.
 
 ## `DS_BOT_RELEASE_TOKEN`
 

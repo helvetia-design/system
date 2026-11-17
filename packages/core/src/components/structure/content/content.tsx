@@ -68,11 +68,11 @@ export class Content implements DsComponentInterface {
   readonly textAlign?: ContentTextAlignment
 
   /**
-   * Defines the space between the child elements.
+   * Defines the space between the child elements. Default is 2xs.
    */
   @Prop()
   @OneOf(CONTENT_SPACES)
-  readonly space?: ContentSpace
+  readonly space: ContentSpace = '2xs'
 
   /**
    * @internal
@@ -115,6 +115,8 @@ export class Content implements DsComponentInterface {
           'ds-stack-content': true,
           'as-row': direction === 'row',
           'as-col': direction === 'column',
+          'as-row-reverse': direction === 'row-reverse',
+          'as-col-reverse': direction === 'column-reverse',
           [`align-${alignValue}`]: align || alignment,
           [`text-${this.textAlign}`]: hasValue(this.textAlign),
           [`has-space-${this.space}`]: hasValue(this.space),

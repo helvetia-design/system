@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../hybrid' as hybrid;
 @use '../../../vars' as vars;
@@ -17,15 +18,20 @@ $host-selector: ('#text');
 
 @include vars.hybrid($name, $css-selector, $use-host) {
   @include vars.local(text-align, inherit);
+  // Deliberate: with no `color` prop set, text follows the page body baseline rather than
+  // owning its own default, so unstyled `ds-text` always matches the surrounding copy.
   @include vars.local(text-color, var(--ds-body-color));
 
-  @include vars.local(text-family, var(--ds-text-typo-paragraph-font-family));
-  @include vars.local(text-weight, var(--ds-text-typo-paragraph-font-weight));
+  @include vars.local(text-font-family, var(--ds-text-typo-paragraph-font-family));
+  @include vars.local(text-font-weight, var(--ds-text-typo-paragraph-font-weight));
   @include vars.local(text-line-height, var(--ds-text-typo-paragraph-line-height));
-  @include vars.local(text-size, var(--ds-text-typo-paragraph-font-size));
+  @include vars.local(text-font-size, var(--ds-text-typo-paragraph-font-size));
+  @include vars.local(text-letter-spacing, var(--ds-text-typo-paragraph-letter-spacing));
+  @include vars.local(text-decoration, var(--ds-text-typo-paragraph-text-decoration));
+  @include vars.local(text-transform, var(--ds-text-typo-paragraph-text-transform));
 
   @include vars.local(text-margin, var(--ds-text-margin-bottom));
-  @include vars.local(text-shadow, none); // var(--ds-text-shadow)
+  @include vars.local(text-shadow, none);
 }
 
 /**
@@ -44,10 +50,13 @@ $host-selector: ('#text');
   text-wrap: balance;
   text-align: var(--_text-align);
 
-  font-weight: var(--_text-weight);
-  font-family: var(--_text-family);
-  font-size: var(--_text-size);
+  font-weight: var(--_text-font-weight);
+  font-family: var(--_text-font-family);
+  font-size: var(--_text-font-size);
   line-height: var(--_text-line-height);
+  letter-spacing: var(--_text-letter-spacing);
+  text-decoration: var(--_text-decoration);
+  text-transform: var(--_text-transform);
 
   color: var(--_text-color);
   text-shadow: var(--_text-shadow);
@@ -55,38 +64,28 @@ $host-selector: ('#text');
   b,
   strong,
   .is-bold {
-    font-weight: var(--ds-alias-text-weight-bold);
+    font-weight: var(--ds-text-weight-bold);
   }
 }
 
 //
 // Alignments
 // --------------------------------
+$alignments: ('left', 'right', 'center', 'justify');
+
 @include hybrid.styles($css-selector, $use-host) {
-  &.is-centered {
-    --mod-text-align: center;
-  }
-
-  &.is-right {
-    --mod-text-align: right;
-  }
-
-  &.is-justified {
-    --mod-text-align: justify;
+  @each $alignment in $alignments {
+    &.is-#{$alignment} {
+      --mod-text-align: #{$alignment};
+    }
   }
 }
 
 @include hybrid.host($use-host) {
-  :host(.has-no-wrap) #text.is-centered {
-    --mod-text-align: center;
-  }
-
-  :host(.has-no-wrap) #text.is-right {
-    --mod-text-align: right;
-  }
-
-  :host(.has-no-wrap) #text.is-justified {
-    --mod-text-align: justify;
+  @each $alignment in $alignments {
+    :host(.is-#{$alignment}) {
+      --mod-text-align: #{$alignment};
+    }
   }
 }
 
@@ -125,14 +124,14 @@ $weights: ('light', 'regular', 'bold');
 @include hybrid.styles($css-selector, $use-host) {
   @each $weight in $weights {
     &.is-#{$weight} {
-      --mod-text-weight: var(--ds-alias-text-weight-#{$weight});
+      --mod-text-font-weight: var(--ds-text-weight-#{$weight});
     }
   }
 }
 
 @include hybrid.host($use-host) {
   :host(.is-bold) {
-    --mod-text-weight: var(--ds-alias-text-weight-bold);
+    --mod-text-font-weight: var(--ds-text-weight-bold);
   }
 }
 
@@ -208,8 +207,31 @@ $colors: (
 //
 // Sizes
 // --------------------------------
+// The size steps map onto `Component.Text.Typo.*`, whose keys are not 1:1 with the class
+// names (`base` lives on `Paragraph`, `sm` on `Small`, `md` on `Block`, `lg` on `Lead`).
+// Keys are quoted and looked up as strings: Sass parses a bare `2xl` as a dimension, not
+// as a string, so an unquoted key would never match a `'2xl'` lookup.
+$size-tokens: (
+  'xs': 'xs',
+  'sm': 'small',
+  'base': 'paragraph',
+  'md': 'block',
+  'lg': 'lead',
+  'xl': 'xl',
+  '2xl': '2xl',
+  '3xl': '3xl',
+  '4xl': '4xl',
+  '5xl': '5xl',
+);
+
 @mixin size($level) {
-  --mod-text-size: var(--ds-device-text-size-#{$level});
+  $token: map.get($size-tokens, '#{$level}');
+
+  @if $token == null {
+    @error 'ds-text: no Typo token mapped for size step "#{$level}".';
+  }
+
+  --mod-text-font-size: var(--ds-text-typo-#{$token}-font-size);
 }
 
 $size-aliases: (
@@ -259,32 +281,35 @@ $sizes: ('xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl');
 //
 // Font Family
 // --------------------------------
+// Font size is deliberately not taken from the composite — it stays owned by the `size`
+// prop so heading/subtitle compose with it instead of replacing it.
+@mixin typo($variant) {
+  --mod-text-font-family: var(--ds-text-typo-#{$variant}-font-family);
+  --mod-text-font-weight: var(--ds-text-typo-#{$variant}-font-weight);
+  --mod-text-line-height: var(--ds-text-typo-#{$variant}-line-height);
+  --mod-text-letter-spacing: var(--ds-text-typo-#{$variant}-letter-spacing);
+  --mod-text-decoration: var(--ds-text-typo-#{$variant}-text-decoration);
+  --mod-text-transform: var(--ds-text-typo-#{$variant}-text-transform);
+}
+
 @include hybrid.styles($css-selector, $use-host) {
   &.is-heading,
   &.is-title {
-    --mod-text-family: var(--ds-alias-text-family-heading);
-    --mod-text-weight: var(--ds-alias-text-weight-bold);
-    --mod-text-line-height: var(--ds-alias-text-line-height-heading);
+    @include typo('heading');
   }
 
   &.is-subtitle {
-    --mod-text-family: var(--ds-alias-text-family-heading);
-    --mod-text-weight: var(--ds-alias-text-weight-light);
-    --mod-text-line-height: var(--ds-alias-text-line-height-heading);
+    @include typo('subtitle');
   }
 }
 
 @include hybrid.host($use-host) {
   :host(.is-heading) {
-    --mod-text-family: var(--ds-alias-text-family-heading);
-    --mod-text-weight: var(--ds-alias-text-weight-bold);
-    --mod-text-line-height: var(--ds-alias-text-line-height-heading);
+    @include typo('heading');
   }
 
   :host(.is-subtitle) {
-    --mod-text-family: var(--ds-alias-text-family-heading);
-    --mod-text-weight: var(--ds-alias-text-weight-light);
-    --mod-text-line-height: var(--ds-alias-text-line-height-heading);
+    @include typo('subtitle');
   }
 }
 
@@ -303,6 +328,7 @@ $sizes: ('xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl');
   }
 
   &.has-space-bottom {
+    --mod-text-mt: 0;
     --mod-text-mb: var(--_text-margin);
   }
 
@@ -314,22 +340,22 @@ $sizes: ('xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl');
 
 @include hybrid.host($use-host) {
   :host(.has-space-all) {
-    --text-mt: var(--_text-margin);
-    --text-mb: var(--_text-margin);
+    --mod-text-mt: var(--_text-margin);
+    --mod-text-mb: var(--_text-margin);
   }
 
   :host(.has-space-top) {
-    --text-mt: var(--_text-margin);
-    --text-mb: 0;
+    --mod-text-mt: var(--_text-margin);
+    --mod-text-mb: 0;
   }
 
   :host(.has-space-bottom) {
-    --text-mt: 0;
-    --text-mb: var(--_text-margin);
+    --mod-text-mt: 0;
+    --mod-text-mb: var(--_text-margin);
   }
 
   :host(.has-space-none) {
-    --text-mt: 0;
-    --text-mb: 0;
+    --mod-text-mt: 0;
+    --mod-text-mb: 0;
   }
 }

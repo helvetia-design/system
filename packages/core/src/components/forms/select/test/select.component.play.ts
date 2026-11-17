@@ -289,3 +289,97 @@ test.describe('aria-label', () => {
     await expect(select.trigger).not.toHaveAttribute('aria-labelledby')
   })
 })
+
+test.describe('moved in the DOM', () => {
+  test('should still open the dropdown and select an option after being moved', async ({ page }) => {
+    await page.mount(`<ds-select label="Country"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+
+    await select.el.evaluate(el => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(el)
+    })
+    await page.waitForChanges()
+
+    const changeSpy = await select.el.spyOnEvent('dsChange')
+    await select.select('Italy')
+
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('it')
+    await select.assertValue('Italy')
+  })
+})
+
+test.describe('outside click', () => {
+  test('should close after clicking outside', async ({ page }) => {
+    await page.mount(`
+      <button data-testid="outside">Outside</button>
+      <ds-select label="Country"></ds-select>
+    `)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+
+    await select.open()
+    await expect(select.trigger).toHaveAttribute('aria-activedescendant', /.+/)
+    await page.getByTestId('outside').click()
+
+    await select.assertClosed()
+  })
+})
+
+test.describe('reduced motion', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+  })
+
+  test('should stay open after clicking the trigger', async ({ page }) => {
+    await page.mount(`<ds-select label="Country"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+
+    await select.open()
+
+    await select.assertOpen()
+  })
+
+  test('should close after clicking the trigger again', async ({ page }) => {
+    await page.mount(`<ds-select label="Country"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+
+    await select.open()
+    await select.assertOpen()
+    await select.open()
+
+    await select.assertClosed()
+  })
+
+  test('should stay open after clicking an option in multiple mode', async ({ page }) => {
+    await page.mount(`<ds-select label="Languages" multiple></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, LANGUAGE_OPTIONS)
+
+    await select.open()
+    await select.option('German').click()
+
+    await select.assertOpen()
+    await select.assertValue(['German'])
+  })
+
+  test('should close after clicking outside', async ({ page }) => {
+    await page.mount(`
+      <button data-testid="outside">Outside</button>
+      <ds-select label="Country"></ds-select>
+    `)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+
+    await select.open()
+    await select.assertOpen()
+    await page.getByTestId('outside').click()
+
+    await select.assertClosed()
+  })
+})

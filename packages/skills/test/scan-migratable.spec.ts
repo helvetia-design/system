@@ -427,6 +427,13 @@ describe('scanMigratable', () => {
     })
   })
 
+  it('counts an HTMLBal*Element type for its component', () => {
+    const root = createScratchDir()
+    write(root, 'src/field.directive.ts', 'constructor(private el: ElementRef<HTMLBalInputElement>) {}\n')
+
+    expect(scanMigratable(root)).toEqual({ suggested: [{ name: 'input', total: 1 }], notYet: [], types: [] })
+  })
+
   it('counts the React BalInputGroup import and tag for input', () => {
     const root = createScratchDir()
     write(

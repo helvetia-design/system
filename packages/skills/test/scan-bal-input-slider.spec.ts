@@ -202,6 +202,8 @@ describe('scanBalInputSlider', () => {
     write(root, 'page.html', '<bal-input-slider></bal-input-slider>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-input-slider></bal-input-slider>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalInputSlider />\n')
     }
 
@@ -229,7 +231,7 @@ describe('scanBalInputSlider', () => {
     )
 
     expect(scanBalInputSlider(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -239,6 +241,7 @@ describe('scanBalInputSlider', () => {
             { line: 6, snippet: 'detail?: BalEvents.BalInputSliderChangeDetail' },
             { line: 7, snippet: 'both(a: BalEvents.BalInputSliderBlur, b: BalInputSliderCustomEvent<number>) {}' },
             { line: 7, snippet: 'both(a: BalEvents.BalInputSliderBlur, b: BalInputSliderCustomEvent<number>) {}' },
+            { line: 9, snippet: 'el?: HTMLBalInputSliderElement' },
           ],
         },
       ],

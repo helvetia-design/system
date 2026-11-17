@@ -3,7 +3,7 @@
 
 @mixin style {
   @include vars.margin(tags);
-  @include vars.local(tags-gap, 0.25rem);
+  @include vars.local(tags-gap, var(--ds-tag-group-gap));
   @include vars.local(tags-display, inline-flex);
 
   display: var(--_tags-display);

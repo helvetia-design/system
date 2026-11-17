@@ -267,6 +267,11 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })
+
+    // Reconnecting after being moved in the DOM (e.g. a keyed list reorder): componentDidLoad
+    // only ever runs once, but disconnectedCallback destroyed the picker. The shadow DOM — and
+    // its refs — survives the move, so just rebuild the picker against the same nodes.
+    if (this.selectEl && !this.picker) this.mountPicker()
   }
 
   componentWillLoad() {
@@ -283,40 +288,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
     if (normalizedValue !== this.value) this.value = normalizedValue
 
     this.readOptionsFromSlot()
-
-    // `slim-select` (the picker library) uses `MutationObserver` unconditionally during setup —
-    // unavailable in Node's SSR mock-doc (`@helvetia-design/core/hydrate`). The picker only matters for
-    // user interaction, which SSR output can't have, so skip it there.
-    if (typeof MutationObserver === 'undefined') {
-      this.syncFormValue(this.value)
-      this.initialValue = this.value
-      return
-    }
-
-    this.picker = new SelectPickerController({
-      selectEl: this.selectEl,
-      popupEl: this.popupEl,
-      shadowRoot: this.el.shadowRoot,
-      triggerId: this.selectId,
-      ariaLabel: this.inheritedAttributes['aria-label'],
-      language: this.language,
-      placeholder: this.placeholder,
-      searchable: this.searchable,
-      disabled: this.disabled,
-      readonly: this.readonly,
-      multiple: this.multiple,
-      clearable: this.clearable,
-      data: this.buildSlimData(),
-      onChange: newVal => this.handleAfterChange(newVal),
-      onOpen: () => {
-        this.focused = true
-        this.dsFocus.emit(new FocusEvent('focus'))
-      },
-      onClose: () => {
-        this.focused = false
-        this.dsBlur.emit(new FocusEvent('blur'))
-      },
-    })
+    this.mountPicker()
 
     this.syncFormValue(this.value)
     this.initialValue = this.value
@@ -335,6 +307,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
 
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: MouseEvent) {
+    this.picker?.rememberDocumentClick(ev)
     if ((this.disabled || this.readonly) && ev.target === this.el) {
       stopEventBubbling(ev)
     }
@@ -429,6 +402,39 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  // `slim-select` (the picker library) uses `MutationObserver` unconditionally during setup —
+  // unavailable in Node's SSR mock-doc (`@helvetia-design/core/hydrate`). The picker only matters for
+  // user interaction, which SSR output can't have, so skip it there. Called from `componentDidLoad`
+  // on first load, and again from `connectedCallback` when reconnecting after being moved in the DOM.
+  private mountPicker() {
+    if (!this.selectEl || !this.popupEl || !this.el.shadowRoot || typeof MutationObserver === 'undefined') return
+
+    this.picker = new SelectPickerController({
+      selectEl: this.selectEl,
+      popupEl: this.popupEl,
+      shadowRoot: this.el.shadowRoot,
+      triggerId: this.selectId,
+      ariaLabel: this.inheritedAttributes['aria-label'],
+      language: this.language,
+      placeholder: this.placeholder,
+      searchable: this.searchable,
+      disabled: this.disabled,
+      readonly: this.readonly,
+      multiple: this.multiple,
+      clearable: this.clearable,
+      data: this.buildSlimData(),
+      onChange: newVal => this.handleAfterChange(newVal),
+      onOpen: () => {
+        this.focused = true
+        this.dsFocus.emit(new FocusEvent('focus'))
+      },
+      onClose: () => {
+        this.focused = false
+        this.dsBlur.emit(new FocusEvent('blur'))
+      },
+    })
+  }
 
   // Attributes are always strings, so `value="it,ch"` arrives as a single string in
   // multiple mode. Split it into the `string[]` the rest of the component expects.

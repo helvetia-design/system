@@ -12,6 +12,9 @@ import {
 
 let tooltipIds = 0
 
+/** SSR/no-DOM fallback, kept in sync with `--ds-tooltip-offset` (`Alias.Space.Gap.XS`). */
+const DEFAULT_OFFSET = 8
+
 /**
  * Tooltip displays contextual information when users hover over, focus on, or tap a trigger element.
  *
@@ -28,6 +31,9 @@ export class Tooltip implements DsComponentInterface {
   private tooltipId = `ds-tooltip-${tooltipIds++}`
   private containerEl: HTMLDivElement | undefined
   private cleanup?: () => void
+  private trigger: HTMLElement | undefined
+  private handlePresent = () => this.present()
+  private handleDismiss = () => this.dismiss()
 
   log!: LogInstance
 
@@ -64,10 +70,11 @@ export class Tooltip implements DsComponentInterface {
 
   /**
    * Offset in pixels from the trigger element to the tooltip.
+   * Defaults to the `--ds-tooltip-offset` token when not set.
    */
   @Prop()
   @Type('number')
-  readonly offset: number = 8
+  readonly offset: number | undefined = undefined
 
   /**
    * Defines the maximum width of the tooltip content in pixels.
@@ -108,12 +115,13 @@ export class Tooltip implements DsComponentInterface {
     const trigger = this.triggerElement
     if (!trigger) return
 
+    this.trigger = trigger
     trigger.setAttribute('aria-describedby', this.tooltipId)
 
-    trigger.addEventListener('mouseenter', () => this.present())
-    trigger.addEventListener('focus', () => this.present())
-    trigger.addEventListener('mouseleave', () => this.dismiss())
-    trigger.addEventListener('blur', () => this.dismiss())
+    trigger.addEventListener('mouseenter', this.handlePresent)
+    trigger.addEventListener('focus', this.handlePresent)
+    trigger.addEventListener('mouseleave', this.handleDismiss)
+    trigger.addEventListener('blur', this.handleDismiss)
 
     if (this.open) {
       this.present()
@@ -123,11 +131,16 @@ export class Tooltip implements DsComponentInterface {
   disconnectedCallback(): void {
     if (this.cleanup) {
       this.cleanup()
+      this.cleanup = undefined
     }
 
-    const trigger = this.triggerElement
-    if (trigger) {
-      trigger.removeAttribute('aria-describedby')
+    if (this.trigger) {
+      this.trigger.removeAttribute('aria-describedby')
+      this.trigger.removeEventListener('mouseenter', this.handlePresent)
+      this.trigger.removeEventListener('focus', this.handlePresent)
+      this.trigger.removeEventListener('mouseleave', this.handleDismiss)
+      this.trigger.removeEventListener('blur', this.handleDismiss)
+      this.trigger = undefined
     }
   }
 
@@ -147,6 +160,10 @@ export class Tooltip implements DsComponentInterface {
     this.dsWillAnimate.emit(true)
 
     this.presented = true
+
+    if (this.cleanup) {
+      this.cleanup()
+    }
 
     this.cleanup = autoUpdate(trigger, this.containerEl, () => this.update(), {
       ancestorScroll: true,
@@ -194,7 +211,7 @@ export class Tooltip implements DsComponentInterface {
       middleware: [
         dsBrowser.hasWindow && !window.frameElement ? shift() : undefined,
         flip(),
-        offset(this.offset),
+        offset(this.resolveOffset()),
       ].filter(Boolean) as any[],
     })
 
@@ -215,7 +232,46 @@ export class Tooltip implements DsComponentInterface {
 
   private get triggerElement(): HTMLElement | null {
     if (!dsBrowser.hasDocument) return null
-    return document.querySelector(`[id="${this.reference}"]`)
+    const selector = `[id="${this.reference}"]`
+    // Scoped to the tooltip's own (shadow) root so components can reference triggers inside their shadow DOM
+    const root = this.el.getRootNode() as Document | ShadowRoot
+    return (root.querySelector?.(selector) as HTMLElement | null) ?? document.querySelector(selector)
+  }
+
+  /**
+   * PRIVATE METHODS
+   * ─────────────────────────────────────────────────────
+   */
+
+  /**
+   * Resolves the trigger-to-tooltip distance in pixels.
+   *
+   * The `offset` prop wins when set, otherwise the value comes from the
+   * `--_tooltip-offset` variable (fed by the `--ds-tooltip-offset` token).
+   * floating-ui needs a number, so the computed value has to be read and
+   * converted here instead of being used as a `var()` in the stylesheet.
+   */
+  private resolveOffset(): number {
+    if (this.offset !== undefined) {
+      return this.offset
+    }
+
+    try {
+      const value = getComputedStyle(this.el).getPropertyValue('--_tooltip-offset').trim()
+      const amount = Number.parseFloat(value)
+
+      if (!Number.isNaN(amount)) {
+        if (value.endsWith('rem')) {
+          const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+          return Number.isNaN(rootFontSize) ? DEFAULT_OFFSET : amount * rootFontSize
+        }
+        return amount
+      }
+    } catch {
+      // Ignore errors, e.g. if getComputedStyle is not available
+    }
+
+    return DEFAULT_OFFSET
   }
 
   /**

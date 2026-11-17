@@ -13,11 +13,10 @@ import { tokenNameToCssVar } from './css-naming.js'
 /**
  * `formattedVariables` (used by both formatters below) renders exactly one CSS declaration per
  * token in `dictionary.allTokens`, using that token's own `.value` as the declaration's value. A
- * typography token's `.value` (post `ds/typography` transform) is a `{fontFamily, fontSize,
- * fontWeight, lineHeight}` object, not a CSS-ready string — printed as-is it would render as
- * `[object Object]`. This fans every `$type: "typography"` token out into 4 sibling tokens *before*
+ * typography token's `.value` (post `ds/typography` transform) is a 7-field object, not a CSS-ready string — printed as-is it would render as
+ * `[object Object]`. This fans every `$type: "typography"` token out into 7 sibling tokens *before*
  * the token list reaches `formattedVariables`, one per `TYPOGRAPHY_CSS_SUFFIXES` entry (e.g.
- * `--ds-label-font-lg-font-family`, `-font-size`, `-font-weight`, `-line-height`) — matching the 4
+ * `--ds-label-font-lg-font-family`, `-font-size`, `-font-weight`, `-line-height`, `-letter-spacing`, `-text-decoration`, `-text-transform`) — matching the 7
  * longhand custom properties decision 5 in docs/plans/typography-token-type-plan.md calls for, and
  * the same split Toky's live preview already produces (`apps/toky/src/tokens/css-preview.ts`'s
  * `pushTypographyPreviewTokens`), so the built CSS and the preview never disagree. A typography
@@ -62,13 +61,13 @@ function expandTypographyTokens(tokens: TransformedToken[], referenceSyntax: Ref
   }
 
   // A whole-token reference (e.g. Modal.Heading: "{Component.Heading.Level.3}") resolves, by the
-  // time this runs, to a plain object copy of the target's own {fontFamily, fontSize, fontWeight,
-  // lineHeight} — Style Dictionary's reference resolution substitutes the target's raw $value
+  // time this runs, to a plain object copy of the target's own 7-field value (fontFamily, fontSize, fontWeight,
+  // lineHeight, letterSpacing, textDecoration, textTransform) — Style Dictionary's reference resolution substitutes the target's raw $value
   // before any transform sees it, so nothing here can tell "this came from aliasing a whole sibling
-  // typography token" apart from "this token was authored with 4 literal/referenced sub-fields"
+  // typography token" apart from "this token was authored with 7 literal/referenced sub-fields"
   // except by checking token.original.$value's own shape: a string (not an object) means the whole
-  // token was aliased. In that case each of the 4 longhand declarations should reference that
-  // sibling's own 4 longhands directly (e.g. `var(--ds-heading-level-3-font-family)`), not repeat
+  // token was aliased. In that case each of the 7 longhand declarations should reference that
+  // sibling's own 7 longhands directly (e.g. `var(--ds-heading-level-3-font-family)`), not repeat
   // its already-resolved literal/reference under this token's name — otherwise the alias silently
   // degrades into a disconnected copy that drifts if the referenced token ever changes.
   const wrapReferenceField = (path: string, suffix: string, syntax: 'css' | 'sass'): string => {
@@ -142,7 +141,7 @@ function computeResponsiveDimensionPaths(tokens: TransformedToken[]): Set<string
  * `outputReferences`, such a token would render `var(--ds-device-space-md)` — which, post the
  * device-token-layer-plan naming change, *is* already the auto-switching var, so this mainly
  * exists to make that explicit and immune to `outputReferences` timing (see this function's twin
- * above). Typography tokens are skipped — their 4 longhand fields already get this treatment
+ * above). Typography tokens are skipped — their 7 longhand fields already get this treatment
  * per-field in expandTypographyTokens, and re-running it here on their (object-shaped) `$value`
  * would be a no-op anyway. CSS-only, same reasoning as expandTypographyTokens: SCSS never emits
  * per-breakpoint vars.

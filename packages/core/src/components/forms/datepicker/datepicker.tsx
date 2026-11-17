@@ -357,6 +357,12 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })
+
+    // Reconnecting after being moved in the DOM (e.g. a keyed list reorder): componentDidLoad
+    // only ever runs once, but disconnectedCallback tore down the mask and picker. The shadow
+    // DOM — and its refs — survives the move, so just rebuild them against the same nodes.
+    if (this.control.nativeEl && !this.dateMask) this.initMask()
+    if (this.popupHostEl && !this.datePicker) this.mountDatePicker()
   }
 
   componentWillLoad() {
@@ -375,9 +381,11 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
   // so toggling `disabled` at runtime swaps which element is actually in the DOM. air-datepicker
   // attaches to a specific node at construction, so the picker must be torn down and rebuilt
   // against the new one rather than just reconfigured. Called once from `componentDidLoad()` and
-  // again from `componentDidRender()` whenever that swap is detected.
+  // again from `componentDidRender()` whenever that swap is detected, and from `connectedCallback()`
+  // when reconnecting after a DOM move destroyed `datePicker` without changing the host node.
   private mountDatePicker() {
-    if (!this.popupHostEl || !this.el.shadowRoot || this.popupHostEl === this.pickerHostEl) return
+    if (!this.popupHostEl || !this.el.shadowRoot) return
+    if (this.popupHostEl === this.pickerHostEl && this.datePicker) return
 
     this.datePicker?.destroy()
     this.pickerHostEl = this.popupHostEl

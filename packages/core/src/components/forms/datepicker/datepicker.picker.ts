@@ -151,8 +151,8 @@ export class DatepickerController {
 
     this.airDatepicker = new AirDatepicker<HTMLDivElement>(popupHostEl, {
       navTitles: {
-        days: `<button id="switch" aria-label="${i18nDsDatepicker[language].switchToYearView}"><strong>MMMM yyyy</strong><ds-icon name="caret-down"></ds-icon></button>`,
-        months: `<button id="switch" aria-label="${i18nDsDatepicker[language].switchToYearView}"><strong>yyyy</strong><ds-icon name="caret-down"></ds-icon></button>`,
+        days: `<button id="switch"><strong>MMMM yyyy</strong><span class="sr-only">${i18nDsDatepicker[language].switchToYearView}</span><ds-icon name="caret-down"></ds-icon></button>`,
+        months: `<button id="switch"><strong>yyyy</strong><span class="sr-only">${i18nDsDatepicker[language].switchToYearView}</span><ds-icon name="caret-down"></ds-icon></button>`,
       },
       prevHtml:
         '<button id="previous"><ds-icon name="caret-left"></ds-icon></button><div id="previous-disabled"><ds-icon name="caret-left"></ds-icon></div>',

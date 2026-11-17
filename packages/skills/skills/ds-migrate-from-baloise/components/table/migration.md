@@ -18,7 +18,7 @@ node <this-skill-directory>/scripts/scan-bal-table.mjs <project-root>
 
 The script prints one JSON object. `total` is the number of findings. `files` groups them by path. Each finding has `line` and `snippet`.
 
-The scan finds the tag and the `BalTable` binding. It does not find the ambient `HTMLBalTableElement` type. Search for it yourself in each file with a finding and in the same-basename `.ts` beside every `.html` finding.
+The scan finds the tag and the `BalTable` binding. It lists the `HTMLBalTableElement` type too.
 
 Show that list to the user grouped by file (path, line, snippet) and end with the total count. Read the content of every `bal-table` before you show the list, and mark each one that stays unchanged because of the AG Grid rule or the unknown content rule below.
 

@@ -4,6 +4,7 @@ import { KEY_BY_LAYER } from './flatten'
 import { toSlashPath } from './format'
 import { flattenFigmaId } from './figma-map'
 import { invalidSegments } from './path'
+import { TEXT_DECORATION_VALUES, TEXT_TRANSFORM_VALUES } from '@helvetia-design/tokens/css-preview'
 
 export interface ValidationError {
   tokenKey: string
@@ -12,6 +13,12 @@ export interface ValidationError {
   // unlike 'error', which the caller treats as blocking.
   severity: 'error' | 'warning'
 }
+
+const REQUIRED_NEW_TYPOGRAPHY_FIELDS = [
+  { key: 'letterSpacing', label: 'letter spacing' },
+  { key: 'textDecoration', label: 'text decoration' },
+  { key: 'textTransform', label: 'text transform' },
+] as const
 
 function isEmptyValue(value: unknown): boolean {
   return value === '' || value === undefined || value === null
@@ -73,6 +80,42 @@ export function validateWorkingTokens(working: WorkingToken[]): ValidationError[
 
     if (!token.referenceTarget && isEmptyValue(token.rawValue)) {
       errors.push({ tokenKey: id, message: 'Value cannot be empty.', severity: 'error' })
+    }
+
+    // docs/plans/typography-letter-spacing-text-decoration-plan.md: a typography token's
+    // letterSpacing / textDecoration / textTransform are required (a whole-token reference inherits
+    // them from its target, so only a literal typography value is checked).
+    if (token.type === 'typography' && !token.referenceTarget && !isEmptyValue(token.rawValue)) {
+      const typography = token.rawValue as Record<string, unknown> | null
+      const missing = REQUIRED_NEW_TYPOGRAPHY_FIELDS.filter(
+        field => typeof typography !== 'object' || typography === null || isEmptyValue(typography[field.key]),
+      )
+      if (missing.length > 0) {
+        errors.push({
+          tokenKey: id,
+          message: `Typography is missing ${missing.map(field => field.label).join(', ')}.`,
+          severity: 'error',
+        })
+      }
+    }
+
+    // textDecoration / textTransform primitives may only hold the CSS keywords the build accepts
+    // (packages/tokens/src/css-value.ts's TEXT_DECORATION_VALUES / TEXT_TRANSFORM_VALUES) — the
+    // build throws on anything else, so catch it here first.
+    if (!token.referenceTarget && !isEmptyValue(token.rawValue)) {
+      const allowed =
+        token.type === 'textDecoration'
+          ? TEXT_DECORATION_VALUES
+          : token.type === 'textTransform'
+            ? TEXT_TRANSFORM_VALUES
+            : null
+      if (allowed && !(allowed as readonly unknown[]).includes(token.rawValue)) {
+        errors.push({
+          tokenKey: id,
+          message: `${token.type} must be one of: ${allowed.join(', ')}.`,
+          severity: 'error',
+        })
+      }
     }
 
     // No partial responsive tokens (docs/plans/responsive-dimension-token-plan.md decision 6) —

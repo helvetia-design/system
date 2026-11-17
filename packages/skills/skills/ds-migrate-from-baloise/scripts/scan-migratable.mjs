@@ -11,11 +11,11 @@ const USAGE_RE = new RegExp(
     String.raw`(?<=<[A-Za-z][^<>]*(?:[\s\[]|\[attr\.))(?<popup>bal-popup)(?![\w-])`,
     String.raw`\bbal(?<controller>[A-Z][A-Za-z0-9]*?)Controller\b`,
     String.raw`\bBal(?<namespace>Props|Events)\s*\.\s*Bal(?<member>[A-Z][A-Za-z0-9]*)\b`,
-    String.raw`\bBal(?<symbol>[A-Z][A-Za-z0-9]*)\b`,
+    String.raw`\b(?:HTML)?Bal(?<symbol>[A-Z][A-Za-z0-9]*)\b`,
   ].join('|'),
   'g',
 )
-const SUFFIX_RE = /(?<=.)(?:Service|Controller|Module|CustomEvent|Options|Props|Events|Detail)$/
+const SUFFIX_RE = /(?<=.)(?:Service|Controller|Module|CustomEvent|Options|Props|Events|Detail|Element)$/
 const TYPE_NAMESPACE_RE = /^(?:(Events|Props|Region)$|(Config|Breakpoint|Platform)(?=[A-Z]|s|$))|(Language)$/
 const COMPONENTS_DIR = join(dirname(fileURLToPath(import.meta.url)), '../components')
 

@@ -2,7 +2,7 @@
 import { realpathSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { lineAt, lineText, readTag, scanSourceFiles, toSnippet } from './source-scan.mjs'
+import { lineAt, lineText, readTag, scanSourceFiles, toSnippet, unwrapElementTypes } from './source-scan.mjs'
 
 const USAGE_RE =
   /<\/?bal-snackbar(?![\w-])|<\/?BalSnackbar\b|\b(?:balSnackbarController|BalSnackbarController|BalSnackbarService|BalSnackbarOptions|BalSnackbar)\b|<\/?bal-notices(?![\w-])|<\/?BalNotices\b|\b(?:BalNotices|defineBalNotices)\b/g
@@ -46,8 +46,9 @@ function group(found) {
 function collect({ file, text, masked, comments }, found) {
   const lines = new Set()
   USAGE_RE.lastIndex = 0
+  const usage = unwrapElementTypes(masked)
   let match
-  while ((match = USAGE_RE.exec(masked)) !== null) {
+  while ((match = USAGE_RE.exec(usage)) !== null) {
     const index = match.index
     const raw = match[0].startsWith('<') ? readTag(text, index) : lineText(text, index)
     const line = lineAt(text, index)

@@ -2,7 +2,7 @@
 
 Migrate every `bal-number-input` usage to `ds-number-input`. Init has already added the `@helvetia-design/*` packages. This task rewrites usages only.
 
-The scan lists the `bal-number-input` tag, the React and Angular symbol `BalNumberInput`, and the `BalEvents.BalNumberInput*` and `BalNumberInputCustomEvent` types. It does not match the ambient `HTMLBalNumberInputElement` or `BalProps.BalNumberInputInterface` types. Search for them yourself in each file with a finding. `SKILL.md` "Legacy types and bundles" says how to rewrite all of them.
+The scan lists the `bal-number-input` tag, the React and Angular symbol `BalNumberInput`, and the `BalEvents.BalNumberInput*` and `BalNumberInputCustomEvent` types. It lists the `HTMLBalNumberInputElement` type too. It does not match `BalProps.BalNumberInputInterface`. Search for it yourself in each file with a finding. `SKILL.md` "Legacy types and bundles" says how to rewrite all of them.
 
 The legacy component has no slots. `ds-number-input` adds a default slot and an `invalid-text` slot. Nothing to migrate, leave them unused.
 

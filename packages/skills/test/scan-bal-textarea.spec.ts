@@ -203,6 +203,8 @@ describe('scanBalTextarea', () => {
     write(root, 'page.html', '<bal-textarea name="a"></bal-textarea>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-textarea name="a"></bal-textarea>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalTextarea name="a" />\n')
     }
 
@@ -240,7 +242,7 @@ describe('scanBalTextarea', () => {
     )
 
     expect(scanBalTextarea(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -250,6 +252,7 @@ describe('scanBalTextarea', () => {
             { line: 6, snippet: 'detail?: BalEvents.BalTextareaChangeDetail' },
             { line: 7, snippet: 'both(a: BalEvents.BalTextareaBlur, b: BalTextareaCustomEvent<string>) {}' },
             { line: 7, snippet: 'both(a: BalEvents.BalTextareaBlur, b: BalTextareaCustomEvent<string>) {}' },
+            { line: 8, snippet: 'el?: HTMLBalTextareaElement' },
           ],
         },
       ],

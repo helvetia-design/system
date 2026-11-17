@@ -1,6 +1,17 @@
 @use '@helvetia-design/styles/src/scss/mixins/breakpoint.mixin.scss' as *;
+@use '../../../vars' as vars;
+
+/**
+ * Variables
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * Define CSS custom properties that can be overridden by consumers.
+ *
+ * @prop --data-gap-horizontal: Gap between items in the horizontal layout
+ */
 
 :host {
+  @include vars.local(data-gap-horizontal, var(--ds-data-horizontal-gap));
+
   display: block;
 }
 
@@ -12,12 +23,13 @@
 
 // Mobile first: single column by default
 :host(.is-horizontal) .data-container {
-  gap: 1rem;
+  gap: var(--_data-gap-horizontal);
 }
 
 // Tablet and up: horizontal layout with multiple columns
 :host(.is-horizontal) .data-container {
   @include tablet {
+    // ds-token-check: intentional — grid column wrap threshold, layout not theme
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 }

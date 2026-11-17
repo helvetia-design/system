@@ -185,6 +185,26 @@ _Avoid_: diff, difference (a diff is any Figma/GitHub mismatch; a conflict is sp
 A Figma Variable Collection mode representing one brand (Base, OrangeVacations, future brands). A brand's token override is a different mode-value on the same variable, not a separate variable.
 _Avoid_: theme, variant (component variants are a distinct concept in this system)
 
+**Figma line-height percentage**:
+How a line-height token is shown in Figma: a percentage string such as `"150%"`, for a token whose value is the unitless multiplier `1.5` everywhere else. The multiplier stays the one stored value; the percentage exists only on the Figma side.
+_Avoid_: scaled line-height, line-height percent token (there is no second token — it is the same token seen from Figma)
+
+**Typography token**:
+A single token that describes how a piece of text looks, with seven required parts: font family, size, weight, line height, letter spacing, text decoration and text transform. It is one token for designers and developers, even though the Figma side shows each part as its own variable.
+_Avoid_: text style, font token (a font family or weight on its own is a primitive, not a typography token)
+
+**Text part**:
+One distinct piece of text inside a component (a label, a heading, a body, a description), styled by exactly one Component-layer typography token (which may alias a shared one, e.g. `Notification.Body → Text.Typo.Paragraph`) plus one separate color token. Loose per-property Component tokens without a typography token behind them do not count. Color is never a part of the typography token: it varies by state and variant, typography does not.
+_Avoid_: text slot (a slot is a DOM concept), font usage
+
+**Inline text part**:
+A text part that sits inside running text (e.g. a link in a paragraph) and takes its family, size and line height from that surrounding text. It still has a full typography token, but in code only weight, letter spacing, text decoration and text transform apply; the token's family, size and line height serve only as the Figma sample.
+_Avoid_: inherited text, partial typography
+
+**Part modifier**:
+A single-property Component token (e.g. `Text.Weight.Bold`) that overrides exactly one part of a text part's typography token, for a prop or state that changes only that one part (a weight prop, a selected day). A prop or state that changes two or more parts gets its own typography token instead.
+_Avoid_: partial typography token, override token
+
 ## Key Concepts
 
 ### Responsive Tokens
@@ -234,7 +254,7 @@ Common categories in the Alias layer:
 - **Space** (2XS–4XL, plus responsive variants) — the raw scale only; Component-layer tokens built from it are named `Padding`/`Gap`/`Margin`, see [Spacing Naming](#spacing-naming)
 - **Color** (backgrounds, borders, text, with light/dark variants)
 - **Border** (width, color, radius, plus a pilot set of `$type: "border"` composite tokens under `▭ Border.Composite.*` — `{color, width, style}`, each sub-value a reference to the existing `Color`/`Width`/new `Style` primitives; see `docs/plans/border-token-type-plan.md`)
-- **Text** (size, color, family, weight, line-height, shadow, plus a `$type: "typography"` composite type — `{fontFamily, fontSize, fontWeight, lineHeight}` — fully supported in Toky/Style Dictionary/Figma sync, but no actual `Typography.*` tokens exist yet; the responsive-`fontSize` question a real pilot needs is still open. See `docs/plans/typography-token-type-plan.md`.)
+- **Text** (size, color, family, weight, line-height, shadow, plus a `$type: "typography"` composite type — `{fontFamily, fontSize, fontWeight, lineHeight, letterSpacing, textDecoration, textTransform}` — fully supported in Toky/Style Dictionary/Figma sync. `letterSpacing` is a `dimension` referencing `Alias.Text.LetterSpacing.*`; `textDecoration`/`textTransform` have their own `$type`s and reference `Alias.Text.TextDecoration.*`/`TextTransform.*`. See `docs/plans/typography-letter-spacing-text-decoration-plan.md` and [ADR-0035](../../docs/adr/0035-typography-letter-spacing-text-decoration-text-transform.md).)
 - **Opacity** (hidden, half, disabled, backdrop, full)
 - **Z-Index** (deep, masked, sticky, navigation, popup, modal, toast, tooltip)
 - **Shadow** (box, text)
@@ -461,6 +481,8 @@ Decisions specific to this package (Figma Variable identity, brand modes, sync b
 - [ADR-0018](../../docs/adr/0018-non-blocking-conflict-check.md) — Conflict check comments, it doesn't block the merge
 - [ADR-0019](../../docs/adr/0019-pull-auto-deletes-figma-variables.md) — Pull deletes the Figma Variable when a token is removed
 - [ADR-0020](../../docs/adr/0020-figma-sync-action-standalone-script.md) — The Figma Sync Action's code stays standalone, not shared with apps/toky
+- [ADR-0034](../../docs/adr/0034-figma-variable-type-change-recreates-variable.md) — A changed Figma variable type deletes and recreates the variable
+- [ADR-0035](../../docs/adr/0035-typography-letter-spacing-text-decoration-text-transform.md) — Typography gains letter-spacing, text-decoration and text-transform
 - [ADR-0030](../../docs/adr/0030-full-merge-brand-token-css.md) — Brand token CSS is fully merged, split into a theme file (`:host, :root`) and an override file (`[data-theme]`)
 
 ## Related Contexts

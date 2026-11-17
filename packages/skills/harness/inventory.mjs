@@ -22,24 +22,19 @@
  * stay outside any app project root: the skill's scanners read every source file below their
  * root, so a checker containing the string `bal-card` would be counted as a finding.
  */
-import { readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 
-const SKIP_DIRS = new Set([
-  'node_modules',
-  'dist',
-  'build',
-  'out',
-  '.next',
-  '.angular',
-  '.git',
-  '.claude',
-  'coverage',
-  '.nx',
-  '.nuxt',
-  '.output',
-  'storybook-static',
-])
+const TOOL_DIRS = new Set(['node_modules', '.angular', '.git', '.claude', '.nx'])
+const BUILD_OUTPUT_DIRS = new Set(['dist', 'build', 'out', 'coverage', '.next', '.nuxt', '.output', 'storybook-static'])
+
+// Build-output names double as ordinary source folder names, so they are only skipped directly
+// beside the `package.json` that produces them — the same rule `source-scan.mjs` applies.
+function isSkippedDir(name, parentDir, root) {
+  if (TOOL_DIRS.has(name)) return true
+  if (!BUILD_OUTPUT_DIRS.has(name)) return false
+  return parentDir === root || existsSync(join(parentDir, 'package.json'))
+}
 const SKIP_FILES = new Set(['package-lock.json', 'pnpm-lock.yaml', 'yarn.lock'])
 const EXTENSIONS = new Set([
   '.ts',
@@ -112,7 +107,7 @@ export function inventory(rootDir, allowlist = []) {
       const entryPath = canonicalChild(rootPath, join(dir, entry.name))
       if (!entryPath) continue
       if (entry.isDirectory()) {
-        if (!SKIP_DIRS.has(entry.name)) walk(rootPath, entryPath, out)
+        if (!isSkippedDir(entry.name, dir, rootPath)) walk(rootPath, entryPath, out)
         continue
       }
       if (!entry.isFile()) continue

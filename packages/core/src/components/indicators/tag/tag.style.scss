@@ -1,6 +1,7 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../hybrid' as hybrid;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 @use './tag-group/tag-group.mixin.scss' as tags;
 
 $use-host: false !default;
@@ -22,11 +23,8 @@ $host-selector: ('#tag');
   @include vars.local(tag-radius, var(--ds-tag-radius));
   @include vars.local(tag-color, var(--ds-tag-default-color-text));
   @include vars.local(tag-bg, var(--ds-tag-default-color-background));
-  @include vars.local(tag-line-height, var(--ds-tag-line-height));
-  @include vars.local(tag-font-family, var(--ds-tag-font-family));
-  @include vars.local(tag-font-size, var(--ds-tag-size-base-font-size));
-  @include vars.local(tag-font-weight, var(--ds-tag-size-base-font-weight));
-  @include vars.local(tag-close-mr, calc(0.25rem * -1));
+  @include typo.local(tag, 'tag-size-base-label-typo');
+  @include vars.local(tag-close-mr, calc(var(--ds-tag-close-gap) * -1));
 }
 
 /**
@@ -53,10 +51,7 @@ $host-selector: ('#tag');
   color: var(--_tag-color);
   background-color: var(--_tag-bg);
 
-  font-family: var(--_tag-font-family);
-  line-height: var(--_tag-line-height);
-  font-size: var(--_tag-font-size);
-  font-weight: var(--_tag-font-weight);
+  @include typo.apply(tag);
 
   > .ds-close,
   > ds-close {
@@ -161,8 +156,7 @@ $close-inverted: ('primary', 'disabled', 'purple-dark', 'red-dark', 'yellow-dark
   --mod-tag-gap: var(--ds-tag-size-sm-gap);
   --mod-tag-py: var(--ds-tag-size-sm-padding-y);
   --mod-tag-px: var(--ds-tag-size-sm-padding-x);
-  --mod-tag-font-size: var(--ds-tag-size-sm-font-size);
-  --mod-tag-font-weight: var(--ds-tag-size-sm-font-weight);
+  @include typo.mod(tag, 'tag-size-sm-label-typo');
 
   > .ds-close,
   > ds-close {
@@ -175,16 +169,14 @@ $close-inverted: ('primary', 'disabled', 'purple-dark', 'red-dark', 'yellow-dark
   --mod-tag-gap: var(--ds-tag-size-md-gap);
   --mod-tag-py: var(--ds-tag-size-md-padding-y);
   --mod-tag-px: var(--ds-tag-size-md-padding-x);
-  --mod-tag-font-size: var(--ds-tag-size-md-font-size);
-  --mod-tag-font-weight: var(--ds-tag-size-md-font-weight);
+  @include typo.mod(tag, 'tag-size-md-label-typo');
 }
 
 @mixin sizeLarge() {
   --mod-tag-gap: var(--ds-tag-size-lg-gap);
   --mod-tag-py: var(--ds-tag-size-lg-padding-y);
   --mod-tag-px: var(--ds-tag-size-lg-padding-x);
-  --mod-tag-font-size: var(--ds-tag-size-lg-font-size);
-  --mod-tag-font-weight: var(--ds-tag-size-lg-font-weight);
+  @include typo.mod(tag, 'tag-size-lg-label-typo');
 }
 
 @include hybrid.styles($css-selector, $use-host) {

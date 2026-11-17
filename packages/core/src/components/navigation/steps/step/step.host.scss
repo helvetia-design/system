@@ -1,4 +1,5 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
+@use '../../../../typography' as typo;
 
 // ─── Host layout ─────────────────────────────────────────────────────────────
 // Default: circle top, label below (column). Flex: 1 so all steps share equal width.
@@ -27,15 +28,14 @@
   flex-shrink: 0;
   width: var(--_steps-circle-size);
   height: var(--_steps-circle-size);
-  border-radius: 9999px;
+  border-radius: var(--_steps-circle-radius);
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--_steps-circle-color-bg);
   color: var(--_steps-circle-color-text);
-  font-family: var(--_steps-step-font-family);
-  font-size: var(--_steps-step-font-size);
-  font-weight: var(--_steps-step-font-weight);
+  @include typo.apply(steps-step);
+  // ds-token-check: intentional — line-height 1 centers the glyph in the fixed-size circle
   line-height: 1;
   transition:
     background-color 180ms ease,
@@ -47,12 +47,10 @@
   cursor: not-allowed;
 }
 
-// line-height: 1 (not the typo token) keeps the invalid icon glyph centered in the circle.
 .step-invalid {
   color: var(--_steps-circle-color-text-invalid);
-  font-family: var(--_steps-step-font-family);
-  font-size: var(--_steps-step-font-size);
-  font-weight: var(--_steps-step-font-weight);
+  @include typo.apply(steps-step);
+  // ds-token-check: intentional — line-height 1 centers the invalid icon glyph in the circle
   line-height: 1;
 }
 
@@ -78,7 +76,7 @@
 :host(.is-disabled) .circle {
   background-color: var(--_steps-circle-color-bg-disabled);
   color: var(--_steps-circle-color-text-disabled);
-  opacity: 0.5;
+  opacity: var(--_steps-circle-opacity-disabled);
 }
 
 // ─── Label ───────────────────────────────────────────────────────────────────
@@ -86,17 +84,14 @@
 .step-label {
   @include unselectable();
 
-  margin-top: 0.5rem;
+  margin-top: var(--_steps-step-gap);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
   color: var(--_steps-step-color);
-  font-family: var(--_steps-step-font-family);
-  font-size: var(--_steps-step-font-size);
-  font-weight: var(--_steps-step-font-weight);
-  line-height: var(--_steps-step-line-height);
+  @include typo.apply(steps-step);
   transition: color 180ms ease;
 }
 
@@ -108,9 +103,13 @@
   color: var(--_steps-step-color-done);
 }
 
+:host(.is-invalid) .step-label {
+  color: var(--_steps-step-color-invalid);
+}
+
 :host(.is-disabled) .step-label {
   color: var(--_steps-step-color-disabled);
-  opacity: 0.4;
+  opacity: var(--_steps-step-opacity-disabled);
 }
 
 // ─── Connector line ──────────────────────────────────────────────────────────
@@ -121,10 +120,10 @@
   position: absolute;
   top: calc(var(--_steps-circle-size) / 2);
   transform: translateY(-50%);
-  left: calc(50% + var(--_steps-circle-size) / 2 + 4px);
-  right: calc(-50% + var(--_steps-circle-size) / 2 + 4px);
+  left: calc(50% + var(--_steps-circle-size) / 2 + var(--_steps-connector-gap));
+  right: calc(-50% + var(--_steps-circle-size) / 2 + var(--_steps-connector-gap));
   height: var(--_steps-connector-height);
-  border-radius: 9999px;
+  border-radius: var(--_steps-connector-radius);
   background-color: var(--_steps-connector-color);
   z-index: 0;
   transition: background-color 180ms ease;
@@ -145,7 +144,9 @@
   .circle {
     width: var(--_steps-circle-size-sm);
     height: var(--_steps-circle-size-sm);
-    font-size: var(--_steps-step-font-size-sm);
+    @include typo.apply-token('steps-step-typo-sm');
+    // ds-token-check: intentional — line-height 1 centers the glyph in the fixed-size circle
+    line-height: 1;
     --mod-icon-size: var(--ds-icon-size-sm);
     --mod-icon-inner-size: var(--ds-icon-size-sm);
   }
@@ -156,8 +157,8 @@
 
   .connector {
     top: calc(var(--_steps-circle-size-sm) / 2);
-    left: calc(50% + var(--_steps-circle-size-sm) / 2 + 4px);
-    right: calc(-50% + var(--_steps-circle-size-sm) / 2 + 4px);
+    left: calc(50% + var(--_steps-circle-size-sm) / 2 + var(--_steps-connector-gap));
+    right: calc(-50% + var(--_steps-circle-size-sm) / 2 + var(--_steps-connector-gap));
   }
 }
 
@@ -175,7 +176,7 @@
   align-items: center;
   flex: unset;
   width: 100%;
-  padding: 0.5rem 0;
+  padding: var(--_steps-step-py) 0;
 }
 
 :host(.is-vertical) .circle {
@@ -185,7 +186,7 @@
 :host(.is-vertical) .step-label {
   display: block;
   margin-top: 0;
-  margin-left: 0.75rem;
+  margin-left: var(--_steps-step-gap-vertical);
   text-align: left;
   white-space: normal;
 }
@@ -205,7 +206,7 @@
   @include unselectable();
 
   display: block;
-  margin-top: 0.5rem;
+  margin-top: var(--_steps-step-gap);
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
@@ -213,10 +214,7 @@
   text-overflow: ellipsis;
   max-width: 100%;
   color: var(--_steps-step-color);
-  font-family: var(--_steps-step-font-family);
-  font-size: var(--_steps-step-font-size);
-  font-weight: var(--_steps-step-font-weight);
-  line-height: var(--_steps-step-line-height);
+  @include typo.apply(steps-step);
   transition: color 180ms ease;
   outline: none;
 }
@@ -228,24 +226,24 @@
 
 :host(.is-navigation.is-disabled) ::slotted(a) {
   color: var(--_steps-step-color-disabled);
-  opacity: 0.4;
+  opacity: var(--_steps-step-opacity-disabled);
 }
 
 :host(.is-navigation) ::slotted(a:focus-visible) {
-  border-radius: var(--ds-alias-radius-base);
+  border-radius: var(--_steps-step-radius-focus);
   @include focus-shadow(var(--_steps-step-color-focus));
 }
 
 // Navigation + vertical: label to the right
 :host(.is-navigation.is-vertical) ::slotted(a) {
   margin-top: 0;
-  margin-left: 0.75rem;
+  margin-left: var(--_steps-step-gap-vertical);
   text-align: left;
   white-space: normal;
 }
 
 @include mobile {
   :host(.is-navigation) ::slotted(a) {
-    font-size: var(--_steps-step-font-size-sm);
+    @include typo.apply-token('steps-step-typo-sm');
   }
 }

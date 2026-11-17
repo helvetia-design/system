@@ -330,6 +330,8 @@ describe('scanBalPopup', () => {
     write(root, 'page.html', '<bal-popup></bal-popup>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-popup></bal-popup>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalPopup />\n')
     }
 

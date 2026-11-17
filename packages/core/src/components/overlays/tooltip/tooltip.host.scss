@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * Variables
@@ -11,10 +12,14 @@
  * @prop --tooltip-shadow: Box shadow of the tooltip container.
  * @prop --tooltip-px: Horizontal padding of the tooltip content.
  * @prop --tooltip-py: Vertical padding of the tooltip content.
+ * @prop --tooltip-offset: Distance between the trigger element and the tooltip container.
  * @prop --tooltip-text-font-family: Font family of the tooltip text.
  * @prop --tooltip-text-font-weight: Font weight of the tooltip text.
  * @prop --tooltip-text-font-size: Font size of the tooltip text.
  * @prop --tooltip-text-line-height: Line height of the tooltip text.
+ * @prop --tooltip-text-letter-spacing: Letter spacing of the tooltip text.
+ * @prop --tooltip-text-text-decoration: Text decoration of the tooltip text.
+ * @prop --tooltip-text-text-transform: Text transform of the tooltip text.
  * @prop --tooltip-z-index: Z-index of the tooltip layer.
  */
 
@@ -22,15 +27,15 @@
   @include vars.base(tooltip);
   @include vars.local(tooltip-color-background, var(--ds-tooltip-color-background));
   @include vars.local(tooltip-color-text, var(--ds-tooltip-color-text));
+  // ds-token-check: intentional — consumer-driven via the contentWidth prop; auto is the size-to-content default
   @include vars.local(tooltip-max-width, auto);
   @include vars.local(tooltip-radius, var(--ds-tooltip-radius));
   @include vars.local(tooltip-shadow, var(--ds-tooltip-shadow));
   @include vars.local(tooltip-px, var(--ds-tooltip-padding-x));
   @include vars.local(tooltip-py, var(--ds-tooltip-padding-y));
-  @include vars.local(tooltip-text-font-family, var(--ds-tooltip-text-font-family));
-  @include vars.local(tooltip-text-font-weight, var(--ds-tooltip-text-font-weight));
-  @include vars.local(tooltip-text-font-size, var(--ds-tooltip-text-font-size));
-  @include vars.local(tooltip-text-line-height, var(--ds-tooltip-text-line-height));
+  // Read from JS (see tooltip.tsx resolveOffset) — floating-ui needs a number, not a var()
+  @include vars.local(tooltip-offset, var(--ds-tooltip-offset));
+  @include typo.local(tooltip-text, 'tooltip-text');
   @include vars.local(tooltip-z-index, var(--ds-tooltip-z-index));
 }
 
@@ -61,6 +66,7 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  // ds-token-check: intentional — fly-in travel distance, motion not themed
   transform: translateY(-4px);
   transition:
     opacity 120ms cubic-bezier(0.4, 0, 1, 1),
@@ -80,6 +86,7 @@
 }
 
 :host([aria-hidden='false']) [part='container'] {
+  // ds-token-check: intentional — binary visibility toggle, not a themeable value
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -117,12 +124,10 @@
   padding-block: var(--_tooltip-py);
   padding-inline: var(--_tooltip-px);
   overflow-y: auto;
+  // ds-token-check: intentional — viewport safe-area guard, identical across brands
   max-height: calc(100svh - 8rem);
   color: var(--_tooltip-color-text);
-  font-family: var(--_tooltip-text-font-family);
-  font-weight: var(--_tooltip-text-font-weight);
-  font-size: var(--_tooltip-text-font-size);
-  line-height: var(--_tooltip-text-line-height);
+  @include typo.apply(tooltip-text);
 }
 
 ::slotted(span),
@@ -132,4 +137,7 @@
   font-weight: inherit;
   font-size: inherit;
   line-height: inherit;
+  letter-spacing: inherit;
+  text-decoration: inherit;
+  text-transform: inherit;
 }

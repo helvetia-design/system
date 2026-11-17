@@ -16,10 +16,10 @@
  * All dependency bumps are recorded under a single, fixed changeset file
  * (.changeset/dependabot-updates.md) targeting `@helvetia-design/core` with
  * the `deps` scope, matching the convention used by `create-changeset.mjs`
- * (any scope not in SCOPE_PACKAGE_MAP — including `deps` — falls back to
- * core, and all packages are version-locked together via the "fixed" group
- * in .changeset/config.json). This way a run of weekly Dependabot PRs
- * produces at most one changeset per release instead of one per PR.
+ * (every changeset always targets core — all packages are version-locked
+ * together via the "fixed" group in .changeset/config.json, so there's one
+ * changelog). This way a run of weekly Dependabot PRs produces at most one
+ * changeset per release instead of one per PR.
  *
  * Usage: node scripts/dependabot-changeset.mjs
  * Exits with no file changes (and no output) if nothing needs updating.

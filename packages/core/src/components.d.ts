@@ -13,6 +13,7 @@ import { AppNavbarContainer } from "./components/navigation/app-navbar/app-navba
 import { BadgeColor, BadgePosition, BadgeSize } from "./components/indicators/badge/badge.interfaces";
 import { IconColor, IconSize } from "./components/media/brand-icon/brand-icon.interfaces";
 import { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, ButtonDidRenderDetail, ButtonElementType, ButtonFocusDetail, ButtonGroupAlignment, ButtonGroupDirection, ButtonNavigateDetail, ButtonSize, ButtonTarget } from "./components/actions/button/button.interfaces";
+import { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 import { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
 import { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
 import { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
@@ -52,7 +53,6 @@ import { TextAlign, TextColor, TextSize, TextSpace } from "./components/structur
 import { TextareaBlurDetail, TextareaChangeDetail, TextareaClickDetail, TextareaFocusDetail, TextareaInputDetail, TextareaInputMode, TextareaKeyPressDetail, TextareaWrap } from "./components/forms/textarea/textarea.interfaces";
 import { ToastActionClickDetail, ToastCloseClickDetail, ToastColor, ToastDuration } from "./components/overlays/alert/toast/toast.interfaces";
 import { ToggleBlurDetail, ToggleChangeDetail, ToggleFocusDetail, ToggleLabelPosition } from "./components/forms/toggle/toggle.interfaces";
-import { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 export { AccordionButtonColor, AccordionButtonSize, AccordionMarker, AccordionMarkerPosition, AccordionSummaryLevel, AccordionToggleDetail } from "./components/structure/accordion/accordion.interfaces";
 export { DsBrand, DsConfigState, DsIcons, DsLanguage, DsLegalLinks, DsLegalText, DsRegion, DsSocialLinks } from "./global/index";
 export { Alert, AlertComponent, AlertContainerSize, AlertType } from "./components/overlays/alert/alert-container.interfaces";
@@ -61,6 +61,7 @@ export { AppNavbarContainer } from "./components/navigation/app-navbar/app-navba
 export { BadgeColor, BadgePosition, BadgeSize } from "./components/indicators/badge/badge.interfaces";
 export { IconColor, IconSize } from "./components/media/brand-icon/brand-icon.interfaces";
 export { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, ButtonDidRenderDetail, ButtonElementType, ButtonFocusDetail, ButtonGroupAlignment, ButtonGroupDirection, ButtonNavigateDetail, ButtonSize, ButtonTarget } from "./components/actions/button/button.interfaces";
+export { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 export { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
 export { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
 export { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
@@ -100,7 +101,6 @@ export { TextAlign, TextColor, TextSize, TextSpace } from "./components/structur
 export { TextareaBlurDetail, TextareaChangeDetail, TextareaClickDetail, TextareaFocusDetail, TextareaInputDetail, TextareaInputMode, TextareaKeyPressDetail, TextareaWrap } from "./components/forms/textarea/textarea.interfaces";
 export { ToastActionClickDetail, ToastCloseClickDetail, ToastColor, ToastDuration } from "./components/overlays/alert/toast/toast.interfaces";
 export { ToggleBlurDetail, ToggleChangeDetail, ToggleFocusDetail, ToggleLabelPosition } from "./components/forms/toggle/toggle.interfaces";
-export { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 export namespace Components {
     /**
      * Accordion displays collapsible content sections with open/close toggle buttons and optional animations.
@@ -294,7 +294,7 @@ export namespace Components {
          */
         "position"?: BadgePosition;
         /**
-          * If `true` the badge is added to the top right corner of the card.
+          * If `true` the badge animates with a pulsing effect to draw attention to it.
           * @default false
          */
         "pulse": boolean;
@@ -343,6 +343,7 @@ export namespace Components {
     }
     /**
      * Button provides a clickable element for triggering actions, submitting forms, or navigating — supporting text, icons, or both.
+     * @attachment ds-badge top-right - Optional badge in the default slot, pinned just outside the button's top-right corner.
      */
     interface DsButton {
         /**
@@ -391,9 +392,8 @@ export namespace Components {
         "disabled": boolean;
         /**
           * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
-          * @default ''
          */
-        "download": string;
+        "download"?: string;
         /**
           * The type of button.
           * @default 'button'
@@ -445,11 +445,6 @@ export namespace Components {
          */
         "noWrap": boolean;
         /**
-          * If `true` the button is outlined
-          * @default false
-         */
-        "outlined": boolean;
-        /**
           * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
           * @default ''
          */
@@ -473,6 +468,11 @@ export namespace Components {
           * @default '_self'
          */
         "target": ButtonTarget;
+        /**
+          * Placement of the tooltip that shows the `a11yTitle` on hover and focus.
+          * @default 'bottom'
+         */
+        "tooltipPlacement": TooltipPlacement;
         /**
           * The value of the button, which is submitted with the form data.
           * @default ''
@@ -510,6 +510,10 @@ export namespace Components {
     }
     /**
      * Card groups related content together in a contained, visually distinct container with optional header and footer.
+     * @attachment ds-badge top-right - Optional badge as the first child of the default slot, centered on the card's top-right corner.
+     * @attachment ds-tag top-left position=left - Optional tag as the first child of the default slot, centered on the card's top edge, aligned left.
+     * @attachment ds-tag top-center position=center - Optional tag as the first child of the default slot, centered on the card's top edge.
+     * @attachment ds-tag top-right position=right - Optional tag as the first child of the default slot, centered on the card's top edge, aligned right.
      */
     interface DsCard {
         /**
@@ -938,9 +942,10 @@ export namespace Components {
          */
         "layout"?: StackLayout;
         /**
-          * Defines the space between the child elements.
+          * Defines the space between the child elements. Default is 2xs.
+          * @default '2xs'
          */
-        "space"?: ContentSpace;
+        "space": ContentSpace;
         /**
           * Defines the text positioning like center, right or default to left.
          */
@@ -1257,6 +1262,7 @@ export namespace Components {
      * Drawer displays a panel that slides up from the bottom of the screen.
      * Uses the native dialog element for accessible top-layer rendering, built-in focus management,
      * and Escape-key handling.
+     * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by `--drawer-close-inset` from the container's top-end corner.
      */
     interface DsDrawer {
         /**
@@ -1548,7 +1554,7 @@ export namespace Components {
          */
         "svg": string;
         /**
-          * If `true` the icon is rotated 180deg
+          * If `true`, rotates the icon — the angle depends on `name`: 225deg for `plus` (turns it into an "×"), 180deg for `caret-down`/`caret-up`. Has no visual effect for any other icon name.
           * @default false
          */
         "turn": boolean;
@@ -1881,7 +1887,7 @@ export namespace Components {
          */
         "animated": boolean;
         /**
-          * Defines the brand of the logo. Default is 'baloise'.
+          * Defines the brand of the logo. Default is 'helvetia'.
          */
         "brand"?: LogoBrand;
         /**
@@ -1897,6 +1903,7 @@ export namespace Components {
     }
     /**
      * Modal displays content in a dialog overlay using the native dialog element.
+     * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by the modal padding from the top-right corner.
      */
     interface DsModal {
         /**
@@ -1920,10 +1927,9 @@ export namespace Components {
          */
         "label": string;
         /**
-          * Width of the modal in pixels.
-          * @default 640
+          * Width of the modal in pixels. Overrides the `--modal-width` token (640px by default).
          */
-        "modalWidth": number;
+        "modalWidth"?: number;
         /**
           * If `true` the modal is open.
           * @default false
@@ -3269,6 +3275,7 @@ export namespace Components {
     }
     /**
      * Tab renders a single tab button inside a ds-tabs group, supporting both the panels and navigation variants.
+     * @attachment ds-badge top-right size=sm - Optional small badge in the default slot, centered vertically on the top-right of the label. Only `size="sm"` is positioned.
      */
     interface DsTab {
         /**
@@ -3372,11 +3379,6 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        /**
-          * Overwrites the default color to invalid style
-          * @default false
-         */
-        "invalid": boolean;
         /**
           * Choosing left or center the tag is aligned to that side in the ds-card.
          */
@@ -3735,10 +3737,10 @@ export namespace Components {
          */
         "dismiss": () => Promise<boolean>;
         /**
-          * Offset in pixels from the trigger element to the tooltip.
-          * @default 8
+          * Offset in pixels from the trigger element to the tooltip. Defaults to the `--ds-tooltip-offset` token when not set.
+          * @default undefined
          */
-        "offset": number;
+        "offset": number | undefined;
         /**
           * When true, the tooltip is shown immediately on load without user interaction.
           * @default false
@@ -4017,6 +4019,7 @@ declare global {
     }
     /**
      * Button provides a clickable element for triggering actions, submitting forms, or navigating — supporting text, icons, or both.
+     * @attachment ds-badge top-right - Optional badge in the default slot, pinned just outside the button's top-right corner.
      */
     interface HTMLDsButtonElement extends Components.DsButton, HTMLStencilElement {
         addEventListener<K extends keyof HTMLDsButtonElementEventMap>(type: K, listener: (this: HTMLDsButtonElement, ev: DsButtonCustomEvent<HTMLDsButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4043,6 +4046,10 @@ declare global {
     };
     /**
      * Card groups related content together in a contained, visually distinct container with optional header and footer.
+     * @attachment ds-badge top-right - Optional badge as the first child of the default slot, centered on the card's top-right corner.
+     * @attachment ds-tag top-left position=left - Optional tag as the first child of the default slot, centered on the card's top edge, aligned left.
+     * @attachment ds-tag top-center position=center - Optional tag as the first child of the default slot, centered on the card's top edge.
+     * @attachment ds-tag top-right position=right - Optional tag as the first child of the default slot, centered on the card's top edge, aligned right.
      */
     interface HTMLDsCardElement extends Components.DsCard, HTMLStencilElement {
     }
@@ -4306,6 +4313,7 @@ declare global {
      * Drawer displays a panel that slides up from the bottom of the screen.
      * Uses the native dialog element for accessible top-layer rendering, built-in focus management,
      * and Escape-key handling.
+     * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by `--drawer-close-inset` from the container's top-end corner.
      */
     interface HTMLDsDrawerElement extends Components.DsDrawer, HTMLStencilElement {
         addEventListener<K extends keyof HTMLDsDrawerElementEventMap>(type: K, listener: (this: HTMLDsDrawerElement, ev: DsDrawerCustomEvent<HTMLDsDrawerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4481,6 +4489,7 @@ declare global {
     }
     /**
      * Modal displays content in a dialog overlay using the native dialog element.
+     * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by the modal padding from the top-right corner.
      */
     interface HTMLDsModalElement extends Components.DsModal, HTMLStencilElement {
         addEventListener<K extends keyof HTMLDsModalElementEventMap>(type: K, listener: (this: HTMLDsModalElement, ev: DsModalCustomEvent<HTMLDsModalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4945,6 +4954,7 @@ declare global {
     }
     /**
      * Tab renders a single tab button inside a ds-tabs group, supporting both the panels and navigation variants.
+     * @attachment ds-badge top-right size=sm - Optional small badge in the default slot, centered vertically on the top-right of the label. Only `size="sm"` is positioned.
      */
     interface HTMLDsTabElement extends Components.DsTab, HTMLStencilElement {
         addEventListener<K extends keyof HTMLDsTabElementEventMap>(type: K, listener: (this: HTMLDsTabElement, ev: DsTabCustomEvent<HTMLDsTabElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -5396,7 +5406,7 @@ declare namespace LocalJSX {
          */
         "position"?: BadgePosition;
         /**
-          * If `true` the badge is added to the top right corner of the card.
+          * If `true` the badge animates with a pulsing effect to draw attention to it.
           * @default false
          */
         "pulse"?: boolean;
@@ -5445,6 +5455,7 @@ declare namespace LocalJSX {
     }
     /**
      * Button provides a clickable element for triggering actions, submitting forms, or navigating — supporting text, icons, or both.
+     * @attachment ds-badge top-right - Optional badge in the default slot, pinned just outside the button's top-right corner.
      */
     interface DsButton {
         /**
@@ -5493,7 +5504,6 @@ declare namespace LocalJSX {
         "disabled"?: boolean;
         /**
           * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
-          * @default ''
          */
         "download"?: string;
         /**
@@ -5571,11 +5581,6 @@ declare namespace LocalJSX {
          */
         "onDsNavigate"?: (event: DsButtonCustomEvent<ButtonNavigateDetail>) => void;
         /**
-          * If `true` the button is outlined
-          * @default false
-         */
-        "outlined"?: boolean;
-        /**
           * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
           * @default ''
          */
@@ -5599,6 +5604,11 @@ declare namespace LocalJSX {
           * @default '_self'
          */
         "target"?: ButtonTarget;
+        /**
+          * Placement of the tooltip that shows the `a11yTitle` on hover and focus.
+          * @default 'bottom'
+         */
+        "tooltipPlacement"?: TooltipPlacement;
         /**
           * The value of the button, which is submitted with the form data.
           * @default ''
@@ -5636,6 +5646,10 @@ declare namespace LocalJSX {
     }
     /**
      * Card groups related content together in a contained, visually distinct container with optional header and footer.
+     * @attachment ds-badge top-right - Optional badge as the first child of the default slot, centered on the card's top-right corner.
+     * @attachment ds-tag top-left position=left - Optional tag as the first child of the default slot, centered on the card's top edge, aligned left.
+     * @attachment ds-tag top-center position=center - Optional tag as the first child of the default slot, centered on the card's top edge.
+     * @attachment ds-tag top-right position=right - Optional tag as the first child of the default slot, centered on the card's top edge, aligned right.
      */
     interface DsCard {
         /**
@@ -6101,7 +6115,8 @@ declare namespace LocalJSX {
          */
         "layout"?: StackLayout;
         /**
-          * Defines the space between the child elements.
+          * Defines the space between the child elements. Default is 2xs.
+          * @default '2xs'
          */
         "space"?: ContentSpace;
         /**
@@ -6453,6 +6468,7 @@ declare namespace LocalJSX {
      * Drawer displays a panel that slides up from the bottom of the screen.
      * Uses the native dialog element for accessible top-layer rendering, built-in focus management,
      * and Escape-key handling.
+     * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by `--drawer-close-inset` from the container's top-end corner.
      */
     interface DsDrawer {
         /**
@@ -6756,7 +6772,7 @@ declare namespace LocalJSX {
          */
         "svg"?: string;
         /**
-          * If `true` the icon is rotated 180deg
+          * If `true`, rotates the icon — the angle depends on `name`: 225deg for `plus` (turns it into an "×"), 180deg for `caret-down`/`caret-up`. Has no visual effect for any other icon name.
           * @default false
          */
         "turn"?: boolean;
@@ -7119,7 +7135,7 @@ declare namespace LocalJSX {
          */
         "animated"?: boolean;
         /**
-          * Defines the brand of the logo. Default is 'baloise'.
+          * Defines the brand of the logo. Default is 'helvetia'.
          */
         "brand"?: LogoBrand;
         /**
@@ -7134,6 +7150,7 @@ declare namespace LocalJSX {
     }
     /**
      * Modal displays content in a dialog overlay using the native dialog element.
+     * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by the modal padding from the top-right corner.
      */
     interface DsModal {
         /**
@@ -7152,8 +7169,7 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Width of the modal in pixels.
-          * @default 640
+          * Width of the modal in pixels. Overrides the `--modal-width` token (640px by default).
          */
         "modalWidth"?: number;
         /**
@@ -8654,6 +8670,7 @@ declare namespace LocalJSX {
     }
     /**
      * Tab renders a single tab button inside a ds-tabs group, supporting both the panels and navigation variants.
+     * @attachment ds-badge top-right size=sm - Optional small badge in the default slot, centered vertically on the top-right of the label. Only `size="sm"` is positioned.
      */
     interface DsTab {
         /**
@@ -8764,11 +8781,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        /**
-          * Overwrites the default color to invalid style
-          * @default false
-         */
-        "invalid"?: boolean;
         /**
           * Emitted when the input got clicked.
          */
@@ -9164,10 +9176,10 @@ declare namespace LocalJSX {
          */
         "contentWidth"?: number | undefined;
         /**
-          * Offset in pixels from the trigger element to the tooltip.
-          * @default 8
+          * Offset in pixels from the trigger element to the tooltip. Defaults to the `--ds-tooltip-offset` token when not set.
+          * @default undefined
          */
-        "offset"?: number;
+        "offset"?: number | undefined;
         /**
           * Emitted after the animation has finished.
          */
@@ -9256,7 +9268,6 @@ declare namespace LocalJSX {
         "square": boolean;
         "wide": boolean;
         "flat": boolean;
-        "outlined": boolean;
         "inverted": boolean;
         "loading": boolean;
         "icon": string;
@@ -9270,6 +9281,7 @@ declare namespace LocalJSX {
         "a11yControls": string;
         "a11yCurrent": string;
         "a11yTitle": string;
+        "tooltipPlacement": TooltipPlacement;
         "a11yLabel": string;
         "a11yHaspopup": string;
     }
@@ -9864,7 +9876,6 @@ declare namespace LocalJSX {
         "closable": boolean;
         "color": TagColor;
         "disabled": boolean;
-        "invalid": boolean;
         "position": TagPlacement;
         "size": TagSize;
     }
@@ -9939,7 +9950,7 @@ declare namespace LocalJSX {
     interface DsTooltipAttributes {
         "reference": string;
         "placement": TooltipPlacement;
-        "offset": number;
+        "offset": number | undefined;
         "contentWidth": number | undefined;
         "open": boolean;
     }
@@ -10055,6 +10066,7 @@ declare module "@stencil/core" {
             "ds-brand-icon": LocalJSX.IntrinsicElements["ds-brand-icon"] & JSXBase.HTMLAttributes<HTMLDsBrandIconElement>;
             /**
              * Button provides a clickable element for triggering actions, submitting forms, or navigating — supporting text, icons, or both.
+             * @attachment ds-badge top-right - Optional badge in the default slot, pinned just outside the button's top-right corner.
              */
             "ds-button": LocalJSX.IntrinsicElements["ds-button"] & JSXBase.HTMLAttributes<HTMLDsButtonElement>;
             /**
@@ -10063,6 +10075,10 @@ declare module "@stencil/core" {
             "ds-button-group": LocalJSX.IntrinsicElements["ds-button-group"] & JSXBase.HTMLAttributes<HTMLDsButtonGroupElement>;
             /**
              * Card groups related content together in a contained, visually distinct container with optional header and footer.
+             * @attachment ds-badge top-right - Optional badge as the first child of the default slot, centered on the card's top-right corner.
+             * @attachment ds-tag top-left position=left - Optional tag as the first child of the default slot, centered on the card's top edge, aligned left.
+             * @attachment ds-tag top-center position=center - Optional tag as the first child of the default slot, centered on the card's top edge.
+             * @attachment ds-tag top-right position=right - Optional tag as the first child of the default slot, centered on the card's top edge, aligned right.
              */
             "ds-card": LocalJSX.IntrinsicElements["ds-card"] & JSXBase.HTMLAttributes<HTMLDsCardElement>;
             /**
@@ -10145,6 +10161,7 @@ declare module "@stencil/core" {
              * Drawer displays a panel that slides up from the bottom of the screen.
              * Uses the native dialog element for accessible top-layer rendering, built-in focus management,
              * and Escape-key handling.
+             * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by `--drawer-close-inset` from the container's top-end corner.
              */
             "ds-drawer": LocalJSX.IntrinsicElements["ds-drawer"] & JSXBase.HTMLAttributes<HTMLDsDrawerElement>;
             /**
@@ -10199,6 +10216,7 @@ declare module "@stencil/core" {
             "ds-logo": LocalJSX.IntrinsicElements["ds-logo"] & JSXBase.HTMLAttributes<HTMLDsLogoElement>;
             /**
              * Modal displays content in a dialog overlay using the native dialog element.
+             * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by the modal padding from the top-right corner.
              */
             "ds-modal": LocalJSX.IntrinsicElements["ds-modal"] & JSXBase.HTMLAttributes<HTMLDsModalElement>;
             /**
@@ -10319,6 +10337,7 @@ declare module "@stencil/core" {
             "ds-steps": LocalJSX.IntrinsicElements["ds-steps"] & JSXBase.HTMLAttributes<HTMLDsStepsElement>;
             /**
              * Tab renders a single tab button inside a ds-tabs group, supporting both the panels and navigation variants.
+             * @attachment ds-badge top-right size=sm - Optional small badge in the default slot, centered vertically on the top-right of the label. Only `size="sm"` is positioned.
              */
             "ds-tab": LocalJSX.IntrinsicElements["ds-tab"] & JSXBase.HTMLAttributes<HTMLDsTabElement>;
             /**

@@ -30,6 +30,7 @@ import {
   ButtonNavigateDetail,
 } from './button.interfaces'
 import { type IconColor } from '../../media/brand-icon/brand-icon.interfaces'
+import { TOOLTIP_PLACEMENTS, type TooltipPlacement } from '../../overlays/tooltip/tooltip.interfaces'
 
 /**
  * Button provides a clickable element for triggering actions, submitting forms, or navigating — supporting text, icons, or both.
@@ -40,6 +41,7 @@ import { type IconColor } from '../../media/brand-icon/brand-icon.interfaces'
  * @part icon - The leading icon wrapper (or the brand icon wrapper when `brandIcon` is set).
  * @part label - The text label wrapper (`<span>`).
  * @part icon-right - The trailing icon wrapper.
+ * @attachment ds-badge top-right - Optional badge in the default slot, pinned just outside the button's top-right corner.
  */
 @Component({
   tag: 'ds-button',
@@ -126,7 +128,7 @@ export class Button implements DsComponentInterface {
    */
   @Prop()
   @Type('string')
-  readonly download: string = ''
+  readonly download?: string
 
   /**
    * If `true` adds a box shadow to improve readability on image background
@@ -155,13 +157,6 @@ export class Button implements DsComponentInterface {
   @Prop()
   @Type('boolean')
   readonly flat: boolean = false
-
-  /**
-   * If `true` the button is outlined
-   */
-  @Prop()
-  @Type('boolean')
-  readonly outlined: boolean = false
 
   /**
    * If `true` the button is inverted
@@ -260,6 +255,13 @@ export class Button implements DsComponentInterface {
   @Prop()
   @Type('string')
   readonly a11yTitle: string = ''
+
+  /**
+   * Placement of the tooltip that shows the `a11yTitle` on hover and focus.
+   */
+  @Prop()
+  @OneOf(TOOLTIP_PLACEMENTS)
+  readonly tooltipPlacement: TooltipPlacement = 'bottom'
 
   /**
    * A11y attributes for the native button element.
@@ -444,7 +446,8 @@ export class Button implements DsComponentInterface {
           }
 
     const ariaAttributes = {
-      'title': this.a11yTitle || this.inheritAttributes['title'],
+      // the internal tooltip replaces the native title tooltip when a11yTitle is set
+      'title': this.a11yTitle ? undefined : this.inheritAttributes['title'],
       'aria-label':
         this.a11yLabel || this.inheritAttributes['aria-label'] || this.a11yTitle || this.inheritAttributes['title'],
       'aria-controls': this.a11yControls || this.inheritAttributes['aria-controls'],
@@ -518,7 +521,7 @@ export class Button implements DsComponentInterface {
               part="icon-right"
               class="icon-right"
               name={this.iconRight}
-              size={'sm'}
+              size={size}
               turn={this.iconTurn}
               inverted={this.isIconInverted}
             />
@@ -526,6 +529,13 @@ export class Button implements DsComponentInterface {
             ''
           )}
         </TagType>
+        {hasValue(this.a11yTitle) ? (
+          <ds-tooltip reference="button" placement={this.tooltipPlacement}>
+            {this.a11yTitle}
+          </ds-tooltip>
+        ) : (
+          ''
+        )}
       </Host>
     )
   }

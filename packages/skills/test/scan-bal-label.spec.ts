@@ -265,6 +265,8 @@ describe('scanBalLabel', () => {
     write(root, 'page.html', '<bal-label>Name</bal-label>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-label>Name</bal-label>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalLabel>Name</BalLabel>\n')
     }
 

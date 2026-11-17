@@ -52,7 +52,7 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
 
   @State() isTouch = dsBreakpoints.isTouch
   @State() doesConfigAllowAnimation = true
-  @State() configBrand: LogoBrand = 'baloise'
+  @State() configBrand: LogoBrand = 'helvetia'
 
   private animationItem!: AnimationItem
   private animatedLogoElement!: HTMLDivElement
@@ -77,7 +77,7 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
   }
 
   /**
-   * Defines the brand of the logo. Default is 'baloise'.
+   * Defines the brand of the logo. Default is 'helvetia'.
    */
   @Prop()
   @OneOf(LOGO_BRANDS)

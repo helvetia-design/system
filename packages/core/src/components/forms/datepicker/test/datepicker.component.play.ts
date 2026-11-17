@@ -229,3 +229,30 @@ test.describe('inline', () => {
     })
   })
 })
+
+test.describe('moved in the DOM', () => {
+  test('should still open the calendar and accept a typed date after being moved', async ({ page }) => {
+    await page.mount(`<ds-datepicker label="Date of birth"></ds-datepicker>`)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+
+    await date.el.evaluate(el => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(el)
+    })
+    await page.waitForChanges()
+
+    await date.type('13.07.2026')
+    await date.blur()
+    await page.waitForChanges()
+    await date.assertValue('13.07.2026')
+
+    const changeSpy = await date.el.spyOnEvent('dsChange')
+    await date.pick('2026-07-20')
+    await page.waitForChanges()
+
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('2026-07-20')
+    await date.assertValue('20.07.2026')
+  })
+})

@@ -14,6 +14,7 @@
  */
 
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
+@use '../../../typography' as typo;
 @use './form.mixin' as form;
 
 /**
@@ -35,16 +36,22 @@
  * @prop --form-container-focus-border - Border color on focus state.
  *
  * @prop --form-label-color - Text color of form label.
- * @prop --form-label-family - Font family of form label.
- * @prop --form-label-weight - Font weight of form label.
+ * @prop --form-label-font-family - Font family of form label.
+ * @prop --form-label-font-weight - Font weight of form label.
+ * @prop --form-label-font-size - Font size of form label.
  * @prop --form-label-line-height - Line height of form label.
- * @prop --form-label-size - Font size of form label.
+ * @prop --form-label-letter-spacing - Letter spacing of form label.
+ * @prop --form-label-text-decoration - Text decoration of form label.
+ * @prop --form-label-text-transform - Text transform of form label.
  *
  * @prop --form-description-color - Text color of form description/help text.
- * @prop --form-description-family - Font family of form description.
- * @prop --form-description-weight - Font weight of form description.
+ * @prop --form-description-font-family - Font family of form description.
+ * @prop --form-description-font-weight - Font weight of form description.
+ * @prop --form-description-font-size - Font size of form description.
  * @prop --form-description-line-height - Line height of form description.
- * @prop --form-description-size - Font size of form description.
+ * @prop --form-description-letter-spacing - Letter spacing of form description.
+ * @prop --form-description-text-decoration - Text decoration of form description.
+ * @prop --form-description-text-transform - Text transform of form description.
  */
 
 .ds-field {
@@ -83,7 +90,7 @@
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
-  background: var(--ds-form-danger-description-color);
+  background: var(--ds-form-danger-color-description);
 }
 
 // Add space to reserve it for upcoming help text so the user will not have any flickering.
@@ -301,7 +308,7 @@
 .ds-field.is-invalid,
 .ds-field.is-danger {
   --mod-form-container-border: var(--ds-form-danger-container-border);
-  --mod-form-description-color: var(--ds-form-danger-description-color);
+  --mod-form-description-color: var(--ds-form-danger-color-description);
   --mod-form-container-hover-border: var(--ds-form-danger-container-border);
   --mod-form-container-active-border: var(--ds-form-danger-container-border);
 }
@@ -312,7 +319,7 @@
 .ds-field.is-valid,
 .ds-field.is-success {
   --mod-form-container-border: var(--ds-form-success-container-border);
-  --mod-form-description-color: var(--ds-form-success-description-color);
+  --mod-form-description-color: var(--ds-form-success-color-description);
   --mod-form-container-hover-border: var(--ds-form-success-container-border);
   --mod-form-container-active-border: var(--ds-form-success-container-border);
 }
@@ -322,7 +329,7 @@
 // --------------------------------
 .ds-field.is-warning {
   --mod-form-container-border: var(--ds-form-warning-container-border);
-  --mod-form-description-color: var(--ds-form-warning-description-color);
+  --mod-form-description-color: var(--ds-form-warning-color-description);
   --mod-form-container-hover-border: var(--ds-form-warning-container-border);
   --mod-form-container-active-border: var(--ds-form-warning-container-border);
 }
@@ -343,18 +350,23 @@
 
   --mod-form-container-background: var(--ds-form-disabled-container-background);
   --mod-form-container-border: var(--ds-form-disabled-container-border);
-  --mod-form-label-color: var(--ds-form-disabled-label-color);
-  --mod-form-description-color: var(--ds-form-disabled-description-color);
+  --mod-form-label-color: var(--ds-form-disabled-color-label);
+  --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
 
-  --mod-form-color: var(--ds-form-disabled-control-value-color);
-  --mod-form-placeholder: var(--ds-form-disabled-control-placeholder-color);
+  --mod-form-color: var(--ds-form-disabled-control-color-value);
+  --mod-form-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(form, 'form-disabled-control-typo');
 
-  --mod-input-color: var(--ds-form-disabled-control-value-color);
-  --mod-input-placeholder: var(--ds-form-disabled-control-placeholder-color);
+  --mod-input-color: var(--ds-form-disabled-control-color-value);
+  --mod-input-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(input, 'form-disabled-control-typo');
 
-  --mod-textarea-color: var(--ds-form-disabled-control-value-color);
-  --mod-textarea-placeholder: var(--ds-form-disabled-control-placeholder-color);
+  --mod-textarea-color: var(--ds-form-disabled-control-color-value);
+  --mod-textarea-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(textarea, 'form-disabled-control-typo');
 
-  --mod-select-color: var(--ds-form-disabled-control-value-color);
-  --mod-select-placeholder: var(--ds-form-disabled-control-placeholder-color);
+  --mod-select-color: var(--ds-form-disabled-control-color-value);
+  --mod-select-placeholder: var(--ds-form-disabled-control-color-placeholder);
 }

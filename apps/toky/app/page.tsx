@@ -125,7 +125,9 @@ async function loadTokens(): Promise<LoadedTokens> {
   }
 }
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ brand?: string | string[] }> }) {
+  const { brand } = await searchParams
+  const initialBrand = Array.isArray(brand) ? (brand[0] ?? null) : (brand ?? null)
   const { tokens, error, syncStatus, branches, tokenBrands, brandTokens } = await loadTokens()
 
   if (error) {
@@ -148,6 +150,7 @@ export default async function Home() {
         brandTokens={brandTokens}
         syncStatus={syncStatus}
         localTokensMode={isLocalTokensModeEnabled()}
+        initialBrand={initialBrand}
       />
     </main>
   )

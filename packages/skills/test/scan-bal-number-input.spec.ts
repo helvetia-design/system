@@ -201,6 +201,8 @@ describe('scanBalNumberInput', () => {
     write(root, 'page.html', '<bal-number-input></bal-number-input>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-number-input></bal-number-input>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalNumberInput />\n')
     }
 
@@ -228,7 +230,7 @@ describe('scanBalNumberInput', () => {
     )
 
     expect(scanBalNumberInput(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -238,6 +240,7 @@ describe('scanBalNumberInput', () => {
             { line: 6, snippet: 'detail?: BalEvents.BalNumberInputChangeDetail' },
             { line: 7, snippet: 'both(a: BalEvents.BalNumberInputBlur, b: BalNumberInputCustomEvent<number>) {}' },
             { line: 7, snippet: 'both(a: BalEvents.BalNumberInputBlur, b: BalNumberInputCustomEvent<number>) {}' },
+            { line: 9, snippet: 'el?: HTMLBalNumberInputElement' },
           ],
         },
       ],

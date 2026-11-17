@@ -33,13 +33,25 @@ const DTCG_TYPE_BY_RESOLVED_TYPE: Record<string, string> = {
   BOOLEAN: 'boolean',
 }
 
-// Figma's Variables UI expects a percentage for line height, not this codebase's raw CSS-style
-// multiplier (1.3, not 130) — inverse of
-// scripts/figma-sync/lib/figma-value.mjs's LINE_HEIGHT_PERCENT_MULTIPLIER (reimplemented here, not
+// Figma's line-height convention is a percentage string ("130%"), not this codebase's raw CSS-style
+// multiplier (1.3) — so a LineHeight Figma variable is a STRING, not a FLOAT. Inverse of
+// scripts/figma-sync/lib/figma-value.mjs's figmaLineHeightPercentFor (reimplemented here, not
 // imported — Node-only module, outside apps/toky's module boundary, per this file's header).
 // Applies to both a standalone `number`-typed LineHeight token and a `typography` composite
 // token's `lineHeight` sub-value.
 export const LINE_HEIGHT_PERCENT_MULTIPLIER = 100
+
+const LINE_HEIGHT_PERCENT_PATTERN = /^(\d+(?:\.\d+)?)%$/
+
+// Strict: only exactly what our own push side generates ("130%") is accepted. Anything else — a
+// legacy bare FLOAT, "1.3" without the symbol, free text — returns undefined, so the caller
+// reports it as unsupported rather than guessing and writing a wrong multiplier into the token file.
+export function lineHeightFromFigmaPercent(value: unknown): number | undefined {
+  if (typeof value !== 'string') return undefined
+  const match = LINE_HEIGHT_PERCENT_PATTERN.exec(value)
+  if (!match) return undefined
+  return Number((Number(match[1]) / LINE_HEIGHT_PERCENT_MULTIPLIER).toFixed(6))
+}
 
 // Mirrors scripts/figma-sync/lib/figma-value.mjs's isLineHeightNumberToken — "LineHeight" anywhere
 // in the path is this codebase's only way to tell a LineHeight `number` token apart from
@@ -195,7 +207,15 @@ export function isLiteralValueEqual(dtcgType: string, a: unknown, b: unknown): b
     // strings — both sides are already-resolved reference strings by the time this runs (decision
     // 4), the same "always a reference, so both sides are already comparable strings" situation as
     // border's `style`. fontSize/lineHeight compare as resolved literals (dimension/number).
-    type TypographyLike = { fontFamily: unknown; fontSize: unknown; fontWeight: unknown; lineHeight: unknown }
+    type TypographyLike = {
+      fontFamily: unknown
+      fontSize: unknown
+      fontWeight: unknown
+      lineHeight: unknown
+      letterSpacing: unknown
+      textDecoration: unknown
+      textTransform: unknown
+    }
     const typographyA = a as TypographyLike | undefined
     const typographyB = b as TypographyLike | undefined
     if (!typographyA || !typographyB) return typographyA === typographyB
@@ -203,7 +223,10 @@ export function isLiteralValueEqual(dtcgType: string, a: unknown, b: unknown): b
       typographyA.fontFamily === typographyB.fontFamily &&
       isLiteralValueEqual('dimension', typographyA.fontSize, typographyB.fontSize) &&
       typographyA.fontWeight === typographyB.fontWeight &&
-      typographyA.lineHeight === typographyB.lineHeight
+      typographyA.lineHeight === typographyB.lineHeight &&
+      isLiteralValueEqual('dimension', typographyA.letterSpacing, typographyB.letterSpacing) &&
+      typographyA.textDecoration === typographyB.textDecoration &&
+      typographyA.textTransform === typographyB.textTransform
     )
   }
   return JSON.stringify(a) === JSON.stringify(b)
@@ -255,19 +278,92 @@ export function isBorderFigmaId(value: unknown): value is Record<BorderSubProper
   )
 }
 
-// A typography token's Figma identity is 4 variableIds (fontFamily, fontSize, fontWeight,
-// lineHeight), not 1 — see docs/plans/typography-token-type-plan.md. Mirrors
+// A typography token's Figma identity is 7 variableIds (fontFamily, fontSize, fontWeight,
+// lineHeight, letterSpacing, textDecoration, textTransform), not 1 — see
+// docs/plans/typography-token-type-plan.md and
+// docs/plans/typography-letter-spacing-text-decoration-plan.md. Mirrors
 // scripts/figma-sync/lib/figma-value.mjs's TYPOGRAPHY_SUB_PROPERTIES (reimplemented, not imported —
 // Node-only module, outside apps/toky's boundary, per this file's header).
-export const TYPOGRAPHY_SUB_PROPERTIES = ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight'] as const
+export const TYPOGRAPHY_SUB_PROPERTIES = [
+  'fontFamily',
+  'fontSize',
+  'fontWeight',
+  'lineHeight',
+  'letterSpacing',
+  'textDecoration',
+  'textTransform',
+] as const
 export type TypographySubProperty = (typeof TYPOGRAPHY_SUB_PROPERTIES)[number]
 
-export function isTypographyFigmaId(value: unknown): value is Record<TypographySubProperty, string> {
+// The 4 sub-properties every committed typography id set has always carried. A token synced before
+// letterSpacing/textDecoration/textTransform existed has only these until the Figma Sync Action
+// backfills the other 3 — see hasCompleteTypographyFigmaId.
+const LEGACY_TYPOGRAPHY_SUB_PROPERTIES = ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight'] as const
+type LegacyTypographySubProperty = (typeof LEGACY_TYPOGRAPHY_SUB_PROPERTIES)[number]
+
+export type PartialTypographyFigmaId = Record<LegacyTypographySubProperty, string> &
+  Partial<Record<TypographySubProperty, string>>
+
+// Recognizes a typography id set, including the legacy 4-id shape — so such a token is still
+// classified as typography (and not mistaken for some other composite) while it waits for backfill.
+export function isTypographyFigmaId(value: unknown): value is PartialTypographyFigmaId {
   return (
     typeof value === 'object' &&
     value !== null &&
-    TYPOGRAPHY_SUB_PROPERTIES.every(sub => typeof (value as Record<string, unknown>)[sub] === 'string')
+    LEGACY_TYPOGRAPHY_SUB_PROPERTIES.every(sub => typeof (value as Record<string, unknown>)[sub] === 'string')
   )
+}
+
+// Whether every one of the 7 Figma variables exists in the id set. A legacy set doesn't, so pull
+// leaves that token alone instead of reading its missing variables as "deleted in Figma".
+export function hasCompleteTypographyFigmaId(
+  value: PartialTypographyFigmaId,
+): value is Record<TypographySubProperty, string> {
+  return TYPOGRAPHY_SUB_PROPERTIES.every(sub => typeof value[sub] === 'string')
+}
+
+// Figma holds textDecoration / textTransform as STRING variables with Figma's own text-property
+// names (inverse of scripts/figma-sync/lib/figma-value.mjs's FIGMA_TEXT_DECORATION_BY_KEYWORD /
+// FIGMA_TEXT_TRANSFORM_BY_KEYWORD — reimplemented here, see this file's header). Exact-case only,
+// like fontWeightNumberFromKeyword: recognizes what our own push side generates, nothing else.
+const TEXT_DECORATION_KEYWORD_BY_FIGMA: Record<string, string> = {
+  NONE: 'none',
+  UNDERLINE: 'underline',
+  STRIKETHROUGH: 'line-through',
+}
+const TEXT_TRANSFORM_KEYWORD_BY_FIGMA: Record<string, string> = {
+  ORIGINAL: 'none',
+  UPPER: 'uppercase',
+  LOWER: 'lowercase',
+  TITLE: 'capitalize',
+}
+
+export function textDecorationKeywordFromFigma(value: unknown): string | undefined {
+  return typeof value === 'string' ? TEXT_DECORATION_KEYWORD_BY_FIGMA[value] : undefined
+}
+
+export function textTransformKeywordFromFigma(value: unknown): string | undefined {
+  return typeof value === 'string' ? TEXT_TRANSFORM_KEYWORD_BY_FIGMA[value] : undefined
+}
+
+// "LetterSpacing" / "TextDecoration" / "TextTransform" anywhere in a standalone token's path is the
+// only way to tell these tokens' Figma STRING variables apart from every other string token — same
+// approach as isLineHeightPath.
+export function isTextDecorationPath(path: string[]): boolean {
+  return path.includes('TextDecoration')
+}
+
+export function isTextTransformPath(path: string[]): boolean {
+  return path.includes('TextTransform')
+}
+
+// Same formula as scripts/figma-sync/lib/figma-value.mjs's figmaLetterSpacingPercentFor: Figma's
+// letter spacing is a percentage of the font size, the token stores a rem dimension. 0 never needs
+// a font size.
+export function letterSpacingPercentFor(letterSpacingPx: number, fontSizePx: number | undefined): string | undefined {
+  if (letterSpacingPx === 0) return '0%'
+  if (fontSizePx === undefined || fontSizePx === 0) return undefined
+  return `${Number(((letterSpacingPx / fontSizePx) * LINE_HEIGHT_PERCENT_MULTIPLIER).toFixed(4))}%`
 }
 
 // A responsive dimension token's Figma identity is 3 variableIds (mobile, tablet, desktop), not 1

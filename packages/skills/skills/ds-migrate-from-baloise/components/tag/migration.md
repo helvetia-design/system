@@ -77,7 +77,7 @@ Write the report as `shared/report.md` describes, with the per-file summary unde
 Needs your attention when found:
 
 1. Every element whose `color`, `size` or `light` is a dynamic binding, with the framework outcome (left in HTML, kept or removed (Unmapped) in React and Angular) and the accepted values named in the Props table. Name file and line.
-2. Every ambient type reference `BalProps.BalTagColor`, `BalProps.BalTagSize`, `BalProps.BalTagPlacement`, `BalEvents.BalTagCloseClick*` and `HTMLBalTagElement`. The scan cannot see them. Grep for them and rename by hand.
+2. Every ambient type reference `BalProps.BalTagColor`, `BalProps.BalTagSize`, `BalProps.BalTagPlacement` and `BalEvents.BalTagCloseClick*`. The scan cannot see them. Grep for them and rename by hand. It does list `HTMLBalTagElement`.
 3. Every legacy `bal-tag`, `bal-tag__label` and `bal-tag__close` class, `--bal-tag-*` custom property and `data-testid="bal-tag-label"` / `data-testid="bal-tag-close"` selector. They no longer match, because `ds-tag` uses shadow DOM. It exposes `part="label"` and the `--tag-*` custom properties instead.
 4. Every selector or test on `aria-disabled`. Legacy `bal-tag` set `aria-disabled` on its host when `disabled`. `ds-tag` reflects the `disabled` attribute and does not set `aria-disabled`.
 5. Every `.bal-tag-group` class selector. It does not carry over to the shadow DOM `ds-tag-group`.

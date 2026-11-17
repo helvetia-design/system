@@ -12,7 +12,6 @@
  * @prop --brand-icon-inner-mt: Margin top of the SVG icon.
  * @prop --brand-icon-color: Color of the icon.
  * @prop --brand-icon-shape: Shape variant color of the icon.
- * @prop --brand-icon-tile-background: Background color of the tile around the icon.
  * @prop --brand-icon-tile-radius: Border radius of the tile background.
  * @prop --brand-icon-rotation: Rotation angle of the icon.
  */
@@ -32,7 +31,6 @@
   @include vars.local(brand-icon-tile-size-tablet, var(--ds-brand-icon-tile-size-base-tablet));
   @include vars.local(brand-icon-tile-size-desktop, var(--ds-brand-icon-tile-size-base-desktop));
 
-  @include vars.local(brand-icon-tile-color-background, var(--ds-brand-icon-tile-color-purple));
   @include vars.local(brand-icon-tile-radius, var(--ds-brand-icon-tile-radius));
 }
 
