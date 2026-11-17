@@ -1,6 +1,36 @@
 import { DsItem, DsList, expect, test } from '@helvetia-design/playwright'
 
 test.describe('component', () => {
+  test('should not render a download attribute on a link item without download', async ({ page }) => {
+    await page.mount(`
+      <ds-list>
+        <ds-item variant="link" label="Open" href="/target"></ds-item>
+      </ds-list>
+    `)
+
+    await expect(page.locator('ds-item a')).not.toHaveAttribute('download')
+  })
+
+  test('should render the download attribute on a link item with download', async ({ page }) => {
+    await page.mount(`
+      <ds-list>
+        <ds-item variant="link" label="Download" href="/file.pdf" download="file.pdf"></ds-item>
+      </ds-list>
+    `)
+
+    await expect(page.locator('ds-item a')).toHaveAttribute('download', 'file.pdf')
+  })
+
+  test('should render an empty download attribute on a link item with a bare download', async ({ page }) => {
+    await page.mount(`
+      <ds-list>
+        <ds-item variant="link" label="Download" href="/file.pdf" download></ds-item>
+      </ds-list>
+    `)
+
+    await expect(page.locator('ds-item a')).toHaveAttribute('download', '')
+  })
+
   test('should render ds-list', async ({ page }) => {
     await page.mount(`
       <ds-list>
