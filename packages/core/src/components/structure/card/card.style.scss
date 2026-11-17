@@ -69,6 +69,7 @@ $host-selector: ('#card');
   }
 
   // Content
+  // Intentional: rich-text content uses the shared typography.content() scale, not Card-owned tokens.
   .ds-card-content {
     @include typography.content();
   }
@@ -140,6 +141,7 @@ $host-selector: ('#card');
 //
 // Badge Positioning
 // --------------------------------
+// ds-token-check: intentional — derived from --_card-gap (layout ratio)
 @include hybrid.styles($css-selector, $use-host) {
   > .ds-badge:first-child,
   > ds-badge:first-child {
@@ -150,6 +152,7 @@ $host-selector: ('#card');
   }
 }
 
+// ds-token-check: intentional — derived from --_card-gap (layout ratio)
 @include hybrid.host($use-host) {
   :host {
     ::slotted(ds-badge) {
@@ -309,6 +312,44 @@ $backgrounds: (
 }
 
 //
+// Clickable & Selected
+// --------------------------------
+// Must come after Colors so the selected border wins over a color variant's border.
+@mixin clickable {
+  cursor: pointer;
+
+  @include hover {
+    &:hover {
+      --mod-card-shadow: var(--ds-card-shadow-hover);
+    }
+  }
+}
+
+@mixin selected {
+  --mod-card-color-border: var(--ds-card-color-selected-border);
+}
+
+@include hybrid.styles($css-selector, $use-host) {
+  &.is-clickable {
+    @include clickable();
+  }
+
+  &.is-selected {
+    @include selected();
+  }
+}
+
+@include hybrid.host($use-host) {
+  :host(.is-clickable) {
+    @include clickable();
+  }
+
+  :host(.is-selected) {
+    @include selected();
+  }
+}
+
+//
 // Space
 // --------------------------------
 $spaces: ('sm', 'lg');
@@ -361,6 +402,7 @@ $spaces: ('sm', 'lg');
 // Image Teaser
 // --------------------------------
 
+// ds-token-check: intentional — derived from --_card-gap (layout ratio)
 @include hybrid.styles('.ds-image-teaser ', $use-host) {
   .ds-card {
     margin-top: calc(var(--_card-gap) * -1 * 2);
@@ -400,6 +442,7 @@ $spaces: ('sm', 'lg');
   }
 }
 
+// ds-token-check: intentional — derived from --_card-gap (layout ratio)
 @include hybrid.host($use-host) {
   :host(.is-image-teaser) #card {
     margin-top: calc(var(--_card-gap) * -1 * 2);
@@ -448,6 +491,7 @@ button.ds-image-link {
 
   img {
     display: block;
+    // ds-token-check: intentional — image zoom motion
     transition: all 0.4s ease-out;
 
     @include hover {

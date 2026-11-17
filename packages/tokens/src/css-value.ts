@@ -216,6 +216,9 @@ interface DtcgTypographyValue {
   fontSize: unknown
   fontWeight: unknown
   lineHeight: unknown
+  letterSpacing: unknown
+  textDecoration: unknown
+  textTransform: unknown
 }
 
 export interface TypographyCssValue {
@@ -223,37 +226,59 @@ export interface TypographyCssValue {
   fontSize: string
   fontWeight: string
   lineHeight: string
+  letterSpacing: string
+  textDecoration: string
+  textTransform: string
 }
 
-// Suffix appended to a typography token's own CSS var name for each of its 4 longhand custom
+// Suffix appended to a typography token's own CSS var name for each of its 7 longhand custom
 // properties, e.g. `--ds-typography-heading-1-font-family` (see
-// docs/plans/typography-token-type-plan.md decision 5 — 4 separate declarations, never a `font`
+// docs/plans/typography-token-type-plan.md decision 5 — separate declarations, never a `font`
 // shorthand). Exported so both the real build's format step and Toky's live preview build the
-// exact same 4 names from one token path.
+// exact same names from one token path.
 export const TYPOGRAPHY_CSS_SUFFIXES: Record<keyof TypographyCssValue, string> = {
   fontFamily: 'font-family',
   fontSize: 'font-size',
   fontWeight: 'font-weight',
   lineHeight: 'line-height',
+  letterSpacing: 'letter-spacing',
+  textDecoration: 'text-decoration',
+  textTransform: 'text-transform',
 }
 
+// The only values a `textDecoration` / `textTransform` token may hold — the CSS keywords. Anything
+// else is rejected (see textKeywordToCss) rather than passed through to the stylesheet.
+// docs/plans/typography-letter-spacing-text-decoration-plan.md decisions 4 and 6.
+export const TEXT_DECORATION_VALUES = ['none', 'underline', 'line-through'] as const
+export const TEXT_TRANSFORM_VALUES = ['none', 'uppercase', 'lowercase', 'capitalize'] as const
+
 /**
- * Turns a typography token's {fontFamily, fontSize, fontWeight, lineHeight} into 4 CSS-ready
- * strings, one per sub-property. Reuses fontFamilyValueToCss/dimensionValueToCss per sub-value,
- * same reasoning as shadowValueToCss/borderValueToCss.
+ * Returns `value` when it is one of `allowed`, null otherwise — same "don't half-render"
+ * discipline as typographyValueToCss: an unknown keyword is never written to CSS.
+ */
+export const textKeywordToCss = (value: unknown, allowed: readonly string[]): string | null =>
+  typeof value === 'string' && allowed.includes(value) ? value : null
+
+/**
+ * Turns a typography token's {fontFamily, fontSize, fontWeight, lineHeight, letterSpacing,
+ * textDecoration, textTransform} into 7 CSS-ready strings, one per sub-property. Reuses
+ * fontFamilyValueToCss/dimensionValueToCss per sub-value, same reasoning as
+ * shadowValueToCss/borderValueToCss.
  *
- * fontFamily/fontWeight are always references in this codebase (docs/plans/typography-token-type-
- * plan.md decision 4), so by the time this runs in the real build (after `ds/font-family`/
- * `ds/font-weight` have processed the referenced tokens), Style Dictionary has already substituted
- * their *post-transform* string value — same "may arrive pre-stringified" duality borderValueToCss
- * documents. fontSize/lineHeight are free literal-or-reference, so either sub-value may arrive as a
- * raw DTCG value (literal, untouched by any sibling transform) or an already-transformed string
- * (referenced a real Font.Size or Font.LineHeight token). Toky's live preview (via
+ * fontFamily/fontWeight/textDecoration/textTransform are always references in this codebase
+ * (docs/plans/typography-token-type-plan.md decision 4), so by the time this runs in the real
+ * build (after `ds/font-family`/`ds/font-weight`/`ds/text-keyword` have processed the referenced
+ * tokens), Style Dictionary has already substituted their *post-transform* string value — same
+ * "may arrive pre-stringified" duality borderValueToCss documents. fontSize/lineHeight/
+ * letterSpacing are free literal-or-reference, so either sub-value may arrive as a raw DTCG value
+ * (literal, untouched by any sibling transform) or an already-transformed string (referenced a
+ * real Font.Size, Font.LineHeight or Font.LetterSpacing token). Toky's live preview (via
  * computePreviewTokens) always calls this on raw resolved values, never pre-stringified ones.
  */
 export const typographyValueToCss = (value: unknown): TypographyCssValue | null => {
   if (typeof value !== 'object' || value === null) return null
-  const { fontFamily, fontSize, fontWeight, lineHeight } = value as DtcgTypographyValue
+  const { fontFamily, fontSize, fontWeight, lineHeight, letterSpacing, textDecoration, textTransform } =
+    value as DtcgTypographyValue
 
   const cssFontFamily =
     typeof fontFamily === 'string' ? fontFamily : Array.isArray(fontFamily) ? fontFamilyValueToCss(fontFamily) : null
@@ -262,10 +287,31 @@ export const typographyValueToCss = (value: unknown): TypographyCssValue | null 
     typeof fontWeight === 'string' ? fontWeight : typeof fontWeight === 'number' ? `${fontWeight}` : null
   const cssLineHeight =
     typeof lineHeight === 'string' ? lineHeight : typeof lineHeight === 'number' ? `${lineHeight}` : null
+  const cssLetterSpacing = typeof letterSpacing === 'string' ? letterSpacing : dimensionValueToCss(letterSpacing)
+  const cssTextDecoration = textKeywordToCss(textDecoration, TEXT_DECORATION_VALUES)
+  const cssTextTransform = textKeywordToCss(textTransform, TEXT_TRANSFORM_VALUES)
 
-  if (cssFontFamily === null || cssFontSize === null || cssFontWeight === null || cssLineHeight === null) return null
+  if (
+    cssFontFamily === null ||
+    cssFontSize === null ||
+    cssFontWeight === null ||
+    cssLineHeight === null ||
+    cssLetterSpacing === null ||
+    cssTextDecoration === null ||
+    cssTextTransform === null
+  ) {
+    return null
+  }
 
-  return { fontFamily: cssFontFamily, fontSize: cssFontSize, fontWeight: cssFontWeight, lineHeight: cssLineHeight }
+  return {
+    fontFamily: cssFontFamily,
+    fontSize: cssFontSize,
+    fontWeight: cssFontWeight,
+    lineHeight: cssLineHeight,
+    letterSpacing: cssLetterSpacing,
+    textDecoration: cssTextDecoration,
+    textTransform: cssTextTransform,
+  }
 }
 
 // The $extensions key a responsive dimension token's breakpoint values live under — see
@@ -323,7 +369,7 @@ export const responsiveDimensionValueToCss = (value: unknown): ResponsiveDimensi
  * No `'typography'` branch: unlike every other type here, one typography token maps to 4 CSS
  * custom properties, not 1 (decision 5) — this function's single-`string`-or-`null` return shape
  * can't carry that. Callers needing typography go straight to `typographyValueToCss` instead and
- * fan the result out to 4 `--ds-*-{font-family,font-size,font-weight,line-height}` names
+ * fan the result out to 7 `--ds-*-{font-family,font-size,font-weight,line-height,letter-spacing,text-decoration,text-transform}` names
  * themselves (see `apps/toky/src/tokens/css-preview.ts` and the `ds/css/variables-*` formatters).
  */
 export const resolvedValueToCss = (value: unknown, type: string, path: string[]): string | null => {
@@ -337,6 +383,12 @@ export const resolvedValueToCss = (value: unknown, type: string, path: string[])
   }
   if (type === 'fontWeight' && (typeof value === 'number' || typeof value === 'string')) {
     return `${Number(value)}`
+  }
+  if (type === 'textDecoration') {
+    return textKeywordToCss(value, TEXT_DECORATION_VALUES)
+  }
+  if (type === 'textTransform') {
+    return textKeywordToCss(value, TEXT_TRANSFORM_VALUES)
   }
   if (type === 'fontFamily') {
     return fontFamilyValueToCss(value)

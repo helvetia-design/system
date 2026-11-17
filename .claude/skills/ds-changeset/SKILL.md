@@ -26,6 +26,7 @@ Use this to determine:
   - Packages: `core`, `angular`, `css`, `devkit`, `testing`, `tokens`, `react`, `table`, `assets`, `deps`, `a11y`
   - Components: derived from the changed file paths under `packages/core/src/components/<name>/` (e.g. a change in `packages/core/src/components/input-slider/` → scope `input-slider`)
   - Combine both when relevant, e.g. `core` + `input-slider` for a component-level change in core.
+  - Scope is purely the bold label on the changelog line — it never changes which package gets bumped. All `@helvetia-design/*` packages are a fixed version group that releases together with one changelog, so the CLI always writes `'@helvetia-design/core': <bump>` in the frontmatter regardless of scope.
 - **Summary** — a concise, single-line description of the change (same tone as existing entries in `.changeset/*.md` or `CHANGELOG.md` files — imperative, no trailing period).
 
 If multiple unrelated changes are staged, create one changeset per logical change (run the command multiple times) rather than combining them into one summary.

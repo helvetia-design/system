@@ -1,33 +1,45 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 /**
  * @prop --modal-background: Background color of the modal dialog.
+ * @prop --modal-color: Text color of the modal title and body.
  * @prop --modal-radius: Border radius of the modal dialog.
  * @prop --modal-backdrop-opacity: Opacity of the backdrop overlay.
+ * @prop --modal-backdrop-background: Background color of the backdrop overlay.
  * @prop --modal-backdrop-filter: Backdrop filter of the backdrop overlay.
- * @prop --modal-heading-family: Font family of the modal title.
- * @prop --modal-heading-weight: Font weight of the modal title.
- * @prop --modal-heading-size: Font size of the modal title.
+ * @prop --modal-heading-font-family: Font family of the modal title.
+ * @prop --modal-heading-font-weight: Font weight of the modal title.
+ * @prop --modal-heading-font-size: Font size of the modal title.
  * @prop --modal-heading-line-height: Line height of the modal title.
+ * @prop --modal-heading-letter-spacing: Letter spacing of the modal title.
+ * @prop --modal-heading-text-decoration: Text decoration of the modal title.
+ * @prop --modal-heading-text-transform: Text transform of the modal title.
+ * @prop --modal-width: Width of the modal dialog from tablet up. Overridden by the `modal-width` property.
+ * @prop --modal-margin: Responsive inset between the modal dialog and the viewport edge.
  * @prop --modal-p: Responsive inner padding of the modal dialog.
  * @prop --modal-gap: Responsive vertical spacing between the modal's title, body, and actions.
+ * @prop --modal-title-padding-end: Extra end padding of the title, reserving room for the close button.
+ * @prop --modal-actions-gap: Gap between the action buttons.
  */
 
 // ─── Variables ────────────────────────────────────────────────────────────────
 
 :host {
   @include vars.local(modal-background, var(--ds-modal-color-background));
+  @include vars.local(modal-color, var(--ds-modal-color-text));
   @include vars.local(modal-radius, var(--ds-modal-radius));
   @include vars.local(modal-backdrop-opacity, var(--ds-modal-backdrop-opacity));
+  @include vars.local(modal-backdrop-background, var(--ds-modal-backdrop-color-background));
   @include vars.local(modal-backdrop-filter, var(--ds-modal-backdrop-filter));
-  @include vars.local(modal-heading-family, var(--ds-modal-heading-font-family));
-  @include vars.local(modal-heading-weight, var(--ds-modal-heading-font-weight));
-  @include vars.local(modal-heading-size, var(--ds-modal-heading-font-size));
-  @include vars.local(modal-heading-line-height, var(--ds-modal-heading-line-height));
+  @include typo.local(modal-heading, 'modal-heading');
   @include vars.local(modal-width, var(--ds-modal-width));
+  @include vars.local(modal-margin, var(--ds-modal-margin));
   @include vars.local(modal-p, var(--ds-modal-padding));
   @include vars.local(modal-gap, var(--ds-modal-gap));
+  @include vars.local(modal-title-padding-end, var(--ds-modal-title-padding-end));
+  @include vars.local(modal-actions-gap, var(--ds-modal-actions-gap));
 
   display: contents;
 }
@@ -43,28 +55,30 @@
 
   display: flex;
   flex-direction: column;
-  width: calc(100% - 1rem);
-  max-height: calc(100vh - 1rem);
+  width: calc(100% - 2 * var(--_modal-margin));
+  max-height: calc(100vh - 2 * var(--_modal-margin));
   overflow: hidden;
 
   background: var(--_modal-background);
+  color: var(--_modal-color);
   border-radius: var(--_modal-radius);
   padding: var(--_modal-p);
 
   // Animation initial state — must come after all: unset
+  // ds-token-check: intentional — animation state
   opacity: 0;
   transform: translate(-50%, calc(-50% - 1rem));
   pointer-events: none;
 
   @include tablet {
     width: var(--_modal-width);
-    max-height: calc(100vh - 6rem);
   }
 }
 
 // ─── Animation ────────────────────────────────────────────────────────────────
 
 :host(.is-open) dialog {
+  // ds-token-check: intentional — animation state
   opacity: 1;
   transform: translate(-50%, -50%);
   pointer-events: auto;
@@ -84,6 +98,7 @@
 
 :host dialog::backdrop {
   @include backdrop();
+  background-color: color-mix(in srgb, var(--_modal-backdrop-background) 50%, transparent);
   backdrop-filter: var(--_modal-backdrop-filter);
   opacity: var(--_modal-backdrop-opacity);
 }
@@ -115,13 +130,10 @@
 // ─── Title ────────────────────────────────────────────────────────────────────
 
 :host #modal-title {
-  // Clears the absolutely positioned close button: --close-size-icon (1.5rem) + a 0.5rem gap.
-  padding-right: calc(var(--_modal-p) + 2rem);
+  // Clears the absolutely positioned close button: its icon size (1.5rem) + a 0.5rem gap.
+  padding-right: calc(var(--_modal-p) + var(--_modal-title-padding-end));
   margin: 0 0 var(--_modal-gap);
-  font-family: var(--_modal-heading-family);
-  font-weight: var(--_modal-heading-weight);
-  font-size: var(--_modal-heading-size);
-  line-height: var(--_modal-heading-line-height);
+  @include typo.apply(modal-heading);
 }
 
 // ─── Body ─────────────────────────────────────────────────────────────────────
@@ -142,7 +154,7 @@
 :host #modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--_modal-actions-gap);
   flex-wrap: wrap;
   margin-top: var(--_modal-gap);
 }

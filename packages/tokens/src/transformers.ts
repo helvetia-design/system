@@ -8,6 +8,9 @@ import {
   numberValueToCssSize,
   roundNumberValue,
   shadowValueToCss,
+  TEXT_DECORATION_VALUES,
+  TEXT_TRANSFORM_VALUES,
+  textKeywordToCss,
   typographyValueToCss,
 } from './css-value.js'
 import { tokenNameToCssVar } from './css-naming.js'
@@ -107,6 +110,29 @@ export const registerCustomTransformers = (sd: typeof StyleDictionary) => {
   })
 
   /**
+   * Validate textDecoration / textTransform tokens: the value must be one of the allowed CSS keywords
+   * (TEXT_DECORATION_VALUES / TEXT_TRANSFORM_VALUES), otherwise the build fails loudly instead of
+   * writing an unknown keyword into the stylesheet.
+   */
+  sd.registerTransform({
+    type: `value`,
+    transitive: true,
+    name: `ds/text-keyword`,
+    filter: token => token.$type === 'textDecoration' || token.$type === 'textTransform',
+    transform: token => {
+      const value = token.$value ?? token.value
+      const allowed = token.$type === 'textDecoration' ? TEXT_DECORATION_VALUES : TEXT_TRANSFORM_VALUES
+      const css = textKeywordToCss(value, allowed)
+      if (css === null) {
+        throw new Error(
+          `Invalid ${token.$type} value ${JSON.stringify(value)} on "${token.path?.join('.')}" — expected one of: ${allowed.join(', ')}.`,
+        )
+      }
+      return css
+    },
+  })
+
+  /**
    * Transform fontFamily tokens (an array of font names) into a CSS-ready, comma-joined
    * font-family declaration, quoting only entries that need it.
    */
@@ -201,13 +227,13 @@ export const registerCustomTransformers = (sd: typeof StyleDictionary) => {
   })
 
   /**
-   * Transform typography tokens ({fontFamily, fontSize, fontWeight, lineHeight}) into their 4
-   * CSS-ready sub-strings. Unlike every transform above, this doesn't produce the token's final
+   * Transform typography tokens ({fontFamily, fontSize, fontWeight, lineHeight, letterSpacing,
+   * textDecoration, textTransform}) into their 7 CSS-ready sub-strings. Unlike every transform above, this doesn't produce the token's final
    * `.value` directly usable by Style Dictionary's stock `css`/`variables` formatter — a typography
-   * token maps to 4 separate custom properties, not 1 (docs/plans/typography-token-type-plan.md
+   * token maps to 7 separate custom properties, not 1 (docs/plans/typography-token-type-plan.md
    * decision 5). The `ds/css/variables-*` formatters (`formatter.ts`) expand each
-   * `$type: "typography"` token's `{fontFamily, fontSize, fontWeight, lineHeight}` value (the
-   * object this transform produces) into 4 token entries before handing off to
+   * `$type: "typography"` token's 7-field value (the
+   * object this transform produces) into 7 token entries before handing off to
    * `formattedVariables` — this transform's only job is getting each sub-value from "maybe still a
    * reference / raw DTCG shape" to "final CSS string" first, same as ds/shadow/ds/border.
    */

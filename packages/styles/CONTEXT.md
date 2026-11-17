@@ -43,7 +43,7 @@ Utility classes provide single-purpose CSS rules for common styling needs:
 
 - **Color utilities** — `.bg-primary`, `.text-danger`, `.border-success`
 - **Spacing utilities** — `.p-lg`, `.m-md`, `.gap-sm`
-- **Typography utilities** — `.text-lg`, `.text-bold`, `.line-height-tight`
+- **Typography utilities** — `.text-lg`, `.text-bold`, `.line-height-tight`, `.letter-spacing-text`, `.text-decoration-none`, `.text-transform-none`
 - **Display utilities** — `.d-flex`, `.d-grid`, `.hidden`
 - **Responsive utilities** — `.tablet:p-lg`, `.desktop:text-xl`
 

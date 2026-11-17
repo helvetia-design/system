@@ -11,21 +11,28 @@
  * These variables can be used in the component styles below and later on be overridden in themes.
  *
  * @prop --notification-radius: Border radius of the notification.
- * @prop --notification-border-width: Border width of the notification.
+ * @prop --notification-border: Composite border (width, style, color) of the notification.
  * @prop --notification-color-background: Background color of the notification.
- * @prop --notification-color-border: Border color of the notification.
  * @prop --notification-color-text: Text color of the notification.
- * @prop --notification-heading-family: Font family of the notification heading.
- * @prop --notification-heading-weight: Font weight of the notification heading.
- * @prop --notification-heading-size: Font size of the notification heading.
+ * @prop --notification-color-heading: Text color of the notification heading and icon.
+ * @prop --notification-heading-font-family: Font family of the notification heading.
+ * @prop --notification-heading-font-weight: Font weight of the notification heading.
+ * @prop --notification-heading-font-size: Font size of the notification heading.
  * @prop --notification-heading-line-height: Line height of the notification heading.
- * @prop --notification-content-family: Font family of the notification content.
- * @prop --notification-content-weight: Font weight of the notification content.
- * @prop --notification-content-size: Font size of the notification content.
+ * @prop --notification-heading-letter-spacing: Letter spacing of the notification heading.
+ * @prop --notification-heading-text-decoration: Text decoration of the notification heading.
+ * @prop --notification-heading-text-transform: Text transform of the notification heading.
+ * @prop --notification-content-font-family: Font family of the notification content.
+ * @prop --notification-content-font-weight: Font weight of the notification content.
+ * @prop --notification-content-font-size: Font size of the notification content.
  * @prop --notification-content-line-height: Line height of the notification content.
+ * @prop --notification-content-letter-spacing: Letter spacing of the notification content.
+ * @prop --notification-content-text-decoration: Text decoration of the notification content.
+ * @prop --notification-content-text-transform: Text transform of the notification content.
  * @prop --notification-icon: Mask image of the icon.
+ * @prop --notification-icon-size: Width of the icon column.
  * @prop --notification-p: Padding inside the notification.
- * @prop --notification-gap: Gap between icon and content.
+ * @prop --notification-gap: Gap between heading and content.
  */
 
 :host {

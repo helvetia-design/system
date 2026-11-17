@@ -1,12 +1,17 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
+@use '../../../../typography' as typo;
 
 /**
  * @prop --steps-connector-color: Color of the connector line between steps.
  * @prop --steps-connector-color-filled: Color of the connector line for completed steps.
  * @prop --steps-connector-height: Thickness of the connector line.
+ * @prop --steps-connector-radius: Corner radius of the connector line.
+ * @prop --steps-connector-gap: Space between a circle and the connector line leaving it.
  * @prop --steps-circle-size: Diameter of the step circle.
  * @prop --steps-circle-size-sm: Diameter of the step circle on mobile.
+ * @prop --steps-circle-radius: Corner radius of the step circle.
+ * @prop --steps-circle-opacity-disabled: Opacity of the circle (disabled state).
  * @prop --steps-circle-color-bg: Background color of the circle (default state).
  * @prop --steps-circle-color-bg-selected: Background color of the circle (selected state).
  * @prop --steps-circle-color-bg-done: Background color of the circle (done state).
@@ -19,15 +24,21 @@
  * @prop --steps-circle-color-text-disabled: Text/icon color inside the circle (disabled state).
  * @prop --steps-step-font-family: Font family for step labels and circle numbers.
  * @prop --steps-step-font-size: Font size for step labels and circle numbers.
- * @prop --steps-step-font-size-sm: Font size for step labels and circle numbers on mobile.
  * @prop --steps-step-font-weight: Font weight for step labels.
  * @prop --steps-step-line-height: Line height for step labels and circle numbers.
+ * @prop --steps-step-letter-spacing: Letter spacing for step labels and circle numbers.
+ * @prop --steps-step-text-decoration: Text decoration for step labels and circle numbers.
+ * @prop --steps-step-text-transform: Text transform for step labels and circle numbers.
  * @prop --steps-step-color: Text color for step labels (default state).
  * @prop --steps-step-color-selected: Text color for step labels (selected state).
  * @prop --steps-step-color-done: Text color for step labels (done state).
+ * @prop --steps-step-color-invalid: Text color for step labels (invalid state).
  * @prop --steps-step-color-focus: Focus ring color for step buttons.
- * @prop --steps-panel-px: Horizontal padding inside each step panel.
- * @prop --steps-panel-py: Vertical padding inside each step panel.
+ * @prop --steps-step-opacity-disabled: Opacity of step labels (disabled state).
+ * @prop --steps-step-gap: Space between the circle and its label (horizontal layout).
+ * @prop --steps-step-gap-vertical: Space between the circle and its label (vertical layout).
+ * @prop --steps-step-py: Vertical padding of a step in the vertical layout.
+ * @prop --steps-step-radius-focus: Corner radius of the focus ring on navigation links.
  * @prop --steps-color-purple: Brand tint used by the purple color variant.
  * @prop --steps-color-green: Brand tint used by the green color variant.
  * @prop --steps-color-red: Brand tint used by the red color variant.
@@ -38,30 +49,34 @@
   @include vars.local(steps-connector-color, var(--ds-steps-connector-color-base));
   @include vars.local(steps-connector-color-filled, var(--ds-steps-connector-color-filled));
   @include vars.local(steps-connector-height, var(--ds-steps-connector-height));
+  @include vars.local(steps-connector-radius, var(--ds-steps-connector-radius));
+  @include vars.local(steps-connector-gap, var(--ds-steps-connector-gap));
   @include vars.local(steps-circle-size, var(--ds-steps-circle-size-base));
   @include vars.local(steps-circle-size-sm, var(--ds-steps-circle-size-sm));
-  @include vars.local(steps-circle-color-bg, var(--ds-steps-circle-color-default-background));
-  @include vars.local(steps-circle-color-bg-selected, var(--ds-steps-circle-color-selected-background));
-  @include vars.local(steps-circle-color-bg-done, var(--ds-steps-circle-color-done-background));
-  @include vars.local(steps-circle-color-bg-invalid, var(--ds-steps-circle-color-invalid-background));
-  @include vars.local(steps-circle-color-bg-disabled, var(--ds-steps-circle-color-disabled-background));
-  @include vars.local(steps-circle-color-text, var(--ds-steps-circle-color-default-text));
-  @include vars.local(steps-circle-color-text-selected, var(--ds-steps-circle-color-selected-text));
-  @include vars.local(steps-circle-color-text-done, var(--ds-steps-circle-color-done-text));
-  @include vars.local(steps-circle-color-text-invalid, var(--ds-steps-circle-color-invalid-text));
-  @include vars.local(steps-circle-color-text-disabled, var(--ds-steps-circle-color-disabled-text));
-  @include vars.local(steps-step-font-family, var(--ds-steps-step-typo-base-font-family));
-  @include vars.local(steps-step-font-size, var(--ds-steps-step-typo-base-font-size));
-  @include vars.local(steps-step-font-size-sm, var(--ds-steps-step-typo-sm-font-size));
-  @include vars.local(steps-step-font-weight, var(--ds-steps-step-typo-base-font-weight));
-  @include vars.local(steps-step-line-height, var(--ds-steps-step-typo-base-line-height));
+  @include vars.local(steps-circle-radius, var(--ds-steps-circle-radius));
+  @include vars.local(steps-circle-opacity-disabled, var(--ds-steps-circle-disabled-opacity));
+  @include vars.local(steps-circle-color-bg, var(--ds-steps-circle-default-color-background));
+  @include vars.local(steps-circle-color-bg-selected, var(--ds-steps-circle-selected-color-background));
+  @include vars.local(steps-circle-color-bg-done, var(--ds-steps-circle-done-color-background));
+  @include vars.local(steps-circle-color-bg-invalid, var(--ds-steps-circle-invalid-color-background));
+  @include vars.local(steps-circle-color-bg-disabled, var(--ds-steps-circle-disabled-color-background));
+  @include vars.local(steps-circle-color-text, var(--ds-steps-circle-default-color-text));
+  @include vars.local(steps-circle-color-text-selected, var(--ds-steps-circle-selected-color-text));
+  @include vars.local(steps-circle-color-text-done, var(--ds-steps-circle-done-color-text));
+  @include vars.local(steps-circle-color-text-invalid, var(--ds-steps-circle-invalid-color-text));
+  @include vars.local(steps-circle-color-text-disabled, var(--ds-steps-circle-disabled-color-text));
+  @include typo.local(steps-step, 'steps-step-typo-base');
   @include vars.local(steps-step-color, var(--ds-steps-step-color-base));
   @include vars.local(steps-step-color-done, var(--ds-steps-step-color-done));
   @include vars.local(steps-step-color-selected, var(--ds-steps-step-color-selected));
   @include vars.local(steps-step-color-disabled, var(--ds-steps-step-color-disabled));
+  @include vars.local(steps-step-color-invalid, var(--ds-steps-step-color-invalid));
   @include vars.local(steps-step-color-focus, var(--ds-steps-step-color-focus));
-  @include vars.local(steps-panel-px, var(--ds-steps-panel-padding-x));
-  @include vars.local(steps-panel-py, var(--ds-steps-panel-padding-y));
+  @include vars.local(steps-step-opacity-disabled, var(--ds-steps-step-opacity-disabled));
+  @include vars.local(steps-step-gap, var(--ds-steps-step-gap-base));
+  @include vars.local(steps-step-gap-vertical, var(--ds-steps-step-gap-vertical));
+  @include vars.local(steps-step-py, var(--ds-steps-step-padding-y));
+  @include vars.local(steps-step-radius-focus, var(--ds-steps-step-radius-focus));
   @include vars.local(steps-color-purple, var(--ds-steps-color-purple));
   @include vars.local(steps-color-green, var(--ds-steps-color-green));
   @include vars.local(steps-color-red, var(--ds-steps-color-red));
@@ -110,12 +125,6 @@
 :host(.is-navigation) nav,
 :host(.is-navigation) ol {
   display: contents;
-}
-
-// ─── Panel padding passthrough ────────────────────────────────────────────────
-
-:host ::slotted(ds-step-panel) {
-  --step-panel-p: var(--_steps-panel-py) var(--_steps-panel-px);
 }
 
 // ─── Vertical mode ────────────────────────────────────────────────────────────

@@ -9,6 +9,8 @@ export {
   resolvedValueToCss,
   typographyValueToCss,
   TYPOGRAPHY_CSS_SUFFIXES,
+  TEXT_DECORATION_VALUES,
+  TEXT_TRANSFORM_VALUES,
   responsiveDimensionValueToCss,
   RESPONSIVE_DIMENSION_CSS_SUFFIXES,
 } from './css-value.js'

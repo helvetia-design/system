@@ -30,11 +30,11 @@
   --mod-list-item-color-hover: var(--ds-list-item-inverted-color-text-hover);
   --mod-list-item-color-active: var(--ds-list-item-inverted-color-text-active);
   --mod-list-item-color-disabled: var(--ds-list-item-inverted-color-text-disabled);
-  --mod-list-item-border-color-base: var(--ds-alias-border-color-inverted-primary);
-  --mod-list-item-border-color-hover: var(--ds-alias-border-color-inverted-primary-hover);
-  --mod-list-item-border-color-active: var(--ds-alias-border-color-inverted-primary-active);
-  --mod-list-item-background-hover: transparent;
-  --mod-list-item-background-active: transparent;
+  --mod-list-item-border-color-base: var(--ds-list-item-inverted-color-border-base);
+  --mod-list-item-border-color-hover: var(--ds-list-item-inverted-color-border-hover);
+  --mod-list-item-border-color-active: var(--ds-list-item-inverted-color-border-active);
+  --mod-list-item-background-hover: var(--ds-list-item-inverted-background-hover);
+  --mod-list-item-background-active: var(--ds-list-item-inverted-background-active);
   --mod-list-item-focus: var(--ds-alias-interaction-focus-color-inverted);
 }
 

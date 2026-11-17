@@ -11,18 +11,20 @@ import {
   BORDER_SUB_PROPERTIES,
   BORDER_SUB_PROPERTY_RESOLVED_TYPE,
   BORDER_SUB_PROPERTY_SUFFIX,
-  figmaBorderSubValuesFor,
+  figmaBorderSubEntriesFor,
   figmaResponsiveDimensionDeviceVariableName,
   figmaResponsiveDimensionSubEntriesFor,
   figmaLiteralValueFor,
+  flattenVariableId,
   figmaShadowSubValuesFor,
-  figmaTypographySubValuesFor,
+  figmaTypographySubEntriesFor,
   isDeviceEligibleResponsiveDimensionToken,
+  isPushableToken,
   isSyncableBorderToken,
   isSyncableResponsiveDimensionToken,
   isSyncableShadowToken,
   isSyncableTypographyToken,
-  resolvedTypeFor,
+  resolvedTypeForToken,
   RESPONSIVE_DIMENSION_SUB_PROPERTIES,
   RESPONSIVE_DIMENSION_SUB_PROPERTY_RESOLVED_TYPE,
   RESPONSIVE_DIMENSION_SUB_PROPERTY_SUFFIX,
@@ -35,8 +37,10 @@ import {
   TYPOGRAPHY_SUB_PROPERTY_SUFFIX,
 } from './figma-value.mjs'
 
+// Figma rejects "." in a variable name (e.g. a Size token literally named "0.875") even though "/"
+// is fine — it's the path's own group separator — so only "." gets swapped, per segment, for "_".
 export function figmaVariableName(path) {
-  return path.join('/')
+  return path.map(segment => segment.replaceAll('.', '_')).join('/')
 }
 
 export function figmaShadowSubVariableName(path, subProperty) {
@@ -134,7 +138,21 @@ export function assignVariableIds(baseTokens, existingNameIndex = new Map(), exi
 
     if (isSyncableTypographyToken(token)) {
       if (isCompositeVariableIdSet(token.variableId)) {
-        idByPath.set(key, token.variableId)
+        // A typography token committed before a sub-property was added (e.g. letterSpacing) carries
+        // fewer ids than TYPOGRAPHY_SUB_PROPERTIES lists. Keep the ids it has and complete only the
+        // missing ones — name-matched if Figma already has it (an interrupted earlier run), else a
+        // fresh temp id — so the existing variables are never touched or recreated.
+        idByPath.set(
+          key,
+          Object.fromEntries(
+            TYPOGRAPHY_SUB_PROPERTIES.map(sub => [
+              sub,
+              token.variableId[sub] ??
+                existingNameIndex.get(figmaTypographySubVariableName(token.path, sub)) ??
+                `temp-${key}-${sub}`,
+            ]),
+          ),
+        )
         continue
       }
       // Path/name fallback match, per sub-property — same "all-or-nothing" reasoning as shadow's.
@@ -351,16 +369,17 @@ export function buildCreatePassPayload({
       id: variableId,
       name: figmaVariableName(token.path),
       variableCollectionId: collectionId,
-      resolvedType: resolvedTypeFor(token.type),
+      resolvedType: resolvedTypeForToken(token),
       scopes: token.figmaScopes ?? ['ALL_SCOPES'],
       description: token.description ?? '',
     })
   }
 
   // Border/typography sub-values may be references (docs/plans/border-token-type-plan.md
-  // decision 4, docs/plans/typography-token-type-plan.md decision 4), so
-  // figmaBorderSubValuesFor/figmaTypographySubValuesFor need the full Base token index to follow
-  // them to a literal — unlike shadow's, whose sub-values are always inline literals.
+  // decision 4, docs/plans/typography-token-type-plan.md decision 4) — figmaBorderSubEntriesFor/
+  // figmaTypographySubEntriesFor tag each as reference-or-literal rather than following it, but
+  // still need this index: letterSpacing's percentage always needs its fontSize literal (via
+  // resolveLiteral), and the alias pass below looks up a reference sub-value's target token here.
   const tokenIndex = buildTokenIndex(baseTokens)
 
   const variableModeValues = []
@@ -398,25 +417,29 @@ export function buildCreatePassPayload({
 
       if (isSyncableBorderToken(token)) {
         const variableId = idByPath.get(pathKey(token.path))
-        const subValues = figmaBorderSubValuesFor(token.value.value, tokenIndex)
+        const subEntries = figmaBorderSubEntriesFor(token.value.value)
         for (const sub of BORDER_SUB_PROPERTIES) {
-          variableModeValues.push({ variableId: variableId[sub], modeId, value: subValues[sub] })
+          const entry = subEntries[sub]
+          if (entry.kind === 'reference') continue // pass 2
+          variableModeValues.push({ variableId: variableId[sub], modeId, value: entry.value })
         }
         continue
       }
 
       if (isSyncableTypographyToken(token)) {
         const variableId = idByPath.get(pathKey(token.path))
-        const subValues = figmaTypographySubValuesFor(token.value.value, tokenIndex)
+        const subEntries = figmaTypographySubEntriesFor(token.value.value, tokenIndex)
         for (const sub of TYPOGRAPHY_SUB_PROPERTIES) {
-          variableModeValues.push({ variableId: variableId[sub], modeId, value: subValues[sub] })
+          const entry = subEntries[sub]
+          if (entry.kind === 'reference') continue // pass 2
+          variableModeValues.push({ variableId: variableId[sub], modeId, value: entry.value })
         }
         continue
       }
 
       // A standalone LineHeight `number` token (Global.Font.LineHeight.*, Alias.Text.LineHeight.*,
-      // Component.*.LineHeight) is scaled ×100 for Figma's percentage convention, same as
-      // typography's own lineHeight sub-value above — see figmaLiteralValueFor.
+      // Component.*.LineHeight) is sent as a percentage string ("150%") for Figma's line-height
+      // convention, same as typography's own lineHeight sub-value above — see figmaLiteralValueFor.
       variableModeValues.push({
         variableId: idByPath.get(pathKey(token.path)),
         modeId,
@@ -498,6 +521,69 @@ export function buildAliasPassPayload({
           // — a breakpoint referencing another composite (shadow/border/typography/responsive
           // dimension) token has no single id to alias against unless it's itself Device-eligible,
           // so it's left unsynced rather than miswritten.
+          const targetVariableId = idByPath.get(pathKey(target.path))
+          const aliasId = singleAliasTargetId(targetVariableId)
+          if (!aliasId) continue
+          variableModeValues.push({
+            variableId: variableId[sub],
+            modeId,
+            value: { type: 'VARIABLE_ALIAS', id: aliasId },
+          })
+        }
+        continue
+      }
+
+      // Handled separately from the rest of this loop for the same reason as the responsive
+      // dimension block above — a border token's own top-level $value is an object ({color, width,
+      // style}, each possibly a `{reference}` string), never itself a `{reference}` string, so
+      // `token.value.kind` is always 'literal' here and would otherwise never reach the generic
+      // `token.value.kind === 'reference'` branch below. (A border token that IS itself a whole-
+      // composite reference — e.g. `Zurich.Border.Composite.Grey` aliasing the entirety of
+      // `Alias.Border.Composite.Grey` — has `token.value.kind === 'reference'` and is handled by
+      // that generic branch instead, via its own isSyncableBorderToken check.)
+      if (isSyncableBorderToken(token) && token.value.kind === 'literal') {
+        const variableId = idByPath.get(pathKey(token.path))
+        const subEntries = figmaBorderSubEntriesFor(token.value.value)
+        for (const sub of BORDER_SUB_PROPERTIES) {
+          const entry = subEntries[sub]
+          if (entry.kind !== 'reference') continue
+          const target = tokenIndex.get(pathKey(entry.path))
+          if (!target) {
+            throw new Error(
+              `Token ${pathKey(token.path)}'s ${sub} references ${pathKey(entry.path)}, which does not exist.`,
+            )
+          }
+          // Same "target must resolve to a single Figma variable" policy as the generic case below.
+          const targetVariableId = idByPath.get(pathKey(target.path))
+          const aliasId = singleAliasTargetId(targetVariableId)
+          if (!aliasId) continue
+          variableModeValues.push({
+            variableId: variableId[sub],
+            modeId,
+            value: { type: 'VARIABLE_ALIAS', id: aliasId },
+          })
+        }
+        continue
+      }
+
+      // Handled separately from the rest of this loop for the same reason as border's own block
+      // above — a typography token's own top-level $value is an object, never itself a
+      // `{reference}` string, so `token.value.kind` is always 'literal' here. letterSpacing is
+      // excluded (never tagged 'reference' by figmaTypographySubEntriesFor): it's always a
+      // percentage derived from two inputs (its own dimension and the composite's fontSize), not a
+      // 1:1 copy of another variable's value, so there's no single Figma variable it could alias.
+      if (isSyncableTypographyToken(token) && token.value.kind === 'literal') {
+        const variableId = idByPath.get(pathKey(token.path))
+        const subEntries = figmaTypographySubEntriesFor(token.value.value, tokenIndex)
+        for (const sub of TYPOGRAPHY_SUB_PROPERTIES) {
+          const entry = subEntries[sub]
+          if (entry.kind !== 'reference') continue
+          const target = tokenIndex.get(pathKey(entry.path))
+          if (!target) {
+            throw new Error(
+              `Token ${pathKey(token.path)}'s ${sub} references ${pathKey(entry.path)}, which does not exist.`,
+            )
+          }
           const targetVariableId = idByPath.get(pathKey(target.path))
           const aliasId = singleAliasTargetId(targetVariableId)
           if (!aliasId) continue
@@ -704,6 +790,44 @@ export function buildNameUpdatePayload({ baseTokens, idByPath, remoteVariablesBy
 }
 
 /**
+ * Finds tokens whose existing Figma variable(s) carry a different `resolvedType` than this run
+ * expects — Figma can't change a variable's type after creation, so such a token has to be deleted
+ * and recreated (e.g. LineHeight tokens moving from FLOAT to the "150%" STRING). Token-level, not
+ * per-variable: a composite token's sub-variables are deleted and recreated together, since the
+ * ones that still match would otherwise collide by name with their own recreated siblings.
+ *
+ * @param {import('./tokens.mjs').Token[]} baseTokens
+ * @param {Record<string, { resolvedType: string }>} remoteVariablesById
+ * @returns {{ token: import('./tokens.mjs').Token, ids: string[] }[]} `ids` are every variableId of the
+ *   token that exists in Figma (the ones to DELETE)
+ */
+export function findResolvedTypeMismatches(baseTokens, remoteVariablesById) {
+  const mismatches = []
+  for (const token of baseTokens) {
+    if (!isPushableToken(token) || !token.variableId) continue
+    const flattened = flattenVariableId(token.variableId)
+    const mismatched = flattened.some(({ id, subProperty }) => {
+      const remote = remoteVariablesById[id]
+      return remote && remote.resolvedType !== expectedResolvedTypeFor(token, subProperty)
+    })
+    if (mismatched) {
+      mismatches.push({ token, ids: flattened.map(({ id }) => id).filter(id => remoteVariablesById[id]) })
+    }
+  }
+  return mismatches
+}
+
+function expectedResolvedTypeFor(token, subProperty) {
+  if (isSyncableShadowToken(token)) return SHADOW_SUB_PROPERTY_RESOLVED_TYPE[subProperty]
+  if (isSyncableBorderToken(token)) return BORDER_SUB_PROPERTY_RESOLVED_TYPE[subProperty]
+  if (isSyncableTypographyToken(token)) return TYPOGRAPHY_SUB_PROPERTY_RESOLVED_TYPE[subProperty]
+  if (isSyncableResponsiveDimensionToken(token)) {
+    return subProperty === 'device' ? 'FLOAT' : RESPONSIVE_DIMENSION_SUB_PROPERTY_RESOLVED_TYPE[subProperty]
+  }
+  return resolvedTypeForToken(token)
+}
+
+/**
  * Patches `idByPath` in place so every temp id assigned by
  * `assignVariableIds` is replaced with pass 1's real Figma id — pass 2 and
  * the newly-created-id collection below must never see a temp id again.
@@ -723,13 +847,20 @@ export function resolveTempIds(idByPath, tempIdToRealId) {
 }
 
 /**
- * Tokens that had no `variableId` at the start of this run — what
- * docs/adr/0017-direct-commit-variableid-backfill.md's write-back commit
- * needs. Call only after `resolveTempIds`, so every entry already holds a
- * real Figma id, never a temp one.
+ * Tokens whose Figma identity changed this run, as `{ path, variableId }` — what
+ * docs/adr/0017-direct-commit-variableid-backfill.md's write-back commit needs. Two kinds: tokens
+ * that had no `variableId` at the start of the run, and typography tokens that had one but were
+ * missing sub-property ids added since (e.g. letterSpacing) — for those, `variableId` is the full
+ * completed id set, existing ids included, since the backfill replaces the whole value. Call only
+ * after `resolveTempIds`, so every entry already holds a real Figma id, never a temp one.
  */
 export function collectNewlyCreatedIds(baseTokens, idByPath) {
   return baseTokens
-    .filter(token => !token.variableId)
+    .filter(token => {
+      if (!isPushableToken(token)) return false
+      if (!token.variableId) return true
+      if (!isSyncableTypographyToken(token) || !isCompositeVariableIdSet(token.variableId)) return false
+      return TYPOGRAPHY_SUB_PROPERTIES.some(sub => !token.variableId[sub])
+    })
     .map(token => ({ path: token.path, variableId: idByPath.get(pathKey(token.path)) }))
 }

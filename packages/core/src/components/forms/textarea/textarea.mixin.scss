@@ -31,7 +31,7 @@
 @mixin container($prefix, $selector: '#container') {
   #{$selector} {
     align-items: center;
-    padding-block: 0.5rem;
+    padding-block: var(--ds-form-container-padding-y);
   }
 }
 

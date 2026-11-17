@@ -11,17 +11,13 @@
  * @prop --progress-bar-radius: Border radius of the progress bar.
  * @prop --progress-bar-background: Background color of the progress bar container.
  * @prop --progress-bar-line-color: Color of the progress indicator fill.
- * @prop --progress-bar-gap: Gap between progress bar and label.
- * @prop --progress-bar-label-color: Text color of the progress label.
- * @prop --progress-bar-label-font-size: Font size of the progress label.
- * @prop --progress-bar-animation-duration: Duration of the progress animation.
  */
 
 :host {
   @include vars.local(progress-bar-height, var(--ds-progress-bar-height));
   @include vars.local(progress-bar-radius, var(--ds-progress-bar-radius));
-  @include vars.local(progress-bar-background, var(--ds-progress-bar-primary-background-dark));
-  @include vars.local(progress-bar-line-color, var(--ds-progress-bar-primary-line));
+  @include vars.local(progress-bar-background, var(--ds-progress-bar-primary-dark-color-background));
+  @include vars.local(progress-bar-line-color, var(--ds-progress-bar-primary-line-color-background));
 }
 
 /**
@@ -52,47 +48,49 @@
 
 :host #line.is-animated {
   will-change: width;
+  // ds-token-check: intentional — motion timing, no motion token layer
   transition: all 300ms ease-in-out;
 }
 
 :host #line.is-full {
+  // ds-token-check: intentional — square end so a full line meets the track edge
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
 // Background colors
 :host(.is-light) {
-  --mod-progress-bar-background: var(--ds-progress-bar-primary-background-light);
+  --mod-progress-bar-background: var(--ds-progress-bar-primary-light-color-background);
 }
 
 // Color variants
 :host(.is-primary) {
-  --mod-progress-bar-line-color: var(--ds-progress-bar-primary-line);
+  --mod-progress-bar-line-color: var(--ds-progress-bar-primary-line-color-background);
 }
 :host(.is-primary.is-dark) {
-  --mod-progress-bar-background: var(--ds-progress-bar-primary-background-dark);
+  --mod-progress-bar-background: var(--ds-progress-bar-primary-dark-color-background);
 }
 :host(.is-purple) {
-  --mod-progress-bar-line-color: var(--ds-progress-bar-purple-line);
+  --mod-progress-bar-line-color: var(--ds-progress-bar-purple-line-color-background);
 }
 :host(.is-purple.is-dark) {
-  --mod-progress-bar-background: var(--ds-progress-bar-purple-background-dark);
+  --mod-progress-bar-background: var(--ds-progress-bar-purple-dark-color-background);
 }
 :host(.is-yellow) {
-  --mod-progress-bar-line-color: var(--ds-progress-bar-yellow-line);
+  --mod-progress-bar-line-color: var(--ds-progress-bar-yellow-line-color-background);
 }
 :host(.is-yellow.is-dark) {
-  --mod-progress-bar-background: var(--ds-progress-bar-yellow-background-dark);
+  --mod-progress-bar-background: var(--ds-progress-bar-yellow-dark-color-background);
 }
 :host(.is-red) {
-  --mod-progress-bar-line-color: var(--ds-progress-bar-red-line);
+  --mod-progress-bar-line-color: var(--ds-progress-bar-red-line-color-background);
 }
 :host(.is-red.is-dark) {
-  --mod-progress-bar-background: var(--ds-progress-bar-red-background-dark);
+  --mod-progress-bar-background: var(--ds-progress-bar-red-dark-color-background);
 }
 :host(.is-green) {
-  --mod-progress-bar-line-color: var(--ds-progress-bar-green-line);
+  --mod-progress-bar-line-color: var(--ds-progress-bar-green-line-color-background);
 }
 :host(.is-green.is-dark) {
-  --mod-progress-bar-background: var(--ds-progress-bar-green-background-dark);
+  --mod-progress-bar-background: var(--ds-progress-bar-green-dark-color-background);
 }

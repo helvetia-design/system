@@ -1,0 +1,456 @@
+{
+  "📱 Device": {
+    "↔️ Space": {
+      "None": {
+        "Device": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:756",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:f727bb0ca80cb50f92c2fac37daa7800a7f5b43a/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/None/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "2XS": {
+        "Device": {
+          "$type": "number",
+          "$value": 4,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:761",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:39b327473c03b7b06de5bc2f105633f4e1d41a00/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/2XS/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "XS": {
+        "Device": {
+          "$type": "number",
+          "$value": 8,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:765",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:cbd836b780c512c03f182d612f80054d9f078974/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/XS/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "SM": {
+        "Device": {
+          "$type": "number",
+          "$value": 12,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:769",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:e38817eff3f115c0bac15b91d94fe5f0b211808d/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/SM/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "Base": {
+        "Device": {
+          "$type": "number",
+          "$value": 16,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:773",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:2ced7d910bf7676ab9538df771c47d63de6a7311/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/Base/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "MD": {
+        "Device": {
+          "$type": "number",
+          "$value": 20,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:777",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:652646c22ed5ef728322220b83d965eff80b88f8/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/MD/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "LG": {
+        "Device": {
+          "$type": "number",
+          "$value": 24,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:781",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:b1f30a009ac5e39b114fd4ea25406c54d4728098/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/LG/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "XL": {
+        "Device": {
+          "$type": "number",
+          "$value": 32,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:785",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:a07e852d49cf2edce14b12f857a22d3ca2aa3ded/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/XL/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "2XL": {
+        "Device": {
+          "$type": "number",
+          "$value": 48,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:789",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:eb4cc55ad4ec6fcf2dfa85d18775d5ab86fd4733/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/2XL/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "3XL": {
+        "Device": {
+          "$type": "number",
+          "$value": 56,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:793",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:85d6c82f4c0feb41322469ecc7cf68de08cdb10a/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/3XL/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "4XL": {
+        "Device": {
+          "$type": "number",
+          "$value": 64,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:797",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:3214e476d37aa459b3bab509489163aeeae0c74e/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/4XL/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      },
+      "3XS": {
+        "Device": {
+          "$type": "number",
+          "$value": 2,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:801",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:cef8ece663c74e2e2da616bc3889f6c914010b33/-1:-1",
+              "targetVariableName": "📱 Device/↔️ Space/3XS/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      }
+    },
+    "🔤 Text": {
+      "Size": {
+        "Base": {
+          "Device": {
+            "$type": "number",
+            "$value": 16,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:805",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:d6a45b0a7234016060e1b5b0c8731d1ebbc9aea3/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/Base/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "None": {
+          "Device": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:809",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:6ecdad59b3df47897e562f25ab777f47c6f0f229/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/None/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "XS": {
+          "Device": {
+            "$type": "number",
+            "$value": 12,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:813",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:9da4805740a55940ac9adf44995beb3c4f483199/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/XS/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "MD": {
+          "Device": {
+            "$type": "number",
+            "$value": 16,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:817",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:81a1d5eb9743a0f9447dd3a41211d9523cdedbaa/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/MD/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "SM": {
+          "Device": {
+            "$type": "number",
+            "$value": 14,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:821",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:76a197bb873bb4516e47b974b966e2ae93a1bcf4/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/SM/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "2XL": {
+          "Device": {
+            "$type": "number",
+            "$value": 24,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:825",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:53c26245dd5b2613d2a8fd156e300fd9aeaa6313/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/2XL/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "3XL": {
+          "Device": {
+            "$type": "number",
+            "$value": 28,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:829",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:8d19bfe2a9900cffc5564a8699aa81f5cef48365/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/3XL/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "4XL": {
+          "Device": {
+            "$type": "number",
+            "$value": 32,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:833",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:24734e45e0bbd517a3eb35ef11755e45a5542595/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/4XL/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "5XL": {
+          "Device": {
+            "$type": "number",
+            "$value": 48,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:837",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:25b6b8c0416561babb54e43dd23c5e28628cebe9/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/5XL/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "XL": {
+          "Device": {
+            "$type": "number",
+            "$value": 20,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:841",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:5e9ebe178d013a934673000a6a4290bdb10095d1/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/XL/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "LG": {
+          "Device": {
+            "$type": "number",
+            "$value": 18,
+            "$extensions": {
+              "com.figma.variableId": "VariableID:137:845",
+              "com.figma.scopes": ["ALL_SCOPES"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:c35d7817b19057ba662871ffe98ae637f3e7a4bc/-1:-1",
+                "targetVariableName": "📱 Device/🔤 Text/Size/LG/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        }
+      }
+    },
+    "🗃️ Container": {
+      "Space": {
+        "Device": {
+          "$type": "number",
+          "$value": 16,
+          "$extensions": {
+            "com.figma.variableId": "VariableID:137:849",
+            "com.figma.scopes": ["ALL_SCOPES"],
+            "com.figma.aliasData": {
+              "targetVariableId": "VariableID:6dba235b533509e70dfde7b3145037a743a88359/-1:-1",
+              "targetVariableName": "📱 Device/🗃️ Container/Space/Mobile",
+              "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+              "targetVariableSetName": "Design Tokens"
+            }
+          }
+        }
+      }
+    }
+  },
+  "🧩 Component": {
+    "Logo": {
+      "Size": {
+        "Base": {
+          "Device": {
+            "$type": "number",
+            "$value": 24,
+            "$description": "Routing alias for ds-logo size — created by ds-figma-component skill to let one node switch Mobile/Tablet/Desktop natively via Figma modes, aliasing to the existing scripts/figma-sync-managed Component/Logo/Size/* variables.",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:2566:2",
+              "com.figma.scopes": ["WIDTH_HEIGHT"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:7539987a82c7f25a2f69f9c64133aee5f6f32746/-1:-1",
+                "targetVariableName": "🧩 Component/Logo/Size/Base/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "SM": {
+          "Device": {
+            "$type": "number",
+            "$value": 24,
+            "$description": "Routing alias for ds-logo size — created by ds-figma-component skill to let one node switch Mobile/Tablet/Desktop natively via Figma modes, aliasing to the existing scripts/figma-sync-managed Component/Logo/Size/* variables.",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:2566:3",
+              "com.figma.scopes": ["WIDTH_HEIGHT"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:e8d12e21d4c0ac7794e169f3fa77d09459605963/-1:-1",
+                "targetVariableName": "🧩 Component/Logo/Size/SM/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        },
+        "LG": {
+          "Device": {
+            "$type": "number",
+            "$value": 32,
+            "$description": "Routing alias for ds-logo size — created by ds-figma-component skill to let one node switch Mobile/Tablet/Desktop natively via Figma modes, aliasing to the existing scripts/figma-sync-managed Component/Logo/Size/* variables.",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:2566:4",
+              "com.figma.scopes": ["WIDTH_HEIGHT"],
+              "com.figma.aliasData": {
+                "targetVariableId": "VariableID:59479c695d2b85e0c4da8834917280b27aa10ba7/-1:-1",
+                "targetVariableName": "🧩 Component/Logo/Size/LG/Mobile",
+                "targetVariableSetId": "VariableCollectionId:e32f6ecd022e5fb32b9cc4dc3db489252994d94b/-1:-1",
+                "targetVariableSetName": "Design Tokens"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$extensions": {
+    "com.figma.modeName": "Mobile"
+  }
+}

@@ -17,7 +17,7 @@ import { HTMLStencilElement } from '@stencil/core/internal'
 /**
  * Close renders a button element for closing or dismissing UI components with customizable size and color.
  *
- * @part close - The close button element.
+ * @part button - The close button element.
  */
 @Component({
   tag: 'ds-close',

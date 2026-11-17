@@ -3,6 +3,7 @@
 @use '../../../hybrid' as hybrid;
 @use '../../../vars' as vars;
 @use '../../../host' as host;
+@use '../../../typography' as typo;
 @use './button-group/button-group.mixin.scss' as button-group;
 
 $use-host: false !default;
@@ -18,10 +19,7 @@ $host-selector: ('#button');
  */
 
 @include vars.hybrid($name, $css-selector, $use-host) {
-  @include vars.local(button-font-family, var(--ds-button-size-base-font-family));
-  @include vars.local(button-font-weight, var(--ds-button-size-base-font-weight));
-  @include vars.local(button-font-size, var(--ds-button-size-base-font-size));
-  @include vars.local(button-line-height, var(--ds-button-size-base-line-height));
+  @include typo.local(button, 'button-size-base-label-typo');
   @include vars.local(button-radius, var(--ds-button-size-base-radius));
 
   @include vars.local(button-color-text, var(--ds-button-color-primary-base-text));
@@ -83,10 +81,7 @@ $host-selector: ('#button');
   transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 
-  font-size: var(--_button-font-size);
-  font-family: var(--_button-font-family);
-  font-weight: var(--_button-font-weight);
-  line-height: var(--_button-line-height);
+  @include typo.apply(button);
 
   border-radius: var(--_button-radius);
 
@@ -105,7 +100,7 @@ $host-selector: ('#button');
   }
 
   // Icon & Spinner
-  --spinner-logo-size: 1.5rem;
+  --spinner-logo-size: var(--ds-button-spinner-size);
   --icon-color: var(--_button-color-text);
 
   // Outline
@@ -137,6 +132,7 @@ $host-selector: ('#button');
     background-color: var(--_button-color-background-active);
     color: var(--_button-color-text-active);
     border: var(--_button-color-border-active);
+    // ds-token-check: intentional — press nudge is a brand-invariant interaction effect
     translate: 0 0.5px;
   }
 }
@@ -180,11 +176,7 @@ $host-selector: ('#button');
     #button {
       flex-direction: column;
       text-align: center;
-      padding: calc(var(--ds-button-size-base-padding-x) / 2);
-
-      @include tablet {
-        padding: calc(var(--ds-button-size-base-padding-x));
-      }
+      padding: var(--ds-button-brand-icon-padding);
     }
   }
 }
@@ -192,10 +184,7 @@ $host-selector: ('#button');
 @include hybrid.styles($css-selector, $use-host) {
   &.has-brand-icon {
     @include brand-icon();
-    padding: calc(var(--ds-button-size-base-padding-x) / 2);
-    @include tablet {
-      padding: calc(var(--ds-button-size-base-padding-x));
-    }
+    padding: var(--ds-button-brand-icon-padding);
   }
 }
 
@@ -204,8 +193,9 @@ $host-selector: ('#button');
 // --------------------------------
 
 @mixin text-decoration() {
-  text-decoration: underline;
-  text-underline-offset: 0.25rem;
+  --mod-button-text-decoration: var(--ds-button-link-label-text-decoration);
+  text-underline-offset: var(--ds-button-link-underline-offset);
+  // ds-token-check: intentional — reuses ds-link's underline width so link buttons match real links
   text-decoration-thickness: var(--ds-link-underline-width);
 }
 
@@ -228,6 +218,7 @@ $host-selector: ('#button');
 @include hybrid.host($use-host) {
   :host ::slotted(ds-badge),
   :host ::slotted(.ds-badge) {
+    // ds-token-check: intentional — badge overlap offset is structural positioning
     --badge-position: absolute;
     --badge-top: -0.5rem;
     --badge-right: -0.5rem;
@@ -237,6 +228,7 @@ $host-selector: ('#button');
 @include hybrid.styles($css-selector, $use-host) {
   .ds-badge,
   ds-badge {
+    // ds-token-check: intentional — badge overlap offset is structural positioning
     --badge-position: absolute;
     --badge-top: -0.5rem;
     --badge-right: -0.5rem;
@@ -265,8 +257,7 @@ $colors: (
   'success',
   'warning',
   'danger',
-  'link',
-  'text'
+  'link'
 );
 
 @mixin color($color) {
@@ -298,7 +289,7 @@ $colors: (
 }
 
 @each $color in $colors {
-  @if ($color != 'secondary' and $color != 'tertiary' and $color != 'ghost' and $color != 'link' and $color != 'text') {
+  @if ($color != 'secondary' and $color != 'tertiary' and $color != 'ghost' and $color != 'link') {
     @include hybrid.host($use-host) {
       :host(.is-#{$color}.is-inverted:not(.is-disabled):not(.is-loading)) {
         @include color(inverted);
@@ -317,7 +308,7 @@ $colors: (
 // Inverted Colors
 // --------------------------------
 
-$inverted-colors: ('secondary', 'tertiary', 'ghost', 'text', 'link');
+$inverted-colors: ('secondary', 'tertiary', 'ghost', 'link');
 
 @each $color in $inverted-colors {
   @include hybrid.host($use-host) {
@@ -352,10 +343,7 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'text', 'link');
 // Sizes
 // --------------------------------
 @mixin size-sm() {
-  --mod-button-font-family: var(--ds-button-size-sm-font-family);
-  --mod-button-font-weight: var(--ds-button-size-sm-font-weight);
-  --mod-button-font-size: var(--ds-button-size-sm-font-size);
-  --mod-button-line-height: var(--ds-button-size-sm-line-height);
+  @include typo.mod(button, 'button-size-sm-label-typo');
   --mod-button-radius: var(--ds-button-size-sm-radius);
   --mod-button-gap: var(--ds-button-size-sm-gap);
   --mod-button-min-height: var(--ds-button-size-sm-min-height);
@@ -377,10 +365,7 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'text', 'link');
 }
 
 @mixin size-lg() {
-  --mod-button-font-family: var(--ds-button-size-lg-font-family);
-  --mod-button-font-weight: var(--ds-button-size-lg-font-weight);
-  --mod-button-font-size: var(--ds-button-size-lg-font-size);
-  --mod-button-line-height: var(--ds-button-size-lg-line-height);
+  @include typo.mod(button, 'button-size-lg-label-typo');
   --mod-button-radius: var(--ds-button-size-lg-radius);
   --mod-button-gap: var(--ds-button-size-lg-gap);
   --mod-button-min-height: var(--ds-button-size-lg-min-height);
@@ -408,7 +393,7 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'text', 'link');
 // Flat
 @mixin shape-flat() {
   --mod-button-px: 0;
-  --mod-button-min-height: 1.75rem;
+  --mod-button-min-height: var(--ds-button-flat-min-height);
 }
 
 @include hybrid.host($use-host) {
@@ -424,36 +409,53 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'text', 'link');
 }
 
 // Square
-@mixin shape-square($size: 3rem) {
+@mixin shape-square($size: base) {
   --mod-button-px: 0;
   --mod-button-gap: 0;
-  --mod-button-min-height: #{$size};
-  --mod-button-min-width: #{$size};
+  --mod-button-min-height: var(--ds-button-size-#{$size}-min-height);
+  --mod-button-min-width: var(--ds-button-size-#{$size}-min-width);
 }
 
+// ds-token-check: intentional — square icon sizes reuse ds-icon's size scale
 @include hybrid.host($use-host) {
-  :host(.is-square:not(.is-sm)) {
+  :host(.is-square:not(.is-sm, .is-lg)) {
     @include shape-square();
-    --icon-size: 1.5rem;
+    --icon-size: var(--ds-icon-size-md);
+    --icon-inner-size: var(--ds-icon-size-md);
   }
 
   :host(.is-square.is-sm) {
-    @include shape-square(2rem);
+    @include shape-square(sm);
     --icon-size: var(--ds-icon-size-sm);
+    --icon-inner-size: var(--ds-icon-size-sm);
+  }
+
+  :host(.is-square.is-lg) {
+    @include shape-square(lg);
+    --icon-size: var(--ds-icon-size-md);
+    --icon-inner-size: var(--ds-icon-size-md);
   }
 }
 
 @include hybrid.styles('.ds-button', $use-host) {
-  &.is-square:not(.is-sm),
-  &.is-square:not(.is-small) {
+  &.is-square:not(.is-sm, .is-small, .is-lg, .is-large) {
     @include shape-square();
-    --icon-size: 1.5rem;
+    --icon-size: var(--ds-icon-size-md);
+    --icon-inner-size: var(--ds-icon-size-md);
   }
 
   &.is-square.is-sm,
   &.is-square.is-small {
-    @include shape-square(2rem);
+    @include shape-square(sm);
     --icon-size: var(--ds-icon-size-sm);
+    --icon-inner-size: var(--ds-icon-size-sm);
+  }
+
+  &.is-square.is-lg,
+  &.is-square.is-large {
+    @include shape-square(lg);
+    --icon-size: var(--ds-icon-size-md);
+    --icon-inner-size: var(--ds-icon-size-md);
   }
 }
 
@@ -545,9 +547,10 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'text', 'link');
   &:focus,
   &.is-focused {
     pointer-events: none;
+    // ds-token-check: intentional — opacity reset, disabled uses color tokens
     opacity: 1;
     box-shadow: none;
-    text-decoration: none;
+    --mod-button-text-decoration: var(--ds-button-disabled-label-text-decoration);
     cursor: default;
     translate: 0 0;
     background-color: var(--ds-button-color-disabled-base-background);
@@ -559,12 +562,12 @@ $inverted-colors: ('secondary', 'tertiary', 'ghost', 'text', 'link');
     }
 
     & > ds-spinner {
-      --spinner-color: var(--ds-button-color-disabled-base-text);
+      --spinner-logo-color: var(--ds-button-color-disabled-base-text);
     }
 
     & > ds-spinner.is-circle {
-      --spinner-circle-color-border-background: var(--ds-global-color-grey-4);
-      --spinner-circle-color-border-progress: var(--ds-button-color-disabled-base-text);
+      --spinner-circle-background-color: var(--ds-button-color-disabled-base-spinner-background);
+      --spinner-circle-progress-color: var(--ds-button-color-disabled-base-text);
     }
   }
 }

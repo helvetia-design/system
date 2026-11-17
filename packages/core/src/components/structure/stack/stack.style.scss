@@ -1,27 +1,27 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 
-$stack-space: ('2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl');
+$stack-space: ('3xs', '2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl');
 
 /**
   * Mixins
   */
 
 @mixin gap($space, $property: gap) {
-  #{$property}: var(--ds-device-space-#{$space});
+  #{$property}: var(--ds-stack-gap-#{$space});
 }
 
 @mixin p($space) {
-  padding: var(--ds-device-space-#{$space});
+  padding: var(--ds-stack-padding-#{$space});
 }
 
 @mixin px($space) {
-  padding-left: var(--ds-device-space-#{$space});
-  padding-right: var(--ds-device-space-#{$space});
+  padding-left: var(--ds-stack-padding-#{$space});
+  padding-right: var(--ds-stack-padding-#{$space});
 }
 
 @mixin py($space) {
-  padding-top: var(--ds-device-space-#{$space});
-  padding-bottom: var(--ds-device-space-#{$space});
+  padding-top: var(--ds-stack-padding-#{$space});
+  padding-bottom: var(--ds-stack-padding-#{$space});
 }
 
 /**
@@ -36,13 +36,13 @@ $stack-space: ('2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl');
 }
 
 .ds-stack {
-  gap: 1rem;
+  gap: var(--ds-stack-gap-base);
 }
 
 .ds-stack-content {
   flex: 1;
   height: 100%;
-  gap: 0.25rem;
+  gap: var(--ds-content-gap);
 }
 
 .ds-stack > .ds-stack,
@@ -246,7 +246,8 @@ $stack-space: ('2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl');
     text-align: right;
   }
 
-  &.text-left {
+  &.text-left,
+  &.text-start {
     text-align: left !important;
   }
 
@@ -254,7 +255,8 @@ $stack-space: ('2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl');
     text-align: center !important;
   }
 
-  &.text-right {
+  &.text-right,
+  &.text-end {
     text-align: right !important;
   }
 }
@@ -383,6 +385,7 @@ $stack-space: ('2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl');
 //
 // custom position
 .ds-stack > ds-radio {
+  // ds-token-check: intentional — optical nudge compensating ds-radio's internal label box; brand-invariant
   margin-top: -0.25rem;
 }
 
