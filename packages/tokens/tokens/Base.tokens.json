@@ -27190,7 +27190,13 @@
     "Bubu": {
       "Color": {
         "$type": "color",
-        "$value": "{🔗 Alias.🎨 Surface.Danger}"
+        "$value": "{🔗 Alias.🎨 Surface.Danger}",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:43:3",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
+        }
       }
     }
   },
