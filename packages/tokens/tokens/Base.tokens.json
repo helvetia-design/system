@@ -27186,6 +27186,12 @@
           }
         }
       }
+    },
+    "Bubu": {
+      "Color": {
+        "$type": "color",
+        "$value": "{🔗 Alias.🎨 Surface.Danger}"
+      }
     }
   },
   "🌐 Global": {
