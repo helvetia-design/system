@@ -389,6 +389,10 @@
     border-width: var(--_datepicker-calendar-border-width);
   }
 
+  .sr-only {
+    @include sr-only;
+  }
+
   .air-datepicker-nav--title:not(.-disabled-) button,
   .air-datepicker-nav--action:not(.-disabled-) button {
     @include button-mx.reset-button;
