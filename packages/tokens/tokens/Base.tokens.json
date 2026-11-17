@@ -12480,7 +12480,7 @@
       "Padding": {
         "SM": {
           "$type": "dimension",
-          "$value": "{🌐 Global.📏 Dimension.Size.0.875}",
+          "$value": "{🌐 Global.📏 Dimension.Size.0_875}",
           "$extensions": {
             "com.figma.variableId": "VariableID:13:1603",
             "com.figma.scopes": [
@@ -12500,7 +12500,7 @@
         },
         "MD": {
           "$type": "dimension",
-          "$value": "{🌐 Global.📏 Dimension.Size.1.5}",
+          "$value": "{🌐 Global.📏 Dimension.Size.1_5}",
           "$extensions": {
             "com.figma.variableId": "VariableID:13:1605",
             "com.figma.scopes": [
@@ -12520,7 +12520,7 @@
         },
         "XL": {
           "$type": "dimension",
-          "$value": "{🌐 Global.📏 Dimension.Size.2.5}",
+          "$value": "{🌐 Global.📏 Dimension.Size.2_5}",
           "$extensions": {
             "com.figma.variableId": "VariableID:13:1607",
             "com.figma.scopes": [
@@ -28014,7 +28014,7 @@
             ]
           }
         },
-        "0.875": {
+        "0_875": {
           "$type": "dimension",
           "$value": {
             "value": 0.875,
@@ -28027,7 +28027,7 @@
             ]
           }
         },
-        "1.5": {
+        "1_5": {
           "$type": "dimension",
           "$value": {
             "value": 1.5,
@@ -28040,7 +28040,7 @@
             ]
           }
         },
-        "2.5": {
+        "2_5": {
           "$type": "dimension",
           "$value": {
             "value": 2.5,

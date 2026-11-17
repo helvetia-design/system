@@ -72355,7 +72355,7 @@
         "🌐 Global",
         "📏 Dimension",
         "Size",
-        "0.875"
+        "0_875"
       ],
       "resolvedValue": {
         "kind": "literal",
@@ -72372,7 +72372,7 @@
         "🌐 Global",
         "📏 Dimension",
         "Size",
-        "1.5"
+        "1_5"
       ],
       "resolvedValue": {
         "kind": "literal",
@@ -72389,7 +72389,7 @@
         "🌐 Global",
         "📏 Dimension",
         "Size",
-        "2.5"
+        "2_5"
       ],
       "resolvedValue": {
         "kind": "literal",
