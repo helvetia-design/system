@@ -129,7 +129,7 @@ describe('findConflicts', () => {
     const conflicts = findConflicts({
       existingState: state({ kind: 'literal', value: 1.3 }),
       currentBaseTokens: [lineHeightToken],
-      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: 130 } } },
+      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: '130%' } } },
       modeId,
     })
     expect(conflicts).toEqual([])
@@ -145,11 +145,11 @@ describe('findConflicts', () => {
     const conflicts = findConflicts({
       existingState: state({ kind: 'literal', value: 1.3 }),
       currentBaseTokens: [lineHeightToken],
-      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: 150 } } },
+      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: '150%' } } },
       modeId,
     })
     expect(conflicts).toHaveLength(1)
-    expect(conflicts[0]).toMatchObject({ baselineValue: 130, githubValue: 140, figmaValue: 150 })
+    expect(conflicts[0]).toMatchObject({ baselineValue: '130%', githubValue: '140%', figmaValue: '150%' })
   })
 
   function colorToken(components, alpha = 1) {
@@ -221,6 +221,36 @@ describe('acceptance scenario: a value-only sync refreshes the baseline, so the 
     })
 
     expect(conflicts).toEqual([])
+  })
+})
+
+describe('findConflicts — LineHeight tokens', () => {
+  const lineHeightToken = value => ({
+    path: ['Global', 'Font', 'LineHeight', '3'],
+    type: 'number',
+    value: { kind: 'literal', value },
+    variableId: 'VariableID:1:1',
+  })
+
+  it('compares in Figma\'s percentage-string shape, so an unchanged Figma "150%" is not a conflict', () => {
+    const conflicts = findConflicts({
+      existingState: state({ kind: 'literal', value: 1.5 }),
+      currentBaseTokens: [lineHeightToken(1.3)],
+      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: '150%' } } },
+      modeId,
+    })
+    expect(conflicts).toEqual([])
+  })
+
+  it('reports both sides moving apart, in the percentage-string shape', () => {
+    const conflicts = findConflicts({
+      existingState: state({ kind: 'literal', value: 1.5 }),
+      currentBaseTokens: [lineHeightToken(1.3)],
+      figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: '200%' } } },
+      modeId,
+    })
+    expect(conflicts).toHaveLength(1)
+    expect(conflicts[0]).toMatchObject({ baselineValue: '150%', githubValue: '130%', figmaValue: '200%' })
   })
 })
 

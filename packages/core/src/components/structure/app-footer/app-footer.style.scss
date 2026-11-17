@@ -6,5 +6,5 @@
 .ds-app-footer-link-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1rem;
+  gap: var(--ds-app-footer-gap-sm) var(--ds-app-footer-gap);
 }

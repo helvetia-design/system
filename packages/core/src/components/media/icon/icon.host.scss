@@ -11,10 +11,7 @@
  * @prop --icon-inner-size: Internal size of the SVG icon.
  * @prop --icon-inner-mt: Margin top of the SVG icon.
  * @prop --icon-color: Color of the icon.
- * @prop --icon-shape: Shape variant color of the icon.
- * @prop --icon-tile-background: Background color of the tile around the icon.
- * @prop --icon-tile-radius: Border radius of the tile background.
- * @prop --icon-rotation: Rotation angle of the icon.
+ * @prop --icon-padding: Padding of the SVG icon.
  */
 
 :host {
@@ -23,6 +20,7 @@
   @include vars.local(icon-inner-size, var(--ds-icon-size-base));
   @include vars.local(icon-inner-mt, 0);
   @include vars.local(icon-color, var(--ds-icon-color-primary));
+  @include vars.local(icon-padding, var(--ds-icon-padding-base));
 }
 
 /**
@@ -52,7 +50,7 @@
     z-index: 1;
     transition: transform 0.2s ease-in-out;
     margin-top: var(--_icon-inner-mt);
-    padding: calc(1 / 16 * var(--_icon-size));
+    padding: var(--_icon-padding);
 
     // Size
     width: var(--_icon-inner-size);
@@ -71,73 +69,6 @@
   @include fillSvg(var(--_icon-color));
 }
 
-// With that variable we can style the brand icon from outside
-// of the component.
-$colors:
-  // Green
-  '#E9FBF7',
-  '#e9fbf7',
-  '#CBF2EC',
-  '#cbf2ec',
-  '#94E3D4',
-  '#94e3d4',
-  '#21D9AC',
-  '#21d9ac',
-  '#00B28F',
-  '#00b28f',
-  '#1B5951',
-  '#1b5951',
-  // Yellow
-  '#FFF9E8',
-  '#fff9e8',
-  '#FFECBC',
-  '#ffecbc',
-  '#FAE052',
-  '#fae052',
-  '#FFBE19',
-  '#ffbe19',
-  '#FA9319',
-  '#fa9319',
-  '#B24A00',
-  '#b24a00',
-  // Red
-  '#FFEEF1',
-  '#ffeef1',
-  '#FFD7D7',
-  '#ffd7d7',
-  '#FFACA6',
-  '#ffaca6',
-  '#FF596F',
-  '#ff596f',
-  '#D9304C',
-  '#d9304c',
-  '#99172D',
-  '#99172d',
-  // Purple
-  '#F9F3FF',
-  '#f9f3ff',
-  '#E1D9FF',
-  '#e1d9ff',
-  '#B8B2FF',
-  '#b8b2ff',
-  '#BE82FA',
-  '#be82fa',
-  '#9F52CC',
-  '#9f52cc',
-  '#6C2273',
-  '#6c2273',
-  // Blue
-  '#000D6E',
-  '#000d6e';
-
-@each $color in $colors {
-  :host(:not(.is-filled)) svg {
-    path[fill='#{$color}'] {
-      fill: var(--icon-brand-color, #{$color});
-    }
-  }
-}
-
 // Inline
 :host(.is-inline) {
   display: inline-flex;
@@ -147,11 +78,15 @@ $colors:
 // Shadow
 :host(.has-shadow) {
   svg {
+    // ds-token-check: intentional — fixed decorative shadow, not part of the Alias
+    // elevation scale and identical across every brand/theme.
     filter: drop-shadow(0px 0px 5rem rgba(0, 0, 0, 0.5));
   }
 }
 
 // Turn Modifiers
+// ds-token-check: intentional — rotation angles are a fixed geometric constant of the
+// "turn" modifier (same across every brand/theme), not a themeable design value.
 :host(.turn-plus) #inner {
   transform: rotate(225deg);
 }
@@ -159,22 +94,6 @@ $colors:
 :host(.turn-caret-down) #inner,
 :host(.turn-caret-up) #inner {
   transform: rotate(180deg);
-}
-
-// Tile
-:host(.is-tile) {
-  background: var(--_icon-tile-color-background);
-  border-radius: var(--_icon-tile-radius);
-
-  height: var(--_icon-tile-size);
-  --mod-icon-size: var(--_icon-tile-size);
-  --mod-icon-inner-size: var(--_icon-tile-size);
-
-  @include tablet {
-    height: var(--_icon-tile-size-tablet);
-    --mod-icon-size: var(--_icon-tile-size-tablet);
-    --mod-icon-inner-size: var(--_icon-tile-size-tablet);
-  }
 }
 
 /**
@@ -191,12 +110,13 @@ $icon-sizes: ('sm', 'md', 'lg', 'xl');
   :host(.is-#{$size}) {
     --mod-icon-size: var(--ds-icon-size-#{$size});
     --mod-icon-inner-size: var(--ds-icon-size-#{$size});
+    --mod-icon-padding: var(--ds-icon-padding-#{$size});
   }
 }
 
 //
 // Colors
-$icon-colors: ('primary', 'primary-light', 'info', 'success', 'danger', 'warning', 'grey');
+$icon-colors: ('primary', 'info', 'success', 'danger', 'warning', 'grey');
 
 @each $color in $icon-colors {
   :host(.is-#{$color}:not(.is-inverted, .is-invalid, .is-disabled)) {

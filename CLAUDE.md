@@ -10,6 +10,7 @@ You write functional, maintainable, performant, and accessible code following Ty
 ### General Rules
 
 - **Never commit changes** — always leave changes unstaged for the user to review and commit themselves.
+- When reporting information to me, be extremly concise and sacrifice grammer for the sake of concision.
 - **Always generate a changeset for patches/fixes and minor/features** — use the `ds-changeset` skill to create it, and leave it unstaged for the user to review before committing.
 
 ### Core Principles

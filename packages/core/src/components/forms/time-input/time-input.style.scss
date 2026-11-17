@@ -19,10 +19,13 @@
  * Define here the css variables for the component to be able to use it in host or non-host mode
  * These variables can be used in the component styles below and later on be overridden in themes.
  *
- * @prop --time-input-family - Font family of the time input control.
- * @prop --time-input-weight - Font weight of the time input control.
+ * @prop --time-input-font-family - Font family of the time input control.
+ * @prop --time-input-font-weight - Font weight of the time input control.
  * @prop --time-input-line-height - Line height of the time input control.
- * @prop --time-input-size - Font size of the time input control.
+ * @prop --time-input-font-size - Font size of the time input control.
+ * @prop --time-input-letter-spacing - Letter spacing of the time input control.
+ * @prop --time-input-text-decoration - Text decoration of the time input control.
+ * @prop --time-input-text-transform - Text transform of the time input control.
  * @prop --time-input-color - Text color of the time input control value.
  * @prop --time-input-placeholder - Text color of the time input placeholder text.
  */

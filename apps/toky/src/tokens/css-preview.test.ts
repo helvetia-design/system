@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolvedValueToCss, tokenNameToCssVar } from '@helvetia-design/tokens/css-preview'
+import { resolvedValueToCss, tokenNameToCssVar, typographyValueToCss } from '@helvetia-design/tokens/css-preview'
 
 import { computeBrandPreviewTokens, computePreviewTokens } from './css-preview'
 import type { TokenDiffEntry, WorkingToken } from './edit'
@@ -68,7 +68,7 @@ describe('resolvedValueToCss', () => {
   })
 
   it('renders a single-entry fontFamily keyword bare — not quoted', () => {
-    // dist/css/base.tokens.css: --ds-link-family: inherit;
+    // dist/css/base.tokens.css: --ds-link-typo-font-family: inherit;
     expect(resolvedValueToCss(['inherit'], 'fontFamily', [])).toBe('inherit')
   })
 
@@ -108,6 +108,50 @@ function flatToken(overrides: Partial<FlatToken>): FlatToken {
     ...overrides,
   }
 }
+
+describe('text-decoration / text-transform / letter-spacing', () => {
+  it('renders a valid textDecoration keyword as-is', () => {
+    expect(resolvedValueToCss('line-through', 'textDecoration', [])).toBe('line-through')
+  })
+
+  it('rejects an unknown textDecoration keyword (overline is not allowed)', () => {
+    expect(resolvedValueToCss('overline', 'textDecoration', [])).toBeNull()
+  })
+
+  it('renders a valid textTransform keyword as-is and rejects an unknown one', () => {
+    expect(resolvedValueToCss('capitalize', 'textTransform', [])).toBe('capitalize')
+    expect(resolvedValueToCss('small-caps', 'textTransform', [])).toBeNull()
+  })
+
+  const typography = {
+    fontFamily: ['Arial'],
+    fontSize: { value: 1, unit: 'rem' },
+    fontWeight: 400,
+    lineHeight: 1.5,
+    letterSpacing: { value: 0, unit: 'rem' },
+    textDecoration: 'none',
+    textTransform: 'none',
+  }
+
+  it('fans a typography value out into all 7 CSS longhands', () => {
+    expect(typographyValueToCss(typography)).toEqual({
+      fontFamily: 'Arial',
+      fontSize: '1rem',
+      fontWeight: '400',
+      lineHeight: '1.5',
+      letterSpacing: '0rem',
+      textDecoration: 'none',
+      textTransform: 'none',
+    })
+  })
+
+  it.each(['letterSpacing', 'textDecoration', 'textTransform'])(
+    'returns null when the required %s sub-value is missing — never half-renders',
+    field => {
+      expect(typographyValueToCss({ ...typography, [field]: undefined })).toBeNull()
+    },
+  )
+})
 
 describe('computePreviewTokens', () => {
   it('maps an update entry to its resolved CSS value, looked up from the working token', () => {

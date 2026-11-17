@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typography;
 
 /**
  * Variables
@@ -11,6 +12,13 @@
  * @prop --ordered-list-style-type: Defines the list style type for the ordered list.
  * @prop --ordered-list-style-position: Defines the list style position for the ordered list.
  * @prop --ordered-list-marker-color: Defines the color of the list marker for the ordered list.
+ * @prop --ordered-list-marker-font-family: Font family of the ordered list marker (counter).
+ * @prop --ordered-list-marker-font-size: Font size of the ordered list marker (counter).
+ * @prop --ordered-list-marker-font-weight: Font weight of the ordered list marker (counter).
+ * @prop --ordered-list-marker-line-height: Line height of the ordered list marker (counter).
+ * @prop --ordered-list-marker-letter-spacing: Letter spacing of the ordered list marker (counter).
+ * @prop --ordered-list-marker-text-decoration: Text decoration of the ordered list marker (counter).
+ * @prop --ordered-list-marker-text-transform: Text transform of the ordered list marker (counter).
  * @prop --unordered-list-mb: Defines the margin-bottom for the unordered list.
  * @prop --unordered-list-style-type: Defines the list style type for the unordered list.
  * @prop --unordered-list-style-position: Defines the list style position for the unordered list.
@@ -20,9 +28,10 @@
  */
 
 ol.ordered-list {
-  @include vars.local(ordered-list-mb, 1.5rem);
+  @include vars.local(ordered-list-mb, var(--ds-list-native-margin-bottom));
   @include vars.local(ordered-list-style-type, inherit);
   @include vars.local(ordered-list-style-position, inherit);
+  @include typography.local(ordered-list-marker, 'list-marker-typo');
 }
 
 ol.ordered-list li {
@@ -30,7 +39,7 @@ ol.ordered-list li {
 }
 
 ul.unordered-list {
-  @include vars.local(unordered-list-mb, 1.5rem);
+  @include vars.local(unordered-list-mb, var(--ds-list-native-margin-bottom));
   @include vars.local(unordered-list-style-type, disc);
   @include vars.local(unordered-list-style-position, inherit);
 }
@@ -54,14 +63,10 @@ ul.unordered-list li {
 // Ordered List
 // --------------------------------
 ol.ordered-list {
-  margin-left: 2rem;
+  margin-left: var(--ds-list-native-indent);
 
   &:not(:last-child) {
     margin-bottom: var(--_ordered-list-mb);
-  }
-
-  @include desktop {
-    --mod-ordered-list-mb: 2rem;
   }
 
   & > li {
@@ -69,8 +74,7 @@ ol.ordered-list {
     list-style-type: var(--_ordered-list-style-type);
 
     &::marker {
-      font-weight: var(--ds-alias-text-weight-bold);
-      font-family: var(--ds-alias-text-family-heading);
+      @include typography.apply(ordered-list-marker);
     }
   }
 
@@ -92,14 +96,10 @@ ol.ordered-list {
 // Unordered List
 // --------------------------------
 ul.unordered-list {
-  margin-left: 2rem;
+  margin-left: var(--ds-list-native-indent);
 
   &:not(:last-child) {
     margin-bottom: var(--_unordered-list-mb);
-  }
-
-  @include desktop {
-    --mod-unordered-list-mb: 2rem;
   }
 
   & > li {
@@ -122,13 +122,13 @@ ul.unordered-list > li.has-bullet-circle {
   &::marker {
     content: none;
   }
+  // ds-token-check: intentional — marker geometry, optical alignment
   &::before {
     content: '';
     position: absolute;
     display: inline-block;
     width: 0.75rem;
     height: 0.75rem;
-    font-size: 0.75rem;
     margin-left: -1.25rem;
     margin-top: 0.313rem;
     border-radius: var(--_unordered-list-marker-radius);
@@ -149,6 +149,7 @@ ul.unordered-list > li.has-icon-close {
     content: none !important;
   }
 
+  // ds-token-check: intentional — marker geometry, optical alignment
   &::before {
     content: '';
     position: absolute;
@@ -181,16 +182,16 @@ ul.unordered-list {
   }
 
   & > li:not(:last-child) {
-    margin-bottom: 1rem;
+    margin-bottom: var(--ds-list-native-item-gap);
   }
 
   //
   // Compact
   &.is-compact {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: var(--ds-list-native-compact-margin-y);
+    margin-bottom: var(--ds-list-native-compact-margin-y);
     li {
-      margin-bottom: 0.25rem;
+      margin-bottom: var(--ds-list-native-compact-item-gap);
     }
   }
 }
@@ -259,7 +260,7 @@ ul.unordered-list > li.has-icon-close {
 // --------------------------------
 ol.ordered-list.is-inverted,
 ul.unordered-list.is-inverted {
-  color: var(--ds-alias-text-color-white);
+  color: var(--ds-list-native-inverted-color-text);
 
   --mod-ordered-list-marker-color: var(--ds-list-marker-color-inverted);
   --mod-unordered-list-marker-color: var(--ds-list-marker-color-inverted);

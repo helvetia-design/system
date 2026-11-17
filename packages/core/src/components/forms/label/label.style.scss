@@ -1,6 +1,7 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../hybrid' as hybrid;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 @use 'sass:list';
 
 $use-host: false !default;
@@ -17,10 +18,7 @@ $host-selector: ('#label');
 
 @include vars.hybrid($name, $css-selector, $use-host) {
   @include vars.local(label-color, var(--ds-label-color-primary));
-  @include vars.local(label-family, var(--ds-label-typo-base-font-family));
-  @include vars.local(label-weight, var(--ds-label-typo-base-font-weight));
-  @include vars.local(label-line-height, var(--ds-label-typo-base-line-height));
-  @include vars.local(label-size, var(--ds-label-typo-base-font-size));
+  @include typo.local(label, 'label-typo-base');
 }
 
 /**
@@ -41,10 +39,7 @@ $host-selector: ('#label');
   min-width: 0;
 
   color: var(--_label-color);
-  font-family: var(--_label-family);
-  font-weight: var(--_label-weight);
-  font-size: var(--_label-size);
-  line-height: var(--_label-line-height);
+  @include typo.apply(label);
 }
 
 @include hybrid.styles($css-selector, $use-host) {
@@ -89,10 +84,7 @@ $host-selector: ('#label');
 // --------------------------------
 
 @mixin size($level) {
-  --mod-label-size: var(--ds-label-typo-#{$level}-font-size);
-  --mod-label-weight: var(--ds-label-typo-#{$level}-font-weight);
-  --mod-label-family: var(--ds-label-typo-#{$level}-font-family);
-  --mod-label-line-height: var(--ds-label-typo-#{$level}-line-height);
+  @include typo.mod(label, 'label-typo-#{$level}');
 }
 
 $size-aliases: (

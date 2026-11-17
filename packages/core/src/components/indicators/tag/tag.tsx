@@ -70,13 +70,6 @@ export class Tag implements DsComponentInterface {
   readonly disabled: boolean = false
 
   /**
-   * Overwrites the default color to invalid style
-   */
-  @Prop({ reflect: true })
-  @Type('boolean')
-  readonly invalid: boolean = false
-
-  /**
    * Choosing left or center the tag is aligned to that side in the ds-card.
    */
   @Prop()
@@ -119,7 +112,6 @@ export class Tag implements DsComponentInterface {
           [`is-${size}`]: hasValue(this.size),
           'is-closable': this.closable,
           'is-disabled': this.disabled,
-          'is-invalid': this.invalid,
         }}
       >
         <span part="label">

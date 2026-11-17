@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 @use '../form/form.mixin' as form;
 
 /**
@@ -10,21 +11,32 @@
  *
  * @prop --counter-gap: Space between the buttons and the value display.
  * @prop --counter-value-min-width: Minimum width of the value display so single- and multi-digit values render at the same widget width.
- * @prop --counter-value-font-weight: Font weight of the value display.
  * @prop --counter-value-font-family: Font family of the value display.
+ * @prop --counter-value-font-size: Font size of the value display.
+ * @prop --counter-value-font-weight: Font weight of the value display.
+ * @prop --counter-value-line-height: Line height of the value display.
+ * @prop --counter-value-letter-spacing: Letter spacing of the value display.
+ * @prop --counter-value-text-decoration: Text decoration of the value display.
+ * @prop --counter-value-text-transform: Text transform of the value display.
  * @prop --counter-value-color: Text color of the value display.
  * @prop --counter-value-animation-duration: Duration of the slide animation played when the value changes.
  * @prop --counter-value-animation-easing: Easing of the slide animation played when the value changes.
  * @prop --form-label-color: Text color of the label.
- * @prop --form-label-family: Font family of the label.
- * @prop --form-label-weight: Font weight of the label.
- * @prop --form-label-size: Font size of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
  * @prop --form-label-line-height: Line height of the label.
+ * @prop --form-label-letter-spacing: Letter spacing of the label.
+ * @prop --form-label-text-decoration: Text decoration of the label.
+ * @prop --form-label-text-transform: Text transform of the label.
  * @prop --form-description-color: Text color of the description.
- * @prop --form-description-family: Font family of the description.
- * @prop --form-description-weight: Font weight of the description.
- * @prop --form-description-size: Font size of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
  * @prop --form-description-line-height: Line height of the description.
+ * @prop --form-description-letter-spacing: Letter spacing of the description.
+ * @prop --form-description-text-decoration: Text decoration of the description.
+ * @prop --form-description-text-transform: Text transform of the description.
  */
 
 :host {
@@ -33,11 +45,10 @@
   @include form.vars-label();
   @include form.vars-description();
 
-  @include vars.local(counter-gap, 0.125rem);
-  @include vars.local(counter-value-min-width, 3rem);
-  @include vars.local(counter-value-font-weight, var(--ds-alias-text-weight-bold));
-  @include vars.local(counter-value-font-family, var(--ds-alias-text-family-text));
-  @include vars.local(counter-value-color, var(--ds-form-default-label-color));
+  @include vars.local(counter-gap, var(--ds-counter-gap));
+  @include vars.local(counter-value-min-width, var(--ds-counter-value-min-width));
+  @include typo.local(counter-value, 'counter-value-typo');
+  @include vars.local(counter-value-color, var(--ds-form-default-color-label));
   // Must match VALUE_ANIMATION_MS in counter.tsx, which clears the outgoing digit from the DOM once
   // the animation finishes.
   @include vars.local(counter-value-animation-duration, 260ms);
@@ -77,8 +88,7 @@
     grid-template-columns: 1fr;
     min-width: var(--_counter-value-min-width);
     text-align: center;
-    font-weight: var(--_counter-value-font-weight);
-    font-family: var(--_counter-value-font-family);
+    @include typo.apply(counter-value);
     color: var(--_counter-value-color);
     user-select: none;
     overflow: hidden;
@@ -157,31 +167,33 @@
 // Invalid or Color Danger
 // --------------------------------
 :host(.is-danger) {
-  --mod-form-description-color: var(--ds-form-danger-description-color);
-  --mod-counter-value-color: var(--ds-alias-text-color-danger);
+  --mod-form-description-color: var(--ds-form-danger-color-description);
+  --mod-counter-value-color: var(--ds-counter-value-color-danger);
 }
 
 //
 // Valid or Color Success
 // --------------------------------
 :host(.is-success) {
-  --mod-form-description-color: var(--ds-form-success-description-color);
+  --mod-form-description-color: var(--ds-form-success-color-description);
 }
 
 //
 // Color Warning
 // --------------------------------
 :host(.is-warning) {
-  --mod-form-description-color: var(--ds-form-warning-description-color);
+  --mod-form-description-color: var(--ds-form-warning-color-description);
 }
 
 //
 // Disabled (also covers `readonly`, treated as equivalent at the field level — see counter.tsx)
 // --------------------------------
 :host(.is-disabled) {
-  --mod-form-label-color: var(--ds-form-disabled-label-color);
-  --mod-form-description-color: var(--ds-form-disabled-description-color);
-  --mod-counter-value-color: var(--ds-form-disabled-label-color);
+  --mod-form-label-color: var(--ds-form-disabled-color-label);
+  --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
+  --mod-counter-value-color: var(--ds-form-disabled-color-label);
 
   &,
   #label,

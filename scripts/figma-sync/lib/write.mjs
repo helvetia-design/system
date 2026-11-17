@@ -15,14 +15,16 @@ import {
   figmaResponsiveDimensionDeviceVariableName,
   figmaResponsiveDimensionSubEntriesFor,
   figmaLiteralValueFor,
+  flattenVariableId,
   figmaShadowSubValuesFor,
   figmaTypographySubValuesFor,
   isDeviceEligibleResponsiveDimensionToken,
+  isPushableToken,
   isSyncableBorderToken,
   isSyncableResponsiveDimensionToken,
   isSyncableShadowToken,
   isSyncableTypographyToken,
-  resolvedTypeFor,
+  resolvedTypeForToken,
   RESPONSIVE_DIMENSION_SUB_PROPERTIES,
   RESPONSIVE_DIMENSION_SUB_PROPERTY_RESOLVED_TYPE,
   RESPONSIVE_DIMENSION_SUB_PROPERTY_SUFFIX,
@@ -134,7 +136,21 @@ export function assignVariableIds(baseTokens, existingNameIndex = new Map(), exi
 
     if (isSyncableTypographyToken(token)) {
       if (isCompositeVariableIdSet(token.variableId)) {
-        idByPath.set(key, token.variableId)
+        // A typography token committed before a sub-property was added (e.g. letterSpacing) carries
+        // fewer ids than TYPOGRAPHY_SUB_PROPERTIES lists. Keep the ids it has and complete only the
+        // missing ones — name-matched if Figma already has it (an interrupted earlier run), else a
+        // fresh temp id — so the existing variables are never touched or recreated.
+        idByPath.set(
+          key,
+          Object.fromEntries(
+            TYPOGRAPHY_SUB_PROPERTIES.map(sub => [
+              sub,
+              token.variableId[sub] ??
+                existingNameIndex.get(figmaTypographySubVariableName(token.path, sub)) ??
+                `temp-${key}-${sub}`,
+            ]),
+          ),
+        )
         continue
       }
       // Path/name fallback match, per sub-property — same "all-or-nothing" reasoning as shadow's.
@@ -351,7 +367,7 @@ export function buildCreatePassPayload({
       id: variableId,
       name: figmaVariableName(token.path),
       variableCollectionId: collectionId,
-      resolvedType: resolvedTypeFor(token.type),
+      resolvedType: resolvedTypeForToken(token),
       scopes: token.figmaScopes ?? ['ALL_SCOPES'],
       description: token.description ?? '',
     })
@@ -415,8 +431,8 @@ export function buildCreatePassPayload({
       }
 
       // A standalone LineHeight `number` token (Global.Font.LineHeight.*, Alias.Text.LineHeight.*,
-      // Component.*.LineHeight) is scaled ×100 for Figma's percentage convention, same as
-      // typography's own lineHeight sub-value above — see figmaLiteralValueFor.
+      // Component.*.LineHeight) is sent as a percentage string ("150%") for Figma's line-height
+      // convention, same as typography's own lineHeight sub-value above — see figmaLiteralValueFor.
       variableModeValues.push({
         variableId: idByPath.get(pathKey(token.path)),
         modeId,
@@ -704,6 +720,44 @@ export function buildNameUpdatePayload({ baseTokens, idByPath, remoteVariablesBy
 }
 
 /**
+ * Finds tokens whose existing Figma variable(s) carry a different `resolvedType` than this run
+ * expects — Figma can't change a variable's type after creation, so such a token has to be deleted
+ * and recreated (e.g. LineHeight tokens moving from FLOAT to the "150%" STRING). Token-level, not
+ * per-variable: a composite token's sub-variables are deleted and recreated together, since the
+ * ones that still match would otherwise collide by name with their own recreated siblings.
+ *
+ * @param {import('./tokens.mjs').Token[]} baseTokens
+ * @param {Record<string, { resolvedType: string }>} remoteVariablesById
+ * @returns {{ token: import('./tokens.mjs').Token, ids: string[] }[]} `ids` are every variableId of the
+ *   token that exists in Figma (the ones to DELETE)
+ */
+export function findResolvedTypeMismatches(baseTokens, remoteVariablesById) {
+  const mismatches = []
+  for (const token of baseTokens) {
+    if (!isPushableToken(token) || !token.variableId) continue
+    const flattened = flattenVariableId(token.variableId)
+    const mismatched = flattened.some(({ id, subProperty }) => {
+      const remote = remoteVariablesById[id]
+      return remote && remote.resolvedType !== expectedResolvedTypeFor(token, subProperty)
+    })
+    if (mismatched) {
+      mismatches.push({ token, ids: flattened.map(({ id }) => id).filter(id => remoteVariablesById[id]) })
+    }
+  }
+  return mismatches
+}
+
+function expectedResolvedTypeFor(token, subProperty) {
+  if (isSyncableShadowToken(token)) return SHADOW_SUB_PROPERTY_RESOLVED_TYPE[subProperty]
+  if (isSyncableBorderToken(token)) return BORDER_SUB_PROPERTY_RESOLVED_TYPE[subProperty]
+  if (isSyncableTypographyToken(token)) return TYPOGRAPHY_SUB_PROPERTY_RESOLVED_TYPE[subProperty]
+  if (isSyncableResponsiveDimensionToken(token)) {
+    return subProperty === 'device' ? 'FLOAT' : RESPONSIVE_DIMENSION_SUB_PROPERTY_RESOLVED_TYPE[subProperty]
+  }
+  return resolvedTypeForToken(token)
+}
+
+/**
  * Patches `idByPath` in place so every temp id assigned by
  * `assignVariableIds` is replaced with pass 1's real Figma id — pass 2 and
  * the newly-created-id collection below must never see a temp id again.
@@ -723,13 +777,20 @@ export function resolveTempIds(idByPath, tempIdToRealId) {
 }
 
 /**
- * Tokens that had no `variableId` at the start of this run — what
- * docs/adr/0017-direct-commit-variableid-backfill.md's write-back commit
- * needs. Call only after `resolveTempIds`, so every entry already holds a
- * real Figma id, never a temp one.
+ * Tokens whose Figma identity changed this run, as `{ path, variableId }` — what
+ * docs/adr/0017-direct-commit-variableid-backfill.md's write-back commit needs. Two kinds: tokens
+ * that had no `variableId` at the start of the run, and typography tokens that had one but were
+ * missing sub-property ids added since (e.g. letterSpacing) — for those, `variableId` is the full
+ * completed id set, existing ids included, since the backfill replaces the whole value. Call only
+ * after `resolveTempIds`, so every entry already holds a real Figma id, never a temp one.
  */
 export function collectNewlyCreatedIds(baseTokens, idByPath) {
   return baseTokens
-    .filter(token => !token.variableId)
+    .filter(token => {
+      if (!isPushableToken(token)) return false
+      if (!token.variableId) return true
+      if (!isSyncableTypographyToken(token) || !isCompositeVariableIdSet(token.variableId)) return false
+      return TYPOGRAPHY_SUB_PROPERTIES.some(sub => !token.variableId[sub])
+    })
     .map(token => ({ path: token.path, variableId: idByPath.get(pathKey(token.path)) }))
 }

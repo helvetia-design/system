@@ -5,7 +5,7 @@
   @include vars.local(buttons-align-items, center);
   @include vars.local(buttons-justify-content, flex-start);
   @include vars.local(buttons-direction, row);
-  @include vars.local(buttons-gap, 0.25rem);
+  @include vars.local(buttons-gap, var(--ds-button-group-gap));
   @include vars.local(buttons-wrap, wrap);
 
   display: flex;

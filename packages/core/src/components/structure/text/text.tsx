@@ -159,15 +159,10 @@ export class Text implements DsComponentInterface {
           'has-no-wrap': this.noWrap,
           [`has-space-${this.space}`]: hasValue(this.space),
           [`is-${this.size}`]: hasValue(this.size),
+          [`is-${this.align}`]: hasValue(this.align),
         }}
       >
-        <Text
-          id="text"
-          part="text"
-          class={{
-            [`is-${this.align}`]: hasValue(this.align),
-          }}
-        >
+        <Text id="text" part="text">
           <slot></slot>
         </Text>
       </Host>

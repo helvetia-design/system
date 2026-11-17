@@ -68,11 +68,11 @@ export class Content implements DsComponentInterface {
   readonly textAlign?: ContentTextAlignment
 
   /**
-   * Defines the space between the child elements.
+   * Defines the space between the child elements. Default is 2xs.
    */
   @Prop()
   @OneOf(CONTENT_SPACES)
-  readonly space?: ContentSpace
+  readonly space: ContentSpace = '2xs'
 
   /**
    * @internal

@@ -52,8 +52,11 @@ describe('applyVariableIdPatch', () => {
 
   it('patches correctly against the real Base.tokens.json shape', () => {
     const realBase = loadTokenFile(resolve(TOKENS_DIR, 'Base.tokens.json'))
-    const [firstUnsynced] = flattenTokens(realBase).filter(t => !t.variableId)
-    expect(firstUnsynced, 'expected at least one real token without a variableId to test against').toBeTruthy()
+    // Once the repo is fully synced no real token lacks a variableId, so pick one and strip its id
+    // from a copy instead of depending on the real file's sync state.
+    const [firstToken] = flattenTokens(realBase)
+    expect(firstToken, 'expected the real Base.tokens.json to contain at least one token').toBeTruthy()
+    const firstUnsynced = firstToken
 
     const patched = applyVariableIdPatch(realBase, [{ path: firstUnsynced.path, variableId: 'VariableID:99:99' }])
     const [patchedToken] = flattenTokens(patched).filter(t => t.path.join('.') === firstUnsynced.path.join('.'))
