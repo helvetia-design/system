@@ -2,7 +2,7 @@
 
 Migrate every `bal-carousel` usage to `ds-carousel`. Init has already added the `@helvetia-design/*` packages. This task rewrites usages only.
 
-The legacy folder has one child element: `bal-carousel-item` becomes `ds-carousel-item`. Legacy items had no identifier; `ds-carousel-item` requires a unique `name`, so the rewrite synthesizes one. Legacy items could render their own link or button; `ds-carousel-item` renders neither, so the rewrite moves that markup into the slot. `controls` and `interface` both shrink to a smaller set of values on the new side, described under Shape and under Props below.
+The legacy folder has one child element: `bal-carousel-item` becomes `ds-carousel-item`. Legacy items had no identifier; `ds-carousel-item` requires a unique `name`, so the rewrite synthesizes one. Legacy product tiles (`color` and `label` both set on the item) rendered their own link or button; `ds-carousel-item` renders neither, so the rewrite moves that markup into the slot. `controls` and `interface` both shrink to a smaller set of values on the new side, described under Shape and under Props below.
 
 ## 1. Scan
 
@@ -60,25 +60,35 @@ Legacy `value` on `bal-carousel` is a 0-based slide **index**. `ds-carousel`'s `
 
 ### Shape: `bal-carousel-item` link and button rewrite
 
-Legacy `bal-carousel-item` rendered its own `<a>` (when `href` was set) or `<button>` (when `elementType`/`name`/`value` were set, with no `href`) around its content. `ds-carousel-item` renders neither — it is always a plain host. The new pattern is slotting the interactive element yourself.
+Legacy `bal-carousel-item` rendered its own `<a>` or `<button>` only when the item had both `color` and `label`. The compiled render logic in `@baloise/ds-core` (`bal-carousel-item.js`) reads `const isProduct = !!this.color && !!this.label;`. The gate is read statically, before any `color="white"` drop: a literal attribute with a non-empty value counts as set, and so does an attribute bound to an expression, because the migration cannot read its runtime value. Legacy read it at runtime, and `label` defaults to `''`, so an expression that is empty rendered a plain host. Treat an expression-bound `color` or `label` as set, and report the item, so the consumer confirms the wrapper belongs there. `ds-carousel-item` renders neither element and is always a plain host, so the rewrite slots the interactive element itself, and only for product tiles.
 
-When `href` is present: wrap the item's existing slot content in a literal `<a>`, carrying over `href`, `target`, `rel`, and `download` unchanged, and add the new `navigation` prop to `ds-carousel-item` (it marks the item as "a consumer-provided `<a>` makes this tile interactive").
+When the item does not have both `color` and `label`, add no wrapper. Legacy rendered a plain host with the slot and ignored `href`, `target`, `rel`, `download`, `elementType`, the form `name` and `value`. Rewrite the item as plain slot content and drop those attributes in every framework, HTML included, because a form `name` would clash with the synthesized `name`. This is a row-prescribed drop, so the cleanup bullets of Unmapped props and handlers (`SKILL.md`) apply to declarations that become unused.
 
 ```html
 <!-- before -->
-<bal-carousel-item color="green" href="/auto" target="_self">
-  <span>Auto</span>
+<bal-carousel-item value="3" label="Car">
+  <ds-card>...</ds-card>
 </bal-carousel-item>
 
 <!-- after -->
-<ds-carousel-item name="item-1" color="green" navigation>
-  <a href="/auto" target="_self">
-    <span>Auto</span>
-  </a>
+<ds-carousel-item name="item-1">
+  <ds-card>...</ds-card>
 </ds-carousel-item>
 ```
 
-When there is no `href` but `elementType`, `name` (the button's form name — distinct from the `name` synthesized above for `ds-carousel-item` itself), or `value` (the button's form value) are present: wrap the slot content in a literal `<button type={elementType} name={name} value={value}>` instead. Do not add `navigation` in this case — the new component's documentation never shows a button-wrapped tile, so flag every occurrence for manual visual and behavior review.
+When the item has both `color` and `label` and an `href`: wrap the item's slot content in a literal `<a>`, carrying over `href`, `target`, `rel`, and `download` unchanged, and add the new `navigation` prop to `ds-carousel-item` (it marks the item as "a consumer-provided `<a>` makes this tile interactive"). The `label` moves into the slot per the `label` row, here inside the `<a>` before any existing slot content.
+
+```html
+<!-- before -->
+<bal-carousel-item color="green" label="Auto" href="/auto" target="_self"></bal-carousel-item>
+
+<!-- after -->
+<ds-carousel-item name="item-1" color="green" navigation>
+  <a href="/auto" target="_self">Auto</a>
+</ds-carousel-item>
+```
+
+When the item has both `color` and `label` but no `href`: wrap the slot content in a literal `<button>` instead, with the `label` moved in the same way. Legacy rendered this button for every such item, because `elementType` defaults to `button`. Set `type` to the item's `elementType`, or to `button` when it has none. Carry over `name` (the button's form name, distinct from the `name` synthesized above for `ds-carousel-item` itself) and `value` (the button's form value) only when they are set. Do not add `navigation` in this case. The new component's documentation never shows a button-wrapped tile, so flag every occurrence for manual visual and behavior review.
 
 ### `controls`
 
@@ -123,9 +133,9 @@ When there is no `href` but `elementType`, `name` (the button's form name — di
 | `color="green"` / `"yellow"` / `"red"` / `"purple"` | same value | Copy as-is. |
 | `color="white"` | _(no equivalent)_ | Drop it. `ds-carousel-item`'s `color` has no `white` value. Mention each dropped occurrence. |
 | `svg` | _(no equivalent prop)_ | Drop it. The new pattern is slotting a `<ds-brand-icon src="...">` component instead of inline SVG markup. Do not attempt to auto-generate that markup from the raw SVG string — flag every occurrence for manual rewrite. |
-| `label` | slot text, or dropped | When the item has no other slotted content (the typical product-tile usage), move the `label` value into the slot as plain text and drop the attribute. When the item already has slotted content (typical image usage, `label` was only the aria-label), drop `label` and report the lost custom aria-label — image items now get an automatic `aria-label="Slide N"` instead. |
+| `label` | slot text, or dropped | On a product tile (`color` and `label` both set), legacy showed the label as visible text before the slot. Move the `label` value into the slot as plain text, inside the wrapper and before any existing slot content, and drop the attribute. On every other item, legacy used `label` only as the host's aria-label. Drop `label` and report the lost custom aria-label. These items now get an automatic `aria-label="Slide N"` instead. |
 | `htmlRole` / `html-role` | _(no equivalent)_ | Drop it. Already `@deprecated`. Mention each dropped occurrence. |
-| `elementType`, item `name` (form name), `value` (form value), `href`, `target`, `rel`, `download` | — | Handled under Shape above, not here — these determine whether the item becomes a wrapped `<a>` or `<button>`. |
+| `elementType`, item `name` (form name), `value` (form value), `href`, `target`, `rel`, `download` | — | Handled under Shape above, not here. They determine the wrapper only on product tiles (`color` and `label` both set) and are dropped on every other item. |
 
 ### Tags and imports
 
@@ -139,9 +149,9 @@ When there is no `href` but `elementType`, `name` (the button's form name — di
 | --- | --- | --- |
 | `balChange` | `dsChange` | Rewrite `addEventListener('balChange'` to `addEventListener('dsChange'`. Angular: `(balChange)` becomes `(dsChange)`. React: `onBalChange` becomes `onDsChange`. |
 | event `detail` | `{ value: string }` | Legacy sent the new slide index as a number. `ds-carousel` sends the active item's name (`item-N`). When the handler body is in the same file (inline arrow, named function, Angular class method bound by `(balChange)`, `addEventListener` callback), rewrite every `.detail` read to `.detail.value`, for example `({ detail }) => f(detail)` becomes `({ detail }) => f(detail.value)`. When the handler uses the read as a number (`Number(...)`, arithmetic, a numeric state setter), `.detail.value` alone gives `'item-2'` or `NaN`. Convert the synthesized name back to the 0-based index instead: `setSlide(event.detail)` becomes `setSlide(Number(event.detail.value.slice('item-'.length)) - 1)`. A parameter typed `CustomEvent<number>` becomes `CustomEvent<{ value: string }>`. Report each rewritten handler, because the bound `value` must now hold the name, not the index. A handler in another file, one whose body you cannot see, or one also bound to an element you did not migrate stays as it is and is reported. |
-| `balNavigate` | `click` | Only applies to items rewritten into a wrapped `<a>`/`<button>` per the Shape section. Move the listener onto that element: `addEventListener('balNavigate'` → `addEventListener('click'`, Angular `(balNavigate)` → `(click)`, React `onBalNavigate` → `onClick`. |
-| `balFocus` | `focus` | Same rule as `balNavigate`, targeting `focus`. |
-| `balBlur` | `blur` | Same rule as `balNavigate`, targeting `blur`. |
+| `balNavigate` | `click` | Legacy fired it only on product tiles with an `href`. On those tiles, rewritten into a wrapped `<a>` per the Shape section, move the listener onto that element. On every other item, a button-wrapped product tile included, legacy never fired the event, so remove the binding and apply the cleanup bullets of Unmapped props and handlers. Rewrites for the `<a>`: `addEventListener('balNavigate'` → `addEventListener('click'`, Angular `(balNavigate)` → `(click)`, React `onBalNavigate` → `onClick`. |
+| `balFocus` | `focus` | Legacy fired it on every product tile. Move the listener onto the wrapped `<a>` or `<button>`, targeting `focus`. On every other item, remove the binding as for `balNavigate`. |
+| `balBlur` | `blur` | Same rule as `balFocus`, targeting `blur`. |
 
 ### Methods
 
@@ -176,23 +186,25 @@ Needs your attention when found:
 11. Every dropped `scrollY` that was `false`.
 12. Every dropped `border`.
 13. Every dropped `space`, with a pointer to the `--carousel-gap` CSS custom property.
-14. Every item rewritten into a wrapped `<button>`, flagged for visual and behaviour review.
+14. Every product tile rewritten into a wrapped `<button>`, flagged for visual and behaviour review.
 15. Every dropped `color="white"`.
 16. Every dropped `svg`, with the guidance to slot a `ds-brand-icon` instead.
-17. Every `label` dropped because the item already had slotted content. The custom aria-label is lost.
-18. Every `balNavigate`, `balFocus` or `balBlur` rewritten to a native event on the wrapped element.
+17. Every `label` dropped from an item that is not a product tile. The custom aria-label is lost.
+18. Every `balNavigate`, `balFocus` or `balBlur` rewritten to a native event on the wrapped element, and every such binding removed from an item where legacy never fired it.
 19. Every handler whose `detail` read was rewritten to `detail.value`. The value is now the item name (`item-N`), not a 0-based index, so state that stores an index must change. Also every handler left as it is because its body is in another file, named by file and line.
 20. Every `previous()`, `next()` or `setFocus()` call, with its Unmapped props and handlers outcome. For `previous()` and `next()`, name the `el.value = 'item-N'` option, which moves the active dot but does not scroll.
-21. One-time note: files which only listen or only call a method, and have no scanned `.html` of the same name beside them, were not scanned.
+21. Every item treated as a product tile because its `color` or `label` is bound to an expression, whose runtime value the migration cannot read. When that expression is empty at runtime, legacy rendered a plain host, so the wrapper does not belong.
+22. One-time note: files which only listen or only call a method, and have no scanned `.html` of the same name beside them, were not scanned.
 
 Coverage only, written to the file:
 
-22. Every synthesized `ds-carousel-item` name.
-23. Every `value` rewritten from an index to a name.
-24. Every dropped `controlsSticky`.
-25. Every dropped `htmlRole`.
-26. Every item rewritten into a wrapped `<a>`, with `navigation` added.
-27. Every `label` moved into the slot as plain text.
+23. Every synthesized `ds-carousel-item` name.
+24. Every `value` rewritten from an index to a name.
+25. Every dropped `controlsSticky`.
+26. Every dropped `htmlRole`.
+27. Every product tile rewritten into a wrapped `<a>`, with `navigation` added.
+28. Every `label` moved into a product tile's slot as plain text.
+29. Every `href`, `target`, `rel`, `download`, `elementType`, form `name` or `value` dropped from an item without both `color` and `label`, which legacy ignored.
 
 Leave every change unstaged for the consumer to review, including `ds-migration-report.md`. Stop. Do not run `git add` or `git commit`.
 

@@ -8846,29 +8846,26 @@
         },
         {
           "name": "download",
-          "type": "string",
+          "type": "string | undefined",
           "complexType": {
             "original": "string",
-            "resolved": "string",
+            "resolved": "string | undefined",
             "references": {}
           },
           "mutable": false,
           "attr": "download",
           "reflectToAttr": false,
           "docs": "This attribute instructs browsers to download a URL instead of navigating to\nit, so the user will be prompted to save it as a local file. If the attribute\nhas a value, it is used as the pre-filled file name in the Save prompt\n(the user can still change the file name if they want).",
-          "docsTags": [
-            {
-              "name": "default",
-              "text": "''"
-            }
-          ],
-          "default": "''",
+          "docsTags": [],
           "values": [
             {
               "type": "string"
+            },
+            {
+              "type": "undefined"
             }
           ],
-          "optional": false,
+          "optional": true,
           "required": false,
           "getter": false,
           "setter": false
@@ -23556,7 +23553,9 @@
           "setter": false,
           "oneOfValues": [
             "column",
-            "row"
+            "row",
+            "column-reverse",
+            "row-reverse"
           ]
         },
         {
@@ -80128,7 +80127,7 @@
       "path": "src/components/indicators/spinner/spinner.interfaces.ts"
     },
     "src/components/indicators/tag/tag.interfaces.ts::TagColor": {
-      "declaration": "\"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"purple\" | \"red\" | \"yellow\" | \"green\" | \"disabled\" | \"red-dark\" | \"yellow-dark\" | \"purple-dark\" | \"green-dark\" | \"green-light\" | \"red-light\" | \"purple-light\" | \"yellow-light\"",
+      "declaration": "\"primary\" | \"success\" | \"warning\" | \"danger\" | \"purple\" | \"red\" | \"yellow\" | \"green\" | \"info\" | \"disabled\" | \"red-dark\" | \"yellow-dark\" | \"purple-dark\" | \"green-dark\" | \"green-light\" | \"red-light\" | \"purple-light\" | \"yellow-light\"",
       "docstring": "",
       "path": "src/components/indicators/tag/tag.interfaces.ts"
     },
@@ -80328,7 +80327,7 @@
       "path": "src/components/overlays/modal/modal.interfaces.ts"
     },
     "src/components/overlays/notification/notification.interfaces.ts::NotificationColor": {
-      "declaration": "\"success\" | \"warning\" | \"danger\" | \"info\" | \"default\" | \"outline-purple\" | \"outline-green\" | \"outline-yellow\" | \"outline-red\" | \"outline-default\"",
+      "declaration": "\"success\" | \"warning\" | \"danger\" | \"default\" | \"info\" | \"outline-purple\" | \"outline-green\" | \"outline-yellow\" | \"outline-red\" | \"outline-default\"",
       "docstring": "",
       "path": "src/components/overlays/notification/notification.interfaces.ts"
     },

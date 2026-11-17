@@ -232,7 +232,46 @@ export class Tooltip implements DsComponentInterface {
 
   private get triggerElement(): HTMLElement | null {
     if (!dsBrowser.hasDocument) return null
-    return document.querySelector(`[id="${this.reference}"]`)
+    const selector = `[id="${this.reference}"]`
+    // Scoped to the tooltip's own (shadow) root so components can reference triggers inside their shadow DOM
+    const root = this.el.getRootNode() as Document | ShadowRoot
+    return (root.querySelector?.(selector) as HTMLElement | null) ?? document.querySelector(selector)
+  }
+
+  /**
+   * PRIVATE METHODS
+   * ─────────────────────────────────────────────────────
+   */
+
+  /**
+   * Resolves the trigger-to-tooltip distance in pixels.
+   *
+   * The `offset` prop wins when set, otherwise the value comes from the
+   * `--_tooltip-offset` variable (fed by the `--ds-tooltip-offset` token).
+   * floating-ui needs a number, so the computed value has to be read and
+   * converted here instead of being used as a `var()` in the stylesheet.
+   */
+  private resolveOffset(): number {
+    if (this.offset !== undefined) {
+      return this.offset
+    }
+
+    try {
+      const value = getComputedStyle(this.el).getPropertyValue('--_tooltip-offset').trim()
+      const amount = Number.parseFloat(value)
+
+      if (!Number.isNaN(amount)) {
+        if (value.endsWith('rem')) {
+          const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+          return Number.isNaN(rootFontSize) ? DEFAULT_OFFSET : amount * rootFontSize
+        }
+        return amount
+      }
+    } catch {
+      // Ignore errors, e.g. if getComputedStyle is not available
+    }
+
+    return DEFAULT_OFFSET
   }
 
   /**

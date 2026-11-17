@@ -2,7 +2,8 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const STATIC_IMPORT = 'import * as clientComponents from "./components.js";'
+// Quote style varies between @stencil/react-output-target versions
+const STATIC_IMPORT = /import \* as clientComponents from ["']\.\/components\.js["'];/
 const CONDITIONAL_IMPORT =
   'const clientComponents = typeof window === "undefined" ? {} : await import("./components.js");'
 const STENCIL_SSR_IMPORT = "import { createComponent } from '@stencil/react-output-target/ssr';"
@@ -20,7 +21,7 @@ if (!source.includes(LOCAL_SSR_IMPORT)) {
 }
 
 if (!source.includes(CONDITIONAL_IMPORT)) {
-  if (!source.includes(STATIC_IMPORT)) {
+  if (!STATIC_IMPORT.test(source)) {
     throw new Error(`Could not find clientComponents import to patch in ${file}`)
   }
   source = source.replace(STATIC_IMPORT, CONDITIONAL_IMPORT)

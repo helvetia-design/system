@@ -16,6 +16,7 @@ import { withValueAccessor } from './value-accessor'
  */
 @Component({
   selector: 'ds-file-upload',
+  host: { 'data-ds-form-control': '' },
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: DsFileUploadInputs,

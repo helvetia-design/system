@@ -11,6 +11,9 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 env:
   DS_PUBLISH: false
 
+permissions:
+  contents: read
+
 jobs:
   PrepareRelease:
     name: 📦️ Prepare Release
@@ -30,7 +33,7 @@ jobs:
 
       - name: Create Pre-Release Pull Request
         id: changesets
-        uses: changesets/action@v2
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           pr-title: '📦️ Release'
           commit-message: 'prepare release'

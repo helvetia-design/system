@@ -13,6 +13,7 @@ import { AppNavbarContainer } from "./components/navigation/app-navbar/app-navba
 import { BadgeColor, BadgePosition, BadgeSize } from "./components/indicators/badge/badge.interfaces";
 import { IconColor, IconSize } from "./components/media/brand-icon/brand-icon.interfaces";
 import { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, ButtonDidRenderDetail, ButtonElementType, ButtonFocusDetail, ButtonGroupAlignment, ButtonGroupDirection, ButtonNavigateDetail, ButtonSize, ButtonTarget } from "./components/actions/button/button.interfaces";
+import { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 import { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
 import { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
 import { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
@@ -52,7 +53,6 @@ import { TextAlign, TextColor, TextSize, TextSpace } from "./components/structur
 import { TextareaBlurDetail, TextareaChangeDetail, TextareaClickDetail, TextareaFocusDetail, TextareaInputDetail, TextareaInputMode, TextareaKeyPressDetail, TextareaWrap } from "./components/forms/textarea/textarea.interfaces";
 import { ToastActionClickDetail, ToastCloseClickDetail, ToastColor, ToastDuration } from "./components/overlays/alert/toast/toast.interfaces";
 import { ToggleBlurDetail, ToggleChangeDetail, ToggleFocusDetail, ToggleLabelPosition } from "./components/forms/toggle/toggle.interfaces";
-import { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 export { AccordionButtonColor, AccordionButtonSize, AccordionMarker, AccordionMarkerPosition, AccordionSummaryLevel, AccordionToggleDetail } from "./components/structure/accordion/accordion.interfaces";
 export { DsBrand, DsConfigState, DsIcons, DsLanguage, DsLegalLinks, DsLegalText, DsRegion, DsSocialLinks } from "./global/index";
 export { Alert, AlertComponent, AlertContainerSize, AlertType } from "./components/overlays/alert/alert-container.interfaces";
@@ -61,6 +61,7 @@ export { AppNavbarContainer } from "./components/navigation/app-navbar/app-navba
 export { BadgeColor, BadgePosition, BadgeSize } from "./components/indicators/badge/badge.interfaces";
 export { IconColor, IconSize } from "./components/media/brand-icon/brand-icon.interfaces";
 export { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, ButtonDidRenderDetail, ButtonElementType, ButtonFocusDetail, ButtonGroupAlignment, ButtonGroupDirection, ButtonNavigateDetail, ButtonSize, ButtonTarget } from "./components/actions/button/button.interfaces";
+export { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 export { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
 export { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
 export { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
@@ -100,7 +101,6 @@ export { TextAlign, TextColor, TextSize, TextSpace } from "./components/structur
 export { TextareaBlurDetail, TextareaChangeDetail, TextareaClickDetail, TextareaFocusDetail, TextareaInputDetail, TextareaInputMode, TextareaKeyPressDetail, TextareaWrap } from "./components/forms/textarea/textarea.interfaces";
 export { ToastActionClickDetail, ToastCloseClickDetail, ToastColor, ToastDuration } from "./components/overlays/alert/toast/toast.interfaces";
 export { ToggleBlurDetail, ToggleChangeDetail, ToggleFocusDetail, ToggleLabelPosition } from "./components/forms/toggle/toggle.interfaces";
-export { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 export namespace Components {
     /**
      * Accordion displays collapsible content sections with open/close toggle buttons and optional animations.
@@ -392,9 +392,8 @@ export namespace Components {
         "disabled": boolean;
         /**
           * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
-          * @default ''
          */
-        "download": string;
+        "download"?: string;
         /**
           * The type of button.
           * @default 'button'
@@ -469,6 +468,11 @@ export namespace Components {
           * @default '_self'
          */
         "target": ButtonTarget;
+        /**
+          * Placement of the tooltip that shows the `a11yTitle` on hover and focus.
+          * @default 'bottom'
+         */
+        "tooltipPlacement": TooltipPlacement;
         /**
           * The value of the button, which is submitted with the form data.
           * @default ''
@@ -1883,7 +1887,7 @@ export namespace Components {
          */
         "animated": boolean;
         /**
-          * Defines the brand of the logo. Default is 'baloise'.
+          * Defines the brand of the logo. Default is 'helvetia'.
          */
         "brand"?: LogoBrand;
         /**
@@ -5500,7 +5504,6 @@ declare namespace LocalJSX {
         "disabled"?: boolean;
         /**
           * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
-          * @default ''
          */
         "download"?: string;
         /**
@@ -5601,6 +5604,11 @@ declare namespace LocalJSX {
           * @default '_self'
          */
         "target"?: ButtonTarget;
+        /**
+          * Placement of the tooltip that shows the `a11yTitle` on hover and focus.
+          * @default 'bottom'
+         */
+        "tooltipPlacement"?: TooltipPlacement;
         /**
           * The value of the button, which is submitted with the form data.
           * @default ''
@@ -7127,7 +7135,7 @@ declare namespace LocalJSX {
          */
         "animated"?: boolean;
         /**
-          * Defines the brand of the logo. Default is 'baloise'.
+          * Defines the brand of the logo. Default is 'helvetia'.
          */
         "brand"?: LogoBrand;
         /**
@@ -9273,6 +9281,7 @@ declare namespace LocalJSX {
         "a11yControls": string;
         "a11yCurrent": string;
         "a11yTitle": string;
+        "tooltipPlacement": TooltipPlacement;
         "a11yLabel": string;
         "a11yHaspopup": string;
     }

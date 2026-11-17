@@ -30,4 +30,9 @@ test.describe('host', () => {
       await expectScreenshot(el, image(variant))
     })
   })
+
+  test('card-position', async ({ page }) => {
+    const el = page.getByTestId('card-position')
+    await expectScreenshot(el, image('card-position'))
+  })
 })

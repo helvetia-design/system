@@ -19,6 +19,7 @@ import { withValueAccessor } from './value-accessor'
  */
 @Component({
   selector: 'ds-number-input',
+  host: { 'data-ds-form-control': '' },
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: DsNumberInputInputs,

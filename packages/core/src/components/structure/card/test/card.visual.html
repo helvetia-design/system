@@ -439,6 +439,32 @@
             </ds-card-actions>
           </ds-card>
         </section>
+
+        <!-- Offset Parent: the host must be the positioned ancestor, see #131 -->
+        <section data-testid="offset-parent" style="position: relative; padding: 48px 0 48px 96px">
+          <span>Offset Parent</span>
+          <ds-card style="width: 320px">
+            <ds-card-content>
+              <button id="offset-parent-trigger" type="button">Trigger</button>
+            </ds-card-content>
+            <div
+              id="offset-parent-popup"
+              style="position: absolute; padding: 4px 8px; background: #ffd400; border: 1px solid #000"
+            >
+              Popup below trigger
+            </div>
+          </ds-card>
+        </section>
+        <script>
+          // Mimics legacy JS popups (e.g. bal-popup) that anchor via offsetParent/offsetTop
+          customElements.whenDefined('ds-card').then(async () => {
+            await document.querySelector('[data-testid="offset-parent"] ds-card').componentOnReady()
+            const trigger = document.getElementById('offset-parent-trigger')
+            const popup = document.getElementById('offset-parent-popup')
+            popup.style.top = `${trigger.offsetTop + trigger.offsetHeight}px`
+            popup.style.left = `${trigger.offsetLeft}px`
+          })
+        </script>
       </main>
     </ds-root>
   </body>

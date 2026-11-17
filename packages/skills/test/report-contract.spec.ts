@@ -36,8 +36,8 @@ const expectedCounts: Record<string, { attention: number; coverage: number }> = 
   'badge': { attention: 3, coverage: 3 },
   'button': { attention: 13, coverage: 4 },
   'card': { attention: 9, coverage: 3 },
-  'carousel': { attention: 21, coverage: 6 },
-  'checkbox': { attention: 16, coverage: 2 },
+  'carousel': { attention: 22, coverage: 7 },
+  'checkbox': { attention: 17, coverage: 2 },
   'close': { attention: 2, coverage: 1 },
   'content': { attention: 4, coverage: 2 },
   'data': { attention: 6, coverage: 1 },
@@ -64,7 +64,7 @@ const expectedCounts: Record<string, { attention: number; coverage: number }> = 
   'pagination': { attention: 6, coverage: 4 },
   'popup': { attention: 18, coverage: 5 },
   'progress-bar': { attention: 6, coverage: 3 },
-  'radio': { attention: 14, coverage: 2 },
+  'radio': { attention: 15, coverage: 2 },
   'segment': { attention: 8, coverage: 0 },
   'select': { attention: 12, coverage: 1 },
   'shape': { attention: 4, coverage: 1 },
@@ -198,6 +198,25 @@ describe('Report items the issue requires by name', () => {
     expect(lineOf('| `bal-accordion` bound `active`')).toContain('`[open]="x"`')
   })
 
+  it('carousel wraps an item in a link or button only when it has both color and label', () => {
+    const migration = read('components/carousel/migration.md')
+    const lineOf = (start: string) => singleLine(migration, start)
+
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('const isProduct = !!this.color && !!this.label;')
+    expect(lineOf('When the item does not have both `color` and `label`')).toContain('add no wrapper')
+    expect(lineOf('When the item has both `color` and `label` but no `href`')).toContain('`<button>`')
+    expect(lineOf('| `balNavigate`')).toContain('button-wrapped product tile included')
+    expect(lineOf('| `label`')).toContain('On every other item')
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('so does an attribute bound to an expression')
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain("`label` defaults to `''`")
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('report the item')
+    itemNumbers('carousel', [
+      'product tile rewritten into a wrapped `<button>`',
+      'from an item without both `color` and `label`',
+      'bound to an expression, whose runtime value the migration cannot read',
+    ])
+  })
+
   it('radio writes tile layout on the group, tile colour as attribute, and removes bal-radio-icon from tiles', () => {
     const migration = read('components/radio/migration.md')
     const lineOf = (start: string) => singleLine(migration, start)
@@ -210,15 +229,83 @@ describe('Report items the issue requires by name', () => {
     expect(colSizeRow).toContain('`[attr.col-size*]`')
     expect(colorRow).toContain('Never write the `tileColor` property')
     expect(lineOf('| `"tile"`')).toContain('`tile` on `ds-radio-group`')
-    expect(lineOf('| `"button"`')).toContain('`tile` + `hideTrigger` on `ds-radio-group`')
-    expect(migration).toContain('add `tile` and `hideTrigger` to the group only')
+    expect(lineOf('| `"tile"`')).toContain('plus `hideTrigger` when no child tile body has a `bal-radio-icon`')
+    expect(lineOf('| `"button"`')).toContain('`tile` on `ds-radio-group`')
+    expect(lineOf('| `"button"`')).not.toContain('hideTrigger')
+    expect(migration).not.toMatch(
+      /`tile`\s*(\+|and|plus)\s*`hideTrigger`[^.]*`"button"`|`"button"`[^.|]*`tile`\s*(\+|and|plus)\s*`hideTrigger`/,
+    )
+
+    const buttonShape = section(migration, '### Shape: `interface="button"` becomes `tile`')
+
+    expect(buttonShape).toContain('add `tile` to the group only')
+    expect(buttonShape).toContain('Do not add `hideTrigger`')
+    expect(buttonShape).not.toMatch(/`tile`\s*(\+|and|plus)\s*`hideTrigger`/)
+
+    const iconShape = section(migration, '### Shape: round icon and `hideTrigger`')
+
+    expect(iconShape).toContain('Decide `hideTrigger` before you delete any `bal-radio-icon`')
+    expect(iconShape).toContain('Never add `hideTrigger` for `"button"`')
+    expect(iconShape).toContain('No child showed the icon: add `hideTrigger` to the group.')
+    expect(iconShape).toContain('Every child showed the icon: write no `hideTrigger`.')
+    expect(iconShape).toContain('write no `hideTrigger` and report the group')
+    expect(iconShape).toContain('when its own `interface` is not `tile` inside a group whose own `interface` is unset')
+    expect(iconShape).toContain("unless an option's `html` contains `bal-radio-icon`")
+    expect(iconShape).toContain('A standalone `bal-radio` follows the same rule')
+    expect(migration.indexOf('### Shape: round icon and `hideTrigger`')).toBeLessThan(
+      migration.indexOf('### Tags and imports'),
+    )
+    expect(migration).toContain('inside a migrated `<ds-radio>`, after the `hideTrigger` decision')
+    expect(singleLine(migration, '2. ')).toContain('only some children showed it')
     expect(migration).toContain('Delete every `<bal-radio-icon>` inside a migrated `<ds-radio>`')
     expect(migration).toContain('Remove `BalRadioIcon` from the `@baloise/ds-react` import')
     expect(migration).not.toContain('exactly as it is')
 
-    const numbers = itemNumbers('radio', ['removed from a tile', 'differs from its siblings or from the group'])
+    const numbers = itemNumbers('radio', [
+      'removed from a tile',
+      'differs from its siblings or from the group',
+      'got `hideTrigger`',
+    ])
 
     expect(new Set(numbers).size).toBe(numbers.length)
+  })
+
+  it('checkbox writes tile layout on the group and tile colour as attribute', () => {
+    const migration = read('components/checkbox/migration.md')
+    const field = read('shared/field.md')
+    const lineOf = (start: string) => singleLine(migration, start)
+    const colorRow = lineOf('| `color`')
+    const colSizeRow = lineOf('| `colSize`')
+
+    expect(colorRow.split('|')[2]).toContain('`tile-color`')
+    expect(colorRow).toContain('[attr.tile-color]="x"')
+    expect(colorRow).toContain('Never write the `tileColor` property')
+    expect(colSizeRow).toContain('Drop from the child')
+    expect(colSizeRow).toContain('`[attr.col-size*]`')
+    expect(lineOf('| `"tile"`')).toContain('`tile` on `ds-checkbox-group`')
+    expect(lineOf('| `"button"`')).toContain('`tile` + `hideTrigger` on `ds-checkbox-group`')
+    expect(lineOf('| `interface`')).toContain('Set on the group only')
+    expect(lineOf('| _(none — new prop)_ | `tileColor`')).toContain('`tile-color` attribute')
+    expect(lineOf('| `columns`')).toContain('Set on the group only')
+    const overwriteRule = lineOf('`ds-checkbox-group` overwrites')
+    expect(overwriteRule).toContain('drop `interface` from every child inside a group')
+    expect(overwriteRule).toContain('moves to the group when every non-switch child carries the same value')
+    expect(overwriteRule).toContain('A standalone `bal-checkbox` outside any group keeps `tile` and `hideTrigger`')
+    expect(overwriteRule).toContain("gets the checkbox's `name`, `tile` and `hideTrigger`")
+    expect(migration).toContain('add `tile` and `hideTrigger` to the group only')
+    expect(migration).toContain('Its `name` moves to the wrapper.')
+    expect(migration).toContain('`tile` and `hideTrigger` go on the wrapper, not on the checkbox')
+    expect(migration).not.toContain('becomes `tileColor`')
+    expect(singleLine(field, '| a single `ds-checkbox` inside `bal-field`')).toContain(
+      "Move the checkbox's `name`, and its `tile` and `hideTrigger`",
+    )
+    expect(singleLine(field, '| `bal-field-message` outside a `bal-field`')).toContain(
+      'its `name`, `tile` and `hideTrigger` move to that wrapper',
+    )
+
+    const numbers = itemNumbers('checkbox', ['differs from its siblings or from the group', 'no group `columns*`'])
+
+    expect(new Set(numbers).size).toBe(1)
   })
 
   it('button checks each of the four colour collisions on its own line', () => {
@@ -700,6 +787,35 @@ describe('Unmapped props and handlers', () => {
       expect(handling).toContain("`a11yCurrent={cond ? 'page' : undefined}`")
       expect(handling).toContain("`[a11yCurrent]=\"cond ? 'page' : ''\"`")
       expect(handling).toContain('`aria-current`')
+      expect(handling).toContain(
+        'On a navigation entry, also rewrite `color` as the current-navigation-entry section above describes.',
+      )
+      expect(handling).not.toContain('with no replacement')
+    })
+
+    it('button binds color so the current navigation entry keeps its highlight', () => {
+      const shape = section(
+        read('components/button/migration.md'),
+        '### Shape: the current navigation entry keeps its highlight through `color`',
+      )
+
+      expect(shape).toContain('bind `color` to the same condition as `a11yCurrent`')
+      expect(shape).toContain('An omitted `color` maps to `primary`')
+      expect(shape).toContain('The other entries keep `<mapped>`')
+      expect(shape).toContain('The current entry gets `<current>`, which is `primary`.')
+      expect(shape).toContain('When `<mapped>` is `primary`, `<current>` is `secondary` instead.')
+      expect(shape).toContain('Leave `inverted` as it is.')
+      expect(shape).toContain(
+        'on an inverted button, `<current>` is `primary` when `<mapped>` is `secondary`, `tertiary`, `ghost` or `link`, and `secondary` otherwise.',
+      )
+      expect(shape).toContain("`color={cond ? '<current>' : '<mapped>'}`")
+      expect(shape).toContain("`[color]=\"cond ? '<current>' : '<mapped>'\"`")
+      expect(shape).toContain("`el.color = cond ? '<current>' : '<mapped>'`")
+      expect(shape).toContain('A true literal sets `color="<current>"`.')
+      expect(shape).toContain('A static navbar entry without `color` becomes `color="secondary"`.')
+      expect(shape).toContain("The binding replaces the button's existing `color`.")
+      expect(shape).toContain('so the non-literal rule above does not apply to it')
+      expect(shape).toContain('add no binding, and report the entry as a highlight to restore by hand')
     })
 
     it('button reports every isActive rewrite and drop with the lost pressed look', () => {
@@ -708,6 +824,8 @@ describe('Unmapped props and handlers', () => {
       expect(items).toHaveLength(1)
       expect(items[0].text).toContain('"the forced pressed look is gone"')
       expect(items[0].text).toContain('"pressed look lost, check whether it was a toggle"')
+      expect(items[0].text).toContain('with the `color` binding that now marks the current entry')
+      expect(items[0].text).toContain('"highlight not restored, non-literal `color`"')
     })
 
     describe.each(['toast', 'snackbar'])('%s', name => {

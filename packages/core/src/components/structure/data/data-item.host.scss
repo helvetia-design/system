@@ -25,7 +25,6 @@
  * @prop --data-item-color-text-label: Text color of the label
  * @prop --data-item-color-text-required: Color of the required indicator
  * @prop --data-item-color-text-disabled: Text color when disabled
- * @prop --data-item-opacity-disabled: Opacity when disabled
  * @prop --data-item-border-bottom: Bottom border
  * @prop --data-item-gap: Gap between label and value columns
  * @prop --data-item-padding-block: Vertical padding of the row
@@ -45,7 +44,6 @@
   @include vars.local(data-item-color-text-label, var(--ds-data-item-label-color));
   @include vars.local(data-item-color-text-required, var(--ds-data-item-required-color));
   @include vars.local(data-item-color-text-disabled, var(--ds-data-item-color-disabled));
-  @include vars.local(data-item-opacity-disabled, var(--ds-data-item-opacity-disabled));
   @include vars.local(data-item-border-bottom, var(--ds-data-item-border-bottom));
   @include vars.local(data-item-gap, var(--ds-data-item-gap));
   @include vars.local(data-item-padding-block, var(--ds-data-item-padding-block));
@@ -64,7 +62,6 @@
 
 // State: Disabled
 :host(.is-disabled) {
-  opacity: var(--_data-item-opacity-disabled);
   color: var(--_data-item-color-text-disabled);
 }
 
