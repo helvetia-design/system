@@ -63,14 +63,16 @@ Rewrite the `color='…'`, `color={"…"}`, and `color={'…'}` forms as well as
 
 Legacy `is-active` forced the pressed look of the button's own colour. A navbar used it to show the current page. `ds-button` has no style for `aria-current`, so the `a11yCurrent` rewrite in the `isActive` row alone leaves every navigation entry looking the same. On a navigation entry with `isActive`, bind `color` to the same condition as `a11yCurrent`, so the current entry gets a different colour than the others.
 
-The other entries keep `<mapped>`, the colour the colour table above gives the button. An omitted `color` maps to `primary`, because `primary` is the default on both sides. The current entry gets `primary`. When `<mapped>` is `primary`, the current entry gets `secondary` instead.
+The other entries keep `<mapped>`, the colour the colour table above gives the button. An omitted `color` maps to `primary`, because `primary` is the default on both sides. The current entry gets `<current>`, which is `primary`. When `<mapped>` is `primary`, `<current>` is `secondary` instead.
 
-- React: `color={cond ? 'primary' : '<mapped>'}`.
-- Angular: `[color]="cond ? 'primary' : '<mapped>'"`.
-- HTML with JavaScript: `el.color = cond ? 'primary' : '<mapped>'`.
-- A true literal sets `color` to the current-entry colour, for example `color="primary"`.
+Leave `inverted` as it is. An inverted button only has four looks of its own: `secondary`, `tertiary`, `ghost` and `link`. Every other colour (`primary`, `success`, `warning`, `danger`, `info`, every `brand-*`) shares one filled inverted look. So on an inverted button, `<current>` is `primary` when `<mapped>` is `secondary`, `tertiary`, `ghost` or `link`, and `secondary` otherwise.
 
-The binding replaces the button's existing `color`. It never adds a second one. It uses only names of the new side, so the non-literal rule above does not apply to it. When the legacy `color` is itself a non-literal expression, there is no `<mapped>` to write. Apply the non-literal rule above to it, add no binding, and report the entry as a highlight to restore by hand. Leave `inverted` as it is. An inverted `primary` uses the filled inverted look, so it still differs from an inverted `link`, `ghost`, `secondary` or `tertiary`.
+- React: `color={cond ? '<current>' : '<mapped>'}`.
+- Angular: `[color]="cond ? '<current>' : '<mapped>'"`.
+- HTML with JavaScript: `el.color = cond ? '<current>' : '<mapped>'`.
+- A true literal sets `color="<current>"`. A static navbar entry without `color` becomes `color="secondary"`.
+
+The binding replaces the button's existing `color`. It never adds a second one. It uses only names of the new side, so the non-literal rule above does not apply to it. When the legacy `color` is itself a non-literal expression, there is no `<mapped>` to write. Apply the non-literal rule above to it, add no binding, and report the entry as a highlight to restore by hand.
 
 ### Shape: a named submit button stops submitting its name and value
 

@@ -714,12 +714,20 @@ describe('Unmapped props and handlers', () => {
 
       expect(shape).toContain('bind `color` to the same condition as `a11yCurrent`')
       expect(shape).toContain('An omitted `color` maps to `primary`')
-      expect(shape).toContain('When `<mapped>` is `primary`, the current entry gets `secondary` instead.')
-      expect(shape).toContain("`color={cond ? 'primary' : '<mapped>'}`")
-      expect(shape).toContain("`[color]=\"cond ? 'primary' : '<mapped>'\"`")
-      expect(shape).toContain("`el.color = cond ? 'primary' : '<mapped>'`")
-      expect(shape).toContain('A true literal sets `color` to the current-entry colour')
+      expect(shape).toContain('The other entries keep `<mapped>`')
+      expect(shape).toContain('The current entry gets `<current>`, which is `primary`.')
+      expect(shape).toContain('When `<mapped>` is `primary`, `<current>` is `secondary` instead.')
+      expect(shape).toContain('Leave `inverted` as it is.')
+      expect(shape).toContain(
+        'on an inverted button, `<current>` is `primary` when `<mapped>` is `secondary`, `tertiary`, `ghost` or `link`, and `secondary` otherwise.',
+      )
+      expect(shape).toContain("`color={cond ? '<current>' : '<mapped>'}`")
+      expect(shape).toContain("`[color]=\"cond ? '<current>' : '<mapped>'\"`")
+      expect(shape).toContain("`el.color = cond ? '<current>' : '<mapped>'`")
+      expect(shape).toContain('A true literal sets `color="<current>"`.')
+      expect(shape).toContain('A static navbar entry without `color` becomes `color="secondary"`.')
       expect(shape).toContain("The binding replaces the button's existing `color`.")
+      expect(shape).toContain('so the non-literal rule above does not apply to it')
       expect(shape).toContain('add no binding, and report the entry as a highlight to restore by hand')
     })
 
