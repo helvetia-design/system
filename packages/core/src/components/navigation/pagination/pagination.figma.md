@@ -216,14 +216,15 @@ tokens:
       HARD STOP resolved with user: no --ds-* var, and no Figma variable matches 10px (Global Space
       scale jumps 8→12). Accepted as a one-off hardcoded 10px in the Figma build; flagged as a
       token-scale gap for a separate follow-up.
-  - cssVar: '(literal 63px/88px, dots badge min-width/max-width — dots variant, >5 total pages)'
+  - cssVar: '--ds-pagination-dots-min-width / --ds-pagination-dots-max-width (dots badge min-width/max-width — dots variant, >5 total pages)'
     figmaVariable: null
     figmaVariableId: null
     resolved: false
     resolution: >
-      HARD STOP resolved with user: neither value is grid-aligned or matches any existing token
-      (content-fit tuning numbers, not spacing-scale values). Accepted as one-off hardcoded 63px /
-      88px literals in the Figma build.
+      16.11.2026: promoted from raw literals to real tokens (🔗 Alias/📏 Size/Counter/MinWidth
+      and /MaxWidth, backed by new 🌐 Global/📏 Dimension/Size/63 and /88 scale steps — neither
+      value is grid-aligned, so no existing scale step fit). No Figma variable exists yet for
+      the new scale steps or the Alias/Component tokens (PENDING-FIGMA-SYNC); bind on next sync.
   - cssVar: '(literal 2rem, dots badge min-height — dots variant)'
     figmaVariable: 🌐 Global/📏 Dimension/Space/32
     figmaVariableId: VariableID:137:2663
@@ -288,9 +289,9 @@ completenessChecklist:
   dots badge (frame, dots variant):
     fill: Pagination/Dots/Color/Background
     radius: Pagination/Dots/Radius
-    minWidth / maxWidth: hardcoded 63px / 88px (accepted, no token)
+    minWidth / maxWidth: Pagination/Dots/MinWidth / MaxWidth (PENDING-FIGMA-SYNC)
     minHeight: Global/Space/32
-    gap: Pagination/Dots/Gap (2px) for the counter; 8px (base-gap, dead-token bug) for the dot row — see tokens: note
+    gap: Pagination/Dots/Gap (2px) for both the counter and the dot row (specificity bug fixed 16.11.2026) — see tokens: note
     margin: literal `0 20px 0 !important` — outer margin, skipped per specs rule, flagged as a code smell (odd 3-value shorthand)
   dot marker (shape, dots variant, ≤5 total pages):
     size: hardcoded 10px (accepted, no token)
@@ -440,14 +441,19 @@ specs:
 - **Anatomy JSDoc hard stop — resolved.** The class-level `@part` tags (`pagination`, `item`)
   matched zero real `part="..."` attributes in `render()`. Fixed in `pagination.tsx` to the 6 real
   parts (`navigation`, `previous`, `next`, `list`, `page`, `ellipsis`), confirmed with the user.
-- **Two genuine token hard stops — resolved with the user**, both accepted as one-off hardcoded
-  values rather than forcing a token match: the dot marker's 10px diameter, and the dots badge's
-  63px/88px min/max-width. Both flagged as follow-ups for a possible future token-scale addition.
-- **CSS specificity bug found, not fixed.** `--ds-pagination-dots-gap` (2px) is dead on the ≤5-page
-  dot row because `#nav ul`'s ID-selector gap rule out-specifies the class-selector `.dots` rule
-  that was clearly meant to apply there too. Figma models the real rendered 8px for that case (not
-  the intended 2px), consistent with the "specs documents what the code decides" / "measured ≠
-  token is a finding" rules. Separate code follow-up to fix the selector specificity.
+- **Two genuine token hard stops.** The dot marker's 10px diameter is still accepted as a one-off
+  hardcoded value (no scale step fits). The dots badge's 63px/88px min/max-width was promoted
+  16.11.2026 to real tokens (new Global scale steps 63/88 → Alias `Size/Counter/MinWidth`/
+  `MaxWidth` → Component `Pagination/Dots/MinWidth`/`MaxWidth`); no Figma variable exists for them
+  yet (PENDING-FIGMA-SYNC) — bind on the component's next Figma run.
+- **CSS specificity bug — fixed 16.11.2026.** `--ds-pagination-dots-gap` (2px) was dead on the
+  ≤5-page dot row because `#nav ul`'s ID-selector gap rule out-specified the class-selector
+  `.dots` rule. Fixed by adding `!important` to the `.dots` gap declaration in
+  `pagination.host.scss` (consistent with the other `!important` overrides already on that same
+  rule). The dot row now renders the intended 2px gap instead of the inherited 8px — Figma
+  previously modeled the wrong (8px) rendered gap for this case and needs re-measuring/re-binding
+  on the component's next Figma run. Visual snapshots for the dot-row test cases need
+  `/update-screenshots`.
 - **Ellipsis font-weight and width are hardcoded literals with no `--ds-*` var at all.** Both have a
   matching Figma variable anyway (`Alias/Text/Weight/Bold`; `Global/Space/32`+`/48`), so per Phase 1
   step 5 these are bound for the Figma visual with the code-side drift flagged as separate

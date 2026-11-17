@@ -3,6 +3,9 @@
     "allow": ["Edit(/.claude/skills/ds-code-to-figma/**)"]
   },
   "enabledPlugins": {
-    "ponytail@ponytail": true
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "ponytail@ponytail": true,
+    "mattpocock-skills@mattpocock": true,
+    "claude-mem@thedotmack": true
   }
 }

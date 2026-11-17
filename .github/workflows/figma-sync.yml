@@ -43,9 +43,12 @@ jobs:
 
       # Direct commit to `main`, not a PR — the one deliberate exception to
       # this repo's PR-mediated writes (docs/adr/0017-direct-commit-variableid-backfill.md).
-      # Needs the bot token to have branch-protection bypass rights on `main`.
+      # Needs the bot token to have branch-protection bypass rights on `main`. Runs after every
+      # real (non-dry-run) sync, not just one that added/removed variableIds — the baseline's
+      # resolvedValue needs refreshing even on a value-only run, or the next PR touching that
+      # token gets a false conflict against a stale value.
       - name: Write back new/removed variableIds + baseline (direct commit)
-        if: steps.sync.outputs.new_ids_file != '' || steps.sync.outputs.removed_ids_file != ''
+        if: ${{ !inputs.dry_run }}
         shell: bash
         env:
           NEW_IDS_FILE: ${{ steps.sync.outputs.new_ids_file }}

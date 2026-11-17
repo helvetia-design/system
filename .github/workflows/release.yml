@@ -73,16 +73,6 @@ jobs:
           echo "📤 NPM Publish (Dry Run):"
           pnpm -r publish --dry-run --no-git-checks
 
-      - name: Commit release
-        if: ${{ !inputs.dry-run }}
-        uses: EndBug/add-and-commit@v11
-        with:
-          add: "['pnpm-lock.yaml', 'CHANGELOG.md']"
-          message: ':bookmark: release: ${{ steps.package-version.outputs.current-version }}'
-          tag: 'v${{ steps.package-version.outputs.current-version }}'
-        env:
-          GITHUB_TOKEN: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
-
       # Generates a Software Bill of Materials (SBOM) in CycloneDX JSON format.
       # Lists every direct and transitive npm dependency with name, version, and license.
       # Required per EU Cyber Resilience Act (CRA) — open source stewards must provide
@@ -131,3 +121,16 @@ jobs:
       - name: Publish
         if: ${{ !inputs.dry-run }}
         run: pnpm -r publish --no-git-checks
+
+      # Runs after Publish so a failed publish leaves no release commit or tag behind and the
+      # workflow can simply be re-run (`pnpm -r publish` skips versions already on npm).
+      # Only the listed files are committed — the SBOM edits to package.json stay out of git.
+      - name: Commit release
+        if: ${{ !inputs.dry-run }}
+        uses: EndBug/add-and-commit@v11
+        with:
+          add: "['pnpm-lock.yaml', 'CHANGELOG.md']"
+          message: ':bookmark: release: ${{ steps.package-version.outputs.current-version }}'
+          tag: 'v${{ steps.package-version.outputs.current-version }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.DS_BOT_RELEASE_TOKEN }}

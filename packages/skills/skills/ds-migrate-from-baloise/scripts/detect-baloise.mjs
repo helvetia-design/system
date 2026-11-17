@@ -4,7 +4,7 @@ import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs'
 import { basename, dirname, extname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
-import { maskComments, SKIPPED_DIRS, SOURCE_EXTENSIONS, sourceMode } from './source-scan.mjs'
+import { isSkippedDir, maskComments, SOURCE_EXTENSIONS, sourceMode } from './source-scan.mjs'
 
 const LEGACY_SCOPE = '@baloise'
 const TARGET_SCOPE = '@helvetia-design'
@@ -344,7 +344,7 @@ function walk(rootDir, dir, packages, imports) {
   for (const entry of entries) {
     if (entry.isSymbolicLink()) continue
     if (entry.isDirectory()) {
-      if (SKIPPED_DIRS.has(entry.name)) continue
+      if (isSkippedDir(entry.name, dir, rootDir)) continue
       walk(rootDir, join(dir, entry.name), packages, imports)
       continue
     }

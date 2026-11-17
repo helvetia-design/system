@@ -126,7 +126,7 @@ Leave the slotted label content in place. Both components project their children
 
 No handler body needs rewriting beyond the event name — every detail shape is unchanged.
 
-Retype handler parameters and refs as `SKILL.md` "Legacy types and bundles" describes. `BalEvents.BalButtonCustomEvent` and the bare `BalButtonCustomEvent` become `DsButtonCustomEvent`, and `HTMLBalButtonElement` becomes `HTMLDsButtonElement`. The scan lists the `BalEvents.BalButton*` and `BalButton*CustomEvent` types. It does not list `BalProps.*` or `HTMLBalButtonElement`, so search for them yourself in each file with a finding.
+Retype handler parameters and refs as `SKILL.md` "Legacy types and bundles" describes. `BalEvents.BalButtonCustomEvent` and the bare `BalButtonCustomEvent` become `DsButtonCustomEvent`, and `HTMLBalButtonElement` becomes `HTMLDsButtonElement`. The scan lists the `BalEvents.BalButton*` and `BalButton*CustomEvent` types. It lists `HTMLBalButtonElement` too. It does not list `BalProps.*`, so search for them yourself in each file with a finding.
 
 In each file that has a finding, also rewrite these five listeners where they are not on the element itself, including `addEventListener`. For every finding in a `.html` file, also open the same-basename `.ts` file beside it and apply these rules there — the Angular case where the template holds the tag and the class file handles the event without ever naming `bal-button`.
 

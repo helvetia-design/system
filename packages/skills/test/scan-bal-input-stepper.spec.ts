@@ -202,6 +202,8 @@ describe('scanBalInputStepper', () => {
     write(root, 'page.html', '<bal-input-stepper></bal-input-stepper>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-input-stepper></bal-input-stepper>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalInputStepper />\n')
     }
 
@@ -229,7 +231,7 @@ describe('scanBalInputStepper', () => {
     )
 
     expect(scanBalInputStepper(root)).toEqual({
-      total: 5,
+      total: 6,
       files: [
         {
           file: 'application.component.ts',
@@ -245,6 +247,7 @@ describe('scanBalInputStepper', () => {
               line: 7,
               snippet: 'both(a: BalEvents.BalInputStepperIncrease, b: BalInputStepperCustomEvent<number>) {}',
             },
+            { line: 9, snippet: 'el?: HTMLBalInputStepperElement' },
           ],
         },
       ],

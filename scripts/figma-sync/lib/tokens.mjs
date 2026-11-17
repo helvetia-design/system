@@ -1,8 +1,8 @@
 /**
  * Token loading, flattening, and per-brand resolution — the read side of
  * Pull (from Code). Mirrors packages/tokens/src/config.brand.ts's
- * computeTokenDiff shape (see docs/plans/figma-sync-action-plan.md §7,
- * Phase 1) without importing it: config.brand.ts is TypeScript compiled by
+ * mergeTokenTree (see docs/plans/figma-sync-action-plan.md §7, Phase 1)
+ * without importing it: config.brand.ts is TypeScript compiled by
  * Style Dictionary's own toolchain, and this script runs as plain Node ESM
  * in CI (docs/adr/0020-figma-sync-action-standalone-script.md).
  */
@@ -150,10 +150,9 @@ export function mergeBrandTree(base, brandOverride) {
 
 /**
  * Recursively walks both token trees and returns only the tokens whose
- * `$value` differs from base. Identical in shape to
- * packages/tokens/src/config.brand.ts's computeTokenDiff — kept here as a
- * parity check (see test/tokens.test.ts), not used by Pull itself, which
- * only ever needs the merged tree, never the sparse diff back out of it.
+ * `$value` differs from base. Used only by test/tokens.test.ts to check that
+ * mergeBrandTree round-trips; Pull itself only ever needs the merged tree,
+ * never the sparse diff back out of it.
  */
 export function computeTokenDiff(base, brand) {
   const result = {}

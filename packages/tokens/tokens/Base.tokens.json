@@ -1755,6 +1755,18 @@
           "$value": "{🌐 Global.📏 Dimension.Space.10}",
           "$description": "Diameter of a small dot marker such as the pagination dots (10px at 16px root)."
         }
+      },
+      "Counter": {
+        "MinWidth": {
+          "$type": "dimension",
+          "$value": "{🌐 Global.📏 Dimension.Size.63}",
+          "$description": "Minimum width of a small content-fit counter badge such as the pagination \"x of y\" pill (63px)."
+        },
+        "MaxWidth": {
+          "$type": "dimension",
+          "$value": "{🌐 Global.📏 Dimension.Size.88}",
+          "$description": "Maximum width of a small content-fit counter badge such as the pagination \"x of y\" pill (88px)."
+        }
       }
     },
     "🔵 Radius": {
@@ -20608,6 +20620,24 @@
             ]
           }
         },
+        "MinWidth": {
+          "$type": "dimension",
+          "$value": "{🔗 Alias.📏 Size.Counter.MinWidth}",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "MaxWidth": {
+          "$type": "dimension",
+          "$value": "{🔗 Alias.📏 Size.Counter.MaxWidth}",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
         "MarginInline": {
           "$type": "dimension",
           "$value": "{🔗 Alias.↔️ Space.Margin.MD}",
@@ -25199,6 +25229,18 @@
             "com.figma.variableId": "VariableID:137:2682"
           }
         },
+        "63": {
+          "$type": "dimension",
+          "$value": {
+            "value": 63,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
         "64": {
           "$type": "dimension",
           "$value": {
@@ -25236,6 +25278,18 @@
               "ALL_SCOPES"
             ],
             "com.figma.variableId": "VariableID:137:2685"
+          }
+        },
+        "88": {
+          "$type": "dimension",
+          "$value": {
+            "value": 88,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
           }
         },
         "96": {

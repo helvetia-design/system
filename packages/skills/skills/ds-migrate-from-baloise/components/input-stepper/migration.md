@@ -59,7 +59,7 @@ Edit each finding yourself, using the mapping below. Read the whole element when
 
 Rewrite only handlers that are attached to the element being migrated. `balChange`, `balInput`, `balBlur`, and `balFocus` are emitted by many other legacy components, so never rewrite a handler on another element, and never rename them by search and replace across the file.
 
-Retype handler parameters and refs as `SKILL.md` "Legacy types and bundles" describes. `BalEvents.BalInputStepper*` and `BalInputStepperCustomEvent` become `DsCounterCustomEvent`, because the type follows the new tag `ds-counter`. Write a detail alias such as `BalEvents.BalInputStepperChangeDetail` out as the new detail type, `number` for `dsChange`, `dsInput`, `dsIncrease` and `dsDecrease`. `HTMLBalInputStepperElement` becomes `HTMLDsCounterElement`. The scan lists the `BalEvents.*` and `Bal*CustomEvent` types. It does not list `BalProps.*` or `HTMLBal*Element`, so search for them yourself in each file with a finding.
+Retype handler parameters and refs as `SKILL.md` "Legacy types and bundles" describes. `BalEvents.BalInputStepper*` and `BalInputStepperCustomEvent` become `DsCounterCustomEvent`, because the type follows the new tag `ds-counter`. Write a detail alias such as `BalEvents.BalInputStepperChangeDetail` out as the new detail type, `number` for `dsChange`, `dsInput`, `dsIncrease` and `dsDecrease`. `HTMLBalInputStepperElement` becomes `HTMLDsCounterElement`. The scan lists the `BalEvents.*` and `Bal*CustomEvent` types. It lists the `HTMLBal*Element` types too. It does not list `BalProps.*`, so search for them yourself in each file with a finding.
 
 Do not edit handler bodies. Report these detail changes so the consumer can check them:
 

@@ -64,7 +64,7 @@ describe('scanBalForm', () => {
     })
   })
 
-  it('lists BalForm but not BalFormGrid, BalFormCol, BalFormBundle or the ambient type', () => {
+  it('lists BalForm and the HTMLBalFormElement type but not BalFormGrid, BalFormCol or BalFormBundle', () => {
     const root = createScratchDir()
     write(
       root,
@@ -83,7 +83,7 @@ describe('scanBalForm', () => {
     )
 
     expect(scanBalForm(root)).toEqual({
-      total: 2,
+      total: 3,
       files: [
         {
           file: 'application.component.ts',
@@ -98,6 +98,7 @@ describe('scanBalForm', () => {
               snippet:
                 '@Component({ imports: [BalForm, BalFormGrid, BalFormCol, ...BalFormGridBundle, ...BalFormBundle] })',
             },
+            { line: 4, snippet: "@ViewChild('wizardForm') wizardForm?: ElementRef<HTMLBalFormElement>" },
           ],
         },
       ],

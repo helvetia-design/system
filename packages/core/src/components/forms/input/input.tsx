@@ -57,6 +57,8 @@ import {
  * @part inner - The field's outer wrapper element.
  * @part label - The field's label element.
  * @part control - The wrapper around the native input and its start/end slots.
+ * @part start - The `start` slot element.
+ * @part end - The `end` slot element.
  * @part input - The native HTML input element.
  * @part description - The description or invalid-text message element below the control.
  */
@@ -100,6 +102,15 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
   @Prop({ mutable: true, reflect: true })
   @Type('string')
   value: string | null = null
+
+  @Watch('value')
+  protected valueChanged() {
+    this.control.inputValue = this.value
+    // Only while not focused: a focused change is exactly what onBlur's dsChange must still catch.
+    if (!this.focused) {
+      this.control.committedValue = this.value
+    }
+  }
 
   /**
    * The name of the control, which is submitted with the form data.

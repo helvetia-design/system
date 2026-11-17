@@ -515,6 +515,8 @@ describe('scanBalModal', () => {
     write(root, 'page.html', '<bal-modal></bal-modal>\n')
     for (const dir of SKIP_DIRS) {
       write(root, `${dir}/page.html`, '<bal-modal></bal-modal>\n')
+    }
+    for (const dir of ['node_modules', '.angular', '.git', '.claude']) {
       write(root, `src/${dir}/nested.html`, '<BalModal></BalModal>\n')
     }
 

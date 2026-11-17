@@ -5,11 +5,16 @@
  * simpler single-file Contents API for Toky's own PR-writes and doesn't
  * need this (docs/adr/0020-figma-sync-action-standalone-script.md).
  */
+// GITHUB_REPOSITORY (owner/repo) is set automatically on every GitHub Actions run — defaulting to
+// it means this always targets the repo the workflow actually runs in. 'helvetia-design/system' is
+// only a fallback for running these scripts locally, outside of Actions, where that var is unset.
+const [REPOSITORY_OWNER, REPOSITORY_NAME] = (process.env.GITHUB_REPOSITORY ?? 'helvetia-design/system').split('/')
+
 // Overridable for local sandbox testing only (e.g. backfill-commit.mjs
 // against a scratch repo instead of the real one) — never set in
 // figma-sync.yml or figma-conflict-check.yml.
-const REPO_OWNER = process.env.GITHUB_REPO_OWNER_OVERRIDE ?? 'baloise'
-const REPO_NAME = process.env.GITHUB_REPO_NAME_OVERRIDE ?? 'design-system'
+const REPO_OWNER = process.env.GITHUB_REPO_OWNER_OVERRIDE ?? REPOSITORY_OWNER
+const REPO_NAME = process.env.GITHUB_REPO_NAME_OVERRIDE ?? REPOSITORY_NAME
 const API_ROOT = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`
 
 function authHeaders(token, extra) {

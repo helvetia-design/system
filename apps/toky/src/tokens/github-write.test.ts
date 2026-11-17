@@ -47,7 +47,7 @@ describe('getBaseTokensFileMeta', () => {
     expect(result).toEqual({ sha: 'abc123', content: { foo: 'bar' } })
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
     expect(url).toBe(
-      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Base.tokens.json?ref=next',
+      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Base.tokens.json?ref=main',
     )
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer test-token')
   })
@@ -69,7 +69,7 @@ describe('getBrandTokensFileMeta', () => {
     expect(result).toEqual({ sha: 'brand-sha', content: { '🌐 Global': {} } })
     const [url] = fetchMock.mock.calls[0] as [string]
     expect(url).toBe(
-      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Zurich.tokens.json?ref=next',
+      'https://api.github.com/repos/helvetia-design/system/contents/packages/tokens/tokens/Zurich.tokens.json?ref=main',
     )
   })
 
@@ -186,7 +186,7 @@ describe('createBranch', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2)
     const [refUrl] = fetchMock.mock.calls[0] as [string]
-    expect(refUrl).toBe('https://api.github.com/repos/helvetia-design/system/git/ref/heads/next')
+    expect(refUrl).toBe('https://api.github.com/repos/helvetia-design/system/git/ref/heads/main')
 
     const [createUrl, createInit] = fetchMock.mock.calls[1] as [string, RequestInit]
     expect(createUrl).toBe('https://api.github.com/repos/helvetia-design/system/git/refs')
@@ -380,7 +380,7 @@ describe('openPullRequest', () => {
     expect(JSON.parse(init.body as string)).toEqual({
       title: 'Update tokens',
       head: 'toky/update-123',
-      base: 'next',
+      base: 'main',
       body: 'body text',
     })
   })

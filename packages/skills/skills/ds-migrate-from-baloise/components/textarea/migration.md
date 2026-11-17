@@ -73,7 +73,7 @@ Rewrite only handlers that are attached to the element being migrated. `balChang
 
 When the value in `balChange` or `balInput` is read, note that it is `string | undefined` in legacy and `string | null` in `ds-textarea`. A cleared field now yields `null`. Do not edit the handler, report it.
 
-Retype handler parameters and refs as `SKILL.md` "Legacy types and bundles" describes. `BalEvents.BalTextarea*` and the wrapper type `BalTextareaCustomEvent` become `DsTextareaCustomEvent`. Write a detail alias such as `BalEvents.BalTextareaChangeDetail` out as the new detail type, `string | null` for `dsChange` and `dsInput`. `HTMLBalTextareaElement` becomes `HTMLDsTextareaElement`. The scan lists the `BalEvents.*` and `Bal*CustomEvent` types. It does not list `BalProps.*` or `HTMLBal*Element`, so search for them yourself in each file with a finding.
+Retype handler parameters and refs as `SKILL.md` "Legacy types and bundles" describes. `BalEvents.BalTextarea*` and the wrapper type `BalTextareaCustomEvent` become `DsTextareaCustomEvent`. Write a detail alias such as `BalEvents.BalTextareaChangeDetail` out as the new detail type, `string | null` for `dsChange` and `dsInput`. `HTMLBalTextareaElement` becomes `HTMLDsTextareaElement`. The scan lists the `BalEvents.*` and `Bal*CustomEvent` types. It lists the `HTMLBal*Element` types too. It does not list `BalProps.*`, so search for them yourself in each file with a finding.
 
 ### Methods
 

@@ -90,14 +90,6 @@ export const debounceEvent = (ev: EventEmitter, wait: number): EventEmitter => {
   } as EventEmitter
 }
 
-export const debounceLCP = (func: (...args: any[]) => void, wait = 0) => {
-  let timer: any
-  return (...args: any[]): any => {
-    clearTimeout(timer)
-    timer = setTimeout(func, wait, ...args)
-  }
-}
-
 export const debounce = (func: (...args: any[]) => void, wait = 0) => {
   let timer: any
   return (...args: any[]): any => {
@@ -122,22 +114,6 @@ export const isDescendant = (
     node = node.parentNode
   }
   return false
-}
-
-export const hasParent = (parentTag: string, child: HTMLElement | EventTarget) => {
-  let node = (child as any).parentNode
-  while (node != null) {
-    if (node.tagName === parentTag.toUpperCase()) {
-      return true
-    }
-    node = node.parentNode
-  }
-  return false
-}
-
-export const getSibling = (parentTag: HTMLElement | EventTarget, child: string): HTMLElement | null => {
-  const node: HTMLElement = (parentTag as any).parentNode
-  return node.querySelector(child)
 }
 
 const ROOT_SELECTORS = ['ds-root', 'ds-app'] as const
@@ -191,60 +167,6 @@ export const raf = (h: any) => {
   return setTimeout(h)
 }
 
-export const transitionEndAsync = (el: HTMLElement | HTMLStencilElement | null, expectedDuration = 0) => {
-  return new Promise(resolve => {
-    transitionEnd(el, expectedDuration, resolve)
-  })
-}
-
-/**
- * Allows developer to wait for a transition
- * to finish and fallback to a timer if the
- * transition is cancelled or otherwise
- * never finishes. Also see transitionEndAsync
- * which is an await-able version of this.
- */
-const transitionEnd = (
-  el: HTMLElement | HTMLStencilElement | null,
-  expectedDuration = 0,
-  callback: (ev?: TransitionEvent) => void,
-) => {
-  let unRegTrans: (() => void) | undefined
-  let animationTimeout: any
-  const opts: any = { passive: true }
-  const ANIMATION_FALLBACK_TIMEOUT = 500
-
-  const unregister = () => {
-    if (unRegTrans) {
-      unRegTrans()
-    }
-  }
-
-  const onTransitionEnd = (ev?: Event) => {
-    if (ev === undefined || el === ev.target) {
-      unregister()
-      callback(ev as TransitionEvent)
-    }
-  }
-
-  if (el) {
-    el.addEventListener('webkitTransitionEnd', onTransitionEnd, opts)
-    el.addEventListener('transitionend', onTransitionEnd, opts)
-    animationTimeout = setTimeout(onTransitionEnd, expectedDuration + ANIMATION_FALLBACK_TIMEOUT)
-
-    unRegTrans = () => {
-      if (animationTimeout) {
-        clearTimeout(animationTimeout)
-        animationTimeout = undefined
-      }
-      el.removeEventListener('webkitTransitionEnd', onTransitionEnd, opts)
-      el.removeEventListener('transitionend', onTransitionEnd, opts)
-    }
-  }
-
-  return unregister
-}
-
 export const addEventListener = (el: any, eventName: string, callback: any, opts?: any) => {
   if (dsBrowser.hasWindow) {
     const config = getDsConfig()
@@ -293,26 +215,6 @@ export const waitForComponent = async (el: HTMLElement | HTMLStencilElement | nu
   await waitAfterIdleCallback()
 }
 
-export const isChildOfEventTarget = async (
-  ev: any,
-  el: HTMLElement | HTMLStencilElement | Window | Document | null | undefined,
-  callback: (target: HTMLElement | HTMLStencilElement) => void,
-) => {
-  if (ev && ev.target && el && el !== ev.target) {
-    let target = ev.target as HTMLElement | HTMLStencilElement
-
-    // special case for the navbar case
-    const isNavbarBrand = ev.target.nodeName === 'DS-APP-NAVBAR-BRAND'
-    if (isNavbarBrand) {
-      target = target.closest('ds-app-navbar') as HTMLStencilElement
-    }
-
-    if (target && isDescendant(target, el)) {
-      callback(target)
-    }
-  }
-}
-
 export const waitForDesignSystem = async (el: any | null, _config?: DsConfig): Promise<void> => {
   const config: any = {
     animated: false,
@@ -324,7 +226,7 @@ export const waitForDesignSystem = async (el: any | null, _config?: DsConfig): P
 
     const webComponents = Array.prototype.slice
       .call(element.querySelectorAll('*'))
-      .filter(el => el.tagName.match(/^bal/i))
+      .filter(el => el.tagName.match(/^ds-/i))
 
     await Promise.all(
       webComponents.map(c => {
@@ -362,9 +264,4 @@ export const runHighPrioritizedTask = (callback: (value: unknown) => void) => {
   } else {
     setTimeout(callback, 32)
   }
-}
-
-export const waitForRequestIdleCallback = () => {
-  console.log('DEPRECATED - use waitAfterIdleCallback instead')
-  return waitAfterIdleCallback
 }

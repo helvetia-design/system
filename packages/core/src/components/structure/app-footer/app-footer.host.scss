@@ -217,6 +217,7 @@ footer {
     --icon-color: var(--_app-footer-social-icon-color);
     // Intentional reuse: social glyphs follow ds-icon's sm scale.
     --icon-size: var(--ds-icon-size-sm);
+    --icon-inner-size: var(--ds-icon-size-sm);
     align-items: center;
     color: var(--_app-footer-link-color);
     display: inline-flex;

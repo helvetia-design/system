@@ -16,6 +16,8 @@
  * @prop --pagination-dots-gap: Gap between the ellipsis dots.
  * @prop --pagination-ellipsis-width: Width of the ellipsis item from tablet up.
  * @prop --pagination-dots-marker-size: Width and height of a dot marker.
+ * @prop --pagination-dots-min-width: Minimum width of the "x of y" counter badge.
+ * @prop --pagination-dots-max-width: Maximum width of the "x of y" counter badge.
  * @prop --pagination-ellipsis-font-family: Font family of the ellipsis text.
  * @prop --pagination-ellipsis-font-size: Font size of the ellipsis text.
  * @prop --pagination-ellipsis-font-weight: Font weight of the ellipsis text.
@@ -55,6 +57,8 @@
   @include vars.local(pagination-dots-color, var(--ds-pagination-dots-color-text));
   @include vars.local(pagination-dots-gap, var(--ds-pagination-dots-gap));
   @include vars.local(pagination-dots-min-height, var(--ds-pagination-dots-min-height));
+  @include vars.local(pagination-dots-min-width, var(--ds-pagination-dots-min-width));
+  @include vars.local(pagination-dots-max-width, var(--ds-pagination-dots-max-width));
   @include vars.local(pagination-dots-margin-inline, var(--ds-pagination-dots-margin-inline));
   @include typo.local(pagination-dots, 'pagination-dots-counter-typo');
   @include typo.local(pagination-dots-value, 'pagination-dots-counter-value-typo');
@@ -156,9 +160,8 @@
 
 :host(.is-variant-dots) .dots {
   order: 2;
-  // ds-token-check: intentional — content-fit bounds for the counter badge
-  max-width: 88px;
-  min-width: 63px;
+  max-width: var(--_pagination-dots-max-width);
+  min-width: var(--_pagination-dots-min-width);
   min-height: var(--_pagination-dots-min-height);
   margin-block: 0 !important;
   margin-inline: var(--_pagination-dots-margin-inline) !important;
@@ -170,11 +173,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
-  // The dot row (<ul>) keeps the size gap from `#nav ul`; only the counter uses the dots gap.
-  &.is-counter {
-    gap: var(--_pagination-dots-gap);
-  }
+  // `#nav ul` sets its own gap via an ID selector, which out-specifies this class selector —
+  // !important needed so the dots gap token actually applies to both the counter and the dot row.
+  gap: var(--_pagination-dots-gap) !important;
 
   li {
     display: flex;

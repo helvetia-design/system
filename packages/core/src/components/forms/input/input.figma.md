@@ -42,8 +42,9 @@ anatomy:
 # (no matching part="..." anywhere in the render tree) and omitted inner/label/control/description
 # (which do render). Fixed directly in input.tsx's JSDoc as part of this phase (user-approved).
 # `<slot name="start">`/`<slot name="end">` in field.util.tsx sit inside `control` (C). Declared as
-# `@slot start` / `@slot end` on ds-input since 12.11.2026 (#215) — modeled as open slots under
-# `slots:` below, not as parts.
+# `@slot start` / `@slot end` on ds-input since 12.11.2026 (#215); `part="start"` / `part="end"` and
+# their `@part` JSDoc were added later on main. Modeled as open slots under `slots:` below; not in the
+# `anatomy:` table yet (that drives the Figma anatomy diagram).
 
 props:
   - name: value

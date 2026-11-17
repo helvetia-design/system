@@ -16,7 +16,7 @@
  * imports `_component-names.scss`), so in-flight calls share one promise and writes land via
  * write-to-temp-then-rename, which is atomic on POSIX and Windows.
  */
-import fg from 'fast-glob'
+import { glob } from 'glob'
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -38,8 +38,8 @@ export function generateComponentTags(coreRoot) {
 }
 
 async function generateComponentTagsUncached(coreRoot) {
-  // Use cwd + relative pattern to avoid Windows path separator issues with fast-glob
-  const componentFiles = await fg('src/components/**/*.tsx', {
+  // Use cwd + relative pattern to avoid Windows path separator issues with glob
+  const componentFiles = await glob('src/components/**/*.tsx', {
     cwd: coreRoot,
     ignore: ['**/*.data.tsx', '**/field.util.tsx', '**/*.interfaces.tsx', '**/index.tsx'],
   })

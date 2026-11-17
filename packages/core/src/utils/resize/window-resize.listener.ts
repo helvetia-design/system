@@ -14,10 +14,10 @@ export class WindowResizeListener extends ListenerAbstract {
   }
 
   override disconnect(): void {
-    super.disconnect()
     if (this.el) {
       removeEventListener(this.el, 'resize', this.debouncedNotify)
     }
+    super.disconnect()
   }
 
   override notify = async () => {
