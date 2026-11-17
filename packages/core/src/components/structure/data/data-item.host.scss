@@ -33,7 +33,6 @@
 
 // State: Disabled
 :host(.is-disabled) {
-  opacity: 0.6;
   color: var(--_data-item-color-text-disabled);
 }
 
