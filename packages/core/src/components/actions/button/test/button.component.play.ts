@@ -132,4 +132,37 @@ test.describe('component', () => {
 
     await expect(page.locator('ds-button a')).toHaveAttribute('aria-current', 'page')
   })
+
+  test('should show a11yTitle as tooltip instead of native title', async ({ page }) => {
+    await page.mount(`
+      <ds-button icon="edit" square a-1-1y-title="Edit"></ds-button>
+    `)
+
+    const nativeButton = page.locator('ds-button button')
+    const tooltip = page.locator('ds-button ds-tooltip')
+
+    await expect(nativeButton).not.toHaveAttribute('title')
+    await expect(nativeButton).toHaveAttribute('aria-label', 'Edit')
+    await expect(tooltip).toHaveText('Edit')
+    await expect(tooltip).toHaveAttribute('aria-hidden', 'true')
+
+    await nativeButton.hover()
+    await expect(tooltip).toHaveAttribute('aria-hidden', 'false')
+  })
+
+  test('should forward tooltipPlacement to the tooltip', async ({ page }) => {
+    await page.mount(`
+      <ds-button icon="edit" square a-1-1y-title="Edit" tooltip-placement="top"></ds-button>
+    `)
+
+    await expect(page.locator('ds-button ds-tooltip')).toHaveJSProperty('placement', 'top')
+  })
+
+  test('should not render a tooltip without a11yTitle', async ({ page }) => {
+    await page.mount(`
+      <ds-button>Click me</ds-button>
+    `)
+
+    await expect(page.locator('ds-button ds-tooltip')).toHaveCount(0)
+  })
 })

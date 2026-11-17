@@ -48,4 +48,10 @@ test.describe('host', () => {
       await expectScreenshot(el, image(variant))
     })
   })
+
+  test('tooltip', async ({ page }) => {
+    const el = page.getByTestId('tooltip')
+    await el.locator('ds-button button').hover()
+    await expectScreenshot(el, image('tooltip'))
+  })
 })

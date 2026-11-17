@@ -232,7 +232,10 @@ export class Tooltip implements DsComponentInterface {
 
   private get triggerElement(): HTMLElement | null {
     if (!dsBrowser.hasDocument) return null
-    return document.querySelector(`[id="${this.reference}"]`)
+    const selector = `[id="${this.reference}"]`
+    // Scoped to the tooltip's own (shadow) root so components can reference triggers inside their shadow DOM
+    const root = this.el.getRootNode() as Document | ShadowRoot
+    return (root.querySelector?.(selector) as HTMLElement | null) ?? document.querySelector(selector)
   }
 
   /**

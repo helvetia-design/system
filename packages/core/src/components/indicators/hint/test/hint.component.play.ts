@@ -120,4 +120,18 @@ test.describe('component', () => {
     await expect(hint.locator('ds-hint-title')).toContainText('My Title')
     await expect(hint.locator('ds-hint-text')).toContainText('My body text.')
   })
+
+  test('should show the trigger label as tooltip on hover', async ({ page }) => {
+    await page.mount(`
+      <ds-hint trigger-label="More info">
+        <ds-hint-text>Body</ds-hint-text>
+      </ds-hint>
+    `)
+
+    const tooltip = page.locator('ds-hint ds-tooltip')
+    await expect(tooltip).toHaveText('More info')
+
+    await page.locator('ds-hint [part="trigger"]').hover()
+    await expect(tooltip).toHaveAttribute('aria-hidden', 'false')
+  })
 })

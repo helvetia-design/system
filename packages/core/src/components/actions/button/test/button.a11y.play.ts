@@ -5,6 +5,11 @@ test('basic', async ({ page, a11y }) => {
   await a11y('ds-button')
 })
 
+test('icon only with a11yTitle', async ({ page, a11y }) => {
+  await page.mount(`<ds-button icon="edit" square a-1-1y-title="Edit"></ds-button>`)
+  await a11y('ds-button')
+})
+
 test.describe('colors', () => {
   const COLORS = [
     'primary',
