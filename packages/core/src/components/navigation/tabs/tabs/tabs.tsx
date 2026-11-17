@@ -232,8 +232,10 @@ export class Tabs implements DsComponentInterface, DsConfigObserver {
   private initCarousel() {
     if (this.vertical || !this.tablistEl) return
     this.tablistEl.addEventListener('scroll', this.checkOverflow, { passive: true })
-    this.resizeObserver = new ResizeObserver(this.checkOverflow)
-    this.resizeObserver.observe(this.tablistEl)
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(this.checkOverflow)
+      this.resizeObserver.observe(this.tablistEl)
+    }
     this.checkOverflow()
   }
 

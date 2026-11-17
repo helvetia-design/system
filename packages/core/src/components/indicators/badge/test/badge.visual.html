@@ -118,37 +118,45 @@
       </section>
 
       <!-- Card Position -->
-      <!-- <section data-testid="card-position">
+      <section data-testid="card-position">
         <span>Card Position</span>
-        <article class="ds-card">
-          <ds-badge color="success" icon="check"></ds-badge>
-          <header class="ds-card-header">
-            <h3 class="ds-title" id="card-title-1">Header</h3>
-          </header>
-          <div class="ds-card-content">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua.
-          </div>
-        </article>
-      </section> -->
+        <div class="ds-stack">
+          <ds-card>
+            <ds-badge color="success" icon="check"></ds-badge>
+            <ds-card-header>
+              <ds-card-title>First child</ds-card-title>
+            </ds-card-header>
+            <ds-card-content>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</ds-card-content>
+          </ds-card>
+          <ds-card>
+            <ds-card-header>
+              <ds-badge color="success" icon="check"></ds-badge>
+              <ds-card-title>Nested in header</ds-card-title>
+            </ds-card-header>
+            <ds-card-content>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</ds-card-content>
+          </ds-card>
+        </div>
+      </section>
 
       <!-- Button Position -->
-      <!-- <section data-testid="button-position">
+      <section data-testid="button-position">
         <span>Button Position</span>
-        <button class="ds-button">
+        <ds-button>
           <ds-badge icon="check"></ds-badge>
           Button
-        </button>
-      </section> -->
+        </ds-button>
+      </section>
 
       <!-- Tabs Position -->
-      <!-- <section data-testid="tabs-position">
+      <section data-testid="tabs-position">
         <span>Tabs Position</span>
-        <ds-tabs interface="tabs" value="tab-b">
-          <ds-tab-item value="tab-a" label="Tab A">Content of Tab A</ds-tab-item>
-          <ds-tab-item value="tab-b" label="Tab B" bubble>Content of Tab B</ds-tab-item>
+        <ds-tabs>
+          <ds-tab name="a">Tab A</ds-tab>
+          <ds-tab name="b"><ds-badge size="sm"></ds-badge>Tab B</ds-tab>
+          <ds-tab-panel for="a">Content A</ds-tab-panel>
+          <ds-tab-panel for="b">Content B</ds-tab-panel>
         </ds-tabs>
-      </section> -->
+      </section>
     </main>
   </body>
 </html>

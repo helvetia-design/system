@@ -193,11 +193,13 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   connectedCallback() {
     this.initialValue = this.value
     setFormValue(this.internals, this.value)
-    this.resizeObserver = new ResizeObserver(() => {
-      this.updateLayout()
-      this.updatePill()
-    })
-    this.resizeObserver.observe(this.el)
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.updateLayout()
+        this.updatePill()
+      })
+      this.resizeObserver.observe(this.el)
+    }
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })

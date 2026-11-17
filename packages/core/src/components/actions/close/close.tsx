@@ -138,10 +138,10 @@ export class Close implements DsComponentInterface, DsConfigObserver {
           part="button"
           type="button"
           aria-label={label}
-          title={label}
           tabindex="0"
           disabled={this.disabled}
         ></button>
+        <ds-tooltip reference="close">{label}</ds-tooltip>
       </Host>
     )
   }

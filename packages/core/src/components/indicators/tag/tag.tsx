@@ -72,7 +72,7 @@ export class Tag implements DsComponentInterface {
   /**
    * Choosing left or center the tag is aligned to that side in the ds-card.
    */
-  @Prop()
+  @Prop({ reflect: true })
   @OneOf(TAG_PLACEMENTS)
   readonly position?: TagPlacement
 

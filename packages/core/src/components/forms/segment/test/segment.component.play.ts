@@ -149,3 +149,22 @@ test.describe('form reset', () => {
     await segment.assertNoSelection()
   })
 })
+
+test.describe('without ResizeObserver', () => {
+  test('renders without throwing', async ({ page }) => {
+    await page.addInitScript(() => {
+      delete (window as any).ResizeObserver
+    })
+    const errors: string[] = []
+    page.on('pageerror', error => errors.push(error.message))
+    page.on('console', message => {
+      if (message.type() === 'error') errors.push(message.text())
+    })
+
+    await page.mount(`<ds-segment name="fruits" label="Fruits" value="apple">${ITEMS}</ds-segment>`)
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await segment.assertSelectedValue('apple')
+    expect(errors).toEqual([])
+  })
+})

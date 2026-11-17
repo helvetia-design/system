@@ -22,6 +22,8 @@
  */
 
 :host {
+  // light-DOM descendants anchoring via offsetParent need the host itself positioned
+  position: relative;
   display: block;
   width: 100%;
 }

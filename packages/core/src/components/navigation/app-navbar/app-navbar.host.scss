@@ -346,6 +346,7 @@
 ::slotted(a[slot='brand']) {
   position: relative;
   display: flex;
+  color: var(--_app-navbar-title-color);
   align-items: center;
   flex-shrink: 0;
   gap: var(--_app-navbar-brand-gap);

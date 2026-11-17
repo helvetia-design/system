@@ -47,7 +47,7 @@ const PX_PER_REM = 16
 // (a FLOAT has nowhere to carry the `%`). Only this push-side transform changes; the JSON tokens
 // themselves stay on the multiplier. Applies to both a standalone `number`-typed LineHeight token
 // (isLineHeightNumberToken below) and a `typography` composite token's `lineHeight` sub-value
-// (figmaTypographySubValuesFor) — every LineHeight-shaped Figma variable in the file, so aliases
+// (figmaTypographySubEntriesFor) — every LineHeight-shaped Figma variable in the file, so aliases
 // between them never mix types. Inverse (strict, throws on anything but "NNN%"):
 // apps/toky/src/tokens/figma-map.ts's lineHeightFromFigmaPercent (reimplemented there, not
 // imported — Node-only module, outside apps/toky's module boundary).
@@ -324,32 +324,39 @@ export function isPushableToken(token) {
  * width, style), one per sub-value. Unlike shadow, there's no unsyncable shape to filter out first
  * (no multi-layer/array case) — every border composite token is eligible.
  *
- * Unlike shadow's sub-values (always inline literals), `color`/`width`/`style` are each a
- * `{reference}` string (docs/plans/border-token-type-plan.md decision 4), so this needs a
- * `tokenIndex` to follow them to a literal — see `resolveLiteral` in `./alias.mjs`.
+ * Unlike shadow's sub-values (always inline literals), `color`/`width`/`style` are each typically a
+ * `{reference}` string pointing at an Alias-layer primitive that already has its own Figma
+ * variable (docs/plans/border-token-type-plan.md decision 4) — same "direct reference stays a live
+ * link, not a flattened copy" policy as a responsive dimension breakpoint
+ * (`figmaResponsiveDimensionSubEntriesFor` above): only one hop is checked, so write.mjs's pass 2
+ * can bind a `VARIABLE_ALIAS` straight to that primitive's variable instead of this baking the
+ * primitive's own literal value into the border's sub-variable, which would leave the Figma side
+ * with a raw hex/px/keyword instead of a visible link to the primitive it actually tracks.
  *
  * @param {unknown} literalValue already-resolved (non-reference) `$value` of a border token —
  *   its `color`/`width`/`style` fields may themselves still be `{reference}` strings
- * @param {Map<string, import('./tokens.mjs').Token>} tokenIndex
- * @returns {{ color: { r: number, g: number, b: number, a: number }, width: number, style: string } | null}
+ * @returns {{
+ *   color: { kind: 'literal', value: { r: number, g: number, b: number, a: number } } | { kind: 'reference', path: string[] },
+ *   width: { kind: 'literal', value: number } | { kind: 'reference', path: string[] },
+ *   style: { kind: 'literal', value: string } | { kind: 'reference', path: string[] },
+ * } | null}
  */
-export function figmaBorderSubValuesFor(literalValue, tokenIndex) {
+export function figmaBorderSubEntriesFor(literalValue) {
   if (typeof literalValue !== 'object' || literalValue === null) return null
   const { color, width, style } = literalValue
-  const colorLiteral = resolveLiteral(color, tokenIndex)
-  const widthLiteral = resolveLiteral(width, tokenIndex)
-  const styleLiteral = resolveLiteral(style, tokenIndex)
-  if (typeof styleLiteral !== 'string') return null
-  return {
-    color: figmaValueFor('color', colorLiteral),
-    width: figmaValueFor('dimension', widthLiteral),
-    style: styleLiteral,
+  const entryFor = (raw, dtcgType) => {
+    const refPath = parseReferencePath(raw)
+    if (refPath) return { kind: 'reference', path: refPath }
+    return { kind: 'literal', value: figmaValueFor(dtcgType, raw) }
   }
+  const styleEntry = entryFor(style, 'string')
+  if (styleEntry.kind === 'literal' && typeof styleEntry.value !== 'string') return null
+  return { color: entryFor(color, 'color'), width: entryFor(width, 'dimension'), style: styleEntry }
 }
 
 // Sub-property suffixes appended to a border token's path to name its 3 decomposed Figma
 // variables, e.g. '🔗 Alias/▭ Border/Composite/Grey/BorderColor'. Order matches
-// figmaBorderSubValuesFor's return shape.
+// figmaBorderSubEntriesFor's return shape.
 export const BORDER_SUB_PROPERTIES = ['color', 'width', 'style']
 export const BORDER_SUB_PROPERTY_SUFFIX = {
   color: 'BorderColor',
@@ -378,40 +385,70 @@ export function isSyncableBorderToken(token) {
  * single flat object).
  *
  * fontFamily/fontWeight are always `{reference}` strings (decision 4), same as border's
- * color/width/style — resolved to a literal via `resolveLiteral` first. fontSize/lineHeight are
- * free literal-or-reference, so `resolveLiteral` is a no-op passthrough for either shape (it only
- * follows a `{reference}` string, returning anything else unchanged). lineHeight's resolved literal
- * is additionally converted to a percentage string (see figmaLineHeightPercentFor) — Figma
- * expects "150%", not this codebase's raw CSS-style multiplier.
+ * color/width/style; fontSize/lineHeight/textDecoration/textTransform are free literal-or-
+ * reference. Every one of those 6 keeps a direct single-hop `{reference}` as a live link (same
+ * policy as border's sub-values and a responsive dimension breakpoint) rather than flattening it to
+ * a copy of the primitive's value — each one's target is itself a plain token whose own Figma
+ * variable already has the exact resolvedType this sub-property expects (e.g. a LineHeight-path
+ * `number` token is STRING-typed on the Figma side too, via `isLineHeightNumberToken`, so lineHeight
+ * can alias straight to it). `letterSpacing` is the one exception: Figma's letter-spacing is always
+ * expressed as a percentage of *this* composite's own fontSize (see
+ * `figmaLetterSpacingPercentFor`), a value derived from two inputs rather than a 1:1 copy of any
+ * single variable, so it's always computed here, never tagged 'reference' — there's no primitive it
+ * could alias to.
  *
  * @param {unknown} literalValue already-resolved (non-reference) `$value` of a typography token —
- *   its `fontFamily`/`fontSize`/`fontWeight`/`lineHeight` fields may themselves still be
- *   `{reference}` strings
+ *   its `fontFamily`/`fontSize`/`fontWeight`/`lineHeight`/`textDecoration`/`textTransform` fields
+ *   may themselves still be `{reference}` strings
  * @param {Map<string, import('./tokens.mjs').Token>} tokenIndex
- * @returns {{ fontFamily: string, fontSize: number, fontWeight: string, lineHeight: string, letterSpacing: string, textDecoration: string, textTransform: string } | null}
+ * @returns {{
+ *   fontFamily: { kind: 'literal', value: string } | { kind: 'reference', path: string[] },
+ *   fontSize: { kind: 'literal', value: number } | { kind: 'reference', path: string[] },
+ *   fontWeight: { kind: 'literal', value: string } | { kind: 'reference', path: string[] },
+ *   lineHeight: { kind: 'literal', value: string } | { kind: 'reference', path: string[] },
+ *   letterSpacing: { kind: 'literal', value: string },
+ *   textDecoration: { kind: 'literal', value: string } | { kind: 'reference', path: string[] },
+ *   textTransform: { kind: 'literal', value: string } | { kind: 'reference', path: string[] },
+ * } | null}
  */
-export function figmaTypographySubValuesFor(literalValue, tokenIndex) {
+export function figmaTypographySubEntriesFor(literalValue, tokenIndex) {
   if (typeof literalValue !== 'object' || literalValue === null) return null
   const { fontFamily, fontSize, fontWeight, lineHeight, letterSpacing, textDecoration, textTransform } = literalValue
-  const fontFamilyLiteral = resolveLiteral(fontFamily, tokenIndex)
-  const fontSizeLiteral = resolveLiteral(fontSize, tokenIndex)
-  const fontWeightLiteral = resolveLiteral(fontWeight, tokenIndex)
-  const lineHeightLiteral = resolveLiteral(lineHeight, tokenIndex)
+
+  const entryFor = (raw, dtcgType) => {
+    const refPath = parseReferencePath(raw)
+    if (refPath) return { kind: 'reference', path: refPath }
+    return { kind: 'literal', value: figmaValueFor(dtcgType, raw) }
+  }
+
+  const lineHeightRefPath = parseReferencePath(lineHeight)
+  let lineHeightEntry
+  if (lineHeightRefPath) {
+    lineHeightEntry = { kind: 'reference', path: lineHeightRefPath }
+  } else {
+    const lineHeightLiteral = resolveLiteral(lineHeight, tokenIndex)
+    if (typeof lineHeightLiteral !== 'number') return null
+    lineHeightEntry = { kind: 'literal', value: figmaLineHeightPercentFor(lineHeightLiteral) }
+  }
+
   const letterSpacingLiteral = resolveLiteral(letterSpacing, tokenIndex)
   const textDecorationLiteral = resolveLiteral(textDecoration, tokenIndex)
   const textTransformLiteral = resolveLiteral(textTransform, tokenIndex)
-  if (typeof lineHeightLiteral !== 'number') return null
   if (letterSpacingLiteral === undefined || textDecorationLiteral === undefined || textTransformLiteral === undefined) {
     return null
   }
+
   return {
-    fontFamily: figmaValueFor('fontFamily', fontFamilyLiteral),
-    fontSize: figmaValueFor('dimension', fontSizeLiteral),
-    fontWeight: figmaValueFor('fontWeight', fontWeightLiteral),
-    lineHeight: figmaLineHeightPercentFor(lineHeightLiteral),
-    letterSpacing: figmaLetterSpacingPercentFor(letterSpacingLiteral, resolveDesktopDimension(fontSize, tokenIndex)),
-    textDecoration: figmaValueFor('textDecoration', textDecorationLiteral),
-    textTransform: figmaValueFor('textTransform', textTransformLiteral),
+    fontFamily: entryFor(fontFamily, 'fontFamily'),
+    fontSize: entryFor(fontSize, 'dimension'),
+    fontWeight: entryFor(fontWeight, 'fontWeight'),
+    lineHeight: lineHeightEntry,
+    letterSpacing: {
+      kind: 'literal',
+      value: figmaLetterSpacingPercentFor(letterSpacingLiteral, resolveDesktopDimension(fontSize, tokenIndex)),
+    },
+    textDecoration: entryFor(textDecoration, 'textDecoration'),
+    textTransform: entryFor(textTransform, 'textTransform'),
   }
 }
 
@@ -430,7 +467,7 @@ function resolveDesktopDimension(rawValue, tokenIndex) {
 
 // Sub-property suffixes appended to a typography token's path to name its 7 decomposed Figma
 // variables, e.g. '🌐 Global/🔤 Font/Typography/Test/FontFamily'. Order matches
-// figmaTypographySubValuesFor's return shape.
+// figmaTypographySubEntriesFor's return shape.
 export const TYPOGRAPHY_SUB_PROPERTIES = [
   'fontFamily',
   'fontSize',
