@@ -112,7 +112,7 @@ jobs:
           echo "repo=$(jq -r '.head.repo.full_name' <<< "$PR")" >> $GITHUB_OUTPUT
 
       - name: Create comment
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace
@@ -168,7 +168,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v6
@@ -314,7 +314,7 @@ jobs:
 
       - name: Commit screenshots
         if: needs.updateScreenshots.outputs.changed == 'true'
-        uses: EndBug/add-and-commit@v11
+        uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8 # v11.1.1
         with:
           add: packages/core/src
           author_name: Helvetia Design System
@@ -323,7 +323,7 @@ jobs:
 
       - name: Create comment
         if: success()
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace
@@ -336,7 +336,7 @@ jobs:
 
       - name: Create comment
         if: failure()
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace

@@ -4,9 +4,6 @@ inputs:
   token:
     description: 'GitHub token (for configuring git remote)'
     required: false
-  npm-token:
-    description: 'NPM token (for configuring npm registry access)'
-    required: false
   branch:
     description: 'Branch name (for info display)'
     required: false
@@ -29,9 +26,12 @@ runs:
     - name: Show inputs from previous job
       if: inputs.branch != ''
       shell: bash
+      env:
+        BRANCH: ${{ inputs.branch }}
+        ACTION: ${{ inputs.action }}
       run: |
-        echo "Branch from previous job: ${{ inputs.branch }}"
-        echo "Action: ${{ inputs.action }}"
+        echo "Branch from previous job: $BRANCH"
+        echo "Action: $ACTION"
 
     - name: Show current branch
       if: inputs.branch != ''
@@ -43,21 +43,13 @@ runs:
         git log -1 --oneline
 
     - name: Setup pnpm
-      uses: pnpm/action-setup@v6
+      uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
 
     - name: Setup Node.js environment
       uses: actions/setup-node@v6
       with:
         node-version: 24
         cache: 'pnpm'
+        ## setup-node writes a runner-temp .npmrc that reads NODE_AUTH_TOKEN at publish
+        ## time; callers set it on the publish step only so other actions never see it.
         registry-url: 'https://registry.npmjs.org'
-
-    ## setup-node writes the registry config to a runner-temp .npmrc (not the
-    ## repo checkout or $HOME) and resolves the auth token from NODE_AUTH_TOKEN
-    ## at publish time, so the secret never touches a file we could commit.
-    - name: Export NPM auth token
-      if: inputs.npm-token != ''
-      shell: bash
-      run: echo "NODE_AUTH_TOKEN=$NPM_PUBLISH_TOKEN" >> "$GITHUB_ENV"
-      env:
-        NPM_PUBLISH_TOKEN: ${{ inputs.npm-token }}
