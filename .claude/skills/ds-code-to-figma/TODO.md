@@ -1,7 +1,7 @@
 # Todos
 
 - [ ] Slots should appear after there show&hide toggle
-- [ ] Adjust figma id to generate new design tokens
+- [x] Adjust figma id to generate new design tokens
 - [ ] Clear the figma file for new generations
 - [ ] PoC with the input to see if we can use the variables from the other lib foundation
 
