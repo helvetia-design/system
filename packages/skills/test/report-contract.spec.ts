@@ -700,6 +700,27 @@ describe('Unmapped props and handlers', () => {
       expect(handling).toContain("`a11yCurrent={cond ? 'page' : undefined}`")
       expect(handling).toContain("`[a11yCurrent]=\"cond ? 'page' : ''\"`")
       expect(handling).toContain('`aria-current`')
+      expect(handling).toContain(
+        'On a navigation entry, also rewrite `color` as the current-navigation-entry section above describes.',
+      )
+      expect(handling).not.toContain('with no replacement')
+    })
+
+    it('button binds color so the current navigation entry keeps its highlight', () => {
+      const shape = section(
+        read('components/button/migration.md'),
+        '### Shape: the current navigation entry keeps its highlight through `color`',
+      )
+
+      expect(shape).toContain('bind `color` to the same condition as `a11yCurrent`')
+      expect(shape).toContain('An omitted `color` maps to `primary`')
+      expect(shape).toContain('When `<mapped>` is `primary`, the current entry gets `secondary` instead.')
+      expect(shape).toContain("`color={cond ? 'primary' : '<mapped>'}`")
+      expect(shape).toContain("`[color]=\"cond ? 'primary' : '<mapped>'\"`")
+      expect(shape).toContain("`el.color = cond ? 'primary' : '<mapped>'`")
+      expect(shape).toContain('A true literal sets `color` to the current-entry colour')
+      expect(shape).toContain("The binding replaces the button's existing `color`.")
+      expect(shape).toContain('add no binding, and report the entry as a highlight to restore by hand')
     })
 
     it('button reports every isActive rewrite and drop with the lost pressed look', () => {
@@ -708,6 +729,8 @@ describe('Unmapped props and handlers', () => {
       expect(items).toHaveLength(1)
       expect(items[0].text).toContain('"the forced pressed look is gone"')
       expect(items[0].text).toContain('"pressed look lost, check whether it was a toggle"')
+      expect(items[0].text).toContain('with the `color` binding that now marks the current entry')
+      expect(items[0].text).toContain('"highlight not restored, non-literal `color`"')
     })
 
     describe.each(['toast', 'snackbar'])('%s', name => {
