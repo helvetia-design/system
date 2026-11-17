@@ -115,6 +115,13 @@ imported.width)`, then move **all** `imported.children` (via `findAll`, not `fin
 
 ## Color and paint
 
+- **Changing a main component's paints doesn't always reach its instances inside slots**
+  (17.11.2026, binding the `Spec/*` marker colors): the placed `Spec/Inset` / `Spec/Gap` /
+  `Spec/Icon size` instances in the Measurements slots kept 100% opacity after the mains were bound
+  and their opacity restored, with no override listed. Re-check placed instances after editing a
+  main and set the paint on them too (same variable, same opacity). Binding with
+  `setBoundVariableForPaint` in a bulk loop also reset paint opacity to 100% — read the opacity
+  back and restore it.
 - **When rebinding a cloned variant's paint to a variable, create the paint with the variable's
   resolved value as its color — never a placeholder.** After `setBoundVariableForPaint`, a master
   can keep rendering the placeholder color even though the binding is correct and instances

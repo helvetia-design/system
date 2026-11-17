@@ -73,15 +73,16 @@ Rules that apply on top of the groups:
 Two independent channels: **color says what kind of value it is, line style says what type of
 value it is.** Never encode meaning in color alone — every marker also has a number and a label.
 
-**Kind → color** (literal documentation colors, not tokens; one color per kind, even when a card
-has several rows of it):
+**Kind → color** (DS palette, bound to the `🌐 Global/🌈 Color/*` variables on every `Spec/*` component; one color per
+kind, even when a card has several rows of it):
 
-| Kind      | Covers                                        | Color   |
-| --------- | --------------------------------------------- | ------- |
-| `size`    | width, height, icon/glyph size (incl. limits) | green   |
-| `spacing` | padding, gap                                  | magenta |
-| `shape`   | radius, border width, focus ring              | blue    |
-| `type`    | font size/weight/line-height                  | purple  |
+| Kind      | Covers                                        | Color            |
+| --------- | --------------------------------------------- | ---------------- |
+| `size`    | width, height, icon/glyph size (incl. limits) | green (success)  |
+| `spacing` | padding, gap                                  | red (danger)     |
+| `shape`   | radius, border width, focus ring              | blue (info)      |
+| `type`    | font size/weight/line-height                  | purple           |
+| hit area  | not a kind: the hit-area outline              | orange (warning) |
 
 **What → marker** (component names in `../PHASE-8-DOCUMENT-MEASUREMENTS.md` step 0):
 
@@ -94,23 +95,30 @@ has several rows of it):
 | radius                   | circle with the radius's own size, sitting in the corner; leader diagonally outward                      |
 | border width, focus ring | leader: 3px dot (no outline) centered on the edge or ring, line outward, pill with the value             |
 | typography               | dashed outline on the text's line box, leader from its edge, pill with size / weight / line-height       |
-| hit area                 | dashed orange outline around the hit area (its own color, not a kind)                                    |
+| hit area                 | dashed orange outline around the hit area (warning color, not a kind)                                    |
 | behavior                 | no line — text label (`Hug ↔`, `Fill ↔`, `Truncates`, `Wraps`)                                           |
 
-**Labels**: every marker label is the same soft **pill** — a light tint of the kind color, a 1px
-outline in the kind color, a solid number bubble first (it matches the Sizes table, where every
-row starts with its bubble), then the **value** in a dark shade of the kind color (`48px`,
-`min 48px`, `4px`). The dark shade keeps the value text at WCAG AA contrast; white on the base
-green or magenta doesn't reach it. The bubble's number is the row's number in the Sizes table —
-never put the number into the value text. Leader and corner-radius pills stay attached to the
-end of their line — there the line is the connection.
+**Labels**: every marker label is the same soft **pill** — a fill in the kind's `-1` tint, a 1px
+outline in the kind color, a solid number bubble first (white number; it matches the Sizes table,
+where every row starts with its bubble), then the **value** in the same kind color (`48px`,
+`min 48px`, `4px`). One color per kind for lines, outline, bubble and value text (17.11.2026, from
+the mockup on `🧰 Annotations`, `4582:4163`). The bubble's number is the row's number in the Sizes
+table — never put the number into the value text. Leader and corner-radius pills stay attached to
+the end of their line — there the line is the connection.
 
-| Kind      | Base (lines, bubble, outline) | Dark (value text) | Tint (pill fill) |
-| --------- | ----------------------------- | ----------------- | ---------------- |
-| `size`    | `#1C9454`                     | `#0F5C33`         | `#E3F2EA`        |
-| `spacing` | `#D92E9E`                     | `#8A1663`         | `#FBE6F3`        |
-| `shape`   | `#3366F2`                     | `#1F45B0`         | `#E6EDFE`        |
-| `type`    | `#8257DB`                     | `#5530A0`         | `#EEE8FA`        |
+| Kind      | Color (lines, outline, bubble, value text) | Fill (pill)         | Value text on fill |
+| --------- | ------------------------------------------ | ------------------- | ------------------ |
+| `size`    | success-5 `#116B34`                        | success-1 `#E8F3EC` | 5.8:1              |
+| `spacing` | danger-5 `#CB1501`                         | danger-1 `#FCE8E6`  | 4.9:1              |
+| `shape`   | info-5 `#155BA3`                           | info-1 `#E8F1FB`    | 6.0:1              |
+| `type`    | purple-6 `#6C2273`                         | purple-1 `#F9F3FF`  | 9.1:1              |
+| hit area  | warning-6 `#C97612`                        | warning-1 `#FFF9E8` | 3.3:1 (see below)  |
+
+Warning-6 stays below AA (4.5:1) on purpose (user decision, 17.11.2026): the hit-area outline has
+no value text today, only the legacy `Spec/Dimension` `kind=icon` uses it with text. Spacing
+overlays keep their opacity on the bound paint (padding tint 35%, gap hatch 60% / 12%), the icon
+overlay its 25%. Variable names are the palette names in the table (`Success/5`, `Success/1`, …,
+`Warning/6`, `Warning/1`); both Design Tokens modes (Base, OrangeVacations) have the same values.
 
 **Gaps are measured from the tick ends**, not from the line: the end ticks stick out 3px on both
 sides of a dimension line, so a gap measured from the line disappears. 4px between the ticks and

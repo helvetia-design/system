@@ -49,7 +49,7 @@ marker by hand instead.
 
 `Value` is the value only (`48px`, `min 48px`, `4px`); the row number goes into `Number` with
 `Show number` on (the default). Every label is the same soft pill (tint fill, kind-colored
-outline, solid number bubble first, dark value text — colors in `conventions/measurements.md` →
+outline, solid number bubble first, value text in the kind color — colors in `conventions/measurements.md` →
 "Labels"), and `Spec/Dimension` puts it on the outer side of its line, 4px from the tick ends
 (above a `top` line, left of a `left` line, …), so it never covers the ticks. Dashed and solid lines are the same
 1px rectangle (dashed = one-side dashed stroke), so both sit centered between the end ticks. Legacy, don't
