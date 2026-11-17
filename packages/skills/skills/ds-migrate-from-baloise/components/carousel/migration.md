@@ -60,7 +60,7 @@ Legacy `value` on `bal-carousel` is a 0-based slide **index**. `ds-carousel`'s `
 
 ### Shape: `bal-carousel-item` link and button rewrite
 
-Legacy `bal-carousel-item` rendered its own `<a>` or `<button>` only when the item had both `color` and `label`. The compiled render logic in `@baloise/ds-core` (`bal-carousel-item.js`) reads `const isProduct = !!this.color && !!this.label;`. An attribute bound to an expression counts as set. `ds-carousel-item` renders neither element and is always a plain host, so the rewrite slots the interactive element itself, and only for product tiles.
+Legacy `bal-carousel-item` rendered its own `<a>` or `<button>` only when the item had both `color` and `label`. The compiled render logic in `@baloise/ds-core` (`bal-carousel-item.js`) reads `const isProduct = !!this.color && !!this.label;`. The gate is read statically, before any `color="white"` drop: a literal attribute with a non-empty value counts as set, and so does an attribute bound to an expression, because the migration cannot read its runtime value. Legacy read it at runtime, and `label` defaults to `''`, so an expression that is empty rendered a plain host. Treat an expression-bound `color` or `label` as set, and report the item, so the consumer confirms the wrapper belongs there. `ds-carousel-item` renders neither element and is always a plain host, so the rewrite slots the interactive element itself, and only for product tiles.
 
 When the item does not have both `color` and `label`, add no wrapper. Legacy rendered a plain host with the slot and ignored `href`, `target`, `rel`, `download`, `elementType`, the form `name` and `value`. Rewrite the item as plain slot content and drop those attributes in every framework, HTML included, because a form `name` would clash with the synthesized `name`. This is a row-prescribed drop, so the cleanup bullets of Unmapped props and handlers (`SKILL.md`) apply to declarations that become unused.
 
@@ -193,17 +193,18 @@ Needs your attention when found:
 18. Every `balNavigate`, `balFocus` or `balBlur` rewritten to a native event on the wrapped element, and every such binding removed from an item where legacy never fired it.
 19. Every handler whose `detail` read was rewritten to `detail.value`. The value is now the item name (`item-N`), not a 0-based index, so state that stores an index must change. Also every handler left as it is because its body is in another file, named by file and line.
 20. Every `previous()`, `next()` or `setFocus()` call, with its Unmapped props and handlers outcome. For `previous()` and `next()`, name the `el.value = 'item-N'` option, which moves the active dot but does not scroll.
-21. One-time note: files which only listen or only call a method, and have no scanned `.html` of the same name beside them, were not scanned.
+21. Every item treated as a product tile because its `color` or `label` is bound to an expression, whose runtime value the migration cannot read. When that expression is empty at runtime, legacy rendered a plain host, so the wrapper does not belong.
+22. One-time note: files which only listen or only call a method, and have no scanned `.html` of the same name beside them, were not scanned.
 
 Coverage only, written to the file:
 
-22. Every synthesized `ds-carousel-item` name.
-23. Every `value` rewritten from an index to a name.
-24. Every dropped `controlsSticky`.
-25. Every dropped `htmlRole`.
-26. Every product tile rewritten into a wrapped `<a>`, with `navigation` added.
-27. Every `label` moved into a product tile's slot as plain text.
-28. Every `href`, `target`, `rel`, `download`, `elementType`, form `name` or `value` dropped from an item without both `color` and `label`, which legacy ignored.
+23. Every synthesized `ds-carousel-item` name.
+24. Every `value` rewritten from an index to a name.
+25. Every dropped `controlsSticky`.
+26. Every dropped `htmlRole`.
+27. Every product tile rewritten into a wrapped `<a>`, with `navigation` added.
+28. Every `label` moved into a product tile's slot as plain text.
+29. Every `href`, `target`, `rel`, `download`, `elementType`, form `name` or `value` dropped from an item without both `color` and `label`, which legacy ignored.
 
 Leave every change unstaged for the consumer to review, including `ds-migration-report.md`. Stop. Do not run `git add` or `git commit`.
 
