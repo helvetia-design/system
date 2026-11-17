@@ -16,7 +16,7 @@ concurrency: ${{ github.workflow }}
 jobs:
   sync:
     name: 🔼 Pull tokens to Figma
-    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'toky/update-next')
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'toky/update-main')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
