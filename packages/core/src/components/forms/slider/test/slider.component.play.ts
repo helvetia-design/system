@@ -155,3 +155,12 @@ test.describe('form reset', () => {
     await slider.assertValue('30')
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-slider label="Label" required="false"></ds-slider>`)
+    const slider = new DsSlider(page.locator('ds-slider'))
+
+    await expect(slider.el).toHaveJSProperty('required', false)
+  })
+})

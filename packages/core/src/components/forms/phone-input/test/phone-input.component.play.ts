@@ -320,3 +320,13 @@ test.describe('form reset', () => {
     await phone.assertNationalNumber('79 123 45 67')
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-phone-input label="Label" required="false"></ds-phone-input>`)
+    const phoneInput = new DsPhoneInput(page.locator('ds-phone-input'))
+
+    await expect(phoneInput.el).toHaveJSProperty('required', false)
+    await expect(phoneInput.nativeInput).toHaveJSProperty('required', false)
+  })
+})

@@ -45,7 +45,7 @@ export const Basic = Story({
     ({ ...args }) => `
 <div class="ds-stack as-col">
   <span>Before</span>
-  <ds-divider ${props(args)}></ds-divider>
+  <ds-divider ${props(args, tag)}></ds-divider>
   <span>After</span>
 </div>
    `,

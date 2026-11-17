@@ -20,7 +20,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     ({ ...args }) => `
-<ds-segment ${props(args)}>
+<ds-segment ${props(args, tag)}>
   <ds-segment-item value="apple" label="Apple"></ds-segment-item>
   <ds-segment-item value="strawberry" label="Strawberry"></ds-segment-item>
 </ds-segment>`,

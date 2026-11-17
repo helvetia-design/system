@@ -15,7 +15,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ ...args }) => `<ds-slider ${props(args)}></ds-slider>`),
+  ...withRender(({ ...args }) => `<ds-slider ${props(args, tag)}></ds-slider>`),
 }
 
 export default meta

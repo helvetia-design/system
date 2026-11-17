@@ -17,7 +17,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-drawer ${props(args)}>${slot}</ds-drawer>`),
+  ...withRender(({ slot, ...args }) => `<ds-drawer ${props(args, tag)}>${slot}</ds-drawer>`),
 }
 
 export default meta
@@ -27,7 +27,7 @@ const Story = StoryFactory<Args>(meta)
 export const Drawer = Story({
   ...withRender(
     ({ slot, ...args }) => `
-<ds-drawer id="drawer-basic" ${props(args)}>${slot}</ds-drawer>
+<ds-drawer id="drawer-basic" ${props(args, tag)}>${slot}</ds-drawer>
 
 <!-- Trigger -->
 <ds-button onclick="document.getElementById('drawer-basic').present()">
@@ -46,7 +46,7 @@ export const RichContent = Story({
   ...withRender(
     ({ slot, ...args }) => `
 <ds-button onclick="document.getElementById('drawer-rich').present()">Open Drawer</ds-button>
-<ds-drawer id="drawer-rich" ${props(args)}>
+<ds-drawer id="drawer-rich" ${props(args, tag)}>
   <h3 class="ds-title mb-base">Filter options</h3>
   <ds-checkbox-group vertical>
     <ds-checkbox>Category A</ds-checkbox>
@@ -72,7 +72,7 @@ export const Container = Story({
   ...withRender(
     ({ slot, ...args }) => `
 <ds-button onclick="document.getElementById('drawer-container').present()">Open Drawer</ds-button>
-<ds-drawer id="drawer-container" ${props(args)}>${slot}</ds-drawer>
+<ds-drawer id="drawer-container" ${props(args, tag)}>${slot}</ds-drawer>
     `,
   ),
 })

@@ -1,4 +1,5 @@
 import {
+  AttrDeserialize,
   AttachInternals,
   Component,
   Element,
@@ -12,6 +13,7 @@ import {
   State,
 } from '@stencil/core'
 import {
+  deserializeBooleanAttribute,
   Logger,
   type LogInstance,
   isSpaceKey,
@@ -166,6 +168,11 @@ export class Radio implements DsComponentInterface {
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = false
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * Defines the layout of the input

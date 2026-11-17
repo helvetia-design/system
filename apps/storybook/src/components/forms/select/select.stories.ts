@@ -15,7 +15,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     ({ ...args }) => `
-      <ds-select id="select-basic" ${props(args)}>
+      <ds-select id="select-basic" ${props(args, 'ds-select')}>
         <ds-select-option value="ch">Switzerland</ds-select-option>
         <ds-select-option value="de">Germany</ds-select-option>
         <ds-select-option value="at">Austria</ds-select-option>
@@ -66,7 +66,7 @@ export const Searchable = Story({
   },
   ...withRender(
     ({ ...args }) => `
-      <ds-select id="select-searchable" ${props(args)}>
+      <ds-select id="select-searchable" ${props(args, 'ds-select')}>
         <ds-select-option value="ch">Switzerland</ds-select-option>
         <ds-select-option value="de">Germany</ds-select-option>
         <ds-select-option value="at">Austria</ds-select-option>
@@ -87,7 +87,7 @@ export const Clearable = Story({
   },
   ...withRender(
     ({ ...args }) => `
-      <ds-select id="select-clearable" ${props(args)}>
+      <ds-select id="select-clearable" ${props(args, 'ds-select')}>
         <ds-select-option value="ch">Switzerland</ds-select-option>
         <ds-select-option value="de">Germany</ds-select-option>
         <ds-select-option value="at">Austria</ds-select-option>
@@ -108,7 +108,7 @@ export const Multiple = Story({
   },
   ...withRender(
     ({ ...args }) => `
-      <ds-select id="select-multiple" ${props(args)}>
+      <ds-select id="select-multiple" ${props(args, 'ds-select')}>
         <ds-select-option value="de">German</ds-select-option>
         <ds-select-option value="fr">French</ds-select-option>
         <ds-select-option value="it">Italian</ds-select-option>
@@ -127,7 +127,7 @@ export const Grouped = Story({
   },
   ...withRender(
     ({ ...args }) => `
-      <ds-select id="select-grouped" ${props(args)}>
+      <ds-select id="select-grouped" ${props(args, 'ds-select')}>
         <ds-select-optgroup label="Switzerland">
           <ds-select-option value="ch-zh">Zurich</ds-select-option>
           <ds-select-option value="ch-bs">Basel</ds-select-option>

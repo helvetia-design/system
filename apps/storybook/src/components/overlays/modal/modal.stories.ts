@@ -16,7 +16,7 @@ const meta: Meta<Args> = {
   ...withRender(
     ({ ...args }) => `
 <ds-button onclick="document.getElementById('modal-basic').present()">Open Modal</ds-button>
-<ds-modal id="modal-basic" ${props(args)}>
+<ds-modal id="modal-basic" ${props(args, 'ds-modal')}>
   <ds-modal-header>Modal Title</ds-modal-header>
   <ds-modal-body>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>

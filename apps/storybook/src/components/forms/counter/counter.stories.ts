@@ -18,7 +18,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ ...args }) => `<ds-counter ${props(args)}></ds-counter>`),
+  ...withRender(({ ...args }) => `<ds-counter ${props(args, tag)}></ds-counter>`),
 }
 
 export default meta

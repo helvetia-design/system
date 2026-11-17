@@ -196,3 +196,12 @@ test.describe('component', () => {
     })
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-file-upload label="Label" required="false"></ds-file-upload>`)
+    const fileUpload = new DsFileUpload(page.locator('ds-file-upload'))
+
+    await expect(fileUpload.el).toHaveJSProperty('required', false)
+  })
+})

@@ -168,3 +168,12 @@ test.describe('without ResizeObserver', () => {
     expect(errors).toEqual([])
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-segment label="Label" required="false">${ITEMS}</ds-segment>`)
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await expect(segment.el).toHaveJSProperty('required', false)
+  })
+})

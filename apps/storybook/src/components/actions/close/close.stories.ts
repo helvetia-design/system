@@ -12,7 +12,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ ...args }) => `<ds-close ${props(args)}></ds-close>`),
+  ...withRender(({ ...args }) => `<ds-close ${props(args, tag)}></ds-close>`),
 }
 
 export default meta

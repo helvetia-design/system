@@ -12,7 +12,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag: 'ds-shape' }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-shape ${props(args)}>${slot}</ds-shape>`),
+  ...withRender(({ slot, ...args }) => `<ds-shape ${props(args, 'ds-shape')}>${slot}</ds-shape>`),
 }
 
 export default meta

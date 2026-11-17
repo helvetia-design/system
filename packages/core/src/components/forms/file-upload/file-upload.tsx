@@ -1,6 +1,27 @@
-import { Component, Element, Event, EventEmitter, h, Listen, Method, Prop, State, Watch } from '@stencil/core'
+import {
+  AttrDeserialize,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Listen,
+  Method,
+  Prop,
+  State,
+  Watch,
+} from '@stencil/core'
 import { DsComponentInterface } from '@global'
-import { Logger, type LogInstance, stopEventBubbling, areArraysEqual, OneOf, Type, watchInvalidTextSlot } from '@utils'
+import {
+  deserializeBooleanAttribute,
+  Logger,
+  type LogInstance,
+  stopEventBubbling,
+  areArraysEqual,
+  OneOf,
+  Type,
+  watchInvalidTextSlot,
+} from '@utils'
 import { defaultConfig, DsLanguage, DsRegion, ListenToConfig } from '@global'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { Field, FieldInterface } from '../input/field.util'
@@ -157,6 +178,11 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
   @Prop()
   @Type('boolean')
   readonly required: boolean = false
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * Accepted MIME-Types like `image/png,image/jpeg`.

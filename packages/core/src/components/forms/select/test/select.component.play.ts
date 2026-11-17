@@ -383,3 +383,12 @@ test.describe('reduced motion', () => {
     await select.assertClosed()
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-select label="Label" required="false"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+
+    await expect(select.el).toHaveJSProperty('required', false)
+  })
+})
