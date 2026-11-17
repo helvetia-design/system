@@ -4,7 +4,7 @@ Migrate every `bal-radio` usage to `ds-radio`, and every `bal-radio-group` usage
 
 Both legacy tags are migrated together, not separately. `bal-radio-group` drives its children with `this.el.querySelectorAll('bal-radio')`; rewriting the children to `ds-radio` while leaving a `bal-radio-group` parent untouched would silently break that cascade, because the old group would stop finding its own children. `ds-radio-group` has the matching `querySelectorAll('ds-radio')` wiring, so the parent and its children are always rewritten in the same pass.
 
-`bal-radio-icon` is the third tag in the legacy folder. It is the legacy indicator that a consumer places inside a tile body, and `ds-radio` has no equivalent because the ds tile draws its own indicator. Inside a migrated `ds-radio`, delete every `<bal-radio-icon>` (React `<BalRadioIcon />`) and its import when it becomes unused. Leave the rest of the tile body (`bal-stack`, `bal-icon`, `bal-content`, `bal-label`, `bal-text` and so on) unchanged for its own migration, and list those tags in the report as children of the tile. A `bal-radio-icon` outside any radio is rare. It stays in place and is reported as "no `ds-*` equivalent, needs manual rework". Do not add a comment to the consumer's code.
+`bal-radio-icon` is the third tag in the legacy folder. It is the legacy indicator that a consumer places inside a tile body, and `ds-radio` has no equivalent because the ds tile draws its own indicator. Decide `hideTrigger` first, as Shape: round icon and `hideTrigger` describes, because the decision reads those tags. Then, inside a migrated `ds-radio`, delete every `<bal-radio-icon>` (React `<BalRadioIcon />`) and its import when it becomes unused. Leave the rest of the tile body (`bal-stack`, `bal-icon`, `bal-content`, `bal-label`, `bal-text` and so on) unchanged for its own migration, and list those tags in the report as children of the tile. A `bal-radio-icon` outside any radio is rare. It stays in place and is reported as "no `ds-*` equivalent, needs manual rework". Do not add a comment to the consumer's code.
 
 The scan also lists `newBalRadioOption`, the helper that builds the dropped `options` array (see Props below), because a file can call it without ever naming a tag. The scan also lists `BalRadioBundle` and the `BalEvents.BalRadio*` and `BalRadio*CustomEvent` types. It lists `HTMLBalRadioElement` too. It does not match the ambient `BalProps.BalRadio*` types. Search for them yourself in each file with a finding. `SKILL.md` "Legacy types and bundles" says how to rewrite all of them.
 
@@ -47,16 +47,28 @@ Legacy `interface` (`'radio' | 'button' | 'tile'`) lived on `bal-radio` and, whe
 | old `interface` | new | handling |
 | --- | --- | --- |
 | omitted, `"radio"` | omit `tile` | Default on both sides. Copy every other prop as-is. |
-| `"tile"` | `tile` on `ds-radio-group` | Boolean attribute, same meaning: a bordered card layout. See the `color` row below for the tile colour. |
-| `"button"` | `tile` + `hideTrigger` on `ds-radio-group` | See Shape: button below. This is a visual approximation, not an exact match. |
+| `"tile"` | `tile` on `ds-radio-group`, plus `hideTrigger` when no child tile body has a `bal-radio-icon` | Boolean attribute, same meaning: a bordered card layout. See Shape: round icon and `hideTrigger` below for when to add `hideTrigger`, and the `color` row below for the tile colour. |
+| `"button"` | `tile` on `ds-radio-group` | See Shape: button below. This is a visual approximation, not an exact match. |
 
 `ds-radio-group` overwrites `tile`, `hideTrigger`, `cols`, `colsTablet` and `colsMobile` on every child, also on children added later through `slotchange`, so `*ngFor` children are covered. A value written on a child inside a group is lost. Write these props on the group only and drop `interface` from every child inside a group. A child-level `interface="tile"` or `"button"` inside a group whose own `interface` is unset moves to the group. When the children of one group carry different `interface` values, or values that differ from the group, report it. A group renders all children the same way. A standalone `bal-radio` outside any group keeps `tile` and `hideTrigger` on itself, because no group overwrites it.
 
-### Shape: `interface="button"` becomes `tile` + `hideTrigger`
+### Shape: round icon and `hideTrigger`
 
-The legacy `button` look (set on `bal-radio-group`, cascading to children) is an auto-width, inline-flowing row of bordered buttons, with the selected one filled solid dark-navy with white text. Neither `tile` nor `hideTrigger` reproduces that: tile mode is always a block-level card, either full width (no `cols`) or an equal-width grid cell (`cols` set) — never auto-width to its own label text — and its selected state is a border plus a soft color tint, never a solid fill.
+Legacy `bal-radio` draws its round `bal-radio-icon` for every `interface` except `tile`. `ds-radio` shows the icon in every mode and hides it only when `tile` and `hideTrigger` are both set. Decide `hideTrigger` before you delete any `bal-radio-icon`, because the decision reads those tags.
 
-Rewrite anyway, as the closest available approximation: add `tile` and `hideTrigger` to the group only. Carry over `color` on individual children as the `tile-color` attribute (see the `color` row below). Flag every occurrence with a **"slight design deviation"** note: sizing behavior changed from auto-width/inline to fixed/grid-width block, and the selected-state fill changed from solid to border-plus-tint.
+This decision applies only to a group or standalone radio that ends up with `interface="tile"`. Never add `hideTrigger` for `"button"`, `"radio"` or an omitted `interface`. A child showed the round icon when its tile body holds a `bal-radio-icon` (`<BalRadioIcon />` in React), or when its own `interface` is not `tile` inside a group whose own `interface` is unset. Then:
+
+- No child showed the icon: add `hideTrigger` to the group.
+- Every child showed the icon: write no `hideTrigger`. The ds tile draws its own icon in place of the deleted `bal-radio-icon`.
+- Only some children showed the icon: a group renders all children the same way, so write no `hideTrigger` and report the group.
+
+A `"tile"` group built from `options` gets `hideTrigger`, unless an option's `html` contains `bal-radio-icon`. A standalone `bal-radio` follows the same rule with its own tile body.
+
+### Shape: `interface="button"` becomes `tile`
+
+The legacy `button` look (set on `bal-radio-group`, cascading to children) is an auto-width, inline-flowing row of bordered buttons, with the selected one filled solid dark-navy with white text. `tile` does not reproduce that: tile mode is always a block-level card, either full width (no `cols`) or an equal-width grid cell (`cols` set) — never auto-width to its own label text — and its selected state is a border plus a soft color tint, never a solid fill.
+
+Rewrite anyway, as the closest available approximation: add `tile` to the group only. Do not add `hideTrigger`, because legacy `button` kept its round icon. Carry over `color` on individual children as the `tile-color` attribute (see the `color` row below). Flag every occurrence with a **"slight design deviation"** note: sizing behavior changed from auto-width/inline to fixed/grid-width block, and the selected-state fill changed from solid to border-plus-tint.
 
 ### Props: `bal-radio` → `ds-radio`
 
@@ -83,12 +95,12 @@ Rewrite anyway, as the closest available approximation: add `tile` and `hideTrig
 | `expanded` | _(no equivalent)_ | Drop it. Mention each dropped occurrence. |
 | _(none — new prop)_ | `required` (defaults `true`) | Do not set this on a group without a label. Its only effect is an "(optional)" suffix next to the group's own `label` prop. When the group sits inside a `bal-field` with a label, `shared/field.md` sets `label` and `required` on the group. Outside a `bal-field`, leave the new default alone. `ds-radio-group` is excluded from the required default rule in `SKILL.md`. Mention once, not per-occurrence, that this new prop exists. |
 | _(none — new props)_ | `label`, `description`, `invalidText`, `loading`, `labelPosition`, `color` | New capabilities, nothing to migrate from legacy. Leave unset. `color` here is the group's input colour, not the tile colour: do not carry a child's `color` onto the group. |
-| `interface` (`"tile"`, `"button"`) | `tile`, `hideTrigger` | Set on the group only, as Shape describes. The group overwrites both on every child. |
+| `interface` (`"tile"`, `"button"`) | `"tile"`: `tile`, plus `hideTrigger` as Shape: round icon and `hideTrigger` describes. `"button"`: `tile` | Set on the group only, as Shape describes. The group overwrites both on every child. |
 | _(none — new prop)_ | `tileColor` | A fallback for children without a `tile-color` attribute. It does not override a child's `tile-color`. |
 
 ### Tags and imports
 
-- **HTML**: `<bal-radio>` becomes `<ds-radio>`, including the closing tag. `<bal-radio-group>` becomes `<ds-radio-group>`, including the closing tag. Delete every `<bal-radio-icon>` inside a migrated `<ds-radio>`. Leave a `<bal-radio-icon>` outside any radio alone.
+- **HTML**: `<bal-radio>` becomes `<ds-radio>`, including the closing tag. `<bal-radio-group>` becomes `<ds-radio-group>`, including the closing tag. Delete every `<bal-radio-icon>` inside a migrated `<ds-radio>`, after the `hideTrigger` decision. Leave a `<bal-radio-icon>` outside any radio alone.
 - **Angular**: the same tag rewrites in `.html` templates and in inline `template:` strings. When a file imports `BalRadio` and/or `BalRadioGroup` from `@baloise/ds-angular`, replace only the ones used with `DsRadio`/`DsRadioGroup` from `@helvetia-design/angular`, keeping the rest on the `@baloise` import. A `...BalRadioBundle` spread in `imports: [...]` becomes `DsRadio` and `DsRadioGroup`. Keep the spread, and add the `Ds*` symbols next to it, while the template still has a group left in place or a `bal-radio-icon` outside a radio. A multi-family bundle such as `BalFormBundle` stays, and the `Ds*` symbols are added next to it. `SKILL.md` "Legacy types and bundles" has the full bundle rule.
 - **React**: `<BalRadio>`/`</BalRadio>` becomes `<DsRadio>`/`</DsRadio>`, `<BalRadioGroup>`/`</BalRadioGroup>` becomes `<DsRadioGroup>`/`</DsRadioGroup>`. Import the renamed symbols from `@helvetia-design/react`, keeping only the ones actually used. Remove `BalRadioIcon` from the `@baloise/ds-react` import when no `<BalRadioIcon />` is left. When the existing `@baloise/ds-react` import also binds other symbols, move only `BalRadio` and `BalRadioGroup` and leave the rest on the `@baloise` import.
 
@@ -134,25 +146,26 @@ Write the report as `shared/report.md` describes, with the per-file summary unde
 
 Needs your attention when found:
 
-1. Every `interface="button"` rewritten to `tile` + `hideTrigger`, with its "slight design deviation" note.
-2. Every child `interface`, `colSize*` or `col-size*` value that differs from its siblings or from the group, with what was written on the group (`tile`, `hideTrigger`, `cols*`). Every group whose children had `colSize*` and no group `columns*`, with the `cols*` written or the reason none was.
-3. Every dropped `labelHidden`. `ds-radio` always renders its label slot.
-4. Every dropped `flat`.
-5. Every dropped `nonSubmit`. `ds-radio` is always submitted with the form.
-6. Every dropped `verticalOnMobile`.
-7. Every dropped `expanded`.
-8. Every dropped `options` or `newBalRadioOption`, flagged for manual conversion to slotted children, together with any `getOptionByValue()` call site tied to it and its Unmapped props and handlers outcome.
-9. Every `getInputElement()` or `getOption()` call, with its Unmapped props and handlers outcome.
-10. Every `setValue()` call on a `bal-radio-group` ref, with the rewrite it got: the form control, the model property, or `el.value`. For `el.value`, note that no `dsChange` fires, so `dsChange` handlers do not run.
-11. Every `bal-radio-icon` or `BalRadioIcon` removed from a tile, with file and line, and the legacy tags left in that tile body (for example `bal-stack`, `bal-icon`, `bal-content`) as children of the tile for their own migrations. Every `bal-radio-icon` outside a radio left in place.
-12. Every legacy type left or written out and every bundle kept, as `SKILL.md` "Legacy types and bundles" describes: each `BalProps.BalRadio*` type such as `BalProps.BalRadioInterface` left in place, each detail alias such as `BalEvents.BalRadioChangeDetail` written out, each `BalRadioBundle` spread kept because a group or a `bal-radio-icon` outside a radio is left, and each multi-family bundle kept.
-13. One-time note: files which only listen or only call a method, and have no scanned `.html` of the same name beside them, were not scanned.
-14. One-time note: the scan reports `setValue()` on a ref typed `HTMLBalRadioGroupElement` in every scanned file. It does not report other method calls or listeners in a file that has no finding and no scanned `.html` of the same name beside it.
+1. Every `interface="button"` rewritten to `tile`, with its "slight design deviation" note.
+2. Every `interface="tile"` group or standalone radio that got `hideTrigger`, because no child showed the legacy round icon. Every group where only some children showed it, which got no `hideTrigger`.
+3. Every child `interface`, `colSize*` or `col-size*` value that differs from its siblings or from the group, with what was written on the group (`tile`, `hideTrigger`, `cols*`). Every group whose children had `colSize*` and no group `columns*`, with the `cols*` written or the reason none was.
+4. Every dropped `labelHidden`. `ds-radio` always renders its label slot.
+5. Every dropped `flat`.
+6. Every dropped `nonSubmit`. `ds-radio` is always submitted with the form.
+7. Every dropped `verticalOnMobile`.
+8. Every dropped `expanded`.
+9. Every dropped `options` or `newBalRadioOption`, flagged for manual conversion to slotted children, together with any `getOptionByValue()` call site tied to it and its Unmapped props and handlers outcome.
+10. Every `getInputElement()` or `getOption()` call, with its Unmapped props and handlers outcome.
+11. Every `setValue()` call on a `bal-radio-group` ref, with the rewrite it got: the form control, the model property, or `el.value`. For `el.value`, note that no `dsChange` fires, so `dsChange` handlers do not run.
+12. Every `bal-radio-icon` or `BalRadioIcon` removed from a tile, with file and line, and the legacy tags left in that tile body (for example `bal-stack`, `bal-icon`, `bal-content`) as children of the tile for their own migrations. Every `bal-radio-icon` outside a radio left in place.
+13. Every legacy type left or written out and every bundle kept, as `SKILL.md` "Legacy types and bundles" describes: each `BalProps.BalRadio*` type such as `BalProps.BalRadioInterface` left in place, each detail alias such as `BalEvents.BalRadioChangeDetail` written out, each `BalRadioBundle` spread kept because a group or a `bal-radio-icon` outside a radio is left, and each multi-family bundle kept.
+14. One-time note: files which only listen or only call a method, and have no scanned `.html` of the same name beside them, were not scanned.
+15. One-time note: the scan reports `setValue()` on a ref typed `HTMLBalRadioGroupElement` in every scanned file. It does not report other method calls or listeners in a file that has no finding and no scanned `.html` of the same name beside it.
 
 Coverage only, written to the file:
 
-15. Every empty `color` dropped.
-16. One-time note, for groups outside a `bal-field` only: `ds-radio-group` has a new `required` prop that defaults to `true`, and the migration left it unset. It is inert unless the consumer later adopts the group's own `label` prop.
+16. Every empty `color` dropped.
+17. One-time note, for groups outside a `bal-field` only: `ds-radio-group` has a new `required` prop that defaults to `true`, and the migration left it unset. It is inert unless the consumer later adopts the group's own `label` prop.
 
 Leave every change unstaged for the consumer to review, including `ds-migration-report.md`. Stop. Do not run `git add` or `git commit`.
 
