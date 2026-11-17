@@ -64,3 +64,25 @@ test.describe('tile variant — initial state', () => {
     expect(spy).toHaveReceivedEventDetail({ value: 'p2' })
   })
 })
+
+test.describe('without ResizeObserver and IntersectionObserver', () => {
+  for (const variant of ['tile', 'slide']) {
+    test(`renders the ${variant} variant without throwing`, async ({ page }) => {
+      await page.addInitScript(() => {
+        delete (window as any).ResizeObserver
+        delete (window as any).IntersectionObserver
+      })
+      const errors: string[] = []
+      page.on('pageerror', error => errors.push(error.message))
+      page.on('console', message => {
+        if (message.type() === 'error') errors.push(message.text())
+      })
+
+      await page.mount(`<ds-carousel variant="${variant}">${ITEMS}</ds-carousel>`)
+      const carousel = new DsCarousel(page.locator('ds-carousel'))
+
+      await carousel.assertItemSelected('s1')
+      expect(errors).toEqual([])
+    })
+  }
+})
