@@ -11,7 +11,9 @@ phase or section. See `../CONVENTIONS.md` for the index.
   node, also when nested inside another frame (`control`). On a single component,
   `component.createSlot()` does both; the slot can then be moved into a nested frame. Preferred
   instances: `set.editComponentProperty(key, { preferredValues: [{ type: 'COMPONENT_SET', key }] })`.
-  `setProperties` can't set a slot: fill it in an instance with `appendChild`. `slot.clone()`
+  `setProperties` can't set a slot: fill it in an instance with `appendChild`. Component
+  properties are listed in creation order and can't be reordered through the API — create each
+  `show` boolean right before the property it shows. `slot.clone()`
   returns a plain frame. Not allowed: `GRID` layout on a slot, a slot nested inside another slot.
   An empty slot keeps a size (100 × 100 by default) and takes the parent's gap; a hidden slot
   can't be found in an instance — bind a boolean to its `visible` and turn it on first.

@@ -328,25 +328,28 @@ Every `figmaPropertyType: text` prop from the mapping file becomes a `TEXT` comp
 Every `slots:` entry becomes one native `SLOT` component property on the set, shared by every
 variant (mechanics: `conventions/build-mechanics.md` → "Slots").
 
-1. After `combineAsVariants()`, add it on the set with
-   `set.addComponentProperty('<figmaSlot>', 'SLOT', '')`. Store the returned key. Set the preferred instances with
-   `set.editComponentProperty(key, { preferredValues: [{ type: 'COMPONENT_SET', key }] })`, in
-   the mapping file's order.
-2. **Open slot only:** add a `show <figmaSlot>` boolean on the set, default `false`
-   (`set.addComponentProperty('show start', 'BOOLEAN', false)`). An empty Figma slot keeps a size
-   and takes the part's gap; an empty code slot takes no space, so the slot is hidden until a
-   designer turns it on.
-3. On **every** variant, add an empty frame named after the slot at its code position inside the
+1. After `combineAsVariants()`, add the properties on the set, **one slot at a time in render
+   order, each slot's `show` boolean first, then the slot** (`show start`, `start`, `show end`,
+   `end`). Figma lists component properties in the order they were created and the Plugin API
+   can't reorder them, so this order is final.
+   - **Open slot only:** `set.addComponentProperty('show <figmaSlot>', 'BOOLEAN', false)`. An
+     empty Figma slot keeps a size and takes the part's gap; an empty code slot takes no space,
+     so the slot is hidden until a designer turns it on.
+   - Then `set.addComponentProperty('<figmaSlot>', 'SLOT', '')`. Store the returned keys. Set the
+     preferred instances with
+     `set.editComponentProperty(key, { preferredValues: [{ type: 'COMPONENT_SET', key }] })`, in
+     the mapping file's order.
+2. On **every** variant, add an empty frame named after the slot at its code position inside the
    part (`start` first in `control`, `end` after the value / placeholder text, before a loading
    spinner): horizontal auto-layout, centered, no fill, `resize` to the main content's size
    (16 × 16 for an icon), then `HUG` both ways, so a shown but empty slot keeps that size. Bind it:
    `frame.componentPropertyReferences = { slotContentId: key, visible: showKey }` (`visible` only
    for an open slot). It turns into a `SLOT` node. The part's own gap and padding space it — the
    skill writes no spacing here.
-4. Default fill: the confirmed `defaultFill` (family slots), or empty for an open slot. Fill a
+3. Default fill: the confirmed `defaultFill` (family slots), or empty for an open slot. Fill a
    slot in an instance by `appendChild`, never with `setProperties`; turn on its `show` boolean
    first, or the slot isn't reachable.
-5. Add slots before the grid layout (step 4 of "Labeled component set"), like text properties.
+4. Add slots before the grid layout (step 4 of "Labeled component set"), like text properties.
 
 ### Interactions
 
