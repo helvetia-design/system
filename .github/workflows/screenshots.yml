@@ -132,7 +132,7 @@ jobs:
           echo "Action: ${{ needs.assembleInformation.outputs.action }}"
 
       - name: Create comment
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace
@@ -221,7 +221,7 @@ jobs:
         run: pnpm exec playwright test --config=playwright.visual.config.mts --update-snapshots
 
       - name: Commit screenshots
-        uses: EndBug/add-and-commit@v11
+        uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8 # v11.1.1
         with:
           message: 'chore: update screenshots for ${{ needs.assembleInformation.outputs.command }}'
         env:
@@ -229,7 +229,7 @@ jobs:
 
       - name: Create comment
         if: success()
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace
@@ -242,7 +242,7 @@ jobs:
 
       - name: Create comment
         if: failure()
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace

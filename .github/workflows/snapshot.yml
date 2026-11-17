@@ -24,7 +24,7 @@ jobs:
         run: echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
 
       - name: Notify in progress
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace
@@ -52,14 +52,13 @@ jobs:
       - uses: ./.github/workflows/actions/setup-environment
         with:
           token: ${{ secrets.DS_BOT_RELEASE_TOKEN }}
-          npm-token: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Read current version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        uses: martinbeentjes/npm-get-version-action@3cf273023a0dda27efcd3164bdfb51908dd46a5b # v1.3.1
         with:
           path: packages/core
 
@@ -92,10 +91,12 @@ jobs:
 
       - name: Publish
         run: pnpm -r publish --no-git-checks --tag snapshot
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: Notify success
         if: success()
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace
@@ -108,7 +109,7 @@ jobs:
 
       - name: Notify failure
         if: failure()
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ github.event.comment.id }}
           edit-mode: replace
