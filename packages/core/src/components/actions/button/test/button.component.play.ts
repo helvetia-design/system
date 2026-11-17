@@ -1,6 +1,30 @@
 import { DsButton, expect, test } from '@helvetia-design/playwright'
 
 test.describe('component', () => {
+  test('should not render a download attribute on a link without download', async ({ page }) => {
+    await page.mount(`
+      <ds-button href="/target">Open</ds-button>
+    `)
+
+    await expect(page.locator('ds-button a')).not.toHaveAttribute('download')
+  })
+
+  test('should render the download attribute on a link with download', async ({ page }) => {
+    await page.mount(`
+      <ds-button href="/file.pdf" download="file.pdf">Download</ds-button>
+    `)
+
+    await expect(page.locator('ds-button a')).toHaveAttribute('download', 'file.pdf')
+  })
+
+  test('should render an empty download attribute on a link with a bare download', async ({ page }) => {
+    await page.mount(`
+      <ds-button href="/file.pdf" download>Download</ds-button>
+    `)
+
+    await expect(page.locator('ds-button a')).toHaveAttribute('download', '')
+  })
+
   test('should have a default slot', async ({ page }) => {
     await page.mount(`
       <ds-button>Click me</ds-button>
