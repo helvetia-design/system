@@ -254,11 +254,7 @@ describe('Report items the issue requires by name', () => {
       'its `name`, `tile` and `hideTrigger` move to that wrapper',
     )
 
-    const numbers = itemNumbers('checkbox', [
-      'differs from its siblings or from the group',
-      'no group `columns*`',
-      "moved to the group's `tileColor`",
-    ])
+    const numbers = itemNumbers('checkbox', ['differs from its siblings or from the group', 'no group `columns*`'])
 
     expect(new Set(numbers).size).toBe(1)
   })

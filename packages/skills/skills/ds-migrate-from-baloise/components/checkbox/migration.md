@@ -269,7 +269,7 @@ Needs your attention when found:
 5. Every `setValue()` call on a `bal-checkbox-group` ref, with the rewrite it got: the form control, the model property, or `el.value` plus `control`. For `el.value`, note that no `dsChange` fires.
 6. Every `bal-check`, `bal-switch`, `BalCheck` or `BalSwitch` left in place because it has no `ds-*` equivalent. Name file and line for each.
 7. Every `interface="button"` rewritten to `tile` + `hideTrigger`, with its "slight design deviation" note.
-8. Every child `interface`, `colSize*` or `col-size*` value that differs from its siblings or from the group, with what was written on the group (`tile`, `hideTrigger`, `cols*`). Every group whose children had `colSize*` and no group `columns*`, with the `cols*` written or the reason none was. Every child `color` moved to the group's `tileColor`.
+8. Every child `interface`, `colSize*` or `col-size*` value that differs from its siblings or from the group, with what was written on the group (`tile`, `hideTrigger`, `cols*`). Every group whose children had `colSize*` and no group `columns*`, with the `cols*` written or the reason none was.
 9. Every dropped `labelHidden`. The label is now visible.
 10. Every dropped `flat`.
 11. Every dropped `nonSubmit`. The checkbox is now always submitted with the form.
