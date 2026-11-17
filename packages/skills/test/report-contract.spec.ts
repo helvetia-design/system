@@ -37,7 +37,7 @@ const expectedCounts: Record<string, { attention: number; coverage: number }> = 
   'button': { attention: 13, coverage: 4 },
   'card': { attention: 9, coverage: 3 },
   'carousel': { attention: 22, coverage: 7 },
-  'checkbox': { attention: 16, coverage: 2 },
+  'checkbox': { attention: 17, coverage: 2 },
   'close': { attention: 2, coverage: 1 },
   'content': { attention: 4, coverage: 2 },
   'data': { attention: 6, coverage: 1 },
@@ -268,6 +268,44 @@ describe('Report items the issue requires by name', () => {
     ])
 
     expect(new Set(numbers).size).toBe(numbers.length)
+  })
+
+  it('checkbox writes tile layout on the group and tile colour as attribute', () => {
+    const migration = read('components/checkbox/migration.md')
+    const field = read('shared/field.md')
+    const lineOf = (start: string) => singleLine(migration, start)
+    const colorRow = lineOf('| `color`')
+    const colSizeRow = lineOf('| `colSize`')
+
+    expect(colorRow.split('|')[2]).toContain('`tile-color`')
+    expect(colorRow).toContain('[attr.tile-color]="x"')
+    expect(colorRow).toContain('Never write the `tileColor` property')
+    expect(colSizeRow).toContain('Drop from the child')
+    expect(colSizeRow).toContain('`[attr.col-size*]`')
+    expect(lineOf('| `"tile"`')).toContain('`tile` on `ds-checkbox-group`')
+    expect(lineOf('| `"button"`')).toContain('`tile` + `hideTrigger` on `ds-checkbox-group`')
+    expect(lineOf('| `interface`')).toContain('Set on the group only')
+    expect(lineOf('| _(none — new prop)_ | `tileColor`')).toContain('`tile-color` attribute')
+    expect(lineOf('| `columns`')).toContain('Set on the group only')
+    const overwriteRule = lineOf('`ds-checkbox-group` overwrites')
+    expect(overwriteRule).toContain('drop `interface` from every child inside a group')
+    expect(overwriteRule).toContain('moves to the group when every non-switch child carries the same value')
+    expect(overwriteRule).toContain('A standalone `bal-checkbox` outside any group keeps `tile` and `hideTrigger`')
+    expect(overwriteRule).toContain("gets the checkbox's `name`, `tile` and `hideTrigger`")
+    expect(migration).toContain('add `tile` and `hideTrigger` to the group only')
+    expect(migration).toContain('Its `name` moves to the wrapper.')
+    expect(migration).toContain('`tile` and `hideTrigger` go on the wrapper, not on the checkbox')
+    expect(migration).not.toContain('becomes `tileColor`')
+    expect(singleLine(field, '| a single `ds-checkbox` inside `bal-field`')).toContain(
+      "Move the checkbox's `name`, and its `tile` and `hideTrigger`",
+    )
+    expect(singleLine(field, '| `bal-field-message` outside a `bal-field`')).toContain(
+      'its `name`, `tile` and `hideTrigger` move to that wrapper',
+    )
+
+    const numbers = itemNumbers('checkbox', ['differs from its siblings or from the group', 'no group `columns*`'])
+
+    expect(new Set(numbers).size).toBe(1)
   })
 
   it('button checks each of the four colour collisions on its own line', () => {
