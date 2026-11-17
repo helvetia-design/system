@@ -36,7 +36,7 @@ const expectedCounts: Record<string, { attention: number; coverage: number }> = 
   'badge': { attention: 3, coverage: 3 },
   'button': { attention: 13, coverage: 4 },
   'card': { attention: 9, coverage: 3 },
-  'carousel': { attention: 21, coverage: 6 },
+  'carousel': { attention: 22, coverage: 7 },
   'checkbox': { attention: 16, coverage: 2 },
   'close': { attention: 2, coverage: 1 },
   'content': { attention: 4, coverage: 2 },
@@ -196,6 +196,25 @@ describe('Report items the issue requires by name', () => {
       /both `button-icon-close` and `button-icon-open`/,
     )
     expect(lineOf('| `bal-accordion` bound `active`')).toContain('`[open]="x"`')
+  })
+
+  it('carousel wraps an item in a link or button only when it has both color and label', () => {
+    const migration = read('components/carousel/migration.md')
+    const lineOf = (start: string) => singleLine(migration, start)
+
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('const isProduct = !!this.color && !!this.label;')
+    expect(lineOf('When the item does not have both `color` and `label`')).toContain('add no wrapper')
+    expect(lineOf('When the item has both `color` and `label` but no `href`')).toContain('`<button>`')
+    expect(lineOf('| `balNavigate`')).toContain('button-wrapped product tile included')
+    expect(lineOf('| `label`')).toContain('On every other item')
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('so does an attribute bound to an expression')
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain("`label` defaults to `''`")
+    expect(lineOf('Legacy `bal-carousel-item` rendered')).toContain('report the item')
+    itemNumbers('carousel', [
+      'product tile rewritten into a wrapped `<button>`',
+      'from an item without both `color` and `label`',
+      'bound to an expression, whose runtime value the migration cannot read',
+    ])
   })
 
   it('radio writes tile layout on the group, tile colour as attribute, and removes bal-radio-icon from tiles', () => {
