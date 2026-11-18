@@ -22,39 +22,45 @@ missing, so children go first:
 
 ## Icon
 
-- **`color` holds `inverted` and `disabled`** as two more options (user decision): one enum, no
-  `inverted` / `disabled` booleans, no `state` axis. Options: `primary · info · grey · success ·
-danger · warning · inverted · disabled`. `disabled` wins over `inverted` in code anyway.
-- **`size`** is a variant axis with an explicit `base` option (the code default is unset and falls
-  back to `Icon/Size/Base`): `base · sm · md · lg · xl`. Never a variable-override mitigation
-  (user's rule: size axes are always crossed variants or splits).
+Built 17.11.2026 — full record in `packages/core/src/components/media/icon/icon.figma.md`.
+
+- **No `color` axis** (user decision 17.11.2026, Gery: "Set color with variables"): the glyph's
+  vector fill is bound to `Icon/Color/Primary`; designers or parent components bind another
+  `Icon/Color/*` variable. `inverted` and `disabled` are colors too, so excluded as props.
+- **`size`** is the only variant axis, with an explicit `base` option (the code default is unset
+  and falls back to `Icon/Size/Base`): `base · sm · md · lg · xl` — 5 variants. Never a
+  variable-override mitigation (size axes are always crossed variants or splits).
 - **Excluded:** `invalid` (same look as `color=danger`, no token), `inline` (no static effect),
-  the SCSS-only `primary-light` (no token, no prop reaches it).
-- **Architecture:** a 40-variant `Icon` wrapper set (`color` rows × `size` columns) with one
-  `Icon` instance-swap property over a glyph library of 79 components; glyphs follow
-  `--icon-padding` (component › `box` › `Vector`).
-- **"🖼️ Icon names" section** (confirmed with the user, answers the Phase 3 "ask the user" step
-  for asset components): a 9 × 9 grid of all 79 icons at `size=md`, `color=primary`, each an
-  instance of the wrapper's default variant with its `Icon` swap set to the glyph, name label
-  underneath.
-- **Inverted row:** its cells get the dark preview background, or the pale glyphs disappear.
+  `turn` (rotate the glyph as an instance override), `shadow` (literal drop-shadow, no token),
+  `svg` / `src` (alternative content sources).
+- **Architecture:** an `Icon` wrapper set with one `icon` instance-swap property over a glyph
+  library of 79 components (`IconAlert` … `IconYoutube`, frame "Icon glyphs" on `Core / Media`);
+  glyphs follow `--icon-padding` (component › `box` › `Vector`). Glyph SVGs with another viewBox
+  (`circle` 28, `alert` / `github` / `information` / `triangle` 14) are scaled to 16.
+- **"🖼️ Icon names" section:** a 9-column grid of all 79 icons at `size=md`, each an instance
+  with its `icon` swap set to the glyph, the code `name` value underneath.
 - **Open (Gery, 17.11.2026):** "Set color with variables" — also for Brand Icon.
 - Orphaned token, not used: `Icon/Color/InvertedDisabled`.
 
 ## Spinner
 
+Built 18.11.2026 — full record in `packages/core/src/components/indicators/spinner/spinner.figma.md`.
+
 - **4 sets:** `variation` (logo / circle) and `inverted` are both top-level splits — logo and
-  circle have different layers. Each set crosses `size` (`sm · base`) × `labelPosition`
+  circle have different layers. Each set crosses `size` (`base · sm`) × `label position`
   (`right · bottom`).
-- **Label:** text property + `show label`, default off (code default `label=''`).
+- **Label:** `show label` (default off, code default `label=''`), then the `label` text property.
 - **Excluded:** `deactivated` (stops the animation only).
-- **Logo glyph:** a hand-traced shape of the Helvetia mark at 86.3% of the `inner` container,
-  corner radius scaled with it. **Circle:** `ring` ellipse + `progress` arc (top 90°).
+- **Logo glyph:** traced from the live Lottie frame that matches the visual snapshots — one
+  unioned vector `logo`, 88.6% of `inner`, centered. **Square** (user decision 18.11.2026): width
+  and height bound to `Logo/Size/MD | SM`; the live 70.5 / 38.5 height is inline-SVG empty space
+  (3.25px above and below), not a spinner value.
+- **Circle:** `ring` ellipse + `progress` arc (top 90°); stroke weight bound to `Circle/Thickness/*`.
+- **Label font:** the family is set as a literal `Baloise Create Text` — the variable holds the
+  CSS name `BaloiseCreateText` (TODO.md); size, weight and color are bound.
 - **Known, same in code:** the circle's progress arc is invisible on the inverted background.
-- **Review findings:** code binds only the logo's width to the size token, its height comes from
-  the Lottie SVG (64 / 32 in Figma vs. 70.5 / 38.5 live). The label color tokens
-  (`--ds-spinner-label-color-primary` / `-inverted`) were pending the token sync.
-- Code drift (follow-up): `spinner.tsx` hardcodes `#000d6e`; the label spacing is rem literals.
+- Code drift (follow-up): `spinner.tsx` hardcodes `#000d6e` / `#ffffff`; the logo SVG's inline
+  empty space (`display: block` would remove it).
 
 ## Logo
 

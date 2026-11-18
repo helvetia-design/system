@@ -213,9 +213,9 @@ values**; clone a prototype and change only text and positions.
    height and clips anything below it. Set it to `layoutSizingVertical = 'HUG'` (seen on
    `ds-input`, 120 variants: the lower 9 row dividers reported no render bounds). Only then:
    on a frame whose `Documentation` column is taller, `HUG` cuts the column's background panel
-   short, so keep `FILL` (the template stays `FILL`). **Wider than the column** (fixed width): set
-   `Component Sets` and `body` to `layoutSizingHorizontal = 'HUG'`; the header follows (seen on
-   `ds-input`, 13 columns, 4780px).
+   short, so keep `FILL` (the template stays `FILL`). **Width:** `Component Sets` and `body` hug
+   their content (template, 18.11.2026), so the column is as wide as the widest stack and the
+   header follows; `Documentation` stays fixed at 764 (its sections fill it).
 5. **Every set is labeled — no axis count is exempt, not even a single-axis set.** With no row axis
    (e.g. a lone `size` axis) there are just `Column Labels` and no `Row Labels`.
 6. **Labels and grid lines, cloned from template prototypes** — a `Column Labels` text, a
