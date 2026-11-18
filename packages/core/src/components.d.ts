@@ -31,7 +31,7 @@ import { PopupDismissDetail, PopupPlacement, PopupPresentDetail, PopupRole } fro
 import { IconColor as IconColor1, IconSize as IconSize1 } from "./components/media/icon/icon.interfaces";
 import { ItemActionIcon, ItemLabelLevel, ItemLabelSize, ItemSize, ItemVariant } from "./components/structure/list/item/item.interfaces";
 import { LabelSize } from "./components/forms/label/label.interfaces";
-import { LogoBrand, LogoColor, LogoSize } from "./components/media/logo/logo.interfaces";
+import { LogoBrand, LogoSize } from "./components/media/logo/logo.interfaces";
 import { ModalDismissDetail, ModalPresentDetail } from "./components/overlays/modal/modal.interfaces";
 import { NotificationCloseClickDetail, NotificationColor, NotificationSize } from "./components/overlays/notification/notification.interfaces";
 import { NumberInputBlurDetail, NumberInputChangeDetail, NumberInputClickDetail, NumberInputFocusDetail, NumberInputInputDetail, NumberInputKeyPressDetail } from "./components/forms/number-input/number-input.interfaces";
@@ -79,7 +79,7 @@ export { PopupDismissDetail, PopupPlacement, PopupPresentDetail, PopupRole } fro
 export { IconColor as IconColor1, IconSize as IconSize1 } from "./components/media/icon/icon.interfaces";
 export { ItemActionIcon, ItemLabelLevel, ItemLabelSize, ItemSize, ItemVariant } from "./components/structure/list/item/item.interfaces";
 export { LabelSize } from "./components/forms/label/label.interfaces";
-export { LogoBrand, LogoColor, LogoSize } from "./components/media/logo/logo.interfaces";
+export { LogoBrand, LogoSize } from "./components/media/logo/logo.interfaces";
 export { ModalDismissDetail, ModalPresentDetail } from "./components/overlays/modal/modal.interfaces";
 export { NotificationCloseClickDetail, NotificationColor, NotificationSize } from "./components/overlays/notification/notification.interfaces";
 export { NumberInputBlurDetail, NumberInputChangeDetail, NumberInputClickDetail, NumberInputFocusDetail, NumberInputInputDetail, NumberInputKeyPressDetail } from "./components/forms/number-input/number-input.interfaces";
@@ -1248,6 +1248,11 @@ export namespace Components {
          */
         "dashed": boolean;
         /**
+          * If `true` the divider is shown on a dark background.
+          * @default false
+         */
+        "inverted": boolean;
+        /**
           * Defines the position of the child elements if they are showed verticaly or horizontally. Default is verticaly.
           * @default 'horizontal'
          */
@@ -1878,7 +1883,7 @@ export namespace Components {
         "size"?: ItemSize;
     }
     /**
-     * Logo displays animated Baloise or Helvetia brand logos with customizable color, size, and responsive sizing.
+     * Logo displays animated Baloise or Helvetia brand logos with customizable size, responsive sizing, and an inverted variant for dark backgrounds.
      */
     interface DsLogo {
         /**
@@ -1890,12 +1895,12 @@ export namespace Components {
           * Defines the brand of the logo. Default is 'helvetia'.
          */
         "brand"?: LogoBrand;
-        /**
-          * Defines the color of the logo.
-          * @default 'primary'
-         */
-        "color": LogoColor;
         "configChanged": (state: DsConfigState) => Promise<void>;
+        /**
+          * If `true` the logo is shown on a dark background.
+          * @default false
+         */
+        "inverted": boolean;
         /**
           * Size of the logo svg
          */
@@ -4473,7 +4478,7 @@ declare global {
         new (): HTMLDsListElement;
     };
     /**
-     * Logo displays animated Baloise or Helvetia brand logos with customizable color, size, and responsive sizing.
+     * Logo displays animated Baloise or Helvetia brand logos with customizable size, responsive sizing, and an inverted variant for dark backgrounds.
      */
     interface HTMLDsLogoElement extends Components.DsLogo, HTMLStencilElement {
     }
@@ -6454,6 +6459,11 @@ declare namespace LocalJSX {
          */
         "dashed"?: boolean;
         /**
+          * If `true` the divider is shown on a dark background.
+          * @default false
+         */
+        "inverted"?: boolean;
+        /**
           * Defines the position of the child elements if they are showed verticaly or horizontally. Default is verticaly.
           * @default 'horizontal'
          */
@@ -7126,7 +7136,7 @@ declare namespace LocalJSX {
         "size"?: ItemSize;
     }
     /**
-     * Logo displays animated Baloise or Helvetia brand logos with customizable color, size, and responsive sizing.
+     * Logo displays animated Baloise or Helvetia brand logos with customizable size, responsive sizing, and an inverted variant for dark backgrounds.
      */
     interface DsLogo {
         /**
@@ -7139,10 +7149,10 @@ declare namespace LocalJSX {
          */
         "brand"?: LogoBrand;
         /**
-          * Defines the color of the logo.
-          * @default 'primary'
+          * If `true` the logo is shown on a dark background.
+          * @default false
          */
-        "color"?: LogoColor;
+        "inverted"?: boolean;
         /**
           * Size of the logo svg
          */
@@ -9451,6 +9461,7 @@ declare namespace LocalJSX {
         "space": DividerSpace;
         "color": DividerColor;
         "dashed": boolean;
+        "inverted": boolean;
     }
     interface DsDrawerAttributes {
         "open": boolean;
@@ -9578,7 +9589,7 @@ declare namespace LocalJSX {
     interface DsLogoAttributes {
         "animated": boolean;
         "brand": LogoBrand;
-        "color": LogoColor;
+        "inverted": boolean;
         "size": LogoSize;
     }
     interface DsModalAttributes {
@@ -10211,7 +10222,7 @@ declare module "@stencil/core" {
              */
             "ds-list": LocalJSX.IntrinsicElements["ds-list"] & JSXBase.HTMLAttributes<HTMLDsListElement>;
             /**
-             * Logo displays animated Baloise or Helvetia brand logos with customizable color, size, and responsive sizing.
+             * Logo displays animated Baloise or Helvetia brand logos with customizable size, responsive sizing, and an inverted variant for dark backgrounds.
              */
             "ds-logo": LocalJSX.IntrinsicElements["ds-logo"] & JSXBase.HTMLAttributes<HTMLDsLogoElement>;
             /**
