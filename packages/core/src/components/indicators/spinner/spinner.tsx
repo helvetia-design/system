@@ -48,7 +48,7 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
 
-  private animationItem!: AnimationItem
+  private animationItem?: AnimationItem
   private animationFunction?: SpinnerAnimationFunction
   private currentRaf: number | undefined
   private innerEl: HTMLDivElement | undefined
@@ -178,17 +178,22 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
     if (this.shouldAnimate()) {
       this.destroy()
       this.currentRaf = raf(async () => {
-        if (this.animationFunction && this.innerEl) {
-          this.animationFunction(this.innerEl, this.getColor())
+        this.currentRaf = undefined
+        // the element may have been removed while the animation module was loading
+        if (this.animationFunction && this.innerEl && this.el.isConnected) {
+          this.animationItem = this.animationFunction(this.innerEl, this.getColor())
         }
       })
     }
   }
 
   private destroy = () => {
-    if (this.animationItem && this.animationItem.destroy) {
-      this.animationItem.destroy()
+    if (this.currentRaf !== undefined) {
+      cancelAnimationFrame(this.currentRaf)
+      this.currentRaf = undefined
     }
+    this.animationItem?.destroy()
+    this.animationItem = undefined
     if (this.innerEl) {
       this.innerEl.innerHTML = ''
     }
