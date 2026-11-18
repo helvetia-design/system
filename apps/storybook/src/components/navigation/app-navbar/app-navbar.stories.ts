@@ -26,7 +26,7 @@ const meta: Meta<Args> = {
   ...withRender(
     () => `<ds-app-navbar>
   <a slot="brand" href="/">
-    <ds-logo color="inverted"></ds-logo>
+    <ds-logo inverted></ds-logo>
   </a>
   <h1 slot="title">Navbar</h1>
 
@@ -56,7 +56,7 @@ export const BasicMobile = Story({
   ...withRender(
     () => `<ds-app-navbar>
   <a slot="brand" href="/">
-    <ds-logo color="inverted"></ds-logo>
+    <ds-logo inverted></ds-logo>
   </a>
   <h1 slot="title">Navbar</h1>
 
