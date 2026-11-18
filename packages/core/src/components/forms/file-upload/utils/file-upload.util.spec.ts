@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { toFileArray } from './file-list.util'
 import { formatFileSize } from './file-size.util'
-import { validateFileArray } from './file-validation.util'
+import { isFileAccepted, validateFileArray } from './file-validation.util'
 
 describe('File List Utils', () => {
   describe('toFileArray', () => {
@@ -189,5 +189,38 @@ describe('File Validation Utils', () => {
       expect(result.validFiles).toHaveLength(1)
       expect(result.validFiles[0]).toBe(testFile)
     })
+  })
+})
+
+describe('isFileAccepted', () => {
+  const pdf = new File(['test'], 'Report.PDF', { type: 'application/pdf' })
+  const png = new File(['test'], 'image.png', { type: 'image/png' })
+
+  it('should match an extension entry against the file name suffix case-insensitive', () => {
+    expect(isFileAccepted(pdf, '.pdf')).toBe(true)
+    expect(isFileAccepted(png, '.PNG')).toBe(true)
+    expect(isFileAccepted(png, '.pdf')).toBe(false)
+  })
+
+  it('should match a wildcard entry as a MIME type prefix', () => {
+    expect(isFileAccepted(png, 'image/*')).toBe(true)
+    expect(isFileAccepted(pdf, 'image/*')).toBe(false)
+  })
+
+  it('should match an exact MIME type', () => {
+    expect(isFileAccepted(pdf, 'application/pdf')).toBe(true)
+    expect(isFileAccepted(png, 'image/jpeg')).toBe(false)
+  })
+
+  it('should handle comma and space separated lists', () => {
+    expect(isFileAccepted(pdf, 'image/*, .pdf')).toBe(true)
+    expect(isFileAccepted(pdf, 'image/png .pdf')).toBe(true)
+    expect(isFileAccepted(png, '.pdf,image/png')).toBe(true)
+    expect(isFileAccepted(png, '.pdf, , application/pdf')).toBe(false)
+  })
+
+  it('should not accept a file without type for a wildcard entry', () => {
+    const untyped = new File(['test'], 'file', { type: '' })
+    expect(isFileAccepted(untyped, 'image/*')).toBe(false)
   })
 })

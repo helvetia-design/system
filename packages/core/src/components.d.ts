@@ -1310,7 +1310,7 @@ export namespace Components {
      */
     interface DsFileUpload {
         /**
-          * Accepted MIME-Types like `image/png,image/jpeg`.
+          * Accepted file types like the native `accept` attribute, e.g. `image/png,image/*,.pdf`.
           * @default ''
          */
         "accept": string;
@@ -6528,7 +6528,7 @@ declare namespace LocalJSX {
      */
     interface DsFileUpload {
         /**
-          * Accepted MIME-Types like `image/png,image/jpeg`.
+          * Accepted file types like the native `accept` attribute, e.g. `image/png,image/*,.pdf`.
           * @default ''
          */
         "accept"?: string;
