@@ -60,9 +60,7 @@ function copy(from, to) {
 function listFiles(target) {
   const stat = fs.statSync(target)
   if (!stat.isDirectory()) return [target]
-  return fs
-    .readdirSync(target, { withFileTypes: true })
-    .flatMap(entry => listFiles(path.join(target, entry.name)))
+  return fs.readdirSync(target, { withFileTypes: true }).flatMap(entry => listFiles(path.join(target, entry.name)))
 }
 
 function collectWorkspaceContexts() {

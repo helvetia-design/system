@@ -12,13 +12,13 @@ answer, but Core is public and Extensions is private, so that option is closed.
 
 Everything agent-facing in this repo, **verbatim and uncurated**:
 
-| Source | Lands at (under `dist/`) |
-| --- | --- |
-| `CONTEXT.md`, `CONTEXT-MAP.md` | `dist/` |
-| `docs/ARCHITECTURE.md`, `docs/STYLE_GUIDE.md` | `dist/docs/` |
-| `docs/adr/**`, `docs/agents/**` | `dist/docs/` |
+| Source                                                            | Lands at (under `dist/`)     |
+| ----------------------------------------------------------------- | ---------------------------- |
+| `CONTEXT.md`, `CONTEXT-MAP.md`                                    | `dist/`                      |
+| `docs/ARCHITECTURE.md`, `docs/STYLE_GUIDE.md`                     | `dist/docs/`                 |
+| `docs/adr/**`, `docs/agents/**`                                   | `dist/docs/`                 |
 | `packages/*/CONTEXT.md`, `apps/*/CONTEXT.md`, `libs/*/CONTEXT.md` | `dist/` + same relative path |
-| `.claude/skills/**` | `dist/skills/` |
+| `.claude/skills/**`                                               | `dist/skills/`               |
 
 **This repo makes no judgement about what a consumer needs.** There is deliberately no manifest
 of "shared" versus "internal" material — curating would mean guessing, and it would put the
