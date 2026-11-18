@@ -141,7 +141,7 @@ what's listed below.
      into the existing page's `Documentation Frames` row, **appended last** (`framesRow.appendChild`) — never inserted at a sorted position, never repositioning a sibling component's frame (clone from the template every time,
      never from a sibling component, so styling can't drift).
 3. In the cloned page/frame, keep `Component A Documentation` as this component's frame: rename it
-   `<Component> Documentation`, delete `Component B Documentation` if it came along, and leave
+   `<Component> Documentation` (the template holds only this one frame since 18.11.2026), and leave
    `body`'s placeholder content for Phases 6–8 (the Variations placeholder is filled in step 5).
 4. Fill the header, per [Documentation frame header](#documentation-frame-header).
 

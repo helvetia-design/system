@@ -76,7 +76,7 @@ layout":
 
 | Card        | Content frame | Layer names touched                                                                                                                        |
 | ----------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Drawing     | `drawn-spec`  | `title`, `stage` (`Component`, `caption` prototype + example `Spec/*` markers)                                                             |
+| Drawing     | `drawn-spec`  | `title`, `stage` (`Component`, `caption` prototype + example `Spec/*` markers, `padding-clip`)                                             |
 | Sizes table | `sizes-table` | `title`, `table` › `header` (`number`, `Property`, one cell per option), `row-<n>` (`number` › `Spec/Marker`, property, cells), `footnote` |
 | Behavior    | `behavior`    | `title`, `columns` › `stretched` (`Component`, `label`)                                                                                    |
 
@@ -99,7 +99,8 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
 
 ### 2. Drawing
 
-1. **Clear the example.** Delete every `Spec/*` marker in `stage`; keep `Component` (the template's
+1. **Clear the example.** Delete every `Spec/*` marker and the `padding-clip` frame (the example's
+   padding tints) in `stage`; keep `Component` (the template's
    example instance), the `caption` prototype (the `<caption>` text under the example) and `stage` itself (no auto-layout, so
    markers sit at calculated positions; `FILL` wide, fixed height).
 2. **Main instance.** `swapComponent` the cloned `Component` to the default set's `drawnOption`
