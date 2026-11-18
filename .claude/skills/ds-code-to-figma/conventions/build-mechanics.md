@@ -19,6 +19,17 @@ phase or section. See `../CONVENTIONS.md` for the index.
   can't be found in an instance — bind a boolean to its `visible` and turn it on first.
   Cloning a slot off an existing slotted component (e.g. `Preview`) loses slot settings like
   `layoutMode` — don't build slots that way.
+- **A node added to slot content and then hidden is deleted** (seen 18.11.2026 on the template's
+  `stage`): `visible = false` on a node appended into a slot's content (also deeper, e.g.
+  `drawn-spec` › `stage`) removes it — `getNodeByIdAsync` returns `null` and it's gone from the
+  parent. Never keep a hidden prototype inside slot content; keep it visible and delete it when
+  unused (the Measurements `caption` prototype works this way).
+- **Transparency goes on the layer, never on a variable-bound paint** (18.11.2026): an instance
+  resets a bound paint's opacity to 100%, so a master with a 12% bound fill shows solid in every
+  copy. Put the color at 100% on a child layer and set that layer's `opacity` instead — the
+  `Spec/Gap` (`tint` 12%, `Hatch` 60%), `Spec/Inset` (`tint` 35%) and `Spec/Icon size` (`tint`
+  25%) masters work this way. `get_screenshot` can lag behind such a change: check the render in
+  Figma, not only on the screenshot.
 - **Figma hard-rejects moving a subtree that itself contains `SLOT` instances into _another_
   slot's contents** — `Cannot move node. Node is not allowed SLOT node`. A documentation frame is
   already 2 slot-levels deep internally (Anatomy/Measurements each nest a `Preview` inside a `Preview`)

@@ -75,7 +75,7 @@ layout":
 
 | Card        | Content frame | Layer names touched                                                                                                                        |
 | ----------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Drawing     | `drawn-spec`  | `title`, `stage` (`Component`, hidden `caption` + example `Spec/*` markers)                                                                |
+| Drawing     | `drawn-spec`  | `title`, `stage` (`Component`, `caption` prototype + example `Spec/*` markers)                                                             |
 | Sizes table | `sizes-table` | `title`, `table` › `header` (`number`, `Property`, one cell per option), `row-<n>` (`number` › `Spec/Marker`, property, cells), `footnote` |
 | Behavior    | `behavior`    | `title`, `columns` › `stretched` (`Component`, `label`)                                                                                    |
 
@@ -99,7 +99,7 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
 ### 2. Drawing
 
 1. **Clear the example.** Delete every `Spec/*` marker in `stage`; keep `Component` (the template's
-   example instance), the hidden `caption` prototype and `stage` itself (no auto-layout, so
+   example instance), the `caption` prototype (the `<caption>` text under the example) and `stage` itself (no auto-layout, so
    markers sit at calculated positions; `FILL` wide, fixed height).
 2. **Main instance.** `swapComponent` the cloned `Component` to the default set's `drawnOption`
    variant in the `drawnColor` option (see `conventions/measurements.md` → "Border visibility"),
@@ -109,8 +109,10 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
 3. **Extra instances.** One per distinct `instance` value in `measurements.rows` (`focus`: the
    `focus` state; `min-content`: shortest realistic label, e.g. `OK`): clone the main instance and
    swap or set it, same `drawnColor`, side by side with 120px between them, centered under the
-   main instance. Each gets a caption under it (`Focus`, `Min content`): clone the hidden
-   `caption` prototype, make the clone visible, set its text and name it `caption-<instance>`.
+   main instance. Each gets a caption under it (`Focus`, `Min content`): clone the
+   `caption` prototype, set its text and name it `caption-<instance>`. The prototype is visible on
+   purpose: Figma deletes a node that is added to slot content and then hidden (seen 18.11.2026 —
+   the earlier hidden prototype vanished this way), so never hide it.
    Delete the prototype afterwards — also when there are no extra instances.
 4. **`stage` height.** Leave enough room around each instance for its markers and resize the
    stage's height to fit everything (only the height — its width stays `FILL`), so nothing is
@@ -248,7 +250,7 @@ into `<name>.figma.md`'s `measurements:` (`show`, `reason`), so a re-run produce
 - Every nested `Preview` is `FILL` wide and `HUG` high; nothing is clipped.
 - Every card comes from the cloned template placeholder; none of the template's example content
   is left (example markers, rows, option cells, the `Component` placeholder instance, the hidden
-  `caption` prototype).
+  `caption` prototype — `<caption>`).
 - Measurements shows the default set's instances only, never an `…Inverted` set.
 - The section has been iterated on and confirmed with the user in Figma.
 
