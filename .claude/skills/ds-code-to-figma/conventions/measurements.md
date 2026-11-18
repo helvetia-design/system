@@ -115,7 +115,7 @@ the end of their line — there the line is the connection.
 | hit area  | warning-6 `#C97612`                        | warning-1 `#FFF9E8` | 3.3:1 (see below)  |
 
 Warning-6 stays below AA (4.5:1) on purpose (user decision, 17.11.2026): the hit-area outline has
-no value text today, only the legacy `Spec/Dimension` `kind=icon` uses it with text. Spacing
+no value text today. Spacing
 overlays carry their opacity on the layer, not on the bound paint (padding `tint` 35%, gap `tint`
 12% and `Hatch` 60%), the icon overlay's `tint` 25% — see `build-mechanics.md`. Variable names are the palette names in the table (`Success/5`, `Success/1`, …,
 `Warning/6`, `Warning/1`); both Design Tokens modes (Base, OrangeVacations) have the same values.

@@ -52,8 +52,9 @@ marker by hand instead.
 outline, solid number bubble first, value text in the kind color — colors in `conventions/measurements.md` →
 "Labels"), and `Spec/Dimension` puts it on the outer side of its line, 4px from the tick ends
 (above a `top` line, left of a `left` line, …), so it never covers the ticks. Dashed and solid lines are the same
-1px rectangle (dashed = one-side dashed stroke), so both sit centered between the end ticks. Legacy, don't
-use for new Measurements: `Spec/Dimension` `kind=icon`, `Spec/Radius`, `Spec/Legend item`, `Spec/Callout`.
+1px rectangle (dashed = one-side dashed stroke), so both sit centered between the end ticks. The old
+`Spec/Dimension` `kind=icon`, `Spec/Radius`, `Spec/Legend item` and `Spec/Callout` were deleted
+from the Annotations page (18.11.2026, unused).
 
 After changing an annotation component, instances already placed can keep a stale layout or
 even a stale render (seen on `ds-button`: the radius pill showed a leftover rectangle of its old
