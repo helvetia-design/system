@@ -15,6 +15,37 @@ Built with accessibility and simplicity in mind, the Helvetia Design System prov
 
 ## Installation
 
+### Run this repo locally
+
+```bash
+# Use the Node.js version from .nvmrc (lts/krypton, Node 24.x)
+nvm install
+nvm use
+
+# Enable Corepack so the pnpm version pinned in package.json is used
+corepack enable
+
+# Install dependencies — npm fails here (blocked by a preinstall guard, and
+# dependency versions use pnpm's "catalog:" protocol)
+pnpm install --frozen-lockfile
+```
+
+> Running `pnpm install @helvetia-design/core` from the repo root adds the published package to the root `package.json` — it is not the setup command for this repo.
+
+```bash
+# Build libs-output-target-web — packages/core/stencil.config.ts imports it,
+# and pnpm start (unlike pnpm build/docs) doesn't build it automatically
+pnpm --filter libs-output-target-web build
+
+# Generate tags.constant.ts and _component-names.scss (gitignored, regenerated on demand)
+node --input-type=module -e "import { generateComponentTags } from './packages/core/config/generate-component-tags.mjs'; import { resolve } from 'node:path'; await generateComponentTags(resolve('packages/core'))"
+
+pnpm start   # Dev server at http://localhost:4000 (also builds the styles)
+pnpm docs    # Optional: Storybook at http://localhost:6006
+```
+
+### Use the package in your own app
+
 Install the core design system package via npm:
 
 ```bash
