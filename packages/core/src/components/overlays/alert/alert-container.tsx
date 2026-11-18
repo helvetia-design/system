@@ -86,8 +86,6 @@ export class AlertContainer implements DsComponentInterface {
     }
 
     this.alerts = [...this.alerts, component]
-
-    this.activeTimer(alertId, duration)
     return alertId
   }
 
@@ -96,6 +94,7 @@ export class AlertContainer implements DsComponentInterface {
    */
   @Method()
   async removeAlert(id: string) {
+    this.clearTimer(id)
     this.alerts = this.alerts.map(n => (n.alertId === id ? { ...n, visible: false } : n))
 
     await wait(this.animationDurationMs)
@@ -107,6 +106,7 @@ export class AlertContainer implements DsComponentInterface {
    */
   @Method()
   async removeAll() {
+    Object.keys(this.alertTimers).forEach(id => this.clearTimer(id))
     this.alerts = this.alerts.map(n => ({ ...n, visible: false }))
 
     await wait(this.animationDurationMs)
@@ -118,12 +118,17 @@ export class AlertContainer implements DsComponentInterface {
    * ─────────────────────────────────────────────────────
    */
 
-  private activeTimer(id: string, duration: number | 'infinite') {
-    if (duration !== 'infinite') {
+  private activeTimer(id: string, duration?: number | 'infinite') {
+    if (typeof duration === 'number' && !this.alertTimers[id]) {
       this.alertTimers[id] = createPausableTimer(() => {
         this.removeAlert(id)
       }, duration + this.animationDurationMs)
     }
+  }
+
+  private clearTimer(id: string) {
+    this.alertTimers[id]?.clear()
+    delete this.alertTimers[id]
   }
 
   private getDuration(alert: Alert): number | 'infinite' {
@@ -151,9 +156,11 @@ export class AlertContainer implements DsComponentInterface {
     return duration
   }
 
-  private present(id: string): void {
+  private present(alert: AlertComponent): void {
+    // start the timer only once the alert is rendered, so queued alerts do not expire unseen
+    this.activeTimer(alert.alertId, alert.duration)
     raf(() => {
-      this.alerts = this.alerts.map(n => (n.alertId === id ? { ...n, visible: true } : n))
+      this.alerts = this.alerts.map(n => (n.alertId === alert.alertId ? { ...n, visible: true } : n))
     })
   }
 
@@ -199,7 +206,7 @@ export class AlertContainer implements DsComponentInterface {
               actionHref={alert.actionHref}
               actionHandler={() => alert.actionHandler(alert.alertId)}
               onDsCloseClick={() => this.removeAlert(alert.alertId)}
-              onDsDidLoad={() => this.present(alert.alertId)}
+              onDsDidLoad={() => this.present(alert)}
               onDsDidPause={() => {
                 this.alertTimers[alert.alertId] && this.alertTimers[alert.alertId].pause()
               }}
