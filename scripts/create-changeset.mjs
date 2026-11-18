@@ -6,7 +6,7 @@
  */
 import prompts from 'prompts'
 import { readFile, rm, writeFile } from 'node:fs/promises'
-import path, { join, resolve, dirname } from 'node:path'
+import { join, resolve, dirname } from 'node:path'
 import { execSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
@@ -39,12 +39,13 @@ function exec(cmd) {
 /**
  * Parse `--key=value` / `--key value` CLI flags into an object
  */
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const args = {}
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (!arg.startsWith('--')) continue
-    const [key, inlineValue] = arg.slice(2).split('=')
+    const [key, ...valueParts] = arg.slice(2).split('=')
+    const inlineValue = valueParts.length ? valueParts.join('=') : undefined
     if (inlineValue !== undefined) {
       args[key] = inlineValue
     } else if (argv[i + 1] && !argv[i + 1].startsWith('--')) {
@@ -57,10 +58,22 @@ function parseArgs(argv) {
 }
 
 /**
+ * Extract the plain `<name>.md` filename from `changeset add --empty` stdout.
+ * Throws on anything else so no path is ever built from garbled output.
+ */
+export function parseChangesetFilename(stdout) {
+  const match = [...stdout.matchAll(/\.changeset[\\/]([\w-]+\.md)/g)].at(-1)
+  if (!match) {
+    throw new Error(`Could not find changeset filename in CLI output: ${stdout.trim() || '(empty)'}`)
+  }
+  return match[1]
+}
+
+/**
  * Write a changeset file for the given bump level, scope(s), and summary.
  * Shared by both the interactive prompt flow and non-interactive CLI usage.
  */
-async function writeChangeset({ bumpLevel, scope, summary }) {
+export async function writeChangeset({ bumpLevel, scope, summary }) {
   if (!BUMP_LEVELS.includes(bumpLevel)) {
     throw new Error(`Invalid bump level "${bumpLevel}". Expected one of: ${BUMP_LEVELS.join(', ')}`)
   }
@@ -86,18 +99,13 @@ ${frontmatter}
 
   // Generate filename using changeset CLI
   const stdout = exec('pnpm exec changeset add --empty')
-  const triggerWord = '.changeset' + path.sep
-  const start = stdout.lastIndexOf(triggerWord) + triggerWord.length
-  const end = stdout.lastIndexOf('.md') + '.md'.length
-  const filename = stdout.substring(start, end).trim()
-  const filepath = join(workspaceRoot, '.changeset', filename)
+  const filepath = join(workspaceRoot, '.changeset', parseChangesetFilename(stdout))
 
   // Setup cleanup on error
-  cleanUp = async () => rm(filepath, { force: true, recursive: true })
+  cleanUp = async () => rm(filepath, { force: true })
 
   // Write changeset file
-  await rm(filepath, { force: true, recursive: true })
-  await writeFile(filepath.trim(), content, { encoding: 'utf-8' })
+  await writeFile(filepath, content, { encoding: 'utf-8' })
 
   console.log('')
   console.log(`\x1b[32m✔\x1b[0m Changeset created: ${filepath}`)
@@ -230,4 +238,6 @@ async function main() {
   await runInteractive()
 }
 
-await main()
+if (resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) {
+  await main()
+}
