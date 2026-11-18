@@ -65,6 +65,19 @@ test.describe('tile variant — initial state', () => {
   })
 })
 
+test.describe('image variant — below controls', () => {
+  test('prev is disabled at start, next scrolls forward and becomes focusable', async ({ page }) => {
+    await page.mount(`<ds-carousel controls="large-below" style="width:300px">${ITEMS}</ds-carousel>`)
+    const carousel = new DsCarousel(page.locator('ds-carousel'))
+
+    await expect(carousel.scrollBtnBelow('prev')).toHaveAttribute('aria-disabled', 'true')
+    await expect(carousel.scrollBtnBelow('next')).not.toHaveAttribute('aria-disabled', 'true')
+
+    await carousel.scrollBtnBelow('next').focus()
+    await expect(carousel.scrollBtnBelow('next')).toBeFocused()
+  })
+})
+
 test.describe('without ResizeObserver and IntersectionObserver', () => {
   for (const variant of ['tile', 'slide']) {
     test(`renders the ${variant} variant without throwing`, async ({ page }) => {

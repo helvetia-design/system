@@ -53,6 +53,15 @@
         </ds-carousel>
       </section>
 
+      <section data-testid="slides-with-below-controls">
+        <span>Slides with Below Controls</span>
+        <ds-carousel variant="slide" controls="large-below">
+          <ds-carousel-item name="s1" src="/assets/images/landscape-coast.jpg"></ds-carousel-item>
+          <ds-carousel-item name="s2" src="/assets/images/landscape-rainforest.jpg"></ds-carousel-item>
+          <ds-carousel-item name="s3" src="/assets/images/landscape-mountain.jpg"></ds-carousel-item>
+        </ds-carousel>
+      </section>
+
       <section data-testid="slides-no-controls">
         <span>Slides (no controls)</span>
         <ds-carousel variant="slide" controls="none">
@@ -80,6 +89,18 @@
       <section data-testid="product-with-dots">
         <span>Product Carousel (dots)</span>
         <ds-carousel variant="tile" controls="dots" style="max-width: 600px">
+          <ds-carousel-item name="p1">Item 1</ds-carousel-item>
+          <ds-carousel-item name="p2">Lorem ipsum dolor sit amet</ds-carousel-item>
+          <ds-carousel-item name="p3">Item 3</ds-carousel-item>
+          <ds-carousel-item name="p4">Item 4</ds-carousel-item>
+          <ds-carousel-item name="p5">Item 5</ds-carousel-item>
+          <ds-carousel-item name="p6">Last item with a long content</ds-carousel-item>
+        </ds-carousel>
+      </section>
+
+      <section data-testid="product-with-below-controls">
+        <span>Product Carousel (below controls)</span>
+        <ds-carousel variant="tile" controls="large-below" style="max-width: 600px">
           <ds-carousel-item name="p1">Item 1</ds-carousel-item>
           <ds-carousel-item name="p2">Lorem ipsum dolor sit amet</ds-carousel-item>
           <ds-carousel-item name="p3">Item 3</ds-carousel-item>

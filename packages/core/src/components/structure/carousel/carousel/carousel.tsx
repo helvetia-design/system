@@ -54,7 +54,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
    */
 
   /**
-   * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `none` hides all controls.
+   * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `large-below` shows large round arrow buttons centered below the track. `none` hides all controls.
    */
   @Prop()
   @OneOf(CAROUSEL_CONTROLS)
@@ -485,6 +485,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     const isSlide = this.variant === 'slide'
     const showPagination = this.controls === 'dots'
     const showLargeArrows = this.controls === 'large'
+    const showBelowArrows = this.controls === 'large-below'
 
     const prevBtn = (
       <button class="scroll-btn scroll-btn--prev" aria-label={i18n.scrollLeft} tabIndex={-1} onClick={this.scrollPrev}>
@@ -521,6 +522,33 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     const atStart = this.activeIndex === 0
     const atEnd = this.activeIndex === this.itemCount - 1
 
+    // Slide: driven by activeIndex (updates via intersection observer). Tile: driven by
+    // scroll position (activeIndex only tracks explicit selection, not continuous scroll).
+    const belowPrevDisabled = isSlide ? atStart : !this.canScrollLeft
+    const belowNextDisabled = isSlide ? atEnd : !this.canScrollRight
+
+    const belowPrevBtn = (
+      <button
+        class={{ 'scroll-btn-below': true, 'scroll-btn-below--prev': true, 'is-disabled': belowPrevDisabled }}
+        aria-label={i18n.scrollLeft}
+        aria-disabled={belowPrevDisabled ? 'true' : undefined}
+        onClick={belowPrevDisabled ? undefined : this.scrollPrev}
+      >
+        <ds-icon name="caret-left" size="sm" />
+      </button>
+    )
+
+    const belowNextBtn = (
+      <button
+        class={{ 'scroll-btn-below': true, 'scroll-btn-below--next': true, 'is-disabled': belowNextDisabled }}
+        aria-label={i18n.scrollRight}
+        aria-disabled={belowNextDisabled ? 'true' : undefined}
+        onClick={belowNextDisabled ? undefined : this.scrollNext}
+      >
+        <ds-icon name="caret-right" size="sm" />
+      </button>
+    )
+
     return (
       <Host
         class={{
@@ -547,6 +575,12 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
             textNext={i18n.scrollRight}
             onDsChange={this.handlePaginationChange}
           />
+        )}
+        {showBelowArrows && (
+          <div class="scroll-btn-below-group">
+            {belowPrevBtn}
+            {belowNextBtn}
+          </div>
         )}
       </Host>
     )
