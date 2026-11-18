@@ -172,6 +172,8 @@ test.describe('moved in the DOM', () => {
     const changeSpy = await slider.el.spyOnEvent('dsChange')
     await slider.handle.focus()
     await page.keyboard.press('ArrowRight')
+    // dsChange is emitted on a setTimeout(0) debounce, so wait it out before asserting the spy.
+    await page.waitForChanges()
 
     expect(changeSpy).toHaveReceivedEventTimes(1)
     await expect(slider.handle).not.toHaveAttribute('aria-valuenow', '20.0')
