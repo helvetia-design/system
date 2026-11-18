@@ -159,7 +159,7 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
   readonly required: boolean = false
 
   /**
-   * Accepted MIME-Types like `image/png,image/jpeg`.
+   * Accepted file types like the native `accept` attribute, e.g. `image/png,image/*,.pdf`.
    */
   @Prop()
   @Type('string')
@@ -332,7 +332,8 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
   }
 
   private handleFiles = (fileList: FileList) => {
-    const files = toFileArray(fileList)
+    const allFiles = toFileArray(fileList)
+    const files = this.multiple ? allFiles : allFiles.slice(0, 1)
 
     const validatedFiles = validateFileArray(this.files, files, {
       accept: this.accept,
