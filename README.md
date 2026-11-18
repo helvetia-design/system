@@ -28,7 +28,7 @@ Then import the CSS and component loader in your application:
 <script type="module" src="node_modules/@helvetia-design/core/dist/design-system/design-system.esm.js"></script>
 ```
 
-For framework-specific integrations, see the [Quick Start guide](https://helvetia-design.vercel.app/?path=/docs/development-getting-started--documentation).
+For framework-specific integrations, see the [Quick Start guide](https://helvetia-design.vercel.app/?path=/docs/development-getting-started--getting-started&globals=framework:angular).
 
 ## Quick Start
 
@@ -59,7 +59,7 @@ Follow our [Code of Conduct](https://github.com/helvetia-design/system/blob/main
 ## Learn More
 
 - **[Documentation](https://helvetia-design.vercel.app)** — Component library, design tokens, and interactive examples in Storybook
-- **[Quick Start](https://helvetia-design.vercel.app/?path=/docs/development-getting-started--documentation)** — Get started with the design system in your project
+- **[Quick Start](https://helvetia-design.vercel.app/?path=/docs/development-getting-started--getting-started&globals=framework:angular)** — Get started with the design system in your project
 - **[llms.txt](https://helvetia-design.vercel.app/llms.txt)** / **[llms-full.txt](https://helvetia-design.vercel.app/llms-full.txt)** — Machine-readable component API and usage docs for AI coding tools ([llmstxt.org](https://llmstxt.org))
 - **[CHANGELOG.md](https://github.com/helvetia-design/system/blob/main/CHANGELOG.md)** — Release notes, version history, and changes for each version
 - **[ARCHITECTURE.md](https://github.com/helvetia-design/system/blob/main/docs/ARCHITECTURE.md)** — System design, workspace structure, component lifecycle, web components patterns, CSS variables, testing strategy
