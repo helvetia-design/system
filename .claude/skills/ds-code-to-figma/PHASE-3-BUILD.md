@@ -137,10 +137,10 @@ what's listed below.
      `Core / <Category>`, and override `Category Header`'s `component` and `lead` text from the
      fixed category-copy table in `CONVENTIONS.md`. Never invent copy; if the category is missing
      from the table, **hard stop** and ask for title/lead text.
-   - **Found → reuse it.** Clone only the template's `Component A Documentation` frame and move it
+   - **Found → reuse it.** Clone only the template's `Component Documentation` frame and move it
      into the existing page's `Documentation Frames` row, **appended last** (`framesRow.appendChild`) — never inserted at a sorted position, never repositioning a sibling component's frame (clone from the template every time,
      never from a sibling component, so styling can't drift).
-3. In the cloned page/frame, keep `Component A Documentation` as this component's frame: rename it
+3. In the cloned page/frame, keep `Component Documentation` as this component's frame: rename it
    `<Component> Documentation` (the template holds only this one frame since 18.11.2026), and leave
    `body`'s placeholder content for Phases 6–8 (the Variations placeholder is filled in step 5).
 4. Fill the header, per [Documentation frame header](#documentation-frame-header).
@@ -148,14 +148,14 @@ what's listed below.
 **Layer-name contract.** This skill addresses the template by these layer names only. If any is
 missing, **hard stop** and report which — never fall back to hand-building.
 
-| Where               | Layer names touched                                                                                                                                                                                   |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Page                | `Category Frame` › `Category Header` (`component`, `lead`) › `Documentation Frames`                                                                                                                   |
-| Documentation frame | `Component A Documentation` › `Header`, `body` › `Documentation` › 4 `Section` placeholders (`Title` `kind` = `copy-me`, `anatomy`, `measurements`, `variations`), `body` › `Component Sets` › `Sets` |
-| Variations          | `kind=variations` `Section` › nested `Preview` › `variations-set` (`title`, `entries` › `entry` (`Component`, `caption`))                                                                             |
-| Sets stack          | `Sets` › `Primary` (`sub-label`, `Labeled Set` › `Row Labels` › `lane-<axis>` › `bracket-<n>`, `Column + Box` › `Column Labels`, set, `Grid` › `divider-row-<n>` / `divider-col-<n>`)                 |
-| `Header`            | `kicker`, `title` › `component`, `review-status`, `body` › `lead`, `meta` › `row` (`label`/`value`)                                                                                                   |
-| `Header` links      | `links` › `link-row-storybook` / `link-row-toky` / `link-row-github` › `link-storybook`, `link-toky`, `link-github`                                                                                   |
+| Where               | Layer names touched                                                                                                                                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page                | `Category Frame` › `Category Header` (`component`, `lead`) › `Documentation Frames`                                                                                                                 |
+| Documentation frame | `Component Documentation` › `Header`, `body` › `Documentation` › 4 `Section` placeholders (`Title` `kind` = `copy-me`, `anatomy`, `measurements`, `variations`), `body` › `Component Sets` › `Sets` |
+| Variations          | `kind=variations` `Section` › nested `Preview` › `variations-set` (`title`, `entries` › `entry` (`Component`, `caption`))                                                                           |
+| Sets stack          | `Sets` › `Primary` (`sub-label`, `Labeled Set` › `Row Labels` › `lane-<axis>` › `bracket-<n>`, `Column + Box` › `Column Labels`, set, `Grid` › `divider-row-<n>` / `divider-col-<n>`)               |
+| `Header`            | `kicker`, `title` › `component`, `review-status`, `body` › `lead`, `meta` › `row` (`label`/`value`)                                                                                                 |
+| `Header` links      | `links` › `link-row-storybook` / `link-row-toky` / `link-row-github` › `link-storybook`, `link-toky`, `link-github`                                                                                 |
 
 ### Labeled component set
 
