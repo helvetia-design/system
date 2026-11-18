@@ -300,7 +300,12 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   // Native radio never fires "change" when clicking an already-checked item,
   // so onClick is the only hook for deselection.
   private handleInputClick = (ev: MouseEvent, itemValue: any) => {
-    if (!this.allowEmptySelection || this.disabled || this.readonly) return
+    // Native radios ignore `readOnly`, so cancel the click to keep the checked state in sync with `value`
+    if (this.readonly) {
+      ev.preventDefault()
+      return
+    }
+    if (!this.allowEmptySelection || this.disabled) return
     if (this.value === itemValue) {
       ev.preventDefault()
       this.value = undefined

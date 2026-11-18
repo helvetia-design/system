@@ -90,6 +90,33 @@ test.describe('disabled', () => {
   })
 })
 
+test.describe('readonly', () => {
+  test('should keep the native selection in sync with value on click', async ({ page }) => {
+    await page.mount(`<ds-segment name="fruits" label="Fruits" value="apple" readonly>${ITEMS}</ds-segment>`)
+    const segment = new DsSegment(page.locator('ds-segment'))
+    const changeSpy = await segment.el.spyOnEvent('dsChange')
+
+    await segment.select('strawberry')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await segment.assertSelectedValue('apple')
+    await expect(segment.itemInput('strawberry')).not.toBeChecked()
+  })
+
+  test('should keep the native selection in sync with value on arrow keys', async ({ page }) => {
+    await page.mount(`<ds-segment name="fruits" label="Fruits" value="apple" readonly>${ITEMS}</ds-segment>`)
+    const segment = new DsSegment(page.locator('ds-segment'))
+    const changeSpy = await segment.el.spyOnEvent('dsChange')
+
+    await segment.itemInput('apple').focus()
+    await page.keyboard.press('ArrowRight')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await segment.assertSelectedValue('apple')
+    await expect(segment.itemInput('strawberry')).not.toBeChecked()
+  })
+})
+
 test.describe('dsBlur', () => {
   test('should fire dsBlur once focus leaves the segment entirely', async ({ page }) => {
     await page.mount(
