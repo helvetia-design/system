@@ -155,3 +155,25 @@ test.describe('form reset', () => {
     await slider.assertValue('30')
   })
 })
+
+test.describe('moved in the DOM', () => {
+  test('should still render and change value after being moved', async ({ page }) => {
+    await page.mount(`<ds-slider label="Label" min="0" max="100" value="20"></ds-slider>`)
+    const slider = new DsSlider(page.locator('ds-slider'))
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-slider')!)
+    })
+    await page.waitForChanges()
+    await expect(slider.handle).toHaveAttribute('aria-valuenow', '20.0')
+
+    const changeSpy = await slider.el.spyOnEvent('dsChange')
+    await slider.handle.focus()
+    await page.keyboard.press('ArrowRight')
+
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    await expect(slider.handle).not.toHaveAttribute('aria-valuenow', '20.0')
+  })
+})

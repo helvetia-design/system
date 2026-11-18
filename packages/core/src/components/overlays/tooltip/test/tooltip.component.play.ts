@@ -112,3 +112,23 @@ test.describe('component', () => {
     expect(removedListenerTypes.sort()).toEqual(['blur', 'focus', 'mouseenter', 'mouseleave'])
   })
 })
+
+test.describe('moved in the DOM', () => {
+  test('should still show on trigger hover after being moved', async ({ page }) => {
+    await page.mount(`
+      <button id="my-trigger">Hover over me</button>
+      <ds-tooltip reference="my-trigger">Tooltip content</ds-tooltip>
+    `)
+    const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-tooltip')!)
+    })
+    await page.waitForChanges()
+    await expect(page.locator('#my-trigger')).toHaveAttribute('aria-describedby')
+    await page.locator('#my-trigger').hover()
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+  })
+})
