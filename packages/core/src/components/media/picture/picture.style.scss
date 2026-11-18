@@ -1,8 +1,12 @@
 picture {
-  --_picture-img-radius: var(--picture-img-radius, var(--ds-alias-radius-lg));
+  --_picture-radius: var(--picture-radius, var(--mod-picture-radius, var(--ds-picture-size-base-radius)));
 
   display: block;
-  border-radius: var(--_picture-img-radius);
+  border-radius: var(--_picture-radius);
+
+  &.is-sm {
+    --mod-picture-radius: var(--ds-picture-size-sm-radius);
+  }
 }
 
 picture img {
@@ -16,5 +20,5 @@ picture img {
   object-fit: cover;
   block-size: auto;
 
-  border-radius: var(--_picture-img-radius);
+  border-radius: var(--_picture-radius);
 }

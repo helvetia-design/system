@@ -12928,6 +12928,22 @@
         }
       }
     },
+    "Picture": {
+      "Size": {
+        "Base": {
+          "Radius": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.🔵 Radius.LG}"
+          }
+        },
+        "SM": {
+          "Radius": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.🔵 Radius.Base}"
+          }
+        }
+      }
+    },
     "Form": {
       "Field": {
         "Gap": {
