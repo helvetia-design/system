@@ -285,9 +285,8 @@ Key environment variables used during development:
 | Variable                | Purpose            | Values                  |
 | ----------------------- | ------------------ | ----------------------- |
 | `IS_DS_DEVELOPMENT`     | Enable dev mode    | `true`                  |
-| `DS_TESTING`            | Unit test mode     | `true`                  |
 | `DS_PLAYWRIGHT_TESTING` | E2E test mode      | `true`                  |
-| `BAL_DOCUMENTATION`     | Doc site build     | `true`                  |
+| `DS_DOCUMENTATION`      | Doc site build     | `true`                  |
 | `DS_RELEASE`            | Production release | `true`                  |
 | `CI`                    | CI environment     | `true` (auto-set in CI) |
 

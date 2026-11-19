@@ -153,3 +153,43 @@ test.describe('component', () => {
     await expect(container).toHaveClass(/is-fluid/)
   })
 })
+
+test.describe('moved in the DOM', () => {
+  test('should not close on Escape when closable=false after being moved', async ({ page }) => {
+    await page.mount(`<ds-drawer label="Dialog" closable="false"><p>Content</p></ds-drawer>`)
+    const ds = new DsDrawer(page.locator('ds-drawer'))
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-drawer')!)
+    })
+    await page.waitForChanges()
+    await page.evaluate(() => (document.querySelector('ds-drawer') as any).present())
+    await ds.assertToBeOpen()
+
+    await page.keyboard.press('Escape')
+
+    await ds.assertToBeOpen()
+    await expect(ds.el).toHaveAttribute('open')
+  })
+
+  test('should close on Escape and sync open after being moved', async ({ page }) => {
+    await page.mount(`<ds-drawer label="Dialog"><p>Content</p></ds-drawer>`)
+    const ds = new DsDrawer(page.locator('ds-drawer'))
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-drawer')!)
+    })
+    await page.waitForChanges()
+    await page.evaluate(() => (document.querySelector('ds-drawer') as any).present())
+    await ds.assertToBeOpen()
+
+    await page.keyboard.press('Escape')
+
+    await ds.assertToBeClosed()
+    await expect(ds.el).not.toHaveAttribute('open')
+  })
+})

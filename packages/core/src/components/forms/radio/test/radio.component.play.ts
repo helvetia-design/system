@@ -148,6 +148,62 @@ test.describe('radio-group', () => {
     expect(changeSpy).toHaveReceivedEventDetail('tony-stark')
   })
 
+  test('should prevent page scrolling on arrow keys', async ({ page }) => {
+    await page.mount(GROUP)
+    const steve = page.locator('ds-radio[value="steve-rogers"]')
+
+    const defaultPrevented = await steve.evaluate(el => {
+      const ev = new KeyboardEvent('keydown', { code: 'ArrowDown', bubbles: true, cancelable: true })
+      el.dispatchEvent(ev)
+      return ev.defaultPrevented
+    })
+
+    expect(defaultPrevented).toBe(true)
+  })
+
+  test('should not change the value via keyboard when readonly', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label" value="steve-rogers" readonly>
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark">Tony Stark</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    const changeSpy = await group.spyOnEvent('dsChange')
+    const steve = page.locator('ds-radio[value="steve-rogers"]')
+    const tony = page.locator('ds-radio[value="tony-stark"]')
+
+    await steve.dispatchEvent('keydown', { code: 'ArrowDown', bubbles: true })
+    await tony.dispatchEvent('keydown', { code: 'Space', bubbles: true })
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await expect(group).toHaveJSProperty('value', 'steve-rogers')
+  })
+
+  test('should select the focused radio on space when allowEmptySelection and value is null', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label" allow-empty-selection>
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark">Tony Stark</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    await group.evaluate((el: HTMLDsRadioGroupElement) => (el.value = null))
+    const changeSpy = await group.spyOnEvent('dsChange')
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+
+    await steve.nativeInput.focus()
+    await page.keyboard.press('Space')
+
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('steve-rogers')
+
+    await page.keyboard.press('Space')
+
+    expect(changeSpy).toHaveReceivedEventTimes(2)
+    await expect(group).toHaveJSProperty('value', undefined)
+  })
+
   test('should fire dsBlur once focus leaves the group entirely', async ({ page }) => {
     await page.mount(`${GROUP}<button data-testid="outside">Outside</button>`)
     const group = page.locator('ds-radio-group')

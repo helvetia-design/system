@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths: ['packages/tokens/tokens/*.tokens.json']
 
+permissions:
+  contents: read
+
 jobs:
   check:
     name: 🔍 Figma Conflict Check

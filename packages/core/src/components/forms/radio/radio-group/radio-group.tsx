@@ -361,22 +361,27 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
       }
 
       if (next && radios.includes(next)) {
+        // Prevent the page from scrolling
+        ev.preventDefault()
         next.setFocus()
 
-        this.value = next.value
-        this.dsChange.emit(this.value)
-        setFormValue(this.internals, this.value)
+        if (!this.readonly) {
+          this.value = next.value
+          this.dsChange.emit(this.value)
+          setFormValue(this.internals, this.value)
+        }
       }
 
-      // Update the radio group value when a user presses the
-      // space bar on top of a selected radio
+      // Select the focused radio on space, or deselect it if it is already selected and empty selection is allowed
       if (['Space'].includes(ev.code)) {
-        this.value = this.allowEmptySelection && this.value !== undefined ? undefined : current.value
-        this.dsChange.emit(this.value)
-        setFormValue(this.internals, this.value)
-
         // Prevent browsers from jumping to the bottom of the screen
         ev.preventDefault()
+
+        if (!this.readonly) {
+          this.value = this.allowEmptySelection && this.value === current.value ? undefined : current.value
+          this.dsChange.emit(this.value)
+          setFormValue(this.internals, this.value)
+        }
       }
     }
   }

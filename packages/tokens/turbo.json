@@ -1,0 +1,13 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "outputs": [
+        "$TURBO_EXTENDS$",
+        "$TURBO_ROOT$/packages/core/www/assets/tokens/**",
+        "$TURBO_ROOT$/apps/storybook/public/assets/css/*.tokens.css",
+        "$TURBO_ROOT$/apps/storybook/public/assets/css/*.override.css"
+      ]
+    }
+  }
+}

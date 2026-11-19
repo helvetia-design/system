@@ -12198,7 +12198,25 @@
             ]
           }
         },
-        "Inverted": {
+        "InvertedPrimary": {
+          "$type": "color",
+          "$value": "{🔗 Alias.▭ Border.Color.White}",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "InvertedSecondary": {
+          "$type": "color",
+          "$value": "{🔗 Alias.▭ Border.Color.White}",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "InvertedDefault": {
           "$type": "color",
           "$value": "{🔗 Alias.▭ Border.Color.White}",
           "$extensions": {
@@ -12480,7 +12498,7 @@
       "Padding": {
         "SM": {
           "$type": "dimension",
-          "$value": "{🌐 Global.📏 Dimension.Size.0.875}",
+          "$value": "{🌐 Global.📏 Dimension.Size.0_875}",
           "$extensions": {
             "com.figma.variableId": "VariableID:13:1603",
             "com.figma.scopes": [
@@ -12500,7 +12518,7 @@
         },
         "MD": {
           "$type": "dimension",
-          "$value": "{🌐 Global.📏 Dimension.Size.1.5}",
+          "$value": "{🌐 Global.📏 Dimension.Size.1_5}",
           "$extensions": {
             "com.figma.variableId": "VariableID:13:1605",
             "com.figma.scopes": [
@@ -12520,7 +12538,7 @@
         },
         "XL": {
           "$type": "dimension",
-          "$value": "{🌐 Global.📏 Dimension.Size.2.5}",
+          "$value": "{🌐 Global.📏 Dimension.Size.2_5}",
           "$extensions": {
             "com.figma.variableId": "VariableID:13:1607",
             "com.figma.scopes": [
@@ -12924,6 +12942,22 @@
                 "ALL_SCOPES"
               ]
             }
+          }
+        }
+      }
+    },
+    "Picture": {
+      "Size": {
+        "Base": {
+          "Radius": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.🔵 Radius.LG}"
+          }
+        },
+        "SM": {
+          "Radius": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.🔵 Radius.Base}"
           }
         }
       }
@@ -27186,6 +27220,18 @@
           }
         }
       }
+    },
+    "Bubu": {
+      "Color": {
+        "$type": "color",
+        "$value": "{🔗 Alias.🎨 Surface.Danger}",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:43:3",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
     }
   },
   "🌐 Global": {
@@ -28014,7 +28060,7 @@
             ]
           }
         },
-        "0.875": {
+        "0_875": {
           "$type": "dimension",
           "$value": {
             "value": 0.875,
@@ -28027,7 +28073,7 @@
             ]
           }
         },
-        "1.5": {
+        "1_5": {
           "$type": "dimension",
           "$value": {
             "value": 1.5,
@@ -28040,7 +28086,7 @@
             ]
           }
         },
-        "2.5": {
+        "2_5": {
           "$type": "dimension",
           "$value": {
             "value": 2.5,

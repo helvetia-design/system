@@ -147,7 +147,7 @@ export class AppFooter implements DsComponentInterface, DsConfigObserver {
     if (this.hasNamedSlot('logo')) {
       return <slot name="logo" />
     }
-    return <ds-logo brand={this.brand} color="inverted" />
+    return <ds-logo brand={this.brand} inverted />
   }
 
   private renderLinkList(links: AppFooterLink[], className: string) {
