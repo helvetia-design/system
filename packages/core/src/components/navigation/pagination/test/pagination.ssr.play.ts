@@ -10,13 +10,11 @@ import { renderToString } from '@helvetia-design/core/hydrate'
 import { TAG, HOST_VARIANTS } from './pagination.variants'
 
 const baseline = visualBaseline(TAG)
-const FIXME = 'SSR: renderToString reports Hydrate Error for the invalid align="bubu" in the basic section (#330)'
 const PAGE_URL = `/components/navigation/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
   HOST_VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
-      test.fixme(true, FIXME)
       const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
       const el = page.getByTestId(variant)
 
