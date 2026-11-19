@@ -92,21 +92,119 @@ describe('findConflicts', () => {
     ).toEqual([])
   })
 
-  it('skips a reference-kind token (out of scope for this pass, see module doc)', () => {
-    const ref = {
-      path: ['A'],
-      type: 'color',
-      value: { kind: 'reference', path: ['Global', 'White'] },
-      variableId: 'VariableID:1:1',
+  describe('alias tokens', () => {
+    const coreTokens = [
+      {
+        path: ['Alias', 'Space', 'SM'],
+        type: 'number',
+        value: { kind: 'literal', value: 8 },
+        variableId: 'VariableID:9:1',
+      },
+      {
+        path: ['Alias', 'Space', 'MD'],
+        type: 'number',
+        value: { kind: 'literal', value: 16 },
+        variableId: 'VariableID:9:2',
+      },
+      {
+        path: ['Alias', 'Space', 'LG'],
+        type: 'number',
+        value: { kind: 'literal', value: 24 },
+        variableId: 'VariableID:9:3',
+      },
+    ]
+    const aliasOf = (id: string) => ({ type: 'VARIABLE_ALIAS', id })
+    function aliasToken(targetPath: string[]) {
+      return {
+        path: ['A'],
+        type: 'number',
+        value: { kind: 'reference', path: targetPath },
+        variableId: 'VariableID:1:1',
+      }
     }
-    expect(
-      findConflicts({
-        existingState: state({ kind: 'reference', path: ['x'] }),
-        currentBaseTokens: [ref],
-        figmaVariablesById: {},
+    const baselineAlias = { kind: 'reference', path: ['Alias', 'Space', 'SM'] }
+
+    function run(github: string[], figmaTargetId: string) {
+      return findConflicts({
+        existingState: state(baselineAlias),
+        currentBaseTokens: [aliasToken(github)],
+        figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: aliasOf(figmaTargetId) } } },
         modeId,
-      }),
-    ).toEqual([])
+        referenceTokens: coreTokens,
+      })
+    }
+
+    it('is a conflict when GitHub and Figma retargeted the alias to different reference tokens', () => {
+      const conflicts = run(['Alias', 'Space', 'MD'], 'VariableID:9:3')
+      expect(conflicts).toEqual([
+        {
+          variableId: 'VariableID:1:1',
+          tokenPath: ['A'],
+          baselineValue: '{Alias.Space.SM}',
+          githubValue: '{Alias.Space.MD}',
+          figmaValue: '{Alias.Space.LG}',
+        },
+      ])
+    })
+
+    it('is not a conflict when only GitHub retargeted the alias', () => {
+      expect(run(['Alias', 'Space', 'MD'], 'VariableID:9:1')).toEqual([])
+    })
+
+    it('is not a conflict when only Figma retargeted the alias', () => {
+      expect(run(['Alias', 'Space', 'SM'], 'VariableID:9:3')).toEqual([])
+    })
+
+    it('is not a conflict when both sides retargeted the alias to the same token', () => {
+      expect(run(['Alias', 'Space', 'MD'], 'VariableID:9:2')).toEqual([])
+    })
+
+    it("resolves an alias to one of the source's own tokens", () => {
+      const own = { ...coreTokens[2], path: ['B'], variableId: 'VariableID:1:2' }
+      const conflicts = findConflicts({
+        existingState: state(baselineAlias),
+        currentBaseTokens: [aliasToken(['Alias', 'Space', 'MD']), own],
+        figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: aliasOf('VariableID:1:2') } } },
+        modeId,
+        referenceTokens: coreTokens,
+      })
+      expect(conflicts).toMatchObject([{ figmaValue: '{B}' }])
+    })
+
+    it('is a conflict when Figma replaced the alias with a literal and GitHub retargeted it', () => {
+      const conflicts = findConflicts({
+        existingState: state(baselineAlias),
+        currentBaseTokens: [aliasToken(['Alias', 'Space', 'MD'])],
+        figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: 12 } } },
+        modeId,
+        referenceTokens: coreTokens,
+      })
+      expect(conflicts).toMatchObject([{ githubValue: '{Alias.Space.MD}', figmaValue: 12 }])
+    })
+
+    it('shows the raw variableId when Figma aliases a variable no token source knows', () => {
+      expect(run(['Alias', 'Space', 'MD'], 'VariableID:404:1')).toMatchObject([{ figmaValue: '{VariableID:404:1}' }])
+    })
+
+    it('resolves an alias to the device sub-id of a responsive reference token', () => {
+      const deviceToken = (path: string[], id: string) => ({
+        path,
+        type: 'dimension',
+        value: { kind: 'literal', value: { value: 0, unit: 'px' } },
+        variableId: { mobile: `${id}:m`, tablet: `${id}:t`, desktop: `${id}:d`, device: `${id}:device` },
+      })
+      const conflicts = findConflicts({
+        existingState: state({ kind: 'reference', path: ['Device', 'Space', 'None'] }),
+        currentBaseTokens: [aliasToken(['Device', 'Space', 'XS'])],
+        figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: aliasOf('VariableID:8:1:device') } } },
+        modeId,
+        referenceTokens: [
+          deviceToken(['Device', 'Space', 'None'], 'VariableID:8:1'),
+          deviceToken(['Device', 'Space', 'XS'], 'VariableID:8:2'),
+        ],
+      })
+      expect(conflicts).toEqual([])
+    })
   })
 
   it('skips a token whose variableId has no live Figma variable (deleted, or never actually pushed)', () => {

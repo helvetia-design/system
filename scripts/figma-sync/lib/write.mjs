@@ -78,6 +78,18 @@ function singleAliasTargetId(targetVariableId) {
   return targetVariableId.device
 }
 
+// A reference token (lib/alias.mjs's buildTokenIndex) lives in another source's collection: it is
+// aliased by its committed variableId and never gets an entry in idByPath.
+function aliasTargetIdFor(target, idByPath) {
+  if (!target.isReference) return idByPath.get(pathKey(target.path))
+  if (!target.variableId) {
+    throw new Error(
+      `Reference token ${pathKey(target.path)} has no com.figma.variableId — sync the reference source to Figma first.`,
+    )
+  }
+  return target.variableId
+}
+
 /**
  * Assigns every Base token the id its Figma payload entries should use:
  * its existing `variableId`; failing that, a Figma variable already
@@ -242,6 +254,23 @@ export function committedVariableIds(baseTokens) {
 }
 
 /**
+ * Committed variableIds of this source whose Figma variable lives in a collection the source does
+ * not own, e.g. a core id copied into an extension token. Any write to them (including pass 0's
+ * type-mismatch DELETE) would change another source's variable.
+ *
+ * @param {import('./tokens.mjs').Token[]} baseTokens
+ * @param {Record<string, { variableCollectionId: string }>} remoteVariablesById
+ * @param {Set<string>} ownCollectionIds
+ * @returns {string[]}
+ */
+export function findForeignCollectionVariableIds(baseTokens, remoteVariablesById, ownCollectionIds) {
+  return committedVariableIds(baseTokens).filter(id => {
+    const remote = remoteVariablesById[id]
+    return remote && !ownCollectionIds.has(remote.variableCollectionId)
+  })
+}
+
+/**
  * @param {object} params
  * @param {import('./tokens.mjs').Token[]} params.baseTokens
  * @param {Record<string, import('./tokens.mjs').Token[]>} params.brandTokensByName e.g. { Base: [...], OrangeVacations: [...] }
@@ -251,6 +280,7 @@ export function committedVariableIds(baseTokens) {
  * @param {string} [params.responsiveCollectionId] the responsive collection ("Design Responsive
  *   Tokens") — only needed when at least one Device-eligible responsive dimension token is present
  *   (isDeviceEligibleResponsiveDimensionToken); its Device variable is created there, not in `collectionId`
+ * @param {import('./tokens.mjs').Token[]} [params.referenceTokens] read-only fallback for references (lib/alias.mjs)
  */
 export function buildCreatePassPayload({
   baseTokens,
@@ -259,6 +289,7 @@ export function buildCreatePassPayload({
   collectionId,
   modeIdByBrand,
   responsiveCollectionId,
+  referenceTokens = [],
 }) {
   const variables = []
   const seenVariableIds = new Set()
@@ -380,7 +411,7 @@ export function buildCreatePassPayload({
   // figmaTypographySubEntriesFor tag each as reference-or-literal rather than following it, but
   // still need this index: letterSpacing's percentage always needs its fontSize literal (via
   // resolveLiteral), and the alias pass below looks up a reference sub-value's target token here.
-  const tokenIndex = buildTokenIndex(baseTokens)
+  const tokenIndex = buildTokenIndex(baseTokens, referenceTokens)
 
   const variableModeValues = []
   for (const [brandName, tokens] of Object.entries(brandTokensByName)) {
@@ -463,6 +494,7 @@ export function buildCreatePassPayload({
  * @param {Record<string, string>} params.modeIdByBrand
  * @param {Record<string, string>} [params.modeIdByBreakpoint] Mobile/Tablet/Desktop mode ids in the
  *   responsive collection — only needed when a Device-eligible responsive dimension token is present
+ * @param {import('./tokens.mjs').Token[]} [params.referenceTokens] read-only fallback for references (lib/alias.mjs)
  */
 export function buildAliasPassPayload({
   baseTokens,
@@ -470,8 +502,9 @@ export function buildAliasPassPayload({
   idByPath,
   modeIdByBrand,
   modeIdByBreakpoint = {},
+  referenceTokens = [],
 }) {
-  const tokenIndex = buildTokenIndex(baseTokens)
+  const tokenIndex = buildTokenIndex(baseTokens, referenceTokens)
   const variableModeValues = []
 
   // Device variables (MVP scope, isDeviceEligibleResponsiveDimensionToken) are written once per
@@ -521,7 +554,7 @@ export function buildAliasPassPayload({
           // — a breakpoint referencing another composite (shadow/border/typography/responsive
           // dimension) token has no single id to alias against unless it's itself Device-eligible,
           // so it's left unsynced rather than miswritten.
-          const targetVariableId = idByPath.get(pathKey(target.path))
+          const targetVariableId = aliasTargetIdFor(target, idByPath)
           const aliasId = singleAliasTargetId(targetVariableId)
           if (!aliasId) continue
           variableModeValues.push({
@@ -554,7 +587,7 @@ export function buildAliasPassPayload({
             )
           }
           // Same "target must resolve to a single Figma variable" policy as the generic case below.
-          const targetVariableId = idByPath.get(pathKey(target.path))
+          const targetVariableId = aliasTargetIdFor(target, idByPath)
           const aliasId = singleAliasTargetId(targetVariableId)
           if (!aliasId) continue
           variableModeValues.push({
@@ -584,7 +617,7 @@ export function buildAliasPassPayload({
               `Token ${pathKey(token.path)}'s ${sub} references ${pathKey(entry.path)}, which does not exist.`,
             )
           }
-          const targetVariableId = idByPath.get(pathKey(target.path))
+          const targetVariableId = aliasTargetIdFor(target, idByPath)
           const aliasId = singleAliasTargetId(targetVariableId)
           if (!aliasId) continue
           variableModeValues.push({
@@ -602,7 +635,7 @@ export function buildAliasPassPayload({
 
       if (isSyncableShadowToken(token)) {
         const variableId = idByPath.get(pathKey(token.path))
-        const targetVariableId = idByPath.get(pathKey(target.path))
+        const targetVariableId = aliasTargetIdFor(target, idByPath)
         for (const sub of SHADOW_SUB_PROPERTIES) {
           variableModeValues.push({
             variableId: variableId[sub],
@@ -615,7 +648,7 @@ export function buildAliasPassPayload({
 
       if (isSyncableBorderToken(token)) {
         const variableId = idByPath.get(pathKey(token.path))
-        const targetVariableId = idByPath.get(pathKey(target.path))
+        const targetVariableId = aliasTargetIdFor(target, idByPath)
         for (const sub of BORDER_SUB_PROPERTIES) {
           variableModeValues.push({
             variableId: variableId[sub],
@@ -628,7 +661,7 @@ export function buildAliasPassPayload({
 
       if (isSyncableTypographyToken(token)) {
         const variableId = idByPath.get(pathKey(token.path))
-        const targetVariableId = idByPath.get(pathKey(target.path))
+        const targetVariableId = aliasTargetIdFor(target, idByPath)
         for (const sub of TYPOGRAPHY_SUB_PROPERTIES) {
           variableModeValues.push({
             variableId: variableId[sub],
@@ -648,7 +681,7 @@ export function buildAliasPassPayload({
       // is Device-eligible, its 'device' id IS the single collapsed variable to alias to; otherwise
       // there's no single Figma variable this could point at (which breakpoint would it mean?), so
       // it's skipped, same "not eligible" policy as an unsyncable shadow/border/typography target.
-      const targetVariableId = idByPath.get(pathKey(target.path))
+      const targetVariableId = aliasTargetIdFor(target, idByPath)
       const aliasId = singleAliasTargetId(targetVariableId)
       if (!aliasId) continue
 

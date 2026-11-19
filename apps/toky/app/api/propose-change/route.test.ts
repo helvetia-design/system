@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { CORE_TOKY_CONFIG, resolveTokyConfig } from '@helvetia-design/tokens/toky-config'
 import type { TokenDiffEntry } from '@/src/tokens/edit'
 
 const {
@@ -15,6 +16,8 @@ const {
   openPullRequest,
   findOpenPullRequest,
   updatePullRequestBody,
+  getTokenPackageName,
+  getTokyConfig,
   auth,
 } = vi.hoisted(() => ({
   getBaseTokensFileMeta: vi.fn(),
@@ -30,6 +33,8 @@ const {
   openPullRequest: vi.fn(),
   findOpenPullRequest: vi.fn(),
   updatePullRequestBody: vi.fn(),
+  getTokenPackageName: vi.fn(),
+  getTokyConfig: vi.fn(),
   auth: vi.fn(),
 }))
 
@@ -50,7 +55,13 @@ vi.mock('@/src/tokens/github-write', async importOriginal => {
     openPullRequest,
     findOpenPullRequest,
     updatePullRequestBody,
+    getTokenPackageName,
   }
+})
+
+vi.mock('@/src/tokens/config', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/src/tokens/config')>()
+  return { ...actual, getTokyConfig }
 })
 
 vi.mock('@/auth', () => ({ auth }))
@@ -112,6 +123,8 @@ beforeEach(() => {
   })
   findOpenPullRequest.mockResolvedValue(null)
   updatePullRequestBody.mockResolvedValue(undefined)
+  getTokenPackageName.mockResolvedValue('@helvetia-design/tokens')
+  getTokyConfig.mockResolvedValue(CORE_TOKY_CONFIG)
 })
 
 describe('POST /api/propose-change', () => {
@@ -566,6 +579,128 @@ describe('POST /api/propose-change', () => {
 
       const [, , prBody] = openPullRequest.mock.calls[0]
       expect(prBody).toContain('**Zurich — Overridden:**\n- 🌐 Global.🌈 Color.Black: #000000 → #111111')
+    })
+  })
+
+  describe('instance config', () => {
+    const extensionsConfig = resolveTokyConfig({
+      repo: { name: 'extensions' },
+      tokenFile: 'Extensions.tokens.json',
+      brandsIndexPath: null,
+      editableLayers: ['🧩 Component'],
+    })
+
+    const componentCreate: TokenDiffEntry = {
+      kind: 'create',
+      layer: 'Component',
+      oldPath: null,
+      newPath: ['🧩 Component', 'PolicyCard', 'Padding'],
+      type: 'dimension',
+      value: '{🔗 Alias.↔️ Space.Padding.SM}',
+      before: undefined,
+    }
+
+    beforeEach(() => {
+      getTokyConfig.mockResolvedValue(extensionsConfig)
+      getTokenPackageName.mockResolvedValue('ds-ext-tokens')
+    })
+
+    it('rejects an edit in a layer outside editableLayers without touching GitHub', async () => {
+      const response = await POST(makeRequest({ diff: cleanDiff, description: '' }))
+      expect(response.status).toBe(403)
+      expect(await response.json()).toEqual({ error: 'The layer "🌐 Global" is read-only in this Toky instance.' })
+      expect(resolveReadRef).not.toHaveBeenCalled()
+    })
+
+    it('rejects moving a token between an editable and a read-only layer in either direction', async () => {
+      const moveOut: TokenDiffEntry = {
+        ...componentCreate,
+        kind: 'update',
+        layer: 'Alias',
+        oldPath: ['🧩 Component', 'PolicyCard', 'Padding'],
+        newPath: ['🔗 Alias', 'PolicyCard', 'Padding'],
+      }
+      const moveIn: TokenDiffEntry = {
+        ...componentCreate,
+        kind: 'update',
+        oldPath: ['🔗 Alias', 'PolicyCard', 'Padding'],
+        newPath: ['🧩 Component', 'PolicyCard', 'Padding'],
+      }
+      expect((await POST(makeRequest({ diff: [moveOut], description: '' }))).status).toBe(403)
+      expect((await POST(makeRequest({ diff: [moveIn], description: '' }))).status).toBe(403)
+      expect(createBranch).not.toHaveBeenCalled()
+    })
+
+    it('rejects a path segment that is not a string, even if it would coerce to an editable layer', async () => {
+      const smuggled = {
+        ...componentCreate,
+        newPath: [['🌐 Global'], '🌈 Color', 'Evil'],
+      } as unknown as TokenDiffEntry
+      const response = await POST(makeRequest({ diff: [smuggled], description: '' }))
+      expect(response.status).toBe(400)
+      expect(await response.json()).toEqual({ error: 'Every token path must be an array of non-empty strings.' })
+      expect(resolveReadRef).not.toHaveBeenCalled()
+    })
+
+    it('rejects a path that does not belong to the entry layer', async () => {
+      const mismatch: TokenDiffEntry = { ...componentCreate, newPath: ['🌐 Global', '🌈 Color', 'Evil'] }
+      const response = await POST(makeRequest({ diff: [mismatch], description: '' }))
+      expect(response.status).toBe(400)
+      expect(await response.json()).toEqual({
+        error: 'The path "🌐 Global.🌈 Color.Evil" is not in the Component layer.',
+      })
+      expect(createBranch).not.toHaveBeenCalled()
+    })
+
+    it('rejects an unknown layer and a change that is not an object', async () => {
+      const unknownLayer = { ...componentCreate, layer: 'Secret' } as unknown as TokenDiffEntry
+      expect((await POST(makeRequest({ diff: [unknownLayer], description: '' }))).status).toBe(400)
+      expect((await POST(makeRequest({ diff: [null], description: '' }))).status).toBe(400)
+      expect(resolveReadRef).not.toHaveBeenCalled()
+    })
+
+    it('applies editableLayers and the path checks to brand overrides too', async () => {
+      getTokyConfig.mockResolvedValue(resolveTokyConfig({ editableLayers: ['🧩 Component'] }))
+      const globalOverride: TokenDiffEntry = {
+        kind: 'update',
+        layer: 'Global',
+        oldPath: ['🌐 Global', '🌈 Color', 'Black'],
+        newPath: ['🌐 Global', '🌈 Color', 'Black'],
+        type: 'color',
+        value: { hex: '#111111' },
+        before: { hex: '#000000' },
+      }
+      const smuggled = { ...componentCreate, newPath: ['🧩 Component', 42, 'X'] } as unknown as TokenDiffEntry
+
+      const locked = await POST(makeRequest({ diff: [], description: '', brandDiffs: { Zurich: [globalOverride] } }))
+      expect(locked.status).toBe(403)
+      expect(await locked.json()).toEqual({ error: 'The layer "🌐 Global" is read-only in this Toky instance.' })
+
+      const malformed = await POST(makeRequest({ diff: [], description: '', brandDiffs: { Zurich: [smuggled] } }))
+      expect(malformed.status).toBe(400)
+      expect(await malformed.json()).toEqual({ error: 'Every token path must be an array of non-empty strings.' })
+
+      expect(resolveReadRef).not.toHaveBeenCalled()
+    })
+
+    it('rejects every edit when editableLayers is empty', async () => {
+      getTokyConfig.mockResolvedValue(resolveTokyConfig({ editableLayers: [] }))
+      const response = await POST(makeRequest({ diff: [componentCreate], description: '' }))
+      expect(response.status).toBe(403)
+    })
+
+    it('rejects brand changes for a source without brands', async () => {
+      const response = await POST(makeRequest({ diff: [], description: '', newBrands: ['Acme'] }))
+      expect(response.status).toBe(400)
+      expect(createBrandFile).not.toHaveBeenCalled()
+    })
+
+    it('accepts an edit in an editable layer and bumps the token package named in its package.json', async () => {
+      const response = await POST(makeRequest({ diff: [componentCreate], description: 'Add padding' }))
+      expect(response.status).toBe(200)
+      expect(updateFileOnBranch).toHaveBeenCalled()
+      const [, , changesetContent] = createFileOnBranch.mock.calls[0]
+      expect(changesetContent).toContain("'ds-ext-tokens': minor")
     })
   })
 })

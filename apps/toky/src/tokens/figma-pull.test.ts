@@ -19,7 +19,7 @@ function collection(brandNames: string[] = []): FigmaVariablesMeta['variableColl
   return {
     'VariableCollectionId:1': {
       id: 'VariableCollectionId:1',
-      name: 'Tokens',
+      name: 'Design Tokens',
       modes: [{ modeId: BASE_MODE, name: 'Base' }, ...brandNames.map((name, i) => ({ modeId: `1:${i + 1}`, name }))],
       defaultModeId: BASE_MODE,
     },
@@ -83,6 +83,71 @@ describe('findCollectionAndModes', () => {
 
   it('throws when a brand has no matching mode', () => {
     expect(() => findCollectionAndModes(meta([], []), ['Zurich'])).toThrow(/No Figma mode named "Zurich"/)
+  })
+
+  const withExtensionCollection: FigmaVariablesMeta = {
+    variables: {},
+    variableCollections: {
+      ...collection(['Zurich']),
+      'VariableCollectionId:2': {
+        id: 'VariableCollectionId:2',
+        name: 'Extension Tokens',
+        modes: [{ modeId: '2:0', name: 'Default' }],
+        defaultModeId: '2:0',
+      },
+      'VariableCollectionId:3': {
+        id: 'VariableCollectionId:3',
+        name: 'Design Responsive Tokens',
+        modes: [
+          { modeId: '3:0', name: 'Mobile' },
+          { modeId: '3:1', name: 'Tablet' },
+          { modeId: '3:2', name: 'Desktop' },
+        ],
+        defaultModeId: '3:0',
+      },
+    },
+  }
+
+  it('keeps finding the core collection by name when other local collections exist', () => {
+    const result = findCollectionAndModes(withExtensionCollection, ['Zurich'])
+    expect(result).toEqual({
+      collectionId: 'VariableCollectionId:1',
+      baseModeId: BASE_MODE,
+      modeIdByBrand: { Base: BASE_MODE, Zurich: ZURICH_MODE },
+    })
+  })
+
+  it('selects the configured collection and modes', () => {
+    const result = findCollectionAndModes(withExtensionCollection, [], {
+      collection: 'Extension Tokens',
+      modes: ['Default'],
+    })
+    expect(result).toEqual({
+      collectionId: 'VariableCollectionId:2',
+      baseModeId: '2:0',
+      modeIdByBrand: { Default: '2:0' },
+    })
+  })
+
+  it('ignores a remote collection with the configured name', () => {
+    const remote: FigmaVariablesMeta = {
+      variables: {},
+      variableCollections: {
+        ...collection(),
+        'VariableCollectionId:9': {
+          ...collection()['VariableCollectionId:1'],
+          id: 'VariableCollectionId:9',
+          remote: true,
+        },
+      },
+    }
+    expect(findCollectionAndModes(remote, []).collectionId).toBe('VariableCollectionId:1')
+  })
+
+  it('throws when the configured collection lacks a configured mode', () => {
+    expect(() =>
+      findCollectionAndModes(withExtensionCollection, [], { collection: 'Extension Tokens', modes: ['Base'] }),
+    ).toThrow(/No Figma mode named "Base" found in collection "Extension Tokens"/)
   })
 })
 
@@ -2355,5 +2420,56 @@ describe('allPullEntryKeys / filterPlanBySelection', () => {
     expect(filtered.updates[0].path).toEqual(kept.path)
     expect(filtered.conflicts).toEqual(plan.conflicts)
     expect(filtered.skipped).toEqual(plan.skipped)
+  })
+})
+
+describe('buildFigmaPullPlan for a source with reference tokens', () => {
+  const DEFAULT_MODE = '2:0'
+  const extensionMeta = (variables: FigmaVariable[]): FigmaVariablesMeta => ({
+    variables: Object.fromEntries(variables.map(v => [v.id, v])),
+    variableCollections: {
+      ...collection(),
+      'VariableCollectionId:2': {
+        id: 'VariableCollectionId:2',
+        name: 'Extension Tokens',
+        modes: [{ modeId: DEFAULT_MODE, name: 'Default' }],
+        defaultModeId: DEFAULT_MODE,
+      },
+    },
+  })
+  const source = { collection: 'Extension Tokens', modes: ['Default'] }
+
+  it('reads only the configured collection and resolves aliases into the reference tokens', () => {
+    const coreVariable = variable({
+      id: white.figmaId as string,
+      name: '🌐 Global/🌈 Color/White',
+      valuesByMode: { [BASE_MODE]: { r: 1, g: 1, b: 1, a: 1 } },
+    })
+    const extensionVariable = variable({
+      id: 'VariableID:ext:1',
+      variableCollectionId: 'VariableCollectionId:2',
+      name: '🧩 Component/PolicyCard/Background',
+      valuesByMode: { [DEFAULT_MODE]: { type: 'VARIABLE_ALIAS', id: white.figmaId } },
+    })
+
+    const result = buildFigmaPullPlan({
+      original: [],
+      working: [],
+      brandNames: [],
+      brandOriginal: {},
+      brandWorking: {},
+      figmaMeta: extensionMeta([coreVariable, extensionVariable]),
+      source,
+      referenceTokens: [white],
+    })
+
+    expect(result.base.creates).toHaveLength(1)
+    expect(result.base.creates[0]).toMatchObject({
+      kind: 'create',
+      path: ['🧩 Component', 'PolicyCard', 'Background'],
+      referenceTarget: '🌐 Global.🌈 Color.White',
+    })
+    expect(result.base.deletes).toHaveLength(0)
+    expect(result.base.updates).toHaveLength(0)
   })
 })

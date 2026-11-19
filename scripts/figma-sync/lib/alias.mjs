@@ -15,9 +15,15 @@ export function pathKey(path) {
  * override changes what a token's *literal* resolves to, never what a
  * reference *points at* — so alias resolution only ever needs Base's
  * flattened tokens, regardless of which brand's tree is being written.
+ *
+ * `referenceTokens` (another source's tokens, e.g. core's for an extension source) are a fallback:
+ * a path resolves in the own tree first. They are marked `isReference` so callers alias their
+ * committed variableId and never write them.
  */
-export function buildTokenIndex(baseTokens) {
-  return new Map(baseTokens.map(token => [pathKey(token.path), token]))
+export function buildTokenIndex(baseTokens, referenceTokens = []) {
+  const index = new Map(referenceTokens.map(token => [pathKey(token.path), { ...token, isReference: true }]))
+  for (const token of baseTokens) index.set(pathKey(token.path), token)
+  return index
 }
 
 /**

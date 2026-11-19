@@ -8,3 +8,18 @@ export function shouldRecheckTeamMembership(lastCheckedAt: number | undefined, n
   if (lastCheckedAt === undefined) return true
   return now - lastCheckedAt >= TEAM_MEMBERSHIP_RECHECK_INTERVAL_MS
 }
+
+/** The team a membership result belongs to, as stored in the JWT: `<org>/<team>`. */
+export function teamIdFor(config: { repo: { owner: string }; team: string }): string {
+  return `${config.repo.owner}/${config.team}`
+}
+
+// A cached result only counts for the team it was checked against — a token issued by another
+// instance, or before the config's team changed, is re-checked right away (docs/adr/0005).
+export function shouldRecheckTeamMembershipFor(
+  checked: { at: number | undefined; teamId: string | undefined },
+  currentTeamId: string,
+  now: number = Date.now(),
+): boolean {
+  return checked.teamId !== currentTeamId || shouldRecheckTeamMembership(checked.at, now)
+}

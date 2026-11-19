@@ -5,54 +5,83 @@
  * "Conflict" entry) — as opposed to a one-sided change, which is just what
  * Pull is about to resolve once this PR merges.
  *
- * Scoped to literal-valued tokens (color/number/string) and the Base mode
- * only. Reference-kind (alias) conflicts and brand-mode-aware conflicts
- * both need a variableId->path reverse lookup and a per-brand pass this
- * check doesn't build yet — a real, stated limitation, not a silent gap
- * (docs/plans/figma-sync-action-plan.md §8 territory, not attempted here).
+ * Compares literal values and alias targets. An alias is compared by the path of its target, so
+ * Figma's VARIABLE_ALIAS ids map back to token paths through the own tokens, the reference tokens
+ * (core's, for an extension source) and the baseline. Checks the first mode only; brand-mode-aware
+ * conflicts need a per-brand pass this check doesn't build yet.
  */
-import { figmaLiteralValueFor, isFigmaValueEqual } from './figma-value.mjs'
+import { pathKey } from './alias.mjs'
+import { figmaLiteralValueFor, flattenVariableId, isFigmaValueEqual } from './figma-value.mjs'
 
 export const COMMENT_MARKER = '<!-- figma-sync-conflict-check -->'
+
+function buildPathByVariableId(existingState, currentBaseTokens, referenceTokens) {
+  const pathById = new Map()
+  for (const [id, entry] of Object.entries(existingState.entries)) pathById.set(id, pathKey(entry.tokenPath))
+  for (const token of [...referenceTokens, ...currentBaseTokens]) {
+    for (const { id } of flattenVariableId(token.variableId)) pathById.set(id, pathKey(token.path))
+  }
+  return pathById
+}
+
+/** A token value in a shape both sides share: `{ alias }` holds a target path, `{ literal }` a Figma value. */
+function comparableTokenValue(token, value) {
+  if (value?.kind === 'reference') return { alias: pathKey(value.path) }
+  if (value?.kind === 'literal') return { literal: figmaLiteralValueFor(token, value.value) }
+  return null
+}
+
+function comparableFigmaValue(raw, pathById) {
+  if (raw?.type === 'VARIABLE_ALIAS') return { alias: pathById.get(raw.id) ?? raw.id }
+  return { literal: raw }
+}
+
+function isSameValue(dtcgType, a, b) {
+  if ('alias' in a || 'alias' in b) return a.alias === b.alias
+  return isFigmaValueEqual(dtcgType, a.literal, b.literal)
+}
+
+const displayValue = value => ('alias' in value ? `{${value.alias}}` : value.literal)
 
 /**
  * @param {object} params
  * @param {import('./baseline.mjs').SyncState | null} params.existingState
  * @param {import('./tokens.mjs').Token[]} params.currentBaseTokens the PR's proposed Base tree
  * @param {Record<string, { valuesByMode: Record<string, unknown> }>} params.figmaVariablesById
- * @param {string} params.modeId Figma's Base mode id
+ * @param {string} params.modeId Figma's id of the source's first mode
+ * @param {import('./tokens.mjs').Token[]} [params.referenceTokens] read-only tokens the source may alias
  */
-export function findConflicts({ existingState, currentBaseTokens, figmaVariablesById, modeId }) {
+export function findConflicts({ existingState, currentBaseTokens, figmaVariablesById, modeId, referenceTokens = [] }) {
   if (!existingState) return []
 
+  const pathById = buildPathByVariableId(existingState, currentBaseTokens, referenceTokens)
   const conflicts = []
 
   for (const token of currentBaseTokens) {
-    if (!token.variableId || token.value.kind !== 'literal') continue
+    if (typeof token.variableId !== 'string') continue
 
     const baseline = existingState.entries[token.variableId]
-    if (!baseline || baseline.resolvedValue?.kind !== 'literal') continue
+    const baselineValue = baseline && comparableTokenValue(token, baseline.resolvedValue)
+    const githubValue = comparableTokenValue(token, token.value)
+    if (!baselineValue || !githubValue) continue
 
-    const figmaVariable = figmaVariablesById[token.variableId]
-    const figmaLiveValue = figmaVariable?.valuesByMode?.[modeId]
+    const figmaLiveValue = figmaVariablesById[token.variableId]?.valuesByMode?.[modeId]
     if (figmaLiveValue === undefined) continue // never synced, or since deleted — not a conflict
+    const figmaValue = comparableFigmaValue(figmaLiveValue, pathById)
 
-    const baselineFigmaShape = figmaLiteralValueFor(token, baseline.resolvedValue.value)
-    const currentFigmaShape = figmaLiteralValueFor(token, token.value.value)
-
-    const githubChanged = !isFigmaValueEqual(token.type, currentFigmaShape, baselineFigmaShape)
-    const figmaChanged = !isFigmaValueEqual(token.type, figmaLiveValue, baselineFigmaShape)
+    const githubChanged = !isSameValue(token.type, githubValue, baselineValue)
+    const figmaChanged = !isSameValue(token.type, figmaValue, baselineValue)
     // Both sides moving to the *same* value isn't a conflict — nothing
     // would actually be overwritten by merging.
-    const disagree = !isFigmaValueEqual(token.type, currentFigmaShape, figmaLiveValue)
+    const disagree = !isSameValue(token.type, githubValue, figmaValue)
 
     if (githubChanged && figmaChanged && disagree) {
       conflicts.push({
         variableId: token.variableId,
         tokenPath: token.path,
-        baselineValue: baselineFigmaShape,
-        githubValue: currentFigmaShape,
-        figmaValue: figmaLiveValue,
+        baselineValue: displayValue(baselineValue),
+        githubValue: displayValue(githubValue),
+        figmaValue: displayValue(figmaValue),
       })
     }
   }

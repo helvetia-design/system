@@ -4,9 +4,11 @@ import { BRAND_NAME_ERROR_MESSAGE, validateBrandName } from '@/src/tokens/brand'
 import { buildChangesetContent } from '@/src/tokens/changeset'
 import { applyDiffToDocument } from '@/src/tokens/edit'
 import type { TokenDiffEntry } from '@/src/tokens/edit'
-import { flattenTokenDocument } from '@/src/tokens/flatten'
+import type { TokyConfig } from '@helvetia-design/tokens/toky-config'
+import { getTokyConfig } from '@/src/tokens/config'
+import { KEY_BY_LAYER, flattenTokenDocument } from '@/src/tokens/flatten'
 import { formatValue } from '@/src/tokens/format'
-import { brandFilePath, getGithubRef } from '@/src/tokens/github'
+import { brandFilePath, githubRefFor } from '@/src/tokens/github'
 import {
   isLocalTokensModeEnabled,
   listLocalTokenBrandFiles,
@@ -23,6 +25,7 @@ import {
   findOpenPullRequest,
   getBaseTokensFileMeta,
   getBrandTokensFileMeta,
+  getTokenPackageName,
   listTokenBrandFiles,
   openPullRequest,
   resolveReadRef,
@@ -62,9 +65,9 @@ function errorMessage(err: unknown): string {
 // confuse the GitHub API or shell tooling downstream, not a full spec parse.
 const VALID_BRANCH_NAME = /^[A-Za-z0-9][A-Za-z0-9._/-]*$/
 
-function resolveTargetBranch(targetBranch: string | undefined): string | null {
+function resolveTargetBranch(targetBranch: string | undefined, defaultRef: string): string | null {
   const trimmed = (targetBranch ?? '').trim()
-  if (!trimmed) return getGithubRef()
+  if (!trimmed) return defaultRef
   if (!VALID_BRANCH_NAME.test(trimmed) || trimmed.includes('..') || trimmed.includes('//') || trimmed.endsWith('/')) {
     return null
   }
@@ -101,6 +104,46 @@ function parseBrandDiffs(input: unknown): Record<string, TokenDiffEntry[]> {
     if (entries.length > 0) pairs.push([trimmed, entries])
   }
   return Object.fromEntries(pairs)
+}
+
+const LAYER_KEY_SET = new Set<string>(Object.values(KEY_BY_LAYER))
+
+function isTokenPath(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) && value.length > 1 && value.every(segment => typeof segment === 'string' && segment !== '')
+  )
+}
+
+// applyDiffToDocument coerces any path segment to a string key, so a non-string segment could
+// smuggle a write past the layer check below — paths are checked strictly before anything else.
+// An update may move a token between layers: its new path must match `layer`, its old path only
+// has to name a known layer (findLockedLayer checks both).
+function invalidEntryReason(entry: TokenDiffEntry): string | null {
+  const layerKey = Object.hasOwn(KEY_BY_LAYER, entry.layer) ? KEY_BY_LAYER[entry.layer] : undefined
+  if (!layerKey) return `Unknown layer "${String(entry.layer)}".`
+  for (const path of [entry.oldPath, entry.newPath]) {
+    if (path !== null && path !== undefined && !isTokenPath(path)) {
+      return 'Every token path must be an array of non-empty strings.'
+    }
+  }
+  const ownPath = entry.newPath ?? entry.oldPath
+  if (!ownPath) return 'A change needs an old or a new token path.'
+  if (ownPath[0] !== layerKey) return `The path "${ownPath.join('.')}" is not in the ${entry.layer} layer.`
+  if (entry.oldPath && !LAYER_KEY_SET.has(entry.oldPath[0])) {
+    return `The path "${entry.oldPath.join('.')}" is not in a known layer.`
+  }
+  return null
+}
+
+// Server-side twin of the editor's read-only layers. Runs after invalidEntryReason, so every
+// path is well-formed and the new path's layer equals `layer`.
+function findLockedLayer(entries: TokenDiffEntry[], config: TokyConfig): string | null {
+  const editable = new Set<string>(config.editableLayers)
+  for (const entry of entries) {
+    const locked = [KEY_BY_LAYER[entry.layer], entry.oldPath?.[0]].find(key => key && !editable.has(key))
+    if (locked) return locked
+  }
+  return null
 }
 
 // Format/reserved-word/in-request-duplicate checks only — collision against
@@ -252,6 +295,7 @@ function appendPrBodyUpdate(
 // edited the file since this diff was staged) is still reported as a 409
 // rather than silently overwritten.
 async function handleLocalSubmit(
+  config: TokyConfig,
   diff: TokenDiffEntry[],
   brandDiffs: Record<string, TokenDiffEntry[]>,
 ): Promise<Response> {
@@ -260,7 +304,10 @@ async function handleLocalSubmit(
   let currentDoc: Record<string, unknown>
   let existingBrands: string[]
   try {
-    ;[currentDoc, existingBrands] = await Promise.all([readLocalBaseTokensDocument(), listLocalTokenBrandFiles()])
+    ;[currentDoc, existingBrands] = await Promise.all([
+      readLocalBaseTokensDocument(config),
+      listLocalTokenBrandFiles(config),
+    ])
   } catch (err) {
     return NextResponse.json({ error: errorMessage(err) }, { status: 500 })
   }
@@ -276,7 +323,7 @@ async function handleLocalSubmit(
 
   let brandDocs: Map<string, Record<string, unknown>>
   try {
-    const fetched = await Promise.all(brandDiffNames.map(name => readLocalBrandTokensDocument(name)))
+    const fetched = await Promise.all(brandDiffNames.map(name => readLocalBrandTokensDocument(config, name)))
     brandDocs = new Map(brandDiffNames.map((name, i) => [name, fetched[i]]))
   } catch (err) {
     return NextResponse.json({ error: errorMessage(err) }, { status: 500 })
@@ -319,10 +366,10 @@ async function handleLocalSubmit(
 
   try {
     if (diff.length > 0) {
-      await writeLocalBaseTokensDocument(applyDiffToDocument(currentDoc, diff))
+      await writeLocalBaseTokensDocument(config, applyDiffToDocument(currentDoc, diff))
     }
     for (const name of brandDiffNames) {
-      await writeLocalBrandTokensDocument(name, applyDiffToDocument(brandDocs.get(name)!, brandDiffs[name]))
+      await writeLocalBrandTokensDocument(config, name, applyDiffToDocument(brandDocs.get(name)!, brandDiffs[name]))
     }
   } catch (err) {
     return NextResponse.json({ error: errorMessage(err) }, { status: 500 })
@@ -361,6 +408,34 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ error: 'No changes to submit.' }, { status: 400 })
   }
 
+  let config: TokyConfig
+  try {
+    config = await getTokyConfig()
+  } catch (err) {
+    return NextResponse.json({ error: errorMessage(err) }, { status: 500 })
+  }
+
+  const allEntries = [...diff, ...Object.values(brandDiffs).flat()]
+  if (!diff.every(isDiffEntry)) {
+    return NextResponse.json({ error: 'Every change must be an object with a kind and a layer.' }, { status: 400 })
+  }
+  const invalidReason = allEntries.map(invalidEntryReason).find(reason => reason !== null)
+  if (invalidReason) {
+    return NextResponse.json({ error: invalidReason }, { status: 400 })
+  }
+
+  const lockedLayer = findLockedLayer(allEntries, config)
+  if (lockedLayer) {
+    return NextResponse.json(
+      { error: `The layer "${lockedLayer}" is read-only in this Toky instance.` },
+      { status: 403 },
+    )
+  }
+
+  if (config.brandsIndexPath === null && (newBrands.length > 0 || brandDiffNames.length > 0)) {
+    return NextResponse.json({ error: 'This token source has no brands.' }, { status: 400 })
+  }
+
   // Local-dev escape hatch (see src/tokens/local.ts): writes the base diff
   // (and any existing brand's sparse override file) straight to disk instead
   // of opening/updating a GitHub PR — no branch, no changeset, no network
@@ -378,7 +453,7 @@ export async function POST(request: Request): Promise<Response> {
         { status: 400 },
       )
     }
-    return handleLocalSubmit(diff, brandDiffs)
+    return handleLocalSubmit(config, diff, brandDiffs)
   }
 
   const brandFormatError = validateNewBrandNamesFormat(newBrands)
@@ -386,7 +461,7 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ error: brandFormatError }, { status: 400 })
   }
 
-  const base = resolveTargetBranch(targetBranch)
+  const base = resolveTargetBranch(targetBranch, githubRefFor(config))
   if (!base) {
     return NextResponse.json({ error: 'Invalid target branch name.' }, { status: 400 })
   }
@@ -401,9 +476,14 @@ export async function POST(request: Request): Promise<Response> {
   let readRef
   let meta
   let existingBrands: string[]
+  let packageName: string
   try {
     readRef = await resolveReadRef(base)
-    ;[meta, existingBrands] = await Promise.all([getBaseTokensFileMeta(readRef.ref), listTokenBrandFiles(readRef.ref)])
+    ;[meta, existingBrands, packageName] = await Promise.all([
+      getBaseTokensFileMeta(readRef.ref),
+      listTokenBrandFiles(readRef.ref),
+      getTokenPackageName(readRef.ref),
+    ])
   } catch (err) {
     return NextResponse.json({ error: errorMessage(err) }, { status: 500 })
   }
@@ -500,7 +580,7 @@ export async function POST(request: Request): Promise<Response> {
       if (initialContent) {
         await createFileOnBranch(
           branch,
-          brandFilePath(name),
+          brandFilePath(config, name),
           `${JSON.stringify(initialContent, null, 2)}\n`,
           `chore(tokens): add ${name} brand`,
         )
@@ -519,7 +599,7 @@ export async function POST(request: Request): Promise<Response> {
       const nextBrandDoc = applyDiffToDocument(brandMeta.content, brandDiffs[name])
       await updateFileAtPath(
         branch,
-        brandFilePath(name),
+        brandFilePath(config, name),
         `${JSON.stringify(nextBrandDoc, null, 2)}\n`,
         brandMeta.sha,
         `chore(tokens): update ${name} brand via Toky`,
@@ -534,7 +614,7 @@ export async function POST(request: Request): Promise<Response> {
     await createFileOnBranch(
       branch,
       changesetPath,
-      buildChangesetContent(diff, description, newBrands, brandDiffs),
+      buildChangesetContent(diff, description, newBrands, brandDiffs, packageName),
       'chore: add changeset for token update',
     )
 
