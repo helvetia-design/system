@@ -36,6 +36,9 @@
     "build:clean": "rimraf dist",
     "lint": "eslint ."
   },
+  "dependencies": {
+    "change-case": "5.4.4"
+  },
   "devDependencies": {
     "eslint": "catalog:",
     "typescript": "catalog:"

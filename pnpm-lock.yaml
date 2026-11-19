@@ -856,6 +856,9 @@ importers:
 
   packages/tokens:
     dependencies:
+      change-case:
+        specifier: 5.4.4
+        version: 5.4.4
       style-dictionary:
         specifier: ^5.8.0
         version: 5.8.0
