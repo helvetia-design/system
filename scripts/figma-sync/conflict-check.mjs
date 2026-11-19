@@ -16,7 +16,8 @@
  * packages/tokens/tokens.
  *
  * TOKY_CONFIG_PATH/TOKENS_ROOT (optional, shared with pull.mjs): token file, sync state,
- * collection, and mode come from the source's Toky config (lib/config.mjs).
+ * collection, mode, and reference tokens come from the source's Toky config (lib/config.mjs).
+ * REFERENCE_TOKENS_FILE overrides the config's referenceTokens file.
  *
  * PR_NUMBER/GITHUB_TOKEN (optional together): if either is unset, skips
  * GitHub entirely and prints the comment body to stdout instead of
@@ -24,7 +25,7 @@
  * formatting with only Figma credentials, no PR or GitHub token needed.
  */
 import { loadSyncStateFile } from './lib/baseline.mjs'
-import { resolveSyncInputs } from './lib/config.mjs'
+import { resolveReferenceTokensFile, resolveSyncInputs } from './lib/config.mjs'
 import { buildCommentBody, COMMENT_MARKER, findConflicts } from './lib/conflict.mjs'
 import { findCollectionAndModes, getLocalVariables } from './lib/figma.mjs'
 import { createIssueComment, findMarkedComment, updateIssueComment } from './lib/github.mjs'
@@ -36,12 +37,18 @@ function requireEnv(name) {
   return value
 }
 
+function loadReferenceTokens(inputs) {
+  const referenceTokensFile = resolveReferenceTokensFile(inputs)
+  return referenceTokensFile ? flattenTokens(loadTokenFile(referenceTokensFile)) : []
+}
+
 async function main() {
   const figmaToken = requireEnv('FIGMA_API_TOKEN')
   const figmaFileKey = requireEnv('FIGMA_FILE_KEY')
   const prNumber = process.env.PR_NUMBER
   const githubToken = process.env.GITHUB_TOKEN
-  const { tokenFilePath, syncStateFile, collectionName, modeNames } = resolveSyncInputs()
+  const inputs = resolveSyncInputs()
+  const { tokenFilePath, syncStateFile, collectionName, modeNames } = inputs
 
   const base = loadTokenFile(tokenFilePath)
   const currentBaseTokens = flattenTokens(base)
@@ -57,6 +64,7 @@ async function main() {
         currentBaseTokens,
         figmaVariablesById: localVariables.variables,
         modeId: modeIdByBrand[modeNames[0]],
+        referenceTokens: loadReferenceTokens(inputs),
       })
     } else {
       console.log(`No Figma collection "${collectionName}" yet (source never synced) — nothing can conflict.`)
