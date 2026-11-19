@@ -24,6 +24,11 @@ phase or section. See `../CONVENTIONS.md` for the index.
   `drawn-spec` › `stage`) removes it — `getNodeByIdAsync` returns `null` and it's gone from the
   parent. Never keep a hidden prototype inside slot content; keep it visible and delete it when
   unused (the Measurements `caption` prototype works this way).
+- **Inserting into slot content invalidates node handles you already hold** (19.11.2026,
+  migrating the Anatomy markers): after `insertChild` into a slot's content, earlier handles to
+  its siblings' descendants throw "node does not exist". Read everything first, then mutate, and
+  re-fetch the parent by id (`getNodeByIdAsync`) after each insert. Find a child's index by `id`
+  (`children.findIndex(c => c.id === n.id)`) — `indexOf` returns `-1` there.
 - **Transparency goes on the layer, never on a variable-bound paint** (18.11.2026): an instance
   resets a bound paint's opacity to 100%, so a master with a 12% bound fill shows solid in every
   copy. Put the color at 100% on a child layer and set that layer's `opacity` instead — the
@@ -177,7 +182,9 @@ proven on a real run: confirm each point on the first build and update this sect
   variables. Per focus variant: append an instance named `focus-ring` as the **last** child,
   `layoutPositioning = 'ABSOLUTE'`, `x = y = 0`, resized to the variant, constraints `STRETCH`;
   keep `clipsContent = false` on the variant, or the outer rings are cut off. Set the ring frames'
-  corner radii to the host radius + offset (outer +5, inner +2; inset = host radius) when the host
-  radius isn't 4. Why: a Figma drop shadow is drawn from the layer's own fill, so on a transparent
+  corner radii to the host radius + offset (outer +5, inner +2; inset = host radius; round hosts:
+  full) on **every** instance — the master is neutral (48 × 48, host radius 0, since 19.11.2026),
+  and a radius equal to the master's value is inherited, not kept as an override, so a later
+  master change would move it. Why: a Figma drop shadow is drawn from the layer's own fill, so on a transparent
   background (`secondary`, `ghost`, `link`) a shadow ring renders as nothing, and its spread only
   renders with clipping on (seen on `ds-button`, 19.11.2026).
