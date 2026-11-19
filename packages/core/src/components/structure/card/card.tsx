@@ -124,25 +124,7 @@ export class Card implements DsComponentInterface {
   readonly color?: CardColor
 
   private get colorTypeClass(): string {
-    const color = !hasValue(this.color) ? '' : `${this.inverted ? 'primary' : this.color}`
-
-    const colorMap: Record<string, string> = {
-      'blue': 'primary',
-      'purple-1': 'purple-lighter',
-      'purple-2': 'purple-light',
-      'purple-3': 'purple',
-      'red-1': 'red-lighter',
-      'red-2': 'red-light',
-      'red-3': 'red',
-      'green-1': 'green-lighter',
-      'green-2': 'green-light',
-      'green-3': 'green',
-      'yellow-1': 'yellow-lighter',
-      'yellow-2': 'yellow-light',
-      'yellow-3': 'yellow',
-    }
-
-    return colorMap[color] || color
+    return !hasValue(this.color) ? '' : `${this.inverted ? 'primary' : this.color}`
   }
 
   /**
@@ -159,7 +141,7 @@ export class Card implements DsComponentInterface {
           [`is-image-teaser`]: isImageTeaser,
           [`is-image-teaser-${this.imageTeaser}`]: isImageTeaser,
           [`is-dense`]: this.dense,
-          [`is-${this.colorTypeClass}`]: hasValue(this.color) && this.colorTypeClass !== 'white',
+          [`is-${this.colorTypeClass}`]: hasValue(this.color),
           [`has-space-${this.space}`]: hasValue(this.space),
           [`is-fullheight`]: this.fullheight,
           [`is-flat`]: !!this.flat,
