@@ -120,7 +120,9 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
    stage's height to fit everything (only the height — its width stays `FILL`), so nothing is
    clipped.
 5. Number every shown row in `measurements.rows` order (`size → spacing → shape → type`): the Sizes table
-   reads 1, 2, 3, … top to bottom, and every number appears exactly once on the drawing.
+   reads 1, 2, 3, … top to bottom, and every number appears on the drawing. A part the instance
+   repeats (left and right padding, every gap, an icon on each side) gets the same marker and
+   number on every occurrence, so no copy looks unmeasured.
 6. Place each row's marker on its `instance`, per `conventions/measurements.md` → "Kinds and visual
    vocabulary": an instance of the `Spec/*` main component from step 0 (`createInstance()`, then
    the variant via `setProperties`) — never a drawn shape, never a detached instance. Every marker
@@ -242,7 +244,7 @@ into `<name>.figma.md`'s `measurements:` (`show`, `reason`), so a re-run produce
 ## Completion Criteria
 
 - Every `rows` entry with `show: drawn` has its number on exactly one instance of the drawn card
-  (a symmetric padding or a repeated gap may repeat the same number) and one numbered table row;
+  (a repeated part — padding on both sides, every gap, an icon on each side — repeats the same number) and one numbered table row;
   nothing with `show: skip` appears.
 - Every marker label is number bubble + value; every leader points away from the component center.
 - Marker colors and line styles follow `conventions/measurements.md`; no marker overlaps another or the

@@ -275,42 +275,6 @@ export class Tooltip implements DsComponentInterface {
   }
 
   /**
-   * PRIVATE METHODS
-   * ─────────────────────────────────────────────────────
-   */
-
-  /**
-   * Resolves the trigger-to-tooltip distance in pixels.
-   *
-   * The `offset` prop wins when set, otherwise the value comes from the
-   * `--_tooltip-offset` variable (fed by the `--ds-tooltip-offset` token).
-   * floating-ui needs a number, so the computed value has to be read and
-   * converted here instead of being used as a `var()` in the stylesheet.
-   */
-  private resolveOffset(): number {
-    if (this.offset !== undefined) {
-      return this.offset
-    }
-
-    try {
-      const value = getComputedStyle(this.el).getPropertyValue('--_tooltip-offset').trim()
-      const amount = Number.parseFloat(value)
-
-      if (!Number.isNaN(amount)) {
-        if (value.endsWith('rem')) {
-          const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
-          return Number.isNaN(rootFontSize) ? DEFAULT_OFFSET : amount * rootFontSize
-        }
-        return amount
-      }
-    } catch {
-      // Ignore errors, e.g. if getComputedStyle is not available
-    }
-
-    return DEFAULT_OFFSET
-  }
-
-  /**
    * RENDER
    * ─────────────────────────────────────────────────────
    */

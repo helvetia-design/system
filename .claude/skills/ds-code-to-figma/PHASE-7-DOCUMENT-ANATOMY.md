@@ -49,8 +49,12 @@ the `Anatomy/Legend item` component is missing.
    side with 48px between them, together centred horizontally in `diagram-area`, all on the
    cloned `y`. Name each instance after what it shows (`Button`, `Button (loading)`) and say which
    instance carries which markers when you ask for confirmation.
-2. **Markers — one per `anatomy:` entry.** Clone `marker-A` for each part, delete the unused ones,
-   rename each to `marker-<letter>` and keep the groups in letter order. Set each `letter` text.
+2. **Markers — one per `anatomy:` entry.** Clone `marker-A` for each part and delete the unused
+   ones. **Letters follow the drawing, not the code** (user decision 19.11.2026): once every dot
+   is placed, letter the markers A, B, C, … from left to right by dot position, so the diagram
+   reads in alphabetical order. Rename each group `marker-<letter>`, keep the groups in letter
+   order, set each `letter` text, and write the final letters back to `<name>.figma.md`'s
+   `anatomy:` (in letter order). A sub-letter (`B1`) keeps its parent's letter.
    - Dots at `y = 16`; the component keeps its cloned `y`.
    - Each dot is centred horizontally on the part it labels; move the whole `marker-<letter>` group,
      never its children one by one. A part that encloses others (e.g. the container) gets its
@@ -86,6 +90,8 @@ Phase 3 deleted it) and Measurements in the cloned frame, so nothing is appended
 
 - `diagram-area` holds the fewest instances of the real component that show every part, and exactly one `marker-<letter>` per
   `anatomy:` entry, in letter order, positioned per the rules above.
+- Letters run A, B, C, … from left to right by dot position, and `anatomy:` in `<name>.figma.md`
+  uses the same letters.
 - `legend` holds exactly one `Anatomy/Legend item` instance per part, in letter order, with only
   its text properties set.
 - The section has been iterated on and confirmed with the user in Figma (unless the placeholder was deleted).

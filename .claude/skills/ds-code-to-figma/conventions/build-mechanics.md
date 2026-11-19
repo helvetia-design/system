@@ -169,8 +169,15 @@ proven on a real run: confirm each point on the first build and update this sect
 
 ## Focus states
 
-- **Every focus state is built as absolutely positioned ring frames with outside strokes — never
-  as `DROP_SHADOW` effects.** Use one ring frame per CSS `box-shadow` spread, stacked in the same
-  order, with stroke weights/colors bound to the focus tokens. A Figma drop shadow is derived from
-  the layer's own alpha, so on a component with a fully transparent background a drop-shadow ring
-  renders as nothing.
+- **Every focus state uses the shared `Focus ring` component — never `DROP_SHADOW` effects.**
+  The set lives on the `Core / Utilities` page (`6284:21`, key
+  `2454d0fabf5c8fcb51b8b44de7a4fec90e9120c8`): `inverted` (`Focus/Color/Base` or `Inverted`) ×
+  `inset` (`focus-shadow` → outer 5 + white 2 outside the host; `focus-inset-shadow` → start 5 +
+  end 3 inside it), every stroke weight and color bound to the `🔗 Alias/✨ Interaction/Focus/*`
+  variables. Per focus variant: append an instance named `focus-ring` as the **last** child,
+  `layoutPositioning = 'ABSOLUTE'`, `x = y = 0`, resized to the variant, constraints `STRETCH`;
+  keep `clipsContent = false` on the variant, or the outer rings are cut off. Set the ring frames'
+  corner radii to the host radius + offset (outer +5, inner +2; inset = host radius) when the host
+  radius isn't 4. Why: a Figma drop shadow is drawn from the layer's own fill, so on a transparent
+  background (`secondary`, `ghost`, `link`) a shadow ring renders as nothing, and its spread only
+  renders with clipping on (seen on `ds-button`, 19.11.2026).

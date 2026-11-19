@@ -61,9 +61,10 @@ the measurements triage (6) are presented **once for the whole family** (`conven
    `@part icon-right`). Cross-check every `@part` tag against a real `part="..."` attribute in
    `render()`: a tag with no matching attribute, or an attribute with no matching tag, is a **hard
    stop** — same treatment as a missing token (see step 5 below) — report it and ask the user to
-   fix the component's code/JSDoc, or explicitly accept the mismatch, before continuing. Assign
-   each part a sequential letter (A, B, C, …) in the order its `part="..."` attribute appears in
-   `render()`'s JSX (DOM order, not JSDoc comment order). **Print the extracted list in the
+   fix the component's code/JSDoc, or explicitly accept the mismatch, before continuing. List the
+   parts in the order their `part="..."` attribute appears in `render()`'s JSX (DOM order, not
+   JSDoc comment order) with provisional letters; the final letters follow the Anatomy drawing,
+   left to right (Phase 7, user decision 19.11.2026). **Print the extracted list in the
    conversation for the user to review before writing anything** — letter, part name, and its
    one-line description taken verbatim from the `@part` JSDoc line. If the component has no
    `@part` tags at all, skip the anatomy section entirely (note why in the draft; this is not a
