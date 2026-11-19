@@ -1,0 +1,239 @@
+# close → Figma mapping
+
+> **Status: done (19.11.2026)** — Phases 1–8 built and confirmed by the user — rebuild of the Close component in the DS Core Components
+> file, tokens from the DS Foundation library. Decisions from earlier runs:
+> `.claude/skills/ds-code-to-figma/rebuild-decisions.md` → "Close". Only the native `<button>` path
+> is modeled; the tooltip is left out (hover overlay).
+
+```yaml
+sets: # default set first
+  - name: Close
+    figmaComponentKey: 3a6f692ed8c74f3916fda1b6fa72d2c357b274db
+    figmaMasterNodeId: '6387:1415'
+  - name: CloseInverted
+    figmaComponentKey: 19a7c416a58c91aa890a49d1727a57f655e42b58
+    figmaMasterNodeId: '6387:1478'
+figmaPage: Core / Actions
+figmaDocFrameNodeId: '6385:986'
+
+anatomy: # the only @part; matches part="button" in both render() branches (close.tsx:116, :138)
+  - letter: A
+    part: button
+    description: 'The close button element.'
+# The X is a CSS mask on `::after` (close.mixin.scss:65), not a part.
+
+props:
+  - name: size
+    type: enum
+    options: [md]
+    default: '(unset → Close/Size/Base)'
+    figmaProperty: size
+    figmaPropertyType: variant
+    figmaOptions: [base, md]
+  - name: inverted
+    type: boolean
+    default: false
+    figmaPropertyType: top-level-split (rule 2) # → CloseInverted
+  - name: disabled
+    figmaPropertyType: component state (blocked)
+  - name: '[excluded]'
+    figmaPropertyType: excluded
+    note: 'button, buttonColor, buttonSize — only the native <button> path is modeled (rebuild-decisions.md); ds-tooltip — hover overlay.'
+  # Generated: the i18n label ("Close") is only aria-label + tooltip text — no property.
+
+states:
+  figmaProperty: state
+  options: [default, hover, focus, active]
+  sources:
+    hover: ':hover (close.mixin.scss:89)'
+    focus: ':focus-visible / .is-focused → focus-shadow (close.mixin.scss:98)'
+    active: ':active (close.mixin.scss:93)'
+componentStates:
+  disabled:
+    {
+      figmaProperty: disabled,
+      options: [false, true],
+      interactive: false,
+      source: 'every pseudo state is inside &:not(:disabled) (close.mixin.scss:85)',
+    }
+
+nested:
+  - childTag: '(focus ring)'
+    figmaComponentKey: 2454d0fabf5c8fcb51b8b44de7a4fec90e9120c8 # Focus ring set, Core / Utilities
+    note: 'focus-shadow mixin → focus-ring instance on every state=focus variant (inverted=true in CloseInverted); round host → ring radii full'
+  # ds-button (button path) and ds-tooltip excluded — see props.
+
+variations: [] # no show booleans — Variations placeholder deleted
+
+tokens: # all checked in the Foundation file (19.11.2026)
+  - { cssVar: --ds-close-size-base, figmaVariable: 🧩 Component/Close/Size/Base, resolved: true } # 24
+  - { cssVar: --ds-close-size-md, figmaVariable: 🧩 Component/Close/Size/MD, resolved: true } # 32
+  - { cssVar: --ds-close-padding-base, figmaVariable: 🧩 Component/Close/Padding/Base, resolved: true, bind: false } # 10 — X = size − padding (14), not bindable
+  - { cssVar: --ds-close-padding-md, figmaVariable: 🧩 Component/Close/Padding/MD, resolved: true, bind: false } # 14 — X = 18
+  - { cssVar: --ds-close-radius, figmaVariable: 🧩 Component/Close/Radius, resolved: true } # 9999
+  - {
+      cssVar: --ds-close-primary-color-background-base,
+      figmaVariable: 🧩 Component/Close/Primary/Color/Background/Base,
+      resolved: true,
+    } # transparent (also the inverted default)
+  - {
+      cssVar: --ds-close-primary-color-background-hover,
+      figmaVariable: 🧩 Component/Close/Primary/Color/Background/Hover,
+      resolved: true,
+    } # navy 10%
+  - {
+      cssVar: --ds-close-primary-color-background-active,
+      figmaVariable: 🧩 Component/Close/Primary/Color/Background/Active,
+      resolved: true,
+    } # navy 20%
+  - {
+      cssVar: --ds-close-primary-color-background-disabled,
+      figmaVariable: 🧩 Component/Close/Primary/Color/Background/Disabled,
+      resolved: true,
+    } # grey
+  - {
+      cssVar: --ds-close-primary-color-icon-base,
+      figmaVariable: 🧩 Component/Close/Primary/Color/Icon/Base,
+      resolved: true,
+    } # navy
+  - {
+      cssVar: --ds-close-primary-color-icon-disabled,
+      figmaVariable: 🧩 Component/Close/Primary/Color/Icon/Disabled,
+      resolved: true,
+    }
+  - {
+      cssVar: --ds-close-inverted-color-background-hover,
+      figmaVariable: 🧩 Component/Close/Inverted/Color/Background/Hover,
+      resolved: true,
+    } # white 30%
+  - {
+      cssVar: --ds-close-inverted-color-background-active,
+      figmaVariable: 🧩 Component/Close/Inverted/Color/Background/Active,
+      resolved: true,
+    } # white 50%
+  - {
+      cssVar: --ds-close-inverted-color-background-disabled,
+      figmaVariable: 🧩 Component/Close/Inverted/Color/Background/Disabled,
+      resolved: true,
+    }
+  - {
+      cssVar: --ds-close-inverted-color-icon-base,
+      figmaVariable: 🧩 Component/Close/Inverted/Color/Icon/Base,
+      resolved: true,
+    } # white
+  - {
+      cssVar: --ds-close-inverted-color-icon-disabled,
+      figmaVariable: 🧩 Component/Close/Inverted/Color/Icon/Disabled,
+      resolved: true,
+    }
+  - {
+      cssVar: --ds-alias-interaction-focus-color-base,
+      figmaVariable: 🔗 Alias/✨ Interaction/Focus/Color/Base,
+      resolved: true,
+    } # via Focus ring
+  - {
+      cssVar: --ds-alias-interaction-focus-color-inverted,
+      figmaVariable: 🔗 Alias/✨ Interaction/Focus/Color/Inverted,
+      resolved: true,
+    } # via Focus ring
+# No breakpoint mixins → no device: section.
+
+completeness:
+  - node: button (component root)
+    width / height: Close/Size/Base | MD
+    radius: Close/Radius
+    fill: Close/<Primary|Inverted>/Color/Background/<Base|Hover|Active|Disabled> (inverted default = Primary/Background/Base)
+  - node: x (vector, centered)
+    width / height: literal 14 | 18 (= size − Close/Padding/*; user decision 19.11.2026)
+    fill: Close/<Primary|Inverted>/Color/Icon/<Base|Disabled>
+  - node: focus-ring (state=focus)
+    instance: Focus ring, inverted per set
+# No other gaps.
+
+measurements: # confirmed by the user 19.11.2026, measured on the dev server
+  drawnOption: base
+  drawnState: hover # default background is transparent (rebuild-decisions.md)
+  options: [base, md]
+  # behavior: none (fixed size, no content)
+  rows:
+    - {
+        property: Size,
+        kind: size,
+        group: fixed,
+        show: drawn,
+        instance: main,
+        source: close.mixin.scss:49,
+        values:
+          { base: { px: 24, token: 🧩 Component/Close/Size/Base }, md: { px: 32, token: 🧩 Component/Close/Size/MD } },
+      }
+    - {
+        property: X size,
+        kind: size,
+        group: fixed,
+        show: drawn,
+        instance: main,
+        source: close.mixin.scss:68,
+        values:
+          {
+            base: { px: 14, token: 'no token (Size/Base − Padding/Base)' },
+            md: { px: 18, token: 'no token (Size/MD − Padding/MD)' },
+          },
+      }
+    - {
+        property: Radius,
+        kind: shape,
+        group: fixed,
+        show: drawn,
+        instance: main,
+        source: close.mixin.scss:47,
+        values: { base: { px: full, token: 🧩 Component/Close/Radius } },
+      }
+    - {
+        property: Focus ring,
+        kind: shape,
+        group: fixed,
+        show: drawn,
+        instance: focus,
+        source: general.mixin.scss:37,
+        values: { base: { px: '2 + 5', token: 🔗 Alias/✨ Interaction/Focus/Size/Inner + Outer } },
+      }
+    - {
+        property: Browser padding,
+        kind: spacing,
+        group: derived,
+        show: skip,
+        reason: 'user-agent button padding (1 / 6) — no effect, the box size is fixed',
+        values: { base: { px: '1 / 6' } },
+      }
+```
+
+## Notes
+
+- **X size (user decision 19.11.2026):** code draws the X at `size − padding` (14 / 18). Figma
+  can't calculate that, and the per-side padding (5 / 7) isn't a token either, so the X frame is a
+  literal 14 / 18. Code follow-up: a `Close/Icon/Size` token.
+- **Button dependency:** none — the `button` path (a `ds-button`) is excluded, so `TODO.md`'s
+  "Close → Button" dependency doesn't apply to this build.
+
+## Proposed grouping (Phase 2)
+
+| Code                                    | Figma                                                  | Type                      |
+| --------------------------------------- | ------------------------------------------------------ | ------------------------- |
+| `size`                                  | `size` · `base · md`                                   | variant (rows)            |
+| `:hover` / `:focus-visible` / `:active` | `state` · `default · hover · focus · active`           | variant (columns)         |
+| `disabled`                              | `disabled` · `false · true`, only with `state=default` | component state (blocked) |
+| `inverted`                              | `CloseInverted`                                        | top-level split (rule 2)  |
+
+Case: **top-level split**, a 2-axis grid per set. No text properties (the i18n "Close" is
+generated, `aria-label` + tooltip only). No variations (no `show` booleans).
+
+```
+Close                                          state                   disabled
+                default   hover    focus    active    true
+size   base     [cell]    [cell]   [cell]   [cell]    [cell]
+       md       [cell]    [cell]   [cell]   [cell]    [cell]
+
+CloseInverted   (same grid)
+```
+
+Count: (4 states + 1 disabled) × 2 sizes = 10 per set, **20** in total (≤ 500).
