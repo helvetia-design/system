@@ -6204,7 +6204,7 @@
           "mutable": false,
           "attr": "pulse",
           "reflectToAttr": true,
-          "docs": "If `true` the badge is added to the top right corner of the card.",
+          "docs": "If `true` the badge animates with a pulsing effect to draw attention to it.",
           "docsTags": [
             {
               "name": "default",
@@ -8472,13 +8472,15 @@
       "dependencies": [
         "ds-spinner",
         "ds-brand-icon",
-        "ds-icon"
+        "ds-icon",
+        "ds-tooltip"
       ],
       "dependencyGraph": {
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ],
         "ds-close": [
           "ds-button"
@@ -9364,6 +9366,55 @@
             "_self",
             "_top"
           ]
+        },
+        {
+          "name": "tooltipPlacement",
+          "type": "\"bottom\" | \"left\" | \"right\" | \"top\"",
+          "complexType": {
+            "original": "TooltipPlacement",
+            "resolved": "\"bottom\" | \"left\" | \"right\" | \"top\"",
+            "references": {
+              "TooltipPlacement": {
+                "location": "import",
+                "path": "../../overlays/tooltip/tooltip.interfaces",
+                "id": "src/components/overlays/tooltip/tooltip.interfaces.ts::TooltipPlacement",
+                "referenceLocation": "TooltipPlacement"
+              }
+            }
+          },
+          "mutable": false,
+          "attr": "tooltip-placement",
+          "reflectToAttr": false,
+          "docs": "Placement of the tooltip that shows the `a11yTitle` on hover and focus.",
+          "docsTags": [
+            {
+              "name": "default",
+              "text": "'bottom'"
+            }
+          ],
+          "default": "'bottom'",
+          "values": [
+            {
+              "value": "bottom",
+              "type": "string"
+            },
+            {
+              "value": "left",
+              "type": "string"
+            },
+            {
+              "value": "right",
+              "type": "string"
+            },
+            {
+              "value": "top",
+              "type": "string"
+            }
+          ],
+          "optional": false,
+          "required": false,
+          "getter": false,
+          "setter": false
         },
         {
           "name": "value",
@@ -22602,16 +22653,19 @@
         "ds-toast"
       ],
       "dependencies": [
-        "ds-button"
+        "ds-button",
+        "ds-tooltip"
       ],
       "dependencyGraph": {
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ],
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ],
         "ds-drawer": [
           "ds-close"
@@ -22852,10 +22906,10 @@
         },
         {
           "name": "size",
-          "type": "\"md\" | \"sm\" | undefined",
+          "type": "\"md\" | undefined",
           "complexType": {
             "original": "CloseSize",
-            "resolved": "\"md\" | \"sm\" | undefined",
+            "resolved": "\"md\" | undefined",
             "references": {
               "CloseSize": {
                 "location": "import",
@@ -22876,10 +22930,6 @@
               "type": "string"
             },
             {
-              "value": "sm",
-              "type": "string"
-            },
-            {
               "type": "undefined"
             }
           ],
@@ -22888,7 +22938,6 @@
           "getter": false,
           "setter": false,
           "oneOfValues": [
-            "sm",
             "md"
           ]
         }
@@ -23854,7 +23903,8 @@
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ]
       },
       "props": [
@@ -24927,10 +24977,6 @@
           "docs": "Text color when disabled"
         },
         {
-          "name": "--data-item-opacity-disabled",
-          "docs": "Opacity when disabled"
-        },
-        {
           "name": "--data-item-border-bottom",
           "docs": "Bottom border"
         },
@@ -25072,7 +25118,8 @@
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ]
       },
       "props": [
@@ -25311,10 +25358,6 @@
         {
           "name": "--data-item-color-text-disabled",
           "docs": "Text color when disabled"
-        },
-        {
-          "name": "--data-item-opacity-disabled",
-          "docs": "Opacity when disabled"
         },
         {
           "name": "--data-item-border-bottom",
@@ -25942,10 +25985,6 @@
           "docs": "Text color when disabled"
         },
         {
-          "name": "--data-item-opacity-disabled",
-          "docs": "Opacity when disabled"
-        },
-        {
           "name": "--data-item-border-bottom",
           "docs": "Bottom border"
         },
@@ -26084,10 +26123,6 @@
         {
           "name": "--data-item-color-text-disabled",
           "docs": "Text color when disabled"
-        },
-        {
-          "name": "--data-item-opacity-disabled",
-          "docs": "Opacity when disabled"
         },
         {
           "name": "--data-item-border-bottom",
@@ -28594,10 +28629,10 @@
       "props": [
         {
           "name": "color",
-          "type": "\"default\" | \"inverted\" | \"primary\" | \"secondary\"",
+          "type": "\"default\" | \"primary\" | \"secondary\"",
           "complexType": {
             "original": "DividerColor",
-            "resolved": "\"default\" | \"inverted\" | \"primary\" | \"secondary\"",
+            "resolved": "\"default\" | \"primary\" | \"secondary\"",
             "references": {
               "DividerColor": {
                 "location": "import",
@@ -28624,10 +28659,6 @@
               "type": "string"
             },
             {
-              "value": "inverted",
-              "type": "string"
-            },
-            {
               "value": "primary",
               "type": "string"
             },
@@ -28643,8 +28674,7 @@
           "oneOfValues": [
             "primary",
             "secondary",
-            "default",
-            "inverted"
+            "default"
           ]
         },
         {
@@ -28659,6 +28689,35 @@
           "attr": "dashed",
           "reflectToAttr": false,
           "docs": "Defines if the separator line is dashed or solid. Default is solid.",
+          "docsTags": [
+            {
+              "name": "default",
+              "text": "false"
+            }
+          ],
+          "default": "false",
+          "values": [
+            {
+              "type": "boolean"
+            }
+          ],
+          "optional": false,
+          "required": false,
+          "getter": false,
+          "setter": false
+        },
+        {
+          "name": "inverted",
+          "type": "boolean",
+          "complexType": {
+            "original": "boolean",
+            "resolved": "boolean",
+            "references": {}
+          },
+          "mutable": false,
+          "attr": "inverted",
+          "reflectToAttr": false,
+          "docs": "If `true` the divider is shown on a dark background.",
           "docsTags": [
             {
               "name": "default",
@@ -28915,8 +28974,8 @@
           ]
         },
         {
-          "name": "🧩 Component / Divider / Color / Inverted",
-          "cssVarName": "--ds-divider-color-inverted",
+          "name": "🧩 Component / Divider / Color / InvertedPrimary",
+          "cssVarName": "--ds-divider-color-invertedprimary",
           "value": "{🔗 Alias.▭ Border.Color.White}",
           "nativeValue": "#FFFFFF",
           "inheritance": [
@@ -28929,15 +28988,67 @@
               "figmaName": "Alias / Border / Color / White"
             },
             {
-              "cssVar": "--ds-divider-color-inverted",
-              "figmaName": "Component / Divider / Color / Inverted"
+              "cssVar": "--ds-divider-color-invertedprimary",
+              "figmaName": "Component / Divider / Color / InvertedPrimary"
             }
           ],
           "path": [
             "🧩 Component",
             "Divider",
             "Color",
-            "Inverted"
+            "InvertedPrimary"
+          ]
+        },
+        {
+          "name": "🧩 Component / Divider / Color / InvertedSecondary",
+          "cssVarName": "--ds-divider-color-invertedsecondary",
+          "value": "{🔗 Alias.▭ Border.Color.White}",
+          "nativeValue": "#FFFFFF",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-white",
+              "figmaName": "Global / Color / White"
+            },
+            {
+              "cssVar": "--ds-border-color-white",
+              "figmaName": "Alias / Border / Color / White"
+            },
+            {
+              "cssVar": "--ds-divider-color-invertedsecondary",
+              "figmaName": "Component / Divider / Color / InvertedSecondary"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Divider",
+            "Color",
+            "InvertedSecondary"
+          ]
+        },
+        {
+          "name": "🧩 Component / Divider / Color / InvertedDefault",
+          "cssVarName": "--ds-divider-color-inverteddefault",
+          "value": "{🔗 Alias.▭ Border.Color.White}",
+          "nativeValue": "#FFFFFF",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-white",
+              "figmaName": "Global / Color / White"
+            },
+            {
+              "cssVar": "--ds-border-color-white",
+              "figmaName": "Alias / Border / Color / White"
+            },
+            {
+              "cssVar": "--ds-divider-color-inverteddefault",
+              "figmaName": "Component / Divider / Color / InvertedDefault"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Divider",
+            "Color",
+            "InvertedDefault"
           ]
         },
         {
@@ -29297,12 +29408,14 @@
           "ds-close"
         ],
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ],
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ],
         "ds-hint": [
           "ds-drawer"
@@ -30020,7 +30133,8 @@
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ]
       },
       "props": [
@@ -33170,6 +33284,7 @@
       "dependents": [],
       "dependencies": [
         "ds-icon",
+        "ds-tooltip",
         "ds-drawer",
         "ds-button",
         "ds-popup",
@@ -33178,6 +33293,7 @@
       "dependencyGraph": {
         "ds-hint": [
           "ds-icon",
+          "ds-tooltip",
           "ds-drawer",
           "ds-button",
           "ds-popup",
@@ -33187,12 +33303,14 @@
           "ds-close"
         ],
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ],
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ],
         "ds-popup": [
           "ds-close"
@@ -34952,12 +35070,12 @@
         {
           "name": "🧩 Component / Icon / Padding / SM",
           "cssVarName": "--ds-icon-padding-sm",
-          "value": "{🌐 Global.📏 Dimension.Size.0.875}",
-          "nativeValue": "{🌐 Global.📏 Dimension.Size.0.875}",
+          "value": "{🌐 Global.📏 Dimension.Size.0_875}",
+          "nativeValue": "{\"value\":0.875,\"unit\":\"px\"}",
           "inheritance": [
             {
-              "cssVar": "--ds-dimension-size-0-875",
-              "figmaName": "Global / Dimension / Size / 0 / 875"
+              "cssVar": "--ds-dimension-size-0875",
+              "figmaName": "Global / Dimension / Size / 0875"
             },
             {
               "cssVar": "--ds-icon-padding-sm",
@@ -34996,12 +35114,12 @@
         {
           "name": "🧩 Component / Icon / Padding / MD",
           "cssVarName": "--ds-icon-padding-md",
-          "value": "{🌐 Global.📏 Dimension.Size.1.5}",
-          "nativeValue": "{🌐 Global.📏 Dimension.Size.1.5}",
+          "value": "{🌐 Global.📏 Dimension.Size.1_5}",
+          "nativeValue": "{\"value\":1.5,\"unit\":\"px\"}",
           "inheritance": [
             {
-              "cssVar": "--ds-dimension-size-1-5",
-              "figmaName": "Global / Dimension / Size / 1 / 5"
+              "cssVar": "--ds-dimension-size-15",
+              "figmaName": "Global / Dimension / Size / 15"
             },
             {
               "cssVar": "--ds-icon-padding-md",
@@ -35040,12 +35158,12 @@
         {
           "name": "🧩 Component / Icon / Padding / XL",
           "cssVarName": "--ds-icon-padding-xl",
-          "value": "{🌐 Global.📏 Dimension.Size.2.5}",
-          "nativeValue": "{🌐 Global.📏 Dimension.Size.2.5}",
+          "value": "{🌐 Global.📏 Dimension.Size.2_5}",
+          "nativeValue": "{\"value\":2.5,\"unit\":\"px\"}",
           "inheritance": [
             {
-              "cssVar": "--ds-dimension-size-2-5",
-              "figmaName": "Global / Dimension / Size / 2 / 5"
+              "cssVar": "--ds-dimension-size-25",
+              "figmaName": "Global / Dimension / Size / 25"
             },
             {
               "cssVar": "--ds-icon-padding-xl",
@@ -35105,6 +35223,14 @@
         {
           "name": "part",
           "text": "control - The wrapper around the native input and its start/end slots."
+        },
+        {
+          "name": "part",
+          "text": "start - The `start` slot element."
+        },
+        {
+          "name": "part",
+          "text": "end - The `end` slot element."
         },
         {
           "name": "part",
@@ -36857,6 +36983,10 @@
           "docs": "The description or invalid-text message element below the control."
         },
         {
+          "name": "end",
+          "docs": "The `end` slot element."
+        },
+        {
           "name": "inner",
           "docs": "The field's outer wrapper element."
         },
@@ -36867,6 +36997,10 @@
         {
           "name": "label",
           "docs": "The field's label element."
+        },
+        {
+          "name": "start",
+          "docs": "The `start` slot element."
         }
       ],
       "customStates": [],
@@ -37246,29 +37380,26 @@
         },
         {
           "name": "download",
-          "type": "string",
+          "type": "string | undefined",
           "complexType": {
             "original": "string",
-            "resolved": "string",
+            "resolved": "string | undefined",
             "references": {}
           },
           "mutable": false,
           "attr": "download",
           "reflectToAttr": false,
           "docs": "This attribute instructs browsers to download a URL instead of navigating to\nit, so the user will be prompted to save it as a local file. If the attribute\nhas a value, it is used as the pre-filled file name in the Save prompt\n(the user can still change the file name if they want).",
-          "docsTags": [
-            {
-              "name": "default",
-              "text": "''"
-            }
-          ],
-          "default": "''",
+          "docsTags": [],
           "values": [
             {
               "type": "string"
+            },
+            {
+              "type": "undefined"
             }
           ],
-          "optional": false,
+          "optional": true,
           "required": false,
           "getter": false,
           "setter": false
@@ -40278,9 +40409,9 @@
     {
       "fileName": "logo.tsx",
       "tag": "ds-logo",
-      "overview": "Logo displays animated Baloise or Helvetia brand logos with customizable color, size, and responsive sizing.",
+      "overview": "Logo displays animated Baloise or Helvetia brand logos with customizable size, responsive sizing, and an inverted variant for dark backgrounds.",
       "usage": {},
-      "docs": "Logo displays animated Baloise or Helvetia brand logos with customizable color, size, and responsive sizing.",
+      "docs": "Logo displays animated Baloise or Helvetia brand logos with customizable size, responsive sizing, and an inverted variant for dark backgrounds.",
       "docsTags": [
         {
           "name": "slot",
@@ -40349,7 +40480,7 @@
           "mutable": false,
           "attr": "brand",
           "reflectToAttr": false,
-          "docs": "Defines the brand of the logo. Default is 'baloise'.",
+          "docs": "Defines the brand of the logo. Default is 'helvetia'.",
           "docsTags": [],
           "values": [
             {
@@ -40369,54 +40500,38 @@
           "getter": false,
           "setter": false,
           "oneOfValues": [
-            "baloise",
-            "helvetia"
+            "helvetia",
+            "baloise"
           ]
         },
         {
-          "name": "color",
-          "type": "\"inverted\" | \"primary\"",
+          "name": "inverted",
+          "type": "boolean",
           "complexType": {
-            "original": "LogoColor",
-            "resolved": "\"inverted\" | \"primary\"",
-            "references": {
-              "LogoColor": {
-                "location": "import",
-                "path": "./logo.interfaces",
-                "id": "src/components/media/logo/logo.interfaces.ts::LogoColor",
-                "referenceLocation": "LogoColor"
-              }
-            }
+            "original": "boolean",
+            "resolved": "boolean",
+            "references": {}
           },
           "mutable": false,
-          "attr": "color",
+          "attr": "inverted",
           "reflectToAttr": false,
-          "docs": "Defines the color of the logo.",
+          "docs": "If `true` the logo is shown on a dark background.",
           "docsTags": [
             {
               "name": "default",
-              "text": "'primary'"
+              "text": "false"
             }
           ],
-          "default": "'primary'",
+          "default": "false",
           "values": [
             {
-              "value": "inverted",
-              "type": "string"
-            },
-            {
-              "value": "primary",
-              "type": "string"
+              "type": "boolean"
             }
           ],
           "optional": false,
           "required": false,
           "getter": false,
-          "setter": false,
-          "oneOfValues": [
-            "primary",
-            "inverted"
-          ]
+          "setter": false
         },
         {
           "name": "size",
@@ -40688,12 +40803,14 @@
           "ds-close"
         ],
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ],
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ]
       },
       "props": [
@@ -41593,12 +41710,14 @@
           "ds-close"
         ],
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ],
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ]
       },
       "props": [
@@ -45495,6 +45614,14 @@
           "docs": "Width and height of a dot marker."
         },
         {
+          "name": "--pagination-dots-min-width",
+          "docs": "Minimum width of the \"x of y\" counter badge."
+        },
+        {
+          "name": "--pagination-dots-max-width",
+          "docs": "Maximum width of the \"x of y\" counter badge."
+        },
+        {
           "name": "--pagination-ellipsis-font-family",
           "docs": "Font family of the ellipsis text."
         },
@@ -45744,6 +45871,58 @@
             "Pagination",
             "Dots",
             "MinHeight"
+          ]
+        },
+        {
+          "name": "🧩 Component / Pagination / Dots / MinWidth",
+          "cssVarName": "--ds-pagination-dots-minwidth",
+          "value": "{🔗 Alias.📏 Size.Counter.MinWidth}",
+          "nativeValue": "{\"value\":63,\"unit\":\"px\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-size-63",
+              "figmaName": "Global / Dimension / Size / 63"
+            },
+            {
+              "cssVar": "--ds-size-counter-minwidth",
+              "figmaName": "Alias / Size / Counter / MinWidth"
+            },
+            {
+              "cssVar": "--ds-pagination-dots-minwidth",
+              "figmaName": "Component / Pagination / Dots / MinWidth"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Pagination",
+            "Dots",
+            "MinWidth"
+          ]
+        },
+        {
+          "name": "🧩 Component / Pagination / Dots / MaxWidth",
+          "cssVarName": "--ds-pagination-dots-maxwidth",
+          "value": "{🔗 Alias.📏 Size.Counter.MaxWidth}",
+          "nativeValue": "{\"value\":88,\"unit\":\"px\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-size-88",
+              "figmaName": "Global / Dimension / Size / 88"
+            },
+            {
+              "cssVar": "--ds-size-counter-maxwidth",
+              "figmaName": "Alias / Size / Counter / MaxWidth"
+            },
+            {
+              "cssVar": "--ds-pagination-dots-maxwidth",
+              "figmaName": "Component / Pagination / Dots / MaxWidth"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Pagination",
+            "Dots",
+            "MaxWidth"
           ]
         },
         {
@@ -47958,12 +48137,14 @@
           "ds-close"
         ],
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ],
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ],
         "ds-hint": [
           "ds-popup"
@@ -62418,10 +62599,12 @@
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ],
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ]
       },
       "props": [
@@ -70597,12 +70780,14 @@
           "ds-close"
         ],
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ],
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ]
       },
       "props": [
@@ -70803,7 +70988,7 @@
           },
           "mutable": false,
           "attr": "position",
-          "reflectToAttr": false,
+          "reflectToAttr": true,
           "docs": "Choosing left or center the tag is aligned to that side in the ds-card.",
           "docsTags": [],
           "values": [
@@ -75274,10 +75459,12 @@
         "ds-button": [
           "ds-spinner",
           "ds-brand-icon",
-          "ds-icon"
+          "ds-icon",
+          "ds-tooltip"
         ],
         "ds-close": [
-          "ds-button"
+          "ds-button",
+          "ds-tooltip"
         ]
       },
       "props": [
@@ -78936,9 +79123,23 @@
         }
       ],
       "encapsulation": "shadow",
-      "dependents": [],
+      "dependents": [
+        "ds-button",
+        "ds-close",
+        "ds-hint"
+      ],
       "dependencies": [],
-      "dependencyGraph": {},
+      "dependencyGraph": {
+        "ds-button": [
+          "ds-tooltip"
+        ],
+        "ds-close": [
+          "ds-tooltip"
+        ],
+        "ds-hint": [
+          "ds-tooltip"
+        ]
+      },
       "props": [
         {
           "name": "contentWidth",
@@ -79586,6 +79787,11 @@
       "docstring": "",
       "path": "src/components/actions/button/button.interfaces.ts"
     },
+    "src/components/overlays/tooltip/tooltip.interfaces.ts::TooltipPlacement": {
+      "declaration": "\"left\" | \"right\" | \"top\" | \"bottom\"",
+      "docstring": "",
+      "path": "src/components/overlays/tooltip/tooltip.interfaces.ts"
+    },
     "src/components/actions/button/button.interfaces.ts::ButtonClickDetail": {
       "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
       "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
@@ -79622,7 +79828,7 @@
       "path": "src/components/actions/button/button.interfaces.ts"
     },
     "src/components/actions/close/close.interfaces.ts::CloseSize": {
-      "declaration": "\"sm\" | \"md\"",
+      "declaration": "\"md\"",
       "docstring": "",
       "path": "src/components/actions/close/close.interfaces.ts"
     },
@@ -80097,7 +80303,7 @@
       "path": "src/components/indicators/badge/badge.interfaces.ts"
     },
     "src/components/overlays/popup/popup.interfaces.ts::PopupPlacement": {
-      "declaration": "\"left\" | \"right\" | \"bottom\" | \"top\" | \"top-start\" | \"top-end\" | \"right-start\" | \"right-end\" | \"bottom-start\" | \"bottom-end\" | \"left-start\" | \"left-end\"",
+      "declaration": "\"left\" | \"right\" | \"top\" | \"bottom\" | \"top-start\" | \"top-end\" | \"right-start\" | \"right-end\" | \"bottom-start\" | \"bottom-end\" | \"left-start\" | \"left-end\"",
       "docstring": "",
       "path": "src/components/overlays/popup/popup.interfaces.ts"
     },
@@ -80168,11 +80374,6 @@
     },
     "src/components/media/logo/logo.interfaces.ts::LogoBrand": {
       "declaration": "\"baloise\" | \"helvetia\"",
-      "docstring": "",
-      "path": "src/components/media/logo/logo.interfaces.ts"
-    },
-    "src/components/media/logo/logo.interfaces.ts::LogoColor": {
-      "declaration": "\"primary\" | \"inverted\"",
       "docstring": "",
       "path": "src/components/media/logo/logo.interfaces.ts"
     },
@@ -80361,11 +80562,6 @@
       "docstring": "",
       "path": "src/components/overlays/sheet/sheet.interfaces.ts"
     },
-    "src/components/overlays/tooltip/tooltip.interfaces.ts::TooltipPlacement": {
-      "declaration": "\"left\" | \"right\" | \"bottom\" | \"top\"",
-      "docstring": "",
-      "path": "src/components/overlays/tooltip/tooltip.interfaces.ts"
-    },
     "src/components/overlays/tooltip/tooltip.interfaces.ts::TooltipWillAnimateDetail": {
       "declaration": "boolean",
       "docstring": "",
@@ -80517,12 +80713,12 @@
       "path": "src/components/structure/divider/divider.interfaces.ts"
     },
     "src/components/structure/divider/divider.interfaces.ts::DividerColor": {
-      "declaration": "\"primary\" | \"secondary\" | \"default\" | \"inverted\"",
+      "declaration": "\"primary\" | \"secondary\" | \"default\"",
       "docstring": "",
       "path": "src/components/structure/divider/divider.interfaces.ts"
     },
     "src/components/structure/heading/heading.interfaces.ts::HeadingSpace": {
-      "declaration": "\"none\" | \"bottom\" | \"top\" | \"all\"",
+      "declaration": "\"none\" | \"top\" | \"bottom\" | \"all\"",
       "docstring": "",
       "path": "src/components/structure/heading/heading.interfaces.ts"
     },
@@ -80602,7 +80798,7 @@
       "path": "src/components/structure/text/text.interfaces.ts"
     },
     "src/components/structure/text/text.interfaces.ts::TextSpace": {
-      "declaration": "\"none\" | \"bottom\" | \"top\" | \"all\"",
+      "declaration": "\"none\" | \"top\" | \"bottom\" | \"all\"",
       "docstring": "",
       "path": "src/components/structure/text/text.interfaces.ts"
     }

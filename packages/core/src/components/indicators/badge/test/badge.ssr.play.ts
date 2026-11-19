@@ -1,12 +1,25 @@
-import { DsBadge, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './badge.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/indicators/${TAG}/test/${TAG}.visual.html`
+
+const FIXME: Record<string, string> = {
+  'card-position': 'SSR: ds-card content gets extra vertical spacing, also after hydration (#326)',
+  'tabs-position': 'SSR: ds-tabs server markup stacks the tabs vertically and shifts on hydration (#327)',
+}
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(page, `<ds-badge>42</ds-badge>`, renderToString, testInfo)
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      test.fixme(variant in FIXME, FIXME[variant])
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const dsBadge = new DsBadge(page.locator('ds-badge'))
-    await dsBadge.assertToBeVisible()
-    await dsBadge.assertToContainText('42')
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
 })

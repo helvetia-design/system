@@ -16,7 +16,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-toast ${props(args)}>${slot}</ds-toast>`),
+  ...withRender(({ slot, ...args }) => `<ds-toast ${props(args, tag)}>${slot}</ds-toast>`),
 }
 
 export default meta

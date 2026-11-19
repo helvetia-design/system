@@ -11,6 +11,7 @@
 // compared against its own sparse override (if any) or, absent one,
 // against the resolved Base value it would otherwise inherit.
 import type { WorkingToken } from './edit'
+import { CORE_TOKY_CONFIG } from '@helvetia-design/tokens/toky-config'
 import { KEY_BY_LAYER } from './flatten'
 import type { FigmaVariable, FigmaVariablesMeta } from './figma'
 import {
@@ -123,30 +124,37 @@ const LAYER_BY_KEY: Record<string, TokenLayer> = Object.fromEntries(
   Object.entries(KEY_BY_LAYER).map(([layer, key]) => [key, layer as TokenLayer]),
 )
 
+/** The Figma collection a token source syncs to (`figmaCollection`/`figmaModes` of the Toky config). */
+export interface FigmaCollectionSource {
+  collection: string
+  // The first mode holds the token file's own values; brand modes come on top.
+  modes: string[]
+}
+
+export const CORE_FIGMA_SOURCE: FigmaCollectionSource = {
+  collection: CORE_TOKY_CONFIG.figmaCollection,
+  modes: CORE_TOKY_CONFIG.figmaModes,
+}
+
 export function findCollectionAndModes(
   meta: FigmaVariablesMeta,
   brandNames: string[],
-): { collectionId: string; modeIdByBrand: Record<string, string> } {
+  source: FigmaCollectionSource = CORE_FIGMA_SOURCE,
+): { collectionId: string; baseModeId: string; modeIdByBrand: Record<string, string> } {
   // A linked library (e.g. a shared "Space"/"Typography" collection) shows up here too, marked
   // `remote: true` — it isn't owned by this file and must be ignored, or enabling any library
   // makes this throw on a perfectly normal file (see apps/toky/src/tokens/figma.ts's
-  // FigmaVariableCollection.remote). The responsive/breakpoint collection ("Design Responsive
-  // Tokens" — Mobile/Tablet/Desktop modes, see scripts/figma-sync/lib/bootstrap.mjs) is local too,
-  // so filtering on `remote` alone still leaves 2: the brand collection this function actually
-  // wants is the one distinguished by carrying a "Base" mode, which the responsive collection
-  // never has.
-  const collections = Object.values(meta.variableCollections).filter(
-    c => !c.remote && c.modes.some(m => m.name === 'Base'),
-  )
+  // FigmaVariableCollection.remote).
+  const collections = Object.values(meta.variableCollections).filter(c => !c.remote && c.name === source.collection)
   if (collections.length !== 1) {
     throw new Error(
-      `Expected exactly one local Figma variable collection with a "Base" mode, found ${collections.length}.`,
+      `Expected exactly one local Figma variable collection named "${source.collection}", found ${collections.length}.`,
     )
   }
   const collection = collections[0]
 
   const modeIdByBrand: Record<string, string> = {}
-  for (const brand of ['Base', ...brandNames]) {
+  for (const brand of [...source.modes, ...brandNames]) {
     const mode = collection.modes.find(m => m.name === brand)
     if (!mode) {
       throw new Error(`No Figma mode named "${brand}" found in collection "${collection.name}".`)
@@ -154,7 +162,7 @@ export function findCollectionAndModes(
     modeIdByBrand[brand] = mode.modeId
   }
 
-  return { collectionId: collection.id, modeIdByBrand }
+  return { collectionId: collection.id, baseModeId: modeIdByBrand[source.modes[0]], modeIdByBrand }
 }
 
 interface DtcgSnapshot {
@@ -1517,8 +1525,11 @@ export function buildBasePullPlan(params: {
   working: WorkingToken[]
   figmaMeta: FigmaVariablesMeta
   baseModeId: string
+  // Read-only tokens of another source (Toky config `referenceTokens`) — only alias targets, never
+  // matched, created, updated, or deleted.
+  referenceTokens?: FlatToken[]
 }): PullPlan {
-  const { original, working, figmaMeta, baseModeId } = params
+  const { original, working, figmaMeta, baseModeId, referenceTokens = [] } = params
   const plan = emptyPlan()
 
   // Shadow tokens are excluded from both indexes — their figmaId is an
@@ -1542,6 +1553,12 @@ export function buildBasePullPlan(params: {
   for (const t of original) {
     if (!isResponsiveDimensionFigmaId(t.figmaId)) continue
     for (const id of Object.values(t.figmaId)) baseIndex.set(id, t)
+  }
+  const aliasIndex = new Map(baseIndex)
+  for (const t of referenceTokens) {
+    if (typeof t.figmaId === 'string' && !aliasIndex.has(t.figmaId)) aliasIndex.set(t.figmaId, t)
+    if (!isResponsiveDimensionFigmaId(t.figmaId)) continue
+    for (const id of Object.values(t.figmaId)) if (!aliasIndex.has(id)) aliasIndex.set(id, t)
   }
   const originalByPath = new Map(original.map(t => [t.path.join('.'), t]))
   const workingByPath = new Map(working.map(w => [w.token.path.join('.'), w]))
@@ -1594,7 +1611,7 @@ export function buildBasePullPlan(params: {
 
     const matched = baseIndex.get(variable.id)
 
-    const derived = deriveValue(variable, modeValue, baseIndex, matched)
+    const derived = deriveValue(variable, modeValue, aliasIndex, matched)
     if (derived.kind === 'unsupported') {
       plan.skipped.push({ variableId: variable.id, name: variable.name, reason: derived.reason })
       continue
@@ -2044,11 +2061,13 @@ export function buildFigmaPullPlan(params: {
   brandOriginal: Record<string, FlatToken[]>
   brandWorking: Record<string, WorkingToken[]>
   figmaMeta: FigmaVariablesMeta
+  source?: FigmaCollectionSource
+  referenceTokens?: FlatToken[]
 }): FigmaPullResult {
-  const { original, working, brandNames, brandOriginal, brandWorking, figmaMeta } = params
-  const { modeIdByBrand } = findCollectionAndModes(figmaMeta, brandNames)
+  const { original, working, brandNames, brandOriginal, brandWorking, figmaMeta, source, referenceTokens } = params
+  const { baseModeId, modeIdByBrand } = findCollectionAndModes(figmaMeta, brandNames, source)
 
-  const base = buildBasePullPlan({ original, working, figmaMeta, baseModeId: modeIdByBrand.Base })
+  const base = buildBasePullPlan({ original, working, figmaMeta, baseModeId, referenceTokens })
 
   const brands: Record<string, PullPlan> = {}
   for (const brand of brandNames) {

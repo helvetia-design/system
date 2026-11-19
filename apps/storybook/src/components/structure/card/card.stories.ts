@@ -20,7 +20,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     ({ slot, slotHeader, ...args }) => `
-<ds-card ${props(args)}>
+<ds-card ${props(args, 'ds-card')}>
   <ds-card-header>
     <ds-card-title>${slotHeader}</ds-card-title>
     <ds-close></ds-close>

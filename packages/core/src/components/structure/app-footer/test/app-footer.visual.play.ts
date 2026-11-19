@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'app-footer'
-const VARIANTS = ['basic', 'custom', 'slotted-logo']
+import { TAG, VARIANTS } from './app-footer.variants'
 
 const image = screenshot(TAG)
 

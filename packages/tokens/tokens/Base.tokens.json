@@ -12198,7 +12198,25 @@
             ]
           }
         },
-        "Inverted": {
+        "InvertedPrimary": {
+          "$type": "color",
+          "$value": "{🔗 Alias.▭ Border.Color.White}",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "InvertedSecondary": {
+          "$type": "color",
+          "$value": "{🔗 Alias.▭ Border.Color.White}",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "InvertedDefault": {
           "$type": "color",
           "$value": "{🔗 Alias.▭ Border.Color.White}",
           "$extensions": {
@@ -12924,6 +12942,22 @@
                 "ALL_SCOPES"
               ]
             }
+          }
+        }
+      }
+    },
+    "Picture": {
+      "Size": {
+        "Base": {
+          "Radius": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.🔵 Radius.LG}"
+          }
+        },
+        "SM": {
+          "Radius": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.🔵 Radius.Base}"
           }
         }
       }

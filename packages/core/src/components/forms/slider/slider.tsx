@@ -1,4 +1,5 @@
 import {
+  AttrDeserialize,
   AttachInternals,
   Component,
   Element,
@@ -14,6 +15,7 @@ import {
 import { HTMLStencilElement } from '@stencil/core/internal'
 import isNaN from 'lodash/isNaN'
 import {
+  deserializeBooleanAttribute,
   inheritAttributes,
   debounceEvent,
   hasValue,
@@ -244,6 +246,11 @@ export class Slider implements DsComponentInterface, FieldInterface {
   @Type('boolean')
   readonly required: boolean = true
 
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
+
   /**
    * If `true`, disables the automatic `invalid`/`invalidText` behavior that the `@helvetia-design/angular` integration
    * applies when the bound `NgControl` is touched and invalid. Only affects the Angular integration; it is a no-op
@@ -293,6 +300,9 @@ export class Slider implements DsComponentInterface, FieldInterface {
       this.hasInvalidTextSlotContent = hasContent
       this.picker?.setInvalid(this.invalid || hasContent)
     })
+
+    // Reconnecting after a DOM move: componentDidLoad only runs once, but disconnectedCallback destroyed the picker.
+    if (this.sliderEl && !this.picker) this.mountPicker()
   }
 
   componentWillLoad() {
@@ -300,27 +310,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
   }
 
   componentDidLoad() {
-    if (!this.sliderEl) return
-
-    this.picker = new SliderPickerController({
-      targetEl: this.sliderEl,
-      labelId: 'label',
-      min: this.min,
-      max: this.max,
-      step: this.step,
-      value: this.value,
-      disabled: this.disabled || this.readonly,
-      invalid: this.invalid || this.hasInvalidTextSlotContent,
-      onInput: value => {
-        this.dsInput.emit(value)
-      },
-      onChange: value => {
-        this.setValue(value)
-      },
-    })
-
-    this.picker.handleEl?.addEventListener('focus', this.handleFocus)
-    this.picker.handleEl?.addEventListener('blur', this.handleBlur)
+    this.mountPicker()
   }
 
   disconnectedCallback() {
@@ -421,6 +411,31 @@ export class Slider implements DsComponentInterface, FieldInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  // Called from `componentDidLoad` on first load, and again from `connectedCallback` when reconnecting after a DOM move.
+  private mountPicker() {
+    if (!this.sliderEl) return
+
+    this.picker = new SliderPickerController({
+      targetEl: this.sliderEl,
+      labelId: 'label',
+      min: this.min,
+      max: this.max,
+      step: this.step,
+      value: this.value,
+      disabled: this.disabled || this.readonly,
+      invalid: this.invalid || this.hasInvalidTextSlotContent,
+      onInput: value => {
+        this.dsInput.emit(value)
+      },
+      onChange: value => {
+        this.setValue(value)
+      },
+    })
+
+    this.picker.handleEl?.addEventListener('focus', this.handleFocus)
+    this.picker.handleEl?.addEventListener('blur', this.handleBlur)
+  }
 
   private setValue(newValue: number) {
     if (this.value === newValue) return

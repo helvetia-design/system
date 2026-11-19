@@ -897,7 +897,7 @@ describe('scanMigratable', () => {
         'export class SegmentComponent {',
         "  language: BalLanguage = 'de'",
         '  onChange(event: BalEvents.BalSegmentCustomEvent<BalProps.BalSegmentValue>) {}',
-        '  onOpen(event: BalEvents . BalPopoverCustomEvent<boolean>) {}',
+        '  onOpen(event: BalEvents . BalFictionalCustomEvent<boolean>) {}',
         '}',
         '',
       ].join('\n'),
@@ -1034,6 +1034,54 @@ describe('scanMigratable', () => {
 
     expect(scanMigratable(root)).toEqual({
       suggested: [{ name: 'text', total: 1 }],
+      notYet: [],
+      types: [],
+    })
+  })
+
+  it('suggests nav, popover and stage with their child tags and leaves notYet empty', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'index.html',
+      [
+        '<bal-nav></bal-nav>',
+        '<bal-nav-meta-bar></bal-nav-meta-bar>',
+        '<bal-nav-menu-bar></bal-nav-menu-bar>',
+        '<bal-nav-menu-flyout></bal-nav-menu-flyout>',
+        '<bal-nav-link-grid></bal-nav-link-grid>',
+        '<bal-nav-link-grid-col></bal-nav-link-grid-col>',
+        '<bal-nav-link-group></bal-nav-link-group>',
+        '<bal-nav-link></bal-nav-link>',
+        '<bal-popover><button bal-popover-trigger>?</button><bal-popover-content></bal-popover-content></bal-popover>',
+        '<bal-stage>',
+        '  <bal-stage-back-link></bal-stage-back-link>',
+        '  <bal-stage-image></bal-stage-image>',
+        '  <bal-stage-head></bal-stage-head>',
+        '  <bal-stage-body></bal-stage-body>',
+        '  <bal-stage-foot></bal-stage-foot>',
+        '</bal-stage>',
+        '<bal-navbar><bal-navbar-brand></bal-navbar-brand></bal-navbar>',
+        '',
+      ].join('\n'),
+    )
+    write(
+      root,
+      'Header.tsx',
+      [
+        "import { BalNav, BalNavLink, BalPopover, BalPopoverContent, BalStage, BalStageImage } from '@baloise/ds-react'",
+        'const onClick = (e: BalNavCustomEvent<unknown>, p: HTMLBalPopoverContentElement) => [e, p]',
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanMigratable(root)).toEqual({
+      suggested: [
+        { name: 'nav', total: 11 },
+        { name: 'navbar', total: 2 },
+        { name: 'popover', total: 5 },
+        { name: 'stage', total: 8 },
+      ],
       notYet: [],
       types: [],
     })

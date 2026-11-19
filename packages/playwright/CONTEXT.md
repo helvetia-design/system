@@ -43,12 +43,13 @@ Benefits:
 
 ### Test Types
 
-| Test Type       | File Pattern         | Purpose                      | Assertions                          |
-| --------------- | -------------------- | ---------------------------- | ----------------------------------- |
-| **Unit**        | `.spec.ts`           | Logic, utilities, edge cases | Vitest assertions                   |
-| **Interaction** | `.component.play.ts` | User interactions, events    | Custom matchers for events          |
-| **Visual**      | `.visual.play.ts`    | Visual regression            | Screenshot comparisons              |
-| **A11y**        | `.a11y.play.ts`      | Accessibility compliance     | axe-core checks + manual assertions |
+| Test Type       | File Pattern         | Purpose                      | Assertions                             |
+| --------------- | -------------------- | ---------------------------- | -------------------------------------- |
+| **Unit**        | `.spec.ts`           | Logic, utilities, edge cases | Vitest assertions                      |
+| **Interaction** | `.component.play.ts` | User interactions, events    | Custom matchers for events             |
+| **Visual**      | `.visual.play.ts`    | Visual regression            | Screenshot comparisons                 |
+| **A11y**        | `.a11y.play.ts`      | Accessibility compliance     | axe-core checks + manual assertions    |
+| **SSR**         | `.ssr.play.ts`       | Server markup and hydration  | Screenshots before and after hydration |
 
 ### Test Mounting
 
@@ -132,6 +133,70 @@ Snapshots are stored in `e2e/snapshots/` and tracked in git:
 - **Compare** — New screenshots are compared to baseline
 - **Update** — Run `/update-screenshots` bot command to re-baseline after intentional changes
 
+### SSR Screenshot Tests
+
+An SSR test renders the page of the visual test with `renderToString`, serves it, and holds back the client bundle. It takes one screenshot of the server markup and one after hydration. Both compare against the desktop baseline of the visual test. Desktop only.
+
+```typescript
+import { renderToString } from '@helvetia-design/core/hydrate'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
+import { TAG, VARIANTS } from './tag.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/indicators/${TAG}/test/${TAG}.visual.html`
+
+test.describe('ssr', () => {
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
+
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
+  })
+})
+```
+
+Helpers:
+
+- `setupSsrVisualTest(page, url, renderToString, options?)` fetches `url`, renders it, serves the result at the same URL, holds the bundle, and navigates. It returns `{ hydrate() }`.
+- `holdHydration(page, { scripts? })` holds back the client bundle requests. `scripts` defaults to `**/build/**`. It works against any server and returns `{ hydrate() }`.
+- `hydrate()` releases the bundle, waits for the components, and runs `assertHydrated()`.
+- `assertHydrated(page)` fails on console errors since `trackConsoleErrors(page)` and on leftover `c-id` attributes. `mountSsr()` uses it too.
+- `visualBaseline(tag, visualTestFile?)(name)` names the baseline of `screenshot(tag)(name)` in `<tag>.visual.play.ts`. The `🧬 SSR` project resolves it through its `snapshotPathTemplate`, so no baseline is renamed.
+
+The `variants.ts` file exists because Playwright does not allow a test file to import another test file.
+
+#### Foreign SSR server
+
+`holdHydration()` needs no `renderToString`. Pass the bundle pattern of the server, navigate with `waitUntil: 'commit'`, take the screenshot, then hydrate:
+
+```typescript
+// Match JavaScript only. Next.js also serves CSS and fonts under /_next/static/, and a held stylesheet never loads.
+const ssr = await holdHydration(page, { scripts: /\/_next\/static\/.+\.js(\?|$)/ })
+await page.mainFrame().goto(url, { waitUntil: 'commit' })
+await waitForServerMarkup(page)
+await expectScreenshot(el, 'server')
+await ssr.hydrate()
+```
+
+The held bundle blocks `domcontentloaded` and `load`. Use `page.mainFrame().goto()`, because the fixture's `page.goto()` waits for `document.fonts.ready`, which can stay pending while the bundle is held. `waitForServerMarkup()` waits for the parser, stylesheets, images, and fonts. `waitForChanges()` returns early while the bundle is held.
+
+#### Components that finish rendering in the browser
+
+If the server markup differs on purpose from the baseline, the first screenshot gets its own baseline with the suffix `-ssr-static`:
+
+```typescript
+const staticImage = visualBaseline(TAG, `${TAG}.ssr.play.ts`)
+await expectScreenshot(el, staticImage(`${variant}-ssr-static`))
+```
+
+The `/update-screenshots` bot (`.github/workflows/screenshots.yml`) only runs the visual projects. It never writes SSR baselines. Update `-ssr-static` baselines locally in the Playwright Linux image on amd64 (`docker run --platform linux/amd64 mcr.microsoft.com/playwright:v1.59.1-noble`). The arm64 build of the image renders differently than CI. Never run `--update-snapshots` with the `🧬 SSR` project and without a filter: its template points at the visual baselines, so it would overwrite them with the server render. Limit it to the `-ssr-static` tests with `-g`.
+
+Client-only components (`ds-modal`, `ds-toast`, `ds-snackbar`, see ADR 0031) keep `mountSsr()` with an inline snippet.
+
 ### Test File Organization
 
 Each component needs test files in `packages/core/src/components/<component>/test/`:
@@ -140,6 +205,8 @@ Each component needs test files in `packages/core/src/components/<component>/tes
 - `<component>.component.play.ts` — Interaction tests (Playwright)
 - `<component>.visual.play.ts` — Visual regression (Playwright)
 - `<component>.a11y.play.ts` — Accessibility (Playwright + axe)
+- `<component>.variants.ts` — Variant list shared by the visual and SSR tests
+- `<component>.ssr.play.ts` — SSR screenshots (not for client-only components)
 
 ## Key Constraints
 

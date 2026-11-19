@@ -1,19 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'slider'
-const VARIANTS = [
-  'basic',
-  'disabled',
-  'readonly',
-  'invalid',
-  'invalid-slot',
-  'valid',
-  'warning',
-  'brand-color',
-  'step',
-  'min-max',
-  'form-reset',
-]
+import { TAG, VARIANTS } from './slider.variants'
 
 const image = screenshot(TAG)
 

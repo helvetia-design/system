@@ -18,6 +18,7 @@ This file maps the multi-context layout of this monorepo. Each context has its o
 | **AG Grid Theme**      | `packages/ag-grid/CONTEXT.md`    | Token-bound AG Grid Theming API theme, `var(--ds-alias-*)` param binding                |
 | **Documentation**      | `apps/storybook/CONTEXT.md`      | Storybook setup, documentation patterns, MDX authoring, component showcase              |
 | **Toky**               | `apps/toky/CONTEXT.md`           | Token-editing web app, working changes, Submit/PR flow, Pull (from Figma)               |
+| **Shared Context**     | `packages/context/CONTEXT.md`    | Agent-facing context packaged for consuming repos, `ds-context.json`, skill path lookup |
 | **Internal Libraries** | `libs/CONTEXT.md`                | ESLint plugin, output targets (Angular), shared utilities, code generation              |
 
 ## How to Use This Map

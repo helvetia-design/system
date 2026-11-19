@@ -1,19 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'text'
-
-const VARIANTS = [
-  'basic',
-  'theme',
-  'no-wrap',
-  'colors',
-  'sizes',
-  'font-weight',
-  'heading',
-  'inline',
-  'shadow',
-  'space',
-] as const
+import { TAG, VARIANTS } from './text.variants'
 
 const image = screenshot(TAG)
 

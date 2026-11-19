@@ -1,0 +1,23 @@
+{
+  "name": "@helvetia-design/context",
+  "version": "0.1.0",
+  "description": "The agent-facing context of the Helvetia Design System — architecture, style guide, ADRs and Claude Code skills — packaged so that a consuming repository reads them instead of copying them.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/helvetia-design/system.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://helvetia-design.vercel.app",
+  "security": "https://github.com/helvetia-design/system/security/advisories/new",
+  "license": "Apache-2.0",
+  "type": "module",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "node scripts/collect.mjs",
+    "prepack": "node scripts/collect.mjs"
+  }
+}

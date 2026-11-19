@@ -120,6 +120,14 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
    * ─────────────────────────────────────────────────────
    */
 
+  connectedCallback() {
+    // Reconnecting after a DOM move: componentDidLoad only runs once, but disconnectedCallback tore down the observers.
+    if (this.trackEl) {
+      this.initScroll()
+      this.initIntersection()
+    }
+  }
+
   componentDidLoad() {
     this.setup()
     this.initScroll()

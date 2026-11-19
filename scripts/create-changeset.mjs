@@ -6,9 +6,9 @@
  */
 import prompts from 'prompts'
 import { readFile, rm, writeFile } from 'node:fs/promises'
-import path, { join, resolve, dirname } from 'node:path'
+import { join, resolve, dirname } from 'node:path'
 import { execSync } from 'node:child_process'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const workspaceRoot = resolve(__dirname, '..')
@@ -39,12 +39,14 @@ function exec(cmd) {
 /**
  * Parse `--key=value` / `--key value` CLI flags into an object
  */
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const args = {}
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (!arg.startsWith('--')) continue
-    const [key, inlineValue] = arg.slice(2).split('=')
+    const eq = arg.indexOf('=')
+    const key = eq === -1 ? arg.slice(2) : arg.slice(2, eq)
+    const inlineValue = eq === -1 ? undefined : arg.slice(eq + 1)
     if (inlineValue !== undefined) {
       args[key] = inlineValue
     } else if (argv[i + 1] && !argv[i + 1].startsWith('--')) {
@@ -57,10 +59,23 @@ function parseArgs(argv) {
 }
 
 /**
+ * Extract the generated changeset filename from `changeset add --empty` stdout.
+ * Throws unless it is a plain `*.md` name, so the caller can never touch anything but that file.
+ */
+export function parseChangesetFilename(stdout) {
+  const matches = [...String(stdout).matchAll(/\.changeset[\\/]([\w-]+\.md)/g)]
+  const filename = matches.at(-1)?.[1]
+  if (!filename) {
+    throw new Error(`Could not read changeset filename from CLI output:\n${stdout}`)
+  }
+  return filename
+}
+
+/**
  * Write a changeset file for the given bump level, scope(s), and summary.
  * Shared by both the interactive prompt flow and non-interactive CLI usage.
  */
-async function writeChangeset({ bumpLevel, scope, summary }) {
+export async function writeChangeset({ bumpLevel, scope, summary }) {
   if (!BUMP_LEVELS.includes(bumpLevel)) {
     throw new Error(`Invalid bump level "${bumpLevel}". Expected one of: ${BUMP_LEVELS.join(', ')}`)
   }
@@ -85,19 +100,14 @@ ${frontmatter}
 `
 
   // Generate filename using changeset CLI
-  const stdout = exec('pnpm exec changeset add --empty')
-  const triggerWord = '.changeset' + path.sep
-  const start = stdout.lastIndexOf(triggerWord) + triggerWord.length
-  const end = stdout.lastIndexOf('.md') + '.md'.length
-  const filename = stdout.substring(start, end).trim()
+  const filename = parseChangesetFilename(exec('pnpm exec changeset add --empty'))
   const filepath = join(workspaceRoot, '.changeset', filename)
 
   // Setup cleanup on error
-  cleanUp = async () => rm(filepath, { force: true, recursive: true })
+  cleanUp = async () => rm(filepath, { force: true })
 
-  // Write changeset file
-  await rm(filepath, { force: true, recursive: true })
-  await writeFile(filepath.trim(), content, { encoding: 'utf-8' })
+  // Overwrite the empty changeset the CLI created
+  await writeFile(filepath, content, { encoding: 'utf-8' })
 
   console.log('')
   console.log(`\x1b[32m✔\x1b[0m Changeset created: ${filepath}`)
@@ -230,4 +240,6 @@ async function main() {
   await runInteractive()
 }
 
-await main()
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main()
+}

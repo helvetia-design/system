@@ -173,3 +173,28 @@ test.describe('formatter', () => {
     expect(changeSpy).toHaveReceivedEventDetail('BE68 5390 0754 7034')
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-input label="Label" required="false"></ds-input>`)
+    const input = new DsInput(page.locator('ds-input'))
+
+    await expect(input.el).toHaveJSProperty('required', false)
+    await expect(input.nativeInput).toHaveJSProperty('required', false)
+  })
+
+  test('should follow required attribute changes after load', async ({ page }) => {
+    await page.mount(`<ds-input label="Label" required="false"></ds-input>`)
+    const input = new DsInput(page.locator('ds-input'))
+
+    await input.el.evaluate(el => el.setAttribute('required', 'true'))
+    await page.waitForChanges()
+    await expect(input.el).toHaveJSProperty('required', true)
+    await expect(input.nativeInput).toHaveJSProperty('required', true)
+
+    await input.el.evaluate(el => el.setAttribute('required', 'false'))
+    await page.waitForChanges()
+    await expect(input.el).toHaveJSProperty('required', false)
+    await expect(input.nativeInput).toHaveJSProperty('required', false)
+  })
+})

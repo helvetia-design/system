@@ -1,16 +1,19 @@
-import { DsBrandIcon, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './brand-icon.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/media/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(
-      page,
-      `<ds-brand-icon src="/assets/images/brand-icons/car-green.svg"></ds-brand-icon>`,
-      renderToString,
-      testInfo,
-    )
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const dsBrandIcon = new DsBrandIcon(page.locator('ds-brand-icon'))
-    await dsBrandIcon.assertToBeVisible()
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
 })

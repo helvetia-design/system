@@ -13,7 +13,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag: 'ds-datepicker' }),
   },
-  ...withRender(({ ...args }) => `<ds-datepicker ${props(args)}></ds-datepicker>`),
+  ...withRender(({ ...args }) => `<ds-datepicker ${props(args, 'ds-datepicker')}></ds-datepicker>`),
 }
 
 export default meta

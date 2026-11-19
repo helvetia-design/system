@@ -5,8 +5,10 @@
  * It orchestrates the questionnaire and passes control to the implementation.
  */
 
+const path = require('path')
 const implementation = require('./implementation')
 const { CATEGORIES } = require('../_shared/component-categories')
+const { primaryComponentRoot, coreIndexPath, storybookComponentsDir, isCategorized } = require('../_shared/ds-context')
 
 async function main() {
   console.log('🧩 Creating a new design system component...\n')
@@ -54,9 +56,11 @@ async function main() {
     }
 
     // Success
-    console.log(`\n✅ Component created: packages/core/src/components/${result.category}/${result.componentName}/`)
+    // Report the path actually written, which depends on the repo's declared component root.
+    const createdIn = path.relative(process.cwd(), primaryComponentRoot(process.cwd()))
+    console.log(`\n✅ Component created: ${createdIn}/${result.category}/${result.componentName}/`)
     console.log(
-      `   Storybook folder scaffolded: apps/storybook/src/components/${result.category}/${result.componentName}/`,
+      `   Storybook folder scaffolded: ${storybookComponentsDir(process.cwd())}/${result.category}/${result.componentName}/`,
     )
     console.log('   Add stories/MDX with /ds-document-component.')
     console.log('\nNext steps:')
@@ -179,7 +183,9 @@ function writeComponentFiles(category, componentName, files, subcomponents) {
   const path = require('path')
   const fs = require('fs')
 
-  const componentPath = path.join(process.cwd(), 'packages/core/src/components', category, componentName)
+  const componentPath = isCategorized(process.cwd())
+    ? path.join(primaryComponentRoot(process.cwd()), category, componentName)
+    : path.join(primaryComponentRoot(process.cwd()), componentName)
 
   // Ensure test directory exists
   const testPath = path.join(componentPath, 'test')
@@ -224,13 +230,13 @@ function scaffoldStorybookFolder(category, componentName) {
 }
 
 /**
- * Register component in packages/core/src/index.ts
+ * Register component in the repo's entry file (packages/core/src/index.ts here).
  */
 function registerComponentInIndex(category, componentName, subcomponents) {
   const path = require('path')
   const fs = require('fs')
 
-  const indexPath = path.join(process.cwd(), 'packages/core/src/index.ts')
+  const indexPath = coreIndexPath(process.cwd())
 
   let indexContent = fs.readFileSync(indexPath, 'utf-8')
 
@@ -257,7 +263,7 @@ function registerComponentInIndex(category, componentName, subcomponents) {
   })
 
   fs.writeFileSync(indexPath, indexContent)
-  console.log('✅ Registered in packages/core/src/index.ts')
+  console.log(`✅ Registered in ${path.relative(process.cwd(), indexPath)}`)
 }
 
 /**

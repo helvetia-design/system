@@ -14,11 +14,14 @@
  * only, where the real committed variableIds (which belong to the real
  * production file) would otherwise get rejected by an empty/different
  * target file. Never set in figma-sync.yml.
+ *
+ * TOKY_CONFIG_PATH (optional): the token source's toky.config.json (lib/config.mjs). Unset means
+ * core. TOKENS_ROOT is the checkout its paths are relative to (default: this repo).
+ * REFERENCE_TOKENS_FILE overrides the config's referenceTokens file.
  */
 import { appendFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 import { loadSyncStateFile } from './lib/baseline.mjs'
 import {
   buildBootstrapPayload,
@@ -26,14 +29,17 @@ import {
   resolveBootstrapIds,
   resolveResponsiveBootstrapIds,
 } from './lib/bootstrap.mjs'
+import { resolveReferenceTokensFile, resolveSyncInputs } from './lib/config.mjs'
 import { buildDeleteVariablesPayload, findRemovedVariableIds } from './lib/deletion.mjs'
 import {
   buildNameIndex,
   findCollectionAndModes,
+  findCollectionIdsByName,
   findResponsiveCollectionAndModes,
   getLocalVariables,
   postVariables,
 } from './lib/figma.mjs'
+import { isDeviceEligibleResponsiveDimensionToken, isSyncableResponsiveDimensionToken } from './lib/figma-value.mjs'
 import { brandFilePath, flattenTokens, listBrandNames, loadTokenFile, mergeBrandTree } from './lib/tokens.mjs'
 import {
   assignVariableIds,
@@ -43,29 +49,26 @@ import {
   buildNameUpdatePayload,
   collectNewlyCreatedIds,
   committedVariableIds,
+  findForeignCollectionVariableIds,
   findResolvedTypeMismatches,
   resolveTempIds,
 } from './lib/write.mjs'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const workspaceRoot = resolve(__dirname, '../..')
-const TOKENS_DIR = process.env.TOKENS_DIR_OVERRIDE
-  ? resolve(process.env.TOKENS_DIR_OVERRIDE)
-  : resolve(workspaceRoot, 'packages/tokens/tokens')
-const SYNC_STATE_FILE = resolve(TOKENS_DIR, '..', '.figma-sync-state.json')
-
-function resolveBrandTrees() {
-  const base = loadTokenFile(resolve(TOKENS_DIR, 'Base.tokens.json'))
+function resolveBrandTrees(inputs) {
+  const base = loadTokenFile(inputs.tokenFilePath)
   const baseTokens = flattenTokens(base)
-  const brandNames = listBrandNames(TOKENS_DIR)
+  const brandNames = inputs.hasBrands ? listBrandNames(inputs.tokensDir, inputs.tokenFile) : []
 
-  const brandTokensByName = { Base: baseTokens }
+  const brandTokensByName = Object.fromEntries(inputs.modeNames.map(modeName => [modeName, baseTokens]))
   for (const brandName of brandNames) {
-    const override = loadTokenFile(brandFilePath(TOKENS_DIR, brandName))
+    const override = loadTokenFile(brandFilePath(inputs.tokensDir, brandName))
     brandTokensByName[brandName] = flattenTokens(mergeBrandTree(base, override))
   }
 
-  return { baseTokens, brandNames, brandTokensByName }
+  const referenceTokensFile = resolveReferenceTokensFile(inputs)
+  const referenceTokens = referenceTokensFile ? flattenTokens(loadTokenFile(referenceTokensFile)) : []
+
+  return { baseTokens, brandNames, brandTokensByName, referenceTokens, referenceTokensFile }
 }
 
 function summarizeBrand(brandName, tokens) {
@@ -75,10 +78,19 @@ function summarizeBrand(brandName, tokens) {
   )
 }
 
-async function dryRun({ baseTokens, brandTokensByName }, figmaToken, figmaFileKey) {
+async function dryRun(
+  { baseTokens, brandTokensByName, referenceTokens, referenceTokensFile },
+  inputs,
+  figmaToken,
+  figmaFileKey,
+) {
   console.log(`Resolved token trees (dry run — no writes):`)
   for (const [brandName, tokens] of Object.entries(brandTokensByName)) {
     summarizeBrand(brandName, tokens)
+  }
+  if (referenceTokensFile) {
+    console.log(`  Reference tokens (read-only): ${referenceTokens.length} from ${referenceTokensFile}`)
+    assertReferencesResolve(baseTokens, brandTokensByName, referenceTokens)
   }
 
   if (!figmaToken || !figmaFileKey) {
@@ -86,12 +98,20 @@ async function dryRun({ baseTokens, brandTokensByName }, figmaToken, figmaFileKe
     return
   }
 
-  const { variables } = await getLocalVariables(figmaFileKey, figmaToken)
+  const localVariables = await getLocalVariables(figmaFileKey, figmaToken)
+  const { variables } = localVariables
   const figmaVariableIds = new Set(Object.values(variables).map(v => v.id))
   const tokenVariableIds = new Set(baseTokens.filter(t => t.variableId).map(t => t.variableId))
+  const sourceCollectionIds = findCollectionIdsByName(localVariables, [
+    inputs.collectionName,
+    inputs.responsiveCollectionName,
+  ])
 
   const missingInFigma = [...tokenVariableIds].filter(id => !figmaVariableIds.has(id))
-  const missingInTokens = [...figmaVariableIds].filter(id => !tokenVariableIds.has(id))
+  const missingInTokens = Object.values(variables)
+    .filter(v => sourceCollectionIds.has(v.variableCollectionId))
+    .map(v => v.id)
+    .filter(id => !tokenVariableIds.has(id))
 
   console.log(`\nFigma file has ${figmaVariableIds.size} variables.`)
   if (missingInFigma.length > 0) {
@@ -112,14 +132,19 @@ async function dryRun({ baseTokens, brandTokensByName }, figmaToken, figmaFileKe
  * since a file might already have one collection but not the other (e.g. this feature shipped after
  * the brand collection was already bootstrapped).
  */
-async function resolveBrandCollection(localVariables, brandNames, figmaFileKey, figmaToken) {
-  const collectionName = process.env.FIGMA_COLLECTION_NAME ?? 'Design Tokens'
+async function resolveBrandCollection(
+  localVariables,
+  brandNames,
+  { collectionName, modeNames },
+  figmaFileKey,
+  figmaToken,
+) {
   const exists = Object.values(localVariables.variableCollections).some(c => c.name === collectionName)
   if (!exists) {
     console.log(
       `No Figma variable collection named "${collectionName}" found — bootstrapping one with a mode per brand…`,
     )
-    const bootstrap = buildBootstrapPayload(brandNames, collectionName)
+    const bootstrap = buildBootstrapPayload(brandNames, collectionName, modeNames)
     const bootstrapResult = await postVariables(figmaFileKey, figmaToken, {
       variableCollections: bootstrap.variableCollections,
       variableModes: bootstrap.variableModes,
@@ -132,7 +157,7 @@ async function resolveBrandCollection(localVariables, brandNames, figmaFileKey, 
     )
     return resolved
   }
-  return findCollectionAndModes(localVariables, brandNames, collectionName)
+  return findCollectionAndModes(localVariables, brandNames, collectionName, modeNames)
 }
 
 /**
@@ -140,8 +165,7 @@ async function resolveBrandCollection(localVariables, brandNames, figmaFileKey, 
  * Device-layer Text.Size/Space/Container.Space only, see lib/figma-value.mjs's DEVICE_ELIGIBLE_PATH_PREFIXES),
  * bootstrapping it if this file has never had one under that name.
  */
-async function resolveResponsiveCollection(localVariables, figmaFileKey, figmaToken) {
-  const collectionName = process.env.FIGMA_RESPONSIVE_COLLECTION_NAME ?? 'Design Responsive Tokens'
+async function resolveResponsiveCollection(localVariables, collectionName, figmaFileKey, figmaToken) {
   const exists = Object.values(localVariables.variableCollections).some(c => c.name === collectionName)
   if (!exists) {
     console.log(
@@ -166,12 +190,47 @@ async function resolveResponsiveCollection(localVariables, figmaFileKey, figmaTo
 }
 
 /**
+ * Fails before any POST if a reference resolves in neither tree, if a reference token carries no
+ * variableId, or (with `localVariables`) if that id is not in this Figma file. Builds the alias pass against the current
+ * ids only for its checks; temp ids are skipped.
+ */
+function assertReferencesResolve(baseTokens, brandTokensByName, referenceTokens, localVariables) {
+  const { variableModeValues } = buildAliasPassPayload({
+    baseTokens,
+    brandTokensByName,
+    idByPath: assignVariableIds(baseTokens),
+    modeIdByBrand: {},
+    referenceTokens,
+  })
+  const missing = [
+    ...new Set(
+      variableModeValues
+        .map(({ value }) => value.id)
+        .filter(id => localVariables && !id.startsWith('temp-') && !localVariables.variables[id]),
+    ),
+  ]
+  if (missing.length > 0) {
+    throw new Error(
+      `${missing.length} alias target variableId(s) don't exist in this Figma file (e.g. ${missing.slice(0, 5).join(', ')}). ` +
+        `Likely causes: the reference source deleted or recreated a referenced variable since the pinned ` +
+        `version (version skew — bump the reference package, e.g. @helvetia-design/tokens, in the token ` +
+        `repo), or the reference tokens were synced to a different file than FIGMA_FILE_KEY.`,
+    )
+  }
+}
+
+/**
  * @returns {{
  *   newIds: { path: string[], variableId: string }[],
  *   removedIds: string[],
  * }}
  */
-async function writePull({ baseTokens, brandNames, brandTokensByName }, figmaToken, figmaFileKey) {
+async function writePull(
+  { baseTokens, brandNames, brandTokensByName, referenceTokens },
+  inputs,
+  figmaToken,
+  figmaFileKey,
+) {
   const localVariables = await getLocalVariables(figmaFileKey, figmaToken)
 
   // Fail fast, before any POST, if the tokens tree already carries variableIds this file has never
@@ -186,6 +245,32 @@ async function writePull({ baseTokens, brandNames, brandTokensByName }, figmaTok
         .join(', ')}). This usually means the tokens directory was round-tripped against a ` +
         `different Figma file — set TOKENS_DIR_OVERRIDE to a scratch tokens directory for sandbox-` +
         `file testing, or point FIGMA_FILE_KEY at the file these variableIds actually belong to.`,
+    )
+  }
+
+  if (referenceTokens.length > 0)
+    assertReferencesResolve(baseTokens, brandTokensByName, referenceTokens, localVariables)
+  if (
+    inputs.responsiveCollectionName === null &&
+    baseTokens.some(
+      token => isSyncableResponsiveDimensionToken(token) && isDeviceEligibleResponsiveDimensionToken(token),
+    )
+  ) {
+    throw new Error('This token source has no responsive collection, but contains Device-eligible responsive tokens.')
+  }
+
+  const foreignIds = findForeignCollectionVariableIds(
+    baseTokens,
+    localVariables.variables,
+    findCollectionIdsByName(localVariables, [inputs.collectionName, inputs.responsiveCollectionName]),
+  )
+  if (foreignIds.length > 0) {
+    throw new Error(
+      `${foreignIds.length} committed variableId(s) belong to a Figma collection other than "${inputs.collectionName}"` +
+        `${inputs.responsiveCollectionName ? ` or "${inputs.responsiveCollectionName}"` : ''} (e.g. ${foreignIds
+          .slice(0, 5)
+          .join(', ')}). Remove the copied com.figma.variableId from these tokens; this run never writes ` +
+        `to another source's variables.`,
     )
   }
 
@@ -208,14 +293,14 @@ async function writePull({ baseTokens, brandNames, brandTokensByName }, figmaTok
   const { collectionId, modeIdByBrand } = await resolveBrandCollection(
     localVariables,
     brandNames,
+    inputs,
     figmaFileKey,
     figmaToken,
   )
-  const { collectionId: responsiveCollectionId, modeIdByBreakpoint } = await resolveResponsiveCollection(
-    localVariables,
-    figmaFileKey,
-    figmaToken,
-  )
+  const { collectionId: responsiveCollectionId, modeIdByBreakpoint } =
+    inputs.responsiveCollectionName === null
+      ? { collectionId: undefined, modeIdByBreakpoint: {} }
+      : await resolveResponsiveCollection(localVariables, inputs.responsiveCollectionName, figmaFileKey, figmaToken)
 
   // Path/name fallback match (docs/adr/0001-figma-variable-identity-key.md)
   // — a token with no committed variableId might already exist in Figma
@@ -226,7 +311,9 @@ async function writePull({ baseTokens, brandNames, brandTokensByName }, figmaTok
   // variable's name-fallback match only makes sense against the responsive
   // collection's own variables, not the brand collection's.
   const nameIndex = buildNameIndex(localVariables, collectionId)
-  const responsiveNameIndex = buildNameIndex(localVariables, responsiveCollectionId)
+  const responsiveNameIndex = responsiveCollectionId
+    ? buildNameIndex(localVariables, responsiveCollectionId)
+    : new Map()
   const idByPath = assignVariableIds(baseTokens, nameIndex, responsiveNameIndex)
 
   // Deletions (docs/adr/0019-pull-auto-deletes-figma-variables.md) are
@@ -244,7 +331,7 @@ async function writePull({ baseTokens, brandNames, brandTokensByName }, figmaTok
   // queued as a DELETE: Figma's POST /variables is atomic, and a DELETE
   // against a nonexistent id 400s the *entire* batch, taking this run's
   // creates and mode-values down with it.
-  const existingState = loadSyncStateFile(SYNC_STATE_FILE)
+  const existingState = loadSyncStateFile(inputs.syncStateFile)
   const removedIds = findRemovedVariableIds(existingState, baseTokens)
   const deletableIds = removedIds.filter(id => localVariables.variables[id])
   const staleBaselineIds = removedIds.filter(id => !localVariables.variables[id])
@@ -264,6 +351,7 @@ async function writePull({ baseTokens, brandNames, brandTokensByName }, figmaTok
     collectionId,
     modeIdByBrand,
     responsiveCollectionId,
+    referenceTokens,
   })
   const deletePass = buildDeleteVariablesPayload(deletableIds)
   createPass.variables.push(...deletePass.variables)
@@ -280,6 +368,7 @@ async function writePull({ baseTokens, brandNames, brandTokensByName }, figmaTok
     idByPath,
     modeIdByBrand,
     modeIdByBreakpoint,
+    referenceTokens,
   })
   console.log(`Pass 2: writing ${aliasPass.variableModeValues.length} alias mode-value(s)…`)
   if (aliasPass.variableModeValues.length > 0) {
@@ -313,13 +402,14 @@ async function writePull({ baseTokens, brandNames, brandTokensByName }, figmaTok
 }
 
 async function main() {
-  const resolved = resolveBrandTrees()
+  const inputs = resolveSyncInputs()
+  const resolved = resolveBrandTrees(inputs)
   const figmaToken = process.env.FIGMA_API_TOKEN
   const figmaFileKey = process.env.FIGMA_FILE_KEY
   const dryRunMode = process.env.DRY_RUN !== 'false'
 
   if (dryRunMode) {
-    await dryRun(resolved, figmaToken, figmaFileKey)
+    await dryRun(resolved, inputs, figmaToken, figmaFileKey)
     return
   }
 
@@ -327,7 +417,7 @@ async function main() {
     throw new Error('DRY_RUN=false requires FIGMA_API_TOKEN and FIGMA_FILE_KEY to be set.')
   }
 
-  const { newIds, removedIds } = await writePull(resolved, figmaToken, figmaFileKey)
+  const { newIds, removedIds } = await writePull(resolved, inputs, figmaToken, figmaFileKey)
 
   // docs/adr/0017-direct-commit-variableid-backfill.md's write-back step reads these. The JSON
   // payload itself goes to a file, not an output/env var directly — a full-tree first sync can

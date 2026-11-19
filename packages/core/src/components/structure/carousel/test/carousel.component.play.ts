@@ -99,3 +99,20 @@ test.describe('without ResizeObserver and IntersectionObserver', () => {
     })
   }
 })
+
+test.describe('moved in the DOM', () => {
+  test('should still track the active slide on scroll after being moved', async ({ page }) => {
+    await page.mount(`<ds-carousel style="width:300px">${ITEMS}</ds-carousel>`)
+    const carousel = new DsCarousel(page.locator('ds-carousel'))
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-carousel')!)
+    })
+    await page.waitForChanges()
+    await carousel.el.locator('[part="track"]').evaluate(el => el.scrollTo({ left: el.clientWidth }))
+
+    await carousel.assertItemSelected('s2')
+  })
+})

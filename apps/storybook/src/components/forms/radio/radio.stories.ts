@@ -19,7 +19,7 @@ const meta: Meta<Args> = {
   ...withRender(
     ({ slot, ...args }) => `
 <ds-radio-group name="playground">
-  <ds-radio ${props(args)}>${slot}</ds-radio>
+  <ds-radio ${props(args, tag)}>${slot}</ds-radio>
 </ds-radio-group>`,
   ),
 }

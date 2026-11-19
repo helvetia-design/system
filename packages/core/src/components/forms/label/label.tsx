@@ -1,6 +1,6 @@
-import { Component, Element, h, Host, Method, Prop, State } from '@stencil/core'
+import { AttrDeserialize, Component, Element, h, Host, Method, Prop, State } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
-import { Logger, type LogInstance, OneOf, Type, hasValue } from '@utils'
+import { deserializeBooleanAttribute, Logger, type LogInstance, OneOf, Type, hasValue } from '@utils'
 import {
   DsConfigObserver,
   DsConfigState,
@@ -88,6 +88,11 @@ export class Label implements DsComponentInterface, DsConfigObserver {
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * Defines the size of the font. Default is like a heading 5 and small is used

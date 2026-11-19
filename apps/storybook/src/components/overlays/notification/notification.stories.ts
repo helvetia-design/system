@@ -45,7 +45,7 @@ const Story = StoryFactory<Args>(meta)
 export const Basic = Story({
   args: {},
   ...withRender(
-    ({ slot, ...args }) => `<ds-notification ${props(args)}>
+    ({ slot, ...args }) => `<ds-notification ${props(args, tag)}>
   ${slot}
 </ds-notification>`,
   ),
@@ -63,19 +63,19 @@ export const Alerts = Story({
   ...withRender(
     ({ slot, ...args }) => `
 <div class="ds-stack">
-  <ds-notification ${props(args)} heading="Alert">
+  <ds-notification ${props(args, tag)} heading="Alert">
     ${slot}
   </ds-notification>
-  <ds-notification ${props(args)} color="info" heading="Information">
+  <ds-notification ${props(args, tag)} color="info" heading="Information">
     ${slot}
   </ds-notification>
-  <ds-notification ${props(args)} color="success" heading="Success">
+  <ds-notification ${props(args, tag)} color="success" heading="Success">
     ${slot}
   </ds-notification>
-  <ds-notification ${props(args)} color="warning" heading="Warning">
+  <ds-notification ${props(args, tag)} color="warning" heading="Warning">
     ${slot}
   </ds-notification>
-  <ds-notification ${props(args)} color="danger" heading="Danger">
+  <ds-notification ${props(args, tag)} color="danger" heading="Danger">
     ${slot}
   </ds-notification>
 </div>`,
@@ -90,19 +90,19 @@ export const Outlines = Story({
   ...withRender(
     ({ slot, ...args }) => `
 <div class="ds-stack">
-  <ds-notification ${props(args)} color="outline-default" heading="Alert">
+  <ds-notification ${props(args, tag)} color="outline-default" heading="Alert">
     ${slot}
   </ds-notification>
-  <ds-notification ${props(args)} color="outline-purple" heading="Information">
+  <ds-notification ${props(args, tag)} color="outline-purple" heading="Information">
     ${slot}
   </ds-notification>
-  <ds-notification ${props(args)} color="outline-green" heading="Success">
+  <ds-notification ${props(args, tag)} color="outline-green" heading="Success">
     ${slot}
   </ds-notification>
-  <ds-notification ${props(args)} color="outline-yellow" heading="Warning">
+  <ds-notification ${props(args, tag)} color="outline-yellow" heading="Warning">
     ${slot}
   </ds-notification>
-  <ds-notification ${props(args)} color="outline-red" heading="Danger">
+  <ds-notification ${props(args, tag)} color="outline-red" heading="Danger">
     ${slot}
   </ds-notification>
 </div>`,

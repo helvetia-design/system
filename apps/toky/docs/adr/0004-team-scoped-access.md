@@ -5,7 +5,8 @@
 Accepted. Supersedes the authorization decision in
 [ADR-0003](0003-github-oauth-sign-in-bot-pat-writes.md) — sign-in mechanism, session
 strategy, preview-deployment blocking, and denied-UX all stand as decided there; only
-_who counts as authorized_ changes.
+_who counts as authorized_ changes. The hardcoded team slug is superseded by
+[ADR-0005](0005-team-from-toky-config.md): the team now comes from the Toky config.
 
 ## Context
 

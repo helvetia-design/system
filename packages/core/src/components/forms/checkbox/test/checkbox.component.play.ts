@@ -191,3 +191,29 @@ test.describe('checkbox-group', () => {
     await tony.assertToBeChecked()
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat a bare required attribute as true', async ({ page }) => {
+    await page.mount(`<ds-checkbox required>Label</ds-checkbox>`)
+    const checkbox = new DsCheckbox(page.locator('ds-checkbox'))
+
+    await expect(checkbox.el).toHaveJSProperty('required', true)
+    await expect(checkbox.nativeInput).toHaveJSProperty('required', true)
+  })
+
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-checkbox required="false">Label</ds-checkbox>`)
+    const checkbox = new DsCheckbox(page.locator('ds-checkbox'))
+
+    await expect(checkbox.el).toHaveJSProperty('required', false)
+    await expect(checkbox.nativeInput).toHaveJSProperty('required', false)
+  })
+
+  test('should treat required="false" on the group as false', async ({ page }) => {
+    await page.mount(
+      `<ds-checkbox-group control name="heroes" label="Label" required="false"><ds-checkbox value="a">A</ds-checkbox></ds-checkbox-group>`,
+    )
+
+    await expect(page.locator('ds-checkbox-group')).toHaveJSProperty('required', false)
+  })
+})

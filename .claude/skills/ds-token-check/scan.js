@@ -10,10 +10,27 @@ const path = require('path')
 const { globSync } = require('glob')
 const postcssScss = require('postcss-scss')
 const { checkNamingForKey, pascalToKebab } = require('./naming-rules')
+const { loadDsContext, familyParents, tokenPaths } = require('../_shared/ds-context')
 
-const COMPONENTS_ROOT = 'packages/core/src/components'
-const TOKENS_CSS_PATH = 'packages/tokens/dist/css/base.tokens.css'
-const TOKENS_JSON_PATH = 'packages/tokens/tokens/Base.tokens.json'
+// The repo's layout comes from ds-context.js, which falls back to this repository's own
+// paths when the repo declares no ds-context.json. A consuming repo may declare several
+// component roots, or none for tokens.
+const DEFAULT_COMPONENTS_ROOT = 'packages/core/src/components'
+
+// The directories whose children are component families — the category folders here, the
+// component roots themselves in a repo that declares "categorized": false.
+function listCategoryPaths(dsRoot) {
+  return familyParents(dsRoot)
+}
+
+// Token files, or a clear failure when the repo has no token package at all.
+function requireTokenPaths(dsRoot) {
+  const paths = tokenPaths(dsRoot)
+  if (!paths) {
+    throw new Error('This repo declares no token package in ds-context.json — ds-token-check cannot run here.')
+  }
+  return paths
+}
 const COMPONENT_TOKENS_KEY = '🧩 Component'
 
 // Component-layer namespaces a whole category deliberately shares instead of each
@@ -31,7 +48,10 @@ const SHARED_OWNERS_BY_CATEGORY = {
 function findDSRoot() {
   let current = process.cwd()
   while (current !== '/') {
-    if (fs.existsSync(path.join(current, COMPONENTS_ROOT))) return current
+    // A repo that declares its layout is the root by definition; otherwise fall back to
+    // recognising this repository's own component root.
+    if (fs.existsSync(path.join(current, 'ds-context.json'))) return current
+    if (fs.existsSync(path.join(current, DEFAULT_COMPONENTS_ROOT))) return current
     current = path.dirname(current)
   }
   throw new Error("Could not find design system root. Make sure you're in the DS repo.")
@@ -42,13 +62,9 @@ function findDSRoot() {
 // tab-panel/. Sub-components live as SIBLING directories under this same parent, never
 // nested inside one another, per packages/core/CONTEXT.md's <category>/<name>/ layout.
 function findFamilyDir(dsRoot, componentName) {
-  const categoryDirs = fs
-    .readdirSync(path.join(dsRoot, COMPONENTS_ROOT), { withFileTypes: true })
-    .filter(d => d.isDirectory())
-    .map(d => d.name)
+  const categoryPaths = listCategoryPaths(dsRoot)
 
-  for (const category of categoryDirs) {
-    const categoryPath = path.join(dsRoot, COMPONENTS_ROOT, category)
+  for (const { dir: categoryPath, category } of categoryPaths) {
     const familyDirs = fs
       .readdirSync(categoryPath, { withFileTypes: true })
       .filter(d => d.isDirectory())
@@ -64,8 +80,7 @@ function findFamilyDir(dsRoot, componentName) {
   // Fallback: componentName might be a sub-component (e.g. "tab" inside the "tabs"
   // family) whose own directory doesn't match the family's name. Search one level
   // deeper for a directory literally named componentName, then return its parent.
-  for (const category of categoryDirs) {
-    const categoryPath = path.join(dsRoot, COMPONENTS_ROOT, category)
+  for (const { dir: categoryPath, category } of categoryPaths) {
     const familyDirs = fs
       .readdirSync(categoryPath, { withFileTypes: true })
       .filter(d => d.isDirectory())
@@ -91,11 +106,7 @@ function findFamilyDir(dsRoot, componentName) {
 // (doesn't match any known component namespace at all).
 function listAllComponentDirNames(dsRoot) {
   const names = new Set()
-  const categoryDirs = fs
-    .readdirSync(path.join(dsRoot, COMPONENTS_ROOT), { withFileTypes: true })
-    .filter(d => d.isDirectory())
-  for (const category of categoryDirs) {
-    const categoryPath = path.join(dsRoot, COMPONENTS_ROOT, category.name)
+  for (const { dir: categoryPath } of listCategoryPaths(dsRoot)) {
     const familyDirs = fs.readdirSync(categoryPath, { withFileTypes: true }).filter(d => d.isDirectory())
     for (const family of familyDirs) {
       names.add(family.name)
@@ -173,7 +184,7 @@ function classify(token, familyKebab, siblingNames, allComponentNames, definedTo
 }
 
 function loadComponentLayer(dsRoot) {
-  const tokensFile = path.join(dsRoot, TOKENS_JSON_PATH)
+  const tokensFile = path.join(dsRoot, requireTokenPaths(dsRoot).json)
   const data = JSON.parse(fs.readFileSync(tokensFile, 'utf-8'))
   return data[COMPONENT_TOKENS_KEY] || {}
 }
@@ -206,9 +217,10 @@ function deriveComponentKeys(usages, componentLayer) {
 }
 
 function loadDefinedTokens(dsRoot) {
-  const cssPath = path.join(dsRoot, TOKENS_CSS_PATH)
+  const tokensCss = requireTokenPaths(dsRoot).css
+  const cssPath = path.join(dsRoot, tokensCss)
   if (!fs.existsSync(cssPath)) {
-    throw new Error(`${TOKENS_CSS_PATH} not found — run \`pnpm tokens\` first.`)
+    throw new Error(`${tokensCss} not found — run \`pnpm tokens\` first.`)
   }
   const css = fs.readFileSync(cssPath, 'utf-8')
   const defined = new Set()
@@ -562,7 +574,8 @@ function scan(componentName) {
   const dsRoot = findDSRoot()
   const found = findFamilyDir(dsRoot, componentName)
   if (!found) {
-    throw new Error(`No component family directory found for "${componentName}" under ${COMPONENTS_ROOT}.`)
+    const roots = loadDsContext(dsRoot).componentRoots.join(', ')
+    throw new Error(`No component family directory found for "${componentName}" under ${roots}.`)
   }
 
   const { familyDir, familyKebab, category } = found

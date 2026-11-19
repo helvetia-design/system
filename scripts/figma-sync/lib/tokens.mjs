@@ -22,9 +22,9 @@ export function loadTokenFile(path) {
  * apps/toky/src/tokens/github.ts's listTokenBrandFiles, re-derived per
  * ADR-0020 rather than imported.
  */
-export function listBrandNames(tokensDir) {
+export function listBrandNames(tokensDir, baseFileName = 'Base.tokens.json') {
   return readdirSync(tokensDir)
-    .filter(name => name.endsWith('.tokens.json') && name !== 'Base.tokens.json')
+    .filter(name => name.endsWith('.tokens.json') && name !== baseFileName)
     .map(name => name.slice(0, -'.tokens.json'.length))
     .sort((a, b) => a.localeCompare(b))
 }
