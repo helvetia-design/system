@@ -1,6 +1,7 @@
 # CONTEXT — Helvetia Design System Repository
 
 This document captures the domain language, architectural patterns, and key concepts that govern the entire design system monorepo.
+bump.
 
 ## Overview
 
