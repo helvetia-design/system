@@ -30,48 +30,13 @@
   gap: var(--ds-carousel-item-gap);
   padding: var(--ds-carousel-item-padding);
   border-radius: var(--ds-carousel-item-radius);
-  background-color: var(--ds-carousel-item-default-color-background-base);
   cursor: pointer;
   outline: none;
-  transition:
-    background-color 120ms ease,
-    box-shadow 120ms ease;
-
-  @include hover {
-    &:hover {
-      background-color: var(--ds-carousel-item-default-color-background-hover);
-    }
-  }
-
-  &:active {
-    background-color: var(--ds-carousel-item-default-color-background-active);
-  }
+  transition: box-shadow 120ms ease;
 }
 
 :host(.is-tile:focus-visible:not(:active)) {
   @include focus-shadow(var(--ds-alias-interaction-focus-color-base));
-}
-
-:host(.is-tile.is-selected) {
-  background-color: var(--ds-carousel-item-selected-color-background);
-}
-
-// ─── Color variants (product) — level 1 (lightest) base ──────────────────────
-
-@each $color in 'purple', 'green', 'red', 'yellow' {
-  :host(.is-tile.is-#{$color}) {
-    background-color: var(--ds-carousel-item-#{$color}-color-background-base);
-
-    @include hover {
-      &:hover {
-        background-color: var(--ds-carousel-item-#{$color}-color-background-hover);
-      }
-    }
-
-    &:active {
-      background-color: var(--ds-carousel-item-#{$color}-color-background-active);
-    }
-  }
 }
 
 // ─── Navigation (link) mode ───────────────────────────────────────────────────
