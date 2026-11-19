@@ -15,6 +15,7 @@ import { ModalPresentDetail, ModalDismissDetail } from './modal.interfaces'
  * @part title - The h2 wrapping the header slot.
  * @part body - The div wrapping the body slot.
  * @part actions - The div wrapping the actions slot.
+ * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by the modal padding from the top-right corner.
  */
 @Component({
   tag: 'ds-modal',
@@ -70,11 +71,11 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
   readonly closable: boolean = true
 
   /**
-   * Width of the modal in pixels.
+   * Width of the modal in pixels. Overrides the `--modal-width` token (640px by default).
    */
   @Prop()
   @Type('number')
-  readonly modalWidth: number = 640
+  readonly modalWidth?: number
 
   /**
    * If `true`, the modal covers the full viewport.
@@ -120,16 +121,12 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
   }
 
   componentDidLoad(): void {
-    this.dialogEl?.addEventListener('cancel', this.handleCancel)
-    this.dialogEl?.addEventListener('close', this.handleNativeClose)
     if (this.open) {
       this.runOpen()
     }
   }
 
   disconnectedCallback(): void {
-    this.dialogEl?.removeEventListener('cancel', this.handleCancel)
-    this.dialogEl?.removeEventListener('close', this.handleNativeClose)
     this.scrollHandler.disconnect()
   }
 
@@ -245,7 +242,7 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
           'is-animated': this.animated,
           'is-fullscreen': this.fullscreen,
         }}
-        style={{ '--_modal-width': `${this.modalWidth}px` }}
+        style={this.modalWidth ? { '--_modal-width': `${this.modalWidth}px` } : undefined}
       >
         <dialog
           part="dialog"
@@ -258,6 +255,8 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
           aria-label={this.label || undefined}
           aria-describedby="modal-body"
           onClick={this.handleBackdropClick}
+          onCancel={this.handleCancel}
+          onClose={this.handleNativeClose}
         >
           {this.closable && <ds-close part="close" onClick={() => this.dismiss(undefined, 'close')} />}
           <h2 id="modal-title" part="title">

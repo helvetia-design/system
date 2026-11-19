@@ -39,4 +39,9 @@ test.describe('host', () => {
       await expectScreenshot(el, image(variant))
     })
   })
+
+  test('offset-parent', async ({ page }) => {
+    const el = page.getByTestId('offset-parent')
+    await expectScreenshot(el, image('offset-parent'))
+  })
 })

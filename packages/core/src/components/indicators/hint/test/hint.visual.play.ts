@@ -43,3 +43,9 @@ test.describe('host', () => {
     })
   })
 })
+
+test('tooltip', async ({ page }) => {
+  await page.setupVisualTest(`/components/indicators/${TAG}/test/${TAG}.visual.html`)
+  await page.getByTestId('basic-label').locator('ds-hint [part="trigger"]').hover()
+  await expectScreenshot(page.locator('body'), image('tooltip'))
+})

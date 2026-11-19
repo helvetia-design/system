@@ -161,3 +161,41 @@ test.describe('navigation variant', () => {
     await tabs.assertTabNotSelected('second')
   })
 })
+
+test.describe('without ResizeObserver', () => {
+  test('renders without throwing', async ({ page }) => {
+    await page.addInitScript(() => {
+      delete (window as any).ResizeObserver
+    })
+    const errors: string[] = []
+    page.on('pageerror', error => errors.push(error.message))
+    page.on('console', message => {
+      if (message.type() === 'error') errors.push(message.text())
+    })
+
+    await page.mount(`<ds-tabs>${PANELS}</ds-tabs>`)
+    const tabs = new DsTabs(page.locator('ds-tabs'))
+
+    await tabs.assertTabSelected('a')
+    expect(errors).toEqual([])
+  })
+})
+
+test.describe('moved in the DOM', () => {
+  test('should still track tablist overflow on scroll after being moved', async ({ page }) => {
+    const tabs = Array.from({ length: 10 }, (_, i) => `<ds-tab name="t${i}">Tab number ${i}</ds-tab>`).join('')
+    await page.mount(`<ds-tabs style="width:240px">${tabs}</ds-tabs>`)
+    const dsTabs = new DsTabs(page.locator('ds-tabs'))
+    await expect(dsTabs.el).toHaveClass(/can-scroll-right/)
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-tabs')!)
+    })
+    await page.waitForChanges()
+    await dsTabs.el.locator('[part="tablist"]').evaluate(el => el.scrollTo({ left: el.scrollWidth }))
+
+    await expect(dsTabs.el).toHaveClass(/can-scroll-left/)
+  })
+})

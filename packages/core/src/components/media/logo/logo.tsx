@@ -25,12 +25,12 @@ import {
 } from '@utils'
 import { DsComponentInterface, DsConfigObserver, DsConfigState, ListenToConfig } from '@global'
 import { LogoBaloise, LogoHelvetia } from './logo.icons'
-import { LOGO_BRANDS, LOGO_COLORS, LOGO_SIZES, LogoBrand, LogoColor, LogoSize } from './logo.interfaces'
+import { LOGO_BRANDS, LOGO_SIZES, LogoBrand, LogoSize } from './logo.interfaces'
 
 type LogoAnimationFunction = (el: HTMLElement, color: string, loop?: boolean) => AnimationItem
 
 /**
- * Logo displays animated Baloise or Helvetia brand logos with customizable color, size, and responsive sizing.
+ * Logo displays animated Baloise or Helvetia brand logos with customizable size, responsive sizing, and an inverted variant for dark backgrounds.
  *
  * @slot - Optional label or caption text.
  * @part animated - The animated logo container element.
@@ -52,7 +52,7 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
 
   @State() isTouch = dsBreakpoints.isTouch
   @State() doesConfigAllowAnimation = true
-  @State() configBrand: LogoBrand = 'baloise'
+  @State() configBrand: LogoBrand = 'helvetia'
 
   private animationItem!: AnimationItem
   private animatedLogoElement!: HTMLDivElement
@@ -77,18 +77,18 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
   }
 
   /**
-   * Defines the brand of the logo. Default is 'baloise'.
+   * Defines the brand of the logo. Default is 'helvetia'.
    */
   @Prop()
   @OneOf(LOGO_BRANDS)
   readonly brand?: LogoBrand
 
   /**
-   * Defines the color of the logo.
+   * If `true` the logo is shown on a dark background.
    */
   @Prop()
-  @OneOf(LOGO_COLORS)
-  readonly color: LogoColor = 'primary'
+  @Type('boolean')
+  readonly inverted: boolean = false
 
   /**
    * Size of the logo svg
@@ -194,7 +194,7 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
   }
 
   private getColor() {
-    return this.color === 'inverted' ? DsComponentLogoColorInverted : DsComponentLogoColorPrimary
+    return this.inverted ? DsComponentLogoColorInverted : DsComponentLogoColorPrimary
   }
 
   private getHeight() {
@@ -226,7 +226,7 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
       <Host
         class={{
           'is-animated': this.isAnimated,
-          'is-inverted': this.color === 'inverted',
+          'is-inverted': this.inverted,
           'is-sm': this.size === 'sm',
           'is-lg': this.size === 'lg',
         }}

@@ -67,4 +67,35 @@ The most important guideline is keeping badge content short and concise. Here's 
   ]}
 />
 
+### Content Type Examples
+
+A badge should indicate a number (e.g. `1`, `99`) to show an amount, or an icon to show a state — not a word or longer text.
+
+<UsageExamples
+  items={[
+    {
+      type: 'correct',
+      title: 'Correct: Number or Icon',
+      content: (
+        <button className="ds-button is-primary">
+          <ds-badge color="danger">99</ds-badge>
+          Notifications
+        </button>
+      ),
+      description: 'Numbers communicate an amount at a glance',
+    },
+    {
+      type: 'incorrect',
+      title: 'Incorrect: Word as Content',
+      content: (
+        <button className="ds-button">
+          <ds-badge color="danger">New</ds-badge>
+          Notifications
+        </button>
+      ),
+      description: 'Words should describe state via color or an icon, not text',
+    },
+  ]}
+/>
+
 <Footer />

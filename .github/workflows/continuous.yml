@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: 🏗️ Lint, Test & Build
@@ -68,6 +71,9 @@ jobs:
       - name: Test token usage
         run: pnpm test:token-usage
 
+      - name: Test scripts
+        run: pnpm test:scripts
+
       - name: Generate SBOM
         if: github.event_name == 'push'
         run: pnpm sbom --sbom-format cyclonedx --out sbom.cdx.json
@@ -103,9 +109,11 @@ jobs:
         # Determine branch reliably from the event payload.
         # - For pull_request events use github.head_ref (the source branch name)
         # - For push events parse GITHUB_REF (refs/heads/<branch>)
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "branch=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+            echo "branch=$HEAD_REF" >> $GITHUB_OUTPUT
           else
             # strip refs/heads/ prefix
             BRANCH_NAME=${GITHUB_REF#refs/heads/}

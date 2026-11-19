@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 @forward '../../actions/button/button.style';
 
@@ -9,12 +10,18 @@
  * Define here the css variables for the component to be able to use it in host or non-host mode
  * These variables can be used in the component styles below and later on be overridden in themes.
  *
- * @prop --accordion-marker-size: Size of the expand/collapse marker icon.
+ * @prop --accordion-header-min-height: Minimum height of the header row.
+ * @prop --accordion-marker-size: Height and minimum width of the expand/collapse marker icon.
+ * @prop --accordion-marker-width: Width of the expand/collapse marker box.
  * @prop --accordion-summary-color: Text color of the summary label.
+ * @prop --accordion-summary-gap: Gap between the summary label and the marker.
  * @prop --accordion-summary-font-family: Font family of the summary label.
  * @prop --accordion-summary-font-weight: Font weight of the summary label.
- * @prop --accordion-summary-font-line-height: Line height of the summary label.
  * @prop --accordion-summary-font-size: Responsive font size of the summary label.
+ * @prop --accordion-summary-line-height: Line height of the summary label.
+ * @prop --accordion-summary-letter-spacing: Letter spacing of the summary label.
+ * @prop --accordion-summary-text-decoration: Text decoration of the summary label.
+ * @prop --accordion-summary-text-transform: Text transform of the summary label.
  * @prop --accordion-summary-color-hover: Summary text color on hover.
  * @prop --accordion-summary-color-active: Summary text color when pressed.
  * @prop --accordion-radius: Border radius used for the focus ring outline.
@@ -22,13 +29,13 @@
 
 :host {
   @include vars.focus(accordion);
-  @include vars.local(accordion-marker-size, 1rem);
+  @include vars.local(accordion-header-min-height, var(--ds-accordion-header-min-height));
+  @include vars.local(accordion-marker-size, var(--ds-accordion-marker-size));
+  @include vars.local(accordion-marker-width, var(--ds-accordion-marker-width));
 
   @include vars.local(accordion-summary-color, var(--ds-accordion-summary-color-base));
-  @include vars.local(accordion-summary-font-family, var(--ds-accordion-summary-typo-font-family));
-  @include vars.local(accordion-summary-font-weight, var(--ds-accordion-summary-typo-font-weight));
-  @include vars.local(accordion-summary-font-line-height, var(--ds-accordion-summary-typo-line-height));
-  @include vars.local(accordion-summary-font-size, var(--ds-accordion-summary-typo-font-size));
+  @include vars.local(accordion-summary-gap, var(--ds-accordion-summary-gap));
+  @include typo.local(accordion-summary, 'accordion-summary-typo');
   @include vars.local(accordion-summary-color-hover, var(--ds-accordion-summary-color-hover));
   @include vars.local(accordion-summary-color-active, var(--ds-accordion-summary-color-active));
   @include vars.local(accordion-radius, var(--ds-accordion-radius));
@@ -50,7 +57,7 @@
 //
 // Header
 :host #header {
-  min-height: 2.5rem;
+  min-height: var(--_accordion-header-min-height);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -65,7 +72,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: var(--_accordion-summary-gap);
   background: inherit;
   border: none;
   width: 100%;
@@ -74,10 +81,7 @@
   outline: none;
 
   color: var(--_accordion-summary-color);
-  font-family: var(--_accordion-summary-font-family);
-  font-weight: var(--_accordion-summary-font-weight);
-  line-height: var(--_accordion-summary-font-line-height);
-  font-size: var(--_accordion-summary-font-size);
+  @include typo.apply(accordion-summary);
 
   &.has-marker-left {
     #marker {
@@ -136,46 +140,46 @@
 }
 
 :host(.is-title) {
-  --mod-accordion-summary-font-family: var(--ds-alias-text-family-heading);
-  --mod-accordion-summary-font-weight: var(--ds-alias-text-weight-bold);
-  --mod-accordion-summary-font-line-height: var(--ds-alias-text-line-height-heading);
+  @include typo.mod(accordion-summary, 'accordion-summary-title-typo');
 }
 
 :host(.is-h1) {
-  --mod-accordion-summary-font-size: var(--ds-heading-level-1-font-size);
+  @include typo.mod(accordion-summary, 'accordion-summary-level-1');
 }
 
 :host(.is-h2) {
-  --mod-accordion-summary-font-size: var(--ds-heading-level-2-font-size);
+  @include typo.mod(accordion-summary, 'accordion-summary-level-2');
 }
 
 :host(.is-h3) {
-  --mod-accordion-summary-font-size: var(--ds-heading-level-3-font-size);
+  @include typo.mod(accordion-summary, 'accordion-summary-level-3');
 }
 
 :host(.is-h4) {
-  --mod-accordion-summary-font-size: var(--ds-heading-level-4-font-size);
+  @include typo.mod(accordion-summary, 'accordion-summary-level-4');
 }
 
 :host(.is-h5) {
-  --mod-accordion-summary-font-size: var(--ds-heading-level-5-font-size);
+  @include typo.mod(accordion-summary, 'accordion-summary-level-5');
 }
 
 //
 // Summary Marker
 :host(:not(.is-button)) #marker {
   min-width: var(--_accordion-marker-size);
-  width: 1.5rem;
+  width: var(--_accordion-marker-width);
   height: var(--_accordion-marker-size);
   cursor: pointer;
 }
 
 :host(:not(.is-button)[open]:not([open=' false '])) {
   #marker {
+    // ds-token-check: intentional — fixed marker geometry, not brand-themeable
     transform: rotate(180deg);
   }
 
   #marker.has-marker-plus {
+    // ds-token-check: intentional — fixed marker geometry, not brand-themeable
     transform: rotate(45deg);
   }
 }

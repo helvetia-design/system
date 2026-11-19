@@ -68,15 +68,13 @@ export const Field: FunctionalComponent<FieldProps> = (props, children) => {
         {/* Input Control                            */}
         {/* ---------------------------------------- */}
         <div id="container" part="control">
-          <slot name="start"></slot>
+          <slot name="start" {...{ part: 'start' }}></slot>
           {children}
-          <slot name="end"></slot>
+          <slot name="end" {...{ part: 'end' }}></slot>
           {/* ---------------------------------------- */}
           {/* Loading Indicator                        */}
           {/* ---------------------------------------- */}
-          {props.loading === true && (
-            <ds-spinner size="sm" variation="circle" color={props.disabled ? 'inverted' : 'primary'}></ds-spinner>
-          )}
+          {props.loading === true && <ds-spinner size="sm" variation="circle" inverted={props.disabled}></ds-spinner>}
         </div>
         {/* ---------------------------------------- */}
         {/* Description / Invalid Text               */}

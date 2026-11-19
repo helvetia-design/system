@@ -3,12 +3,10 @@
   "ui": "tui",
   "globalDependencies": ["scripts/**"],
   "globalEnv": [
-    "BAL_DOCUMENTATION",
     "DS_DOCUMENTATION",
     "DS_RELEASE",
     "DS_DEVELOPMENT",
     "DS_PLAYWRIGHT_TESTING",
-    "DS_TESTING",
     "TOKY_GITHUB_TOKEN",
     "TOKY_GITHUB_ORG_TOKEN",
     "TOKY_GITHUB_REF",
@@ -21,7 +19,18 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build", "optimize"],
-      "inputs": ["src/**", "app/**", "tokens/**", "!**/*.spec.*", "!**/*.play.*"],
+      "inputs": [
+        "src/**",
+        "app/**",
+        "tokens/**",
+        "config/**",
+        "scripts/**",
+        "stencil.config.ts",
+        "tsconfig*.json",
+        "ng-package.json",
+        "!**/*.spec.*",
+        "!**/*.play.*"
+      ],
       "outputs": [
         "dist/**",
         "www/**",

@@ -25,6 +25,7 @@ import { withValueAccessor } from './value-accessor'
  */
 @Component({
   selector: 'ds-slider',
+  host: { 'data-ds-form-control': '' },
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: DsSliderInputs,

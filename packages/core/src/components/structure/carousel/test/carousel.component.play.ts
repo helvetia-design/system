@@ -64,3 +64,42 @@ test.describe('tile variant — initial state', () => {
     expect(spy).toHaveReceivedEventDetail({ value: 'p2' })
   })
 })
+
+test.describe('without ResizeObserver and IntersectionObserver', () => {
+  for (const variant of ['tile', 'slide']) {
+    test(`renders the ${variant} variant without throwing`, async ({ page }) => {
+      await page.addInitScript(() => {
+        delete (window as any).ResizeObserver
+        delete (window as any).IntersectionObserver
+      })
+      const errors: string[] = []
+      page.on('pageerror', error => errors.push(error.message))
+      page.on('console', message => {
+        if (message.type() === 'error') errors.push(message.text())
+      })
+
+      await page.mount(`<ds-carousel variant="${variant}">${ITEMS}</ds-carousel>`)
+      const carousel = new DsCarousel(page.locator('ds-carousel'))
+
+      await carousel.assertItemSelected('s1')
+      expect(errors).toEqual([])
+    })
+  }
+})
+
+test.describe('moved in the DOM', () => {
+  test('should still track the active slide on scroll after being moved', async ({ page }) => {
+    await page.mount(`<ds-carousel style="width:300px">${ITEMS}</ds-carousel>`)
+    const carousel = new DsCarousel(page.locator('ds-carousel'))
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-carousel')!)
+    })
+    await page.waitForChanges()
+    await carousel.el.locator('[part="track"]').evaluate(el => el.scrollTo({ left: el.clientWidth }))
+
+    await carousel.assertItemSelected('s2')
+  })
+})

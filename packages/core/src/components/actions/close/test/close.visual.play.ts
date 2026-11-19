@@ -15,3 +15,9 @@ VARIANTS.forEach(variant => {
     await expectScreenshot(el, image(variant))
   })
 })
+
+test('tooltip', async ({ page }) => {
+  const el = page.getByTestId('tooltip')
+  await el.locator('ds-close button').hover()
+  await expectScreenshot(el, image('tooltip'))
+})

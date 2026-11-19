@@ -12,6 +12,7 @@ import { DrawerPresentDetail, DrawerDismissDetail, DRAWER_CONTAINERS, DrawerCont
  * @slot - The drawer content.
  * @part dialog - The native dialog element.
  * @part close  - The optional close button (visible when closable).
+ * @attachment ds-close top-right - Close button rendered when `closable` is true, inset by `--drawer-close-inset` from the container's top-end corner.
  */
 @Component({
   tag: 'ds-drawer',
@@ -108,16 +109,12 @@ export class Drawer implements DsComponentInterface, DsConfigObserver {
   }
 
   componentDidLoad(): void {
-    this.dialogEl?.addEventListener('cancel', this.handleCancel)
-    this.dialogEl?.addEventListener('close', this.handleNativeClose)
     if (this.open) {
       this.runOpen()
     }
   }
 
   disconnectedCallback(): void {
-    this.dialogEl?.removeEventListener('cancel', this.handleCancel)
-    this.dialogEl?.removeEventListener('close', this.handleNativeClose)
     this.scrollHandler.disconnect()
   }
 
@@ -222,6 +219,8 @@ export class Drawer implements DsComponentInterface, DsConfigObserver {
           ref={el => (this.dialogEl = el as HTMLDialogElement)}
           aria-label={this.label || undefined}
           onClick={this.handleBackdropClick}
+          onCancel={this.handleCancel}
+          onClose={this.handleNativeClose}
         >
           <div
             class={{

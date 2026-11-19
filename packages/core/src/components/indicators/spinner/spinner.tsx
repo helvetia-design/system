@@ -48,7 +48,7 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
 
-  private animationItem!: AnimationItem
+  private animationItem?: AnimationItem
   private animationFunction?: SpinnerAnimationFunction
   private currentRaf: number | undefined
   private innerEl: HTMLDivElement | undefined
@@ -178,17 +178,22 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
     if (this.shouldAnimate()) {
       this.destroy()
       this.currentRaf = raf(async () => {
-        if (this.animationFunction && this.innerEl) {
-          this.animationFunction(this.innerEl, this.getColor())
+        this.currentRaf = undefined
+        // the element may have been removed while the animation module was loading
+        if (this.animationFunction && this.innerEl && this.el.isConnected) {
+          this.animationItem = this.animationFunction(this.innerEl, this.getColor())
         }
       })
     }
   }
 
   private destroy = () => {
-    if (this.animationItem && this.animationItem.destroy) {
-      this.animationItem.destroy()
+    if (this.currentRaf !== undefined) {
+      cancelAnimationFrame(this.currentRaf)
+      this.currentRaf = undefined
     }
+    this.animationItem?.destroy()
+    this.animationItem = undefined
     if (this.innerEl) {
       this.innerEl.innerHTML = ''
     }
@@ -228,18 +233,27 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
   }
 
   private getColor(): string {
-    // Prefer a CSS custom property override if present on the host
     try {
-      const cssVar = this.el ? getComputedStyle(this.el).getPropertyValue('--spinner-color').trim() : ''
-      if (cssVar) {
-        return cssVar
+      const style = this.el ? getComputedStyle(this.el) : undefined
+
+      // Prefer an explicit override (e.g. ds-button theming its nested spinner)
+      const override = style?.getPropertyValue('--spinner-logo-color').trim()
+      if (override) {
+        return override
+      }
+
+      // Otherwise resolve the component's own logo color token
+      const tokenVar = this.inverted ? '--ds-spinner-logo-color-inverted' : '--ds-spinner-logo-color-primary'
+      const tokenColor = style?.getPropertyValue(tokenVar).trim()
+      if (tokenColor) {
+        return tokenColor
       }
     } catch {
       // Ignore errors, e.g. if getComputedStyle is not available
     }
 
-    // Fallback to component props
-    return this.inverted ? '#ffffff' : '#151f6d'
+    // SSR/no-DOM fallback, kept in sync with --ds-spinner-logo-color-primary/-inverted
+    return this.inverted ? '#ffffff' : '#000d6e'
   }
 
   /**

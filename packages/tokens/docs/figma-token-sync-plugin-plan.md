@@ -1,6 +1,6 @@
 # Figma Token Sync Plugin — Implementation Plan
 
-Status: proposed · Owner: packages/tokens · Related: [ADR 0001](adr/0001-figma-variable-identity-key.md), [ADR 0002](adr/0002-brand-modes-not-collections.md), [ADR 0003](adr/0003-native-variable-aliasing.md), [ADR 0004](adr/0004-git-data-api-atomic-commits.md), [ADR 0005](adr/0005-git-committed-sync-baseline.md)
+Status: proposed · Owner: packages/tokens · Related: [ADR 0001](adr/0001-figma-variable-identity-key.md), [ADR 0002](adr/0002-brand-modes-not-collections.md), [ADR 0003](adr/0003-native-variable-aliasing.md), [ADR 0004](adr/0004-git-data-api-atomic-commits.md), [ADR 0005](adr/0005-git-committed-sync-baseline.md), [ADR 0006](adr/0006-figma-breakpoint-display-order.md)
 
 ## 1. Purpose
 
@@ -21,23 +21,24 @@ workflows beyond GitHub PR review are explicitly out of scope — see
 These were resolved before drafting this plan and are treated as fixed
 constraints throughout:
 
-| Decision              | Resolution                                                                                               |
-| --------------------- | -------------------------------------------------------------------------------------------------------- |
-| Plugin location       | Inside this monorepo, `scripts/figma/token-sync-plugin/`                                                 |
-| Brand ↔ Figma mapping | Modes within one Variable Collection ([ADR-0002](adr/0002-brand-modes-not-collections.md))               |
-| Token identity        | `variableId` primary, path fallback ([ADR-0001](adr/0001-figma-variable-identity-key.md))                |
-| Metadata location     | Separate `.figma-sync-state.json`, not inline `$extensions`                                              |
-| Branch strategy       | New branch + PR per sync session                                                                         |
-| PAT type              | Classic or fine-grained accepted; scopes validated on connect                                            |
-| Fetch trigger         | Manual "Check for updates," not automatic on plugin open                                                 |
-| Diff strategy         | 3-way diff against a stored sync baseline                                                                |
-| Brand file writes     | Push strips to true overrides only (mirrors `computeTokenDiff`)                                          |
-| Reference handling    | Native Figma variable aliases, not flattened literals ([ADR-0003](adr/0003-native-variable-aliasing.md)) |
-| Baseline storage      | Committed to GitHub, not local `clientStorage` ([ADR-0005](adr/0005-git-committed-sync-baseline.md))     |
-| GitHub write API      | Git Data API, one atomic commit per sync ([ADR-0004](adr/0004-git-data-api-atomic-commits.md))           |
-| Deletion safety       | Extra confirmation step, excluded from "Apply All"                                                       |
-| Rollout scope         | Single-designer pilot for Phases 1–3; concurrency hardening in Phase 5                                   |
-| UI stack              | TypeScript + Preact, bundled with esbuild                                                                |
+| Decision                           | Resolution                                                                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Plugin location                    | Inside this monorepo, `scripts/figma/token-sync-plugin/`                                                                                         |
+| Brand ↔ Figma mapping              | Modes within one Variable Collection ([ADR-0002](adr/0002-brand-modes-not-collections.md))                                                       |
+| Token identity                     | `variableId` primary, path fallback ([ADR-0001](adr/0001-figma-variable-identity-key.md))                                                        |
+| Metadata location                  | Separate `.figma-sync-state.json`, not inline `$extensions`                                                                                      |
+| Branch strategy                    | New branch + PR per sync session                                                                                                                 |
+| PAT type                           | Classic or fine-grained accepted; scopes validated on connect                                                                                    |
+| Fetch trigger                      | Manual "Check for updates," not automatic on plugin open                                                                                         |
+| Diff strategy                      | 3-way diff against a stored sync baseline                                                                                                        |
+| Brand file writes                  | Push strips to true overrides only (mirrors `computeTokenDiff`)                                                                                  |
+| Reference handling                 | Native Figma variable aliases, not flattened literals ([ADR-0003](adr/0003-native-variable-aliasing.md))                                         |
+| Baseline storage                   | Committed to GitHub, not local `clientStorage` ([ADR-0005](adr/0005-git-committed-sync-baseline.md))                                             |
+| GitHub write API                   | Git Data API, one atomic commit per sync ([ADR-0004](adr/0004-git-data-api-atomic-commits.md))                                                   |
+| Deletion safety                    | Extra confirmation step, excluded from "Apply All"                                                                                               |
+| Rollout scope                      | Single-designer pilot for Phases 1–3; concurrency hardening in Phase 5                                                                           |
+| UI stack                           | TypeScript + Preact, bundled with esbuild                                                                                                        |
+| Breakpoint variable creation order | Desktop, Tablet, Mobile — Phase 2 only, explicit constant independent of JSON key order ([ADR-0006](adr/0006-figma-breakpoint-display-order.md)) |
 
 ## 3. Architecture
 

@@ -193,11 +193,13 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   connectedCallback() {
     this.initialValue = this.value
     setFormValue(this.internals, this.value)
-    this.resizeObserver = new ResizeObserver(() => {
-      this.updateLayout()
-      this.updatePill()
-    })
-    this.resizeObserver.observe(this.el)
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.updateLayout()
+        this.updatePill()
+      })
+      this.resizeObserver.observe(this.el)
+    }
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })
@@ -298,7 +300,12 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   // Native radio never fires "change" when clicking an already-checked item,
   // so onClick is the only hook for deselection.
   private handleInputClick = (ev: MouseEvent, itemValue: any) => {
-    if (!this.allowEmptySelection || this.disabled || this.readonly) return
+    // Native radios ignore `readOnly`, so cancel the click to keep the checked state in sync with `value`
+    if (this.readonly) {
+      ev.preventDefault()
+      return
+    }
+    if (!this.allowEmptySelection || this.disabled) return
     if (this.value === itemValue) {
       ev.preventDefault()
       this.value = undefined

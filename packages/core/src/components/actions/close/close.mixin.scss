@@ -40,6 +40,7 @@
     @if $background {
       background: var(--_close-color-background);
     } @else {
+      // ds-token-check: intentional — transparent is a fixed CSS keyword, not a themeable value
       background: transparent;
     }
 

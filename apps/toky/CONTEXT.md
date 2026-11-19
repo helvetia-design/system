@@ -26,6 +26,10 @@ A tag on a working-change entry recording whether it came from a manual edit or 
 **Brand**:
 A named override tree layered on top of Base (e.g. `OrangeVacations`), stored as its own sparse `*.tokens.json` file. Toky can create a new brand as part of a submit — see [ADR-0001](docs/adr/0001-auto-patch-brands-array-on-create.md).
 
+**Brand switcher**:
+A control in the top-right of the token table toolbar for changing the currently selected Brand without opening the Brands sidebar. Selecting a Brand there is the same act as selecting it in the sidebar: it becomes the active Brand and the table shows its column next to Base.
+_Avoid_: theme switcher (a "theme" in this system is a compiled CSS file or a Figma mode, not a Toky concept — see [`packages/tokens/CONTEXT.md`](../../packages/tokens/CONTEXT.md))
+
 **Live Preview**:
 A sidebar tab (alongside Figma Pull/Brands/Problems/Staged Changes) embedding `packages/core`'s dev-server (`localhost:4000`) in an iframe, reflecting the _current_ working changes as `--ds-*` CSS custom property overrides — not the committed/built tokens. Mirrors the brand currently selected for editing (no independent brand selector). Mounts/unmounts with the tab (no state kept across switches); each mount re-sends the full working-vs-baseline diff, not an incremental delta. A page picker (`SearchSelect`, shared with the Reference picker) lets you switch which `*.visual.html` page the iframe shows, sourced from `packages/core`'s generated `/visual-pages.json` manifest (every visual page under `src/{blocks,templates,foundation,components}`) plus a static "Playground" option; switching pages reloads the iframe and re-runs the ready handshake. See [`docs/plans/toky-live-token-preview-plan.md`](../../docs/plans/toky-live-token-preview-plan.md) and [ADR-0021](../../docs/adr/0021-shared-css-naming-serialization-for-preview.md).
 _Avoid_: preview (bare — this app has no other "preview" concept yet, but qualify as "Live Preview" to stay consistent with the plan doc)

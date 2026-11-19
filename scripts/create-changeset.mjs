@@ -6,29 +6,21 @@
  */
 import prompts from 'prompts'
 import { readFile, rm, writeFile } from 'node:fs/promises'
-import path, { join, resolve, dirname } from 'node:path'
+import { join, resolve, dirname } from 'node:path'
 import { execSync } from 'node:child_process'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const workspaceRoot = resolve(__dirname, '..')
 const BUMP_LEVELS = ['patch', 'minor', 'major']
 
 /**
- * Maps a scope choice to the package it should bump. Scopes without an entry here
- * (component tags like `slider`, or cross-cutting scopes like `a11y`/`deps`/`table`/`devkit`)
- * fall back to `@helvetia-design/core`, since that's where components/utilities actually live.
+ * All `@helvetia-design/*` packages are a fixed changeset group (see .changeset/config.json)
+ * and release together under one version with one changelog. Every changeset's frontmatter
+ * therefore always targets `@helvetia-design/core` — the scope choice only affects the bold
+ * label on the changelog line, never which package gets bumped.
  */
-const SCOPE_PACKAGE_MAP = {
-  core: '@helvetia-design/core',
-  angular: '@helvetia-design/angular',
-  styles: '@helvetia-design/styles',
-  tokens: '@helvetia-design/tokens',
-  react: '@helvetia-design/react',
-  assets: '@helvetia-design/assets',
-  testing: '@helvetia-design/playwright',
-  skills: '@helvetia-design/skills',
-}
+const CHANGESET_PACKAGE = '@helvetia-design/core'
 
 let cleanUp = () => Promise.resolve()
 
@@ -47,12 +39,14 @@ function exec(cmd) {
 /**
  * Parse `--key=value` / `--key value` CLI flags into an object
  */
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const args = {}
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (!arg.startsWith('--')) continue
-    const [key, inlineValue] = arg.slice(2).split('=')
+    const eq = arg.indexOf('=')
+    const key = eq === -1 ? arg.slice(2) : arg.slice(2, eq)
+    const inlineValue = eq === -1 ? undefined : arg.slice(eq + 1)
     if (inlineValue !== undefined) {
       args[key] = inlineValue
     } else if (argv[i + 1] && !argv[i + 1].startsWith('--')) {
@@ -65,10 +59,23 @@ function parseArgs(argv) {
 }
 
 /**
+ * Extract the generated changeset filename from `changeset add --empty` stdout.
+ * Throws unless it is a plain `*.md` name, so the caller can never touch anything but that file.
+ */
+export function parseChangesetFilename(stdout) {
+  const matches = [...String(stdout).matchAll(/\.changeset[\\/]([\w-]+\.md)/g)]
+  const filename = matches.at(-1)?.[1]
+  if (!filename) {
+    throw new Error(`Could not read changeset filename from CLI output:\n${stdout}`)
+  }
+  return filename
+}
+
+/**
  * Write a changeset file for the given bump level, scope(s), and summary.
  * Shared by both the interactive prompt flow and non-interactive CLI usage.
  */
-async function writeChangeset({ bumpLevel, scope, summary }) {
+export async function writeChangeset({ bumpLevel, scope, summary }) {
   if (!BUMP_LEVELS.includes(bumpLevel)) {
     throw new Error(`Invalid bump level "${bumpLevel}". Expected one of: ${BUMP_LEVELS.join(', ')}`)
   }
@@ -84,8 +91,7 @@ async function writeChangeset({ bumpLevel, scope, summary }) {
   }
 
   const label = cleanScopes.join('/')
-  const packages = [...new Set(cleanScopes.map(s => SCOPE_PACKAGE_MAP[s] ?? '@helvetia-design/core'))]
-  const frontmatter = packages.map(pkg => `'${pkg}': ${bumpLevel}`).join('\n')
+  const frontmatter = `'${CHANGESET_PACKAGE}': ${bumpLevel}`
   const content = `---
 ${frontmatter}
 ---
@@ -94,19 +100,14 @@ ${frontmatter}
 `
 
   // Generate filename using changeset CLI
-  const stdout = exec('pnpm exec changeset add --empty')
-  const triggerWord = '.changeset' + path.sep
-  const start = stdout.lastIndexOf(triggerWord) + triggerWord.length
-  const end = stdout.lastIndexOf('.md') + '.md'.length
-  const filename = stdout.substring(start, end).trim()
+  const filename = parseChangesetFilename(exec('pnpm exec changeset add --empty'))
   const filepath = join(workspaceRoot, '.changeset', filename)
 
   // Setup cleanup on error
-  cleanUp = async () => rm(filepath, { force: true, recursive: true })
+  cleanUp = async () => rm(filepath, { force: true })
 
-  // Write changeset file
-  await rm(filepath, { force: true, recursive: true })
-  await writeFile(filepath.trim(), content, { encoding: 'utf-8' })
+  // Overwrite the empty changeset the CLI created
+  await writeFile(filepath, content, { encoding: 'utf-8' })
 
   console.log('')
   console.log(`\x1b[32m✔\x1b[0m Changeset created: ${filepath}`)
@@ -239,4 +240,6 @@ async function main() {
   await runInteractive()
 }
 
-await main()
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main()
+}

@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@axe-core/playwright": "catalog:",
-    "@swc/helpers": "0.5.23",
+    "@swc/helpers": "0.5.24",
     "fast-deep-equal": "catalog:"
   },
   "devDependencies": {

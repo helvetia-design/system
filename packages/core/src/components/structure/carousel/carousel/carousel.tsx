@@ -120,6 +120,14 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
    * ─────────────────────────────────────────────────────
    */
 
+  connectedCallback() {
+    // Reconnecting after a DOM move: componentDidLoad only runs once, but disconnectedCallback tore down the observers.
+    if (this.trackEl) {
+      this.initScroll()
+      this.initIntersection()
+    }
+  }
+
   componentDidLoad() {
     this.setup()
     this.initScroll()
@@ -436,8 +444,10 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     const el = this.trackEl
     if (!el || this.variant !== 'tile') return
     el.addEventListener('scroll', this.checkOverflow, { passive: true })
-    this.resizeObserver = new ResizeObserver(this.checkOverflow)
-    this.resizeObserver.observe(el)
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(this.checkOverflow)
+      this.resizeObserver.observe(el)
+    }
     this.checkOverflow()
   }
 
@@ -445,6 +455,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     this.intersectionObserver?.disconnect()
     this.intersectionInitialized = false
     if (this.variant !== 'slide' || !this.trackEl) return
+    if (typeof IntersectionObserver === 'undefined') return
 
     this.intersectionObserver = new IntersectionObserver(
       entries => {
@@ -524,6 +535,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
           'is-slide': isSlide,
           'is-tile': !isSlide,
           'has-overflow': this.canScrollLeft || this.canScrollRight,
+          'has-large-arrows': showLargeArrows,
           'can-scroll-left': this.canScrollLeft,
           'can-scroll-right': this.canScrollRight,
         }}

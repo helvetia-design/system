@@ -458,3 +458,46 @@ test.describe('component', () => {
     await expect(page.locator('ds-modal')).toHaveCount(0)
   })
 })
+
+test.describe('moved in the DOM', () => {
+  test('should not close on Escape when closable=false after being moved', async ({ page }) => {
+    await page.mount(
+      `<ds-modal label="Dialog" closable="false"><ds-modal-header>Title</ds-modal-header><ds-modal-body>Body</ds-modal-body></ds-modal>`,
+    )
+    const ds = new DsModal(page.locator('ds-modal'))
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-modal')!)
+    })
+    await page.waitForChanges()
+    await page.evaluate(() => (document.querySelector('ds-modal') as any).present())
+    await ds.assertToBeOpen()
+
+    await page.keyboard.press('Escape')
+
+    await ds.assertToBeOpen()
+    await expect(ds.el).toHaveAttribute('open')
+  })
+
+  test('should close on Escape and sync open after being moved', async ({ page }) => {
+    await page.mount(
+      `<ds-modal label="Dialog"><ds-modal-header>Title</ds-modal-header><ds-modal-body>Body</ds-modal-body></ds-modal>`,
+    )
+    const ds = new DsModal(page.locator('ds-modal'))
+
+    await page.evaluate(() => {
+      const newParent = document.createElement('div')
+      document.body.appendChild(newParent)
+      newParent.appendChild(document.querySelector('ds-modal')!)
+    })
+    await page.waitForChanges()
+    await page.evaluate(() => (document.querySelector('ds-modal') as any).present())
+    await ds.assertToBeOpen()
+
+    await page.keyboard.press('Escape')
+
+    await ds.assertToBeClosed()
+  })
+})

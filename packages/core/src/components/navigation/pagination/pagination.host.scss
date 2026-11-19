@@ -1,5 +1,6 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
+@use '../../../typography' as typo;
 
 @forward '../../actions/button/button.style.scss';
 
@@ -13,20 +14,59 @@
  * @prop --pagination-dots-background: Background color of the ellipsis dots.
  * @prop --pagination-dots-radius: Border radius of the ellipsis dots.
  * @prop --pagination-dots-gap: Gap between the ellipsis dots.
+ * @prop --pagination-ellipsis-width: Width of the ellipsis item from tablet up.
+ * @prop --pagination-dots-marker-size: Width and height of a dot marker.
+ * @prop --pagination-dots-min-width: Minimum width of the "x of y" counter badge.
+ * @prop --pagination-dots-max-width: Maximum width of the "x of y" counter badge.
+ * @prop --pagination-ellipsis-font-family: Font family of the ellipsis text.
+ * @prop --pagination-ellipsis-font-size: Font size of the ellipsis text.
+ * @prop --pagination-ellipsis-font-weight: Font weight of the ellipsis text.
+ * @prop --pagination-ellipsis-line-height: Line height of the ellipsis text.
+ * @prop --pagination-ellipsis-letter-spacing: Letter spacing of the ellipsis text.
+ * @prop --pagination-ellipsis-text-decoration: Text decoration of the ellipsis text.
+ * @prop --pagination-ellipsis-text-transform: Text transform of the ellipsis text.
+ * @prop --pagination-dots-font-family: Font family of the "x of y" counter text.
+ * @prop --pagination-dots-font-size: Font size of the "x of y" counter text.
+ * @prop --pagination-dots-font-weight: Font weight of the "x of y" counter text.
+ * @prop --pagination-dots-line-height: Line height of the "x of y" counter text.
+ * @prop --pagination-dots-letter-spacing: Letter spacing of the "x of y" counter text.
+ * @prop --pagination-dots-text-decoration: Text decoration of the "x of y" counter text.
+ * @prop --pagination-dots-text-transform: Text transform of the "x of y" counter text.
+ * @prop --pagination-dots-value-font-family: Font family of the current-page value.
+ * @prop --pagination-dots-value-font-size: Font size of the current-page value.
+ * @prop --pagination-dots-value-font-weight: Font weight of the current-page value.
+ * @prop --pagination-dots-value-line-height: Line height of the current-page value.
+ * @prop --pagination-dots-value-letter-spacing: Letter spacing of the current-page value.
+ * @prop --pagination-dots-value-text-decoration: Text decoration of the current-page value.
+ * @prop --pagination-dots-value-text-transform: Text transform of the current-page value.
  */
 
 :host {
   @include vars.base(pagination);
   @include vars.local(pagination-gap, var(--ds-pagination-size-base-gap));
 
-  @include vars.local(pagination-disabled-color, var(--ds-pagination-disabled-color));
+  @include vars.local(pagination-disabled-color, var(--ds-pagination-ellipsis-color-text-disabled));
   @include vars.local(pagination-elevation-sticky, var(--ds-pagination-elevation-sticky));
+
+  @include vars.local(pagination-ellipsis-width, var(--ds-pagination-size-base-ellipsis-width));
+  @include vars.local(pagination-ellipsis-color, var(--ds-pagination-ellipsis-color-text-base));
+  @include typo.local(pagination-ellipsis, 'pagination-ellipsis-typo');
 
   @include vars.local(pagination-dots-radius, var(--ds-pagination-dots-radius));
   @include vars.local(pagination-dots-background, var(--ds-pagination-dots-color-background));
-  @include vars.local(pagination-dots-inactive-color, var(--ds-pagination-dots-color-inactive));
-  @include vars.local(pagination-dots-active-color, var(--ds-pagination-dots-color-active));
+  @include vars.local(pagination-dots-color, var(--ds-pagination-dots-color-text));
   @include vars.local(pagination-dots-gap, var(--ds-pagination-dots-gap));
+  @include vars.local(pagination-dots-min-height, var(--ds-pagination-dots-min-height));
+  @include vars.local(pagination-dots-min-width, var(--ds-pagination-dots-min-width));
+  @include vars.local(pagination-dots-max-width, var(--ds-pagination-dots-max-width));
+  @include vars.local(pagination-dots-margin-inline, var(--ds-pagination-dots-margin-inline));
+  @include typo.local(pagination-dots, 'pagination-dots-counter-typo');
+  @include typo.local(pagination-dots-value, 'pagination-dots-counter-value-typo');
+
+  @include vars.local(pagination-dots-marker-size, var(--ds-pagination-dots-marker-size));
+  @include vars.local(pagination-dots-marker-radius, var(--ds-pagination-dots-marker-radius));
+  @include vars.local(pagination-dots-inactive-color, var(--ds-pagination-dots-marker-color-background-base));
+  @include vars.local(pagination-dots-active-color, var(--ds-pagination-dots-marker-color-background-selected));
 }
 
 /**
@@ -67,17 +107,13 @@
   }
 
   #ellipsis {
-    width: 2rem;
-    font-weight: 700;
+    width: var(--ds-pagination-size-sm-ellipsis-width);
+    color: var(--_pagination-ellipsis-color);
+    @include typo.apply(pagination-ellipsis);
 
     @include tablet {
-      width: 3rem;
+      width: var(--_pagination-ellipsis-width);
     }
-  }
-
-  button.is-disabled.is-text {
-    background: transparent;
-    border-color: transparent;
   }
 }
 
@@ -99,10 +135,7 @@
 
 :host(.is-size-sm) {
   --mod-pagination-gap: var(--ds-pagination-size-sm-gap);
-
-  #ellipsis {
-    width: 2rem;
-  }
+  --mod-pagination-ellipsis-width: var(--ds-pagination-size-sm-ellipsis-width);
 }
 
 // Alignment
@@ -127,17 +160,22 @@
 
 :host(.is-variant-dots) .dots {
   order: 2;
-  max-width: 88px;
-  min-width: 63px;
-  min-height: 2rem;
-  margin: 0 20px 0 !important;
+  max-width: var(--_pagination-dots-max-width);
+  min-width: var(--_pagination-dots-min-width);
+  min-height: var(--_pagination-dots-min-height);
+  margin-block: 0 !important;
+  margin-inline: var(--_pagination-dots-margin-inline) !important;
   background: var(--_pagination-dots-background);
   border-radius: var(--_pagination-dots-radius);
+  color: var(--_pagination-dots-color);
+  @include typo.apply(pagination-dots);
 
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--_pagination-dots-gap);
+  // `#nav ul` sets its own gap via an ID selector, which out-specifies this class selector —
+  // !important needed so the dots gap token actually applies to both the counter and the dot row.
+  gap: var(--_pagination-dots-gap) !important;
 
   li {
     display: flex;
@@ -146,14 +184,14 @@
   }
 
   strong {
-    font-weight: var(--ds-alias-text-weight-bold);
+    @include typo.apply(pagination-dots-value);
   }
 
   button.dot {
     cursor: pointer;
-    width: 0.625rem;
-    height: 0.625rem;
-    border-radius: 50%;
+    width: var(--_pagination-dots-marker-size);
+    height: var(--_pagination-dots-marker-size);
+    border-radius: var(--_pagination-dots-marker-radius);
     background-color: var(--_pagination-dots-inactive-color);
     border: none;
     padding: 0;

@@ -1,4 +1,7 @@
 {
+  "permissions": {
+    "allow": ["Edit(/.claude/skills/ds-code-to-figma/**)"]
+  },
   "enabledPlugins": {
     "andrej-karpathy-skills@karpathy-skills": true,
     "ponytail@ponytail": true,

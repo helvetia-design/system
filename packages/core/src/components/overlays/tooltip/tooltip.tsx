@@ -12,6 +12,9 @@ import {
 
 let tooltipIds = 0
 
+/** SSR/no-DOM fallback, kept in sync with `--ds-tooltip-offset` (`Alias.Space.Gap.XS`). */
+const DEFAULT_OFFSET = 8
+
 /**
  * Tooltip displays contextual information when users hover over, focus on, or tap a trigger element.
  *
@@ -67,10 +70,11 @@ export class Tooltip implements DsComponentInterface {
 
   /**
    * Offset in pixels from the trigger element to the tooltip.
+   * Defaults to the `--ds-tooltip-offset` token when not set.
    */
   @Prop()
   @Type('number')
-  readonly offset: number = 8
+  readonly offset: number | undefined = undefined
 
   /**
    * Defines the maximum width of the tooltip content in pixels.
@@ -105,23 +109,14 @@ export class Tooltip implements DsComponentInterface {
    */
   @Event() dsDidAnimate!: EventEmitter<TooltipDidAnimateDetail>
 
+  connectedCallback(): void {
+    // Reconnecting after a DOM move: componentDidLoad only runs once, but disconnectedCallback detached the trigger.
+    if (this.containerEl && !this.trigger) this.attachTrigger()
+  }
+
   componentDidLoad(): void {
     this.contentWidthChanged(this.contentWidth)
-
-    const trigger = this.triggerElement
-    if (!trigger) return
-
-    this.trigger = trigger
-    trigger.setAttribute('aria-describedby', this.tooltipId)
-
-    trigger.addEventListener('mouseenter', this.handlePresent)
-    trigger.addEventListener('focus', this.handlePresent)
-    trigger.addEventListener('mouseleave', this.handleDismiss)
-    trigger.addEventListener('blur', this.handleDismiss)
-
-    if (this.open) {
-      this.present()
-    }
+    this.attachTrigger()
   }
 
   disconnectedCallback(): void {
@@ -207,7 +202,7 @@ export class Tooltip implements DsComponentInterface {
       middleware: [
         dsBrowser.hasWindow && !window.frameElement ? shift() : undefined,
         flip(),
-        offset(this.offset),
+        offset(this.resolveOffset()),
       ].filter(Boolean) as any[],
     })
 
@@ -228,7 +223,63 @@ export class Tooltip implements DsComponentInterface {
 
   private get triggerElement(): HTMLElement | null {
     if (!dsBrowser.hasDocument) return null
-    return document.querySelector(`[id="${this.reference}"]`)
+    const selector = `[id="${this.reference}"]`
+    // Scoped to the tooltip's own (shadow) root so components can reference triggers inside their shadow DOM
+    const root = this.el.getRootNode() as Document | ShadowRoot
+    return (root.querySelector?.(selector) as HTMLElement | null) ?? document.querySelector(selector)
+  }
+
+  /**
+   * PRIVATE METHODS
+   * ─────────────────────────────────────────────────────
+   */
+
+  private attachTrigger(): void {
+    const trigger = this.triggerElement
+    if (!trigger) return
+
+    this.trigger = trigger
+    trigger.setAttribute('aria-describedby', this.tooltipId)
+
+    trigger.addEventListener('mouseenter', this.handlePresent)
+    trigger.addEventListener('focus', this.handlePresent)
+    trigger.addEventListener('mouseleave', this.handleDismiss)
+    trigger.addEventListener('blur', this.handleDismiss)
+
+    if (this.open) {
+      this.present()
+    }
+  }
+
+  /**
+   * Resolves the trigger-to-tooltip distance in pixels.
+   *
+   * The `offset` prop wins when set, otherwise the value comes from the
+   * `--_tooltip-offset` variable (fed by the `--ds-tooltip-offset` token).
+   * floating-ui needs a number, so the computed value has to be read and
+   * converted here instead of being used as a `var()` in the stylesheet.
+   */
+  private resolveOffset(): number {
+    if (this.offset !== undefined) {
+      return this.offset
+    }
+
+    try {
+      const value = getComputedStyle(this.el).getPropertyValue('--_tooltip-offset').trim()
+      const amount = Number.parseFloat(value)
+
+      if (!Number.isNaN(amount)) {
+        if (value.endsWith('rem')) {
+          const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
+          return Number.isNaN(rootFontSize) ? DEFAULT_OFFSET : amount * rootFontSize
+        }
+        return amount
+      }
+    } catch {
+      // Ignore errors, e.g. if getComputedStyle is not available
+    }
+
+    return DEFAULT_OFFSET
   }
 
   /**

@@ -36,7 +36,9 @@ Edit each finding yourself, using the mapping below. Read the whole element when
 
 | old (`bal-logo`) | new (`ds-logo`) | handling |
 | --- | --- | --- |
-| `color="blue"` | `color="primary"` | Rewrite static values: `blue` to `primary`, `white` to `inverted`. Keep the attribute even when it was the default. A binding (`[color]`, `color={x}`): HTML keeps it and flags it, because the value set is different. React and Angular keep it when the expression's type only admits `primary` or `inverted`. Otherwise apply Unmapped props and handlers (`SKILL.md`). |
+| `color` omitted, `color=""`, `color="blue"` | omit `color` | Drop `color`. `ds-logo` has no `color` prop and renders `primary` by default. Also drop `color='blue'`, `color={"blue"}`, and `color={'blue'}`. |
+| `color="white"` | `inverted` | HTML and Angular: write `inverted="true"`. React: write `inverted`. Also rewrite `color='white'`, `color={"white"}`, and `color={'white'}`. When `inverted` is already present, drop `color` and keep a single `inverted`. Do **not** write `color="inverted"`: `ds-logo` has no `color` prop. |
+| `[color]="x"`, `[attr.color]="x"`, `color={x}` | `inverted` | Dynamic value. Do not generate a comparison expression. `inverted` is a boolean, so the value type differs. HTML: leave the binding unchanged and list the file and line for manual review. React and Angular: apply Unmapped props and handlers (`SKILL.md`). The report says that `color="white"` is now `inverted` set to true. |
 | `size="small"` | `size="sm"` | Rewrite the static value `small` to `sm`. Drop `size=""`, since an omitted `size` is the responsive default on both sides. A binding (`[size]`, `size={x}`): HTML keeps it and flags it, because the value set is different. React and Angular keep it when the expression's type only admits `sm` or `lg`. Otherwise apply Unmapped props and handlers (`SKILL.md`). |
 | `brand` | `brand` | Copy `baloise`, `helvetia` and bindings as-is. Drop `brand=""`, since an omitted `brand` follows the app config on both sides. |
 | `animated` | `animated` | Copy as-is, including bindings. |

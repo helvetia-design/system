@@ -64,8 +64,8 @@ rather than being refactored to compose `ds-button`:
 - `ds-close`'s native-`<button>` branch (`button={false}`) gets its own
   internal `<ds-tooltip>` (same `getRootNode()`-scoped reference pattern)
   and drops its hardcoded `title={label}`. Its composed-`ds-button` branch
-  (`button={true}`) instead passes `a11yTitle={label}`, inheriting
-  `ds-button`'s tooltip behavior directly.
+  (`button={true}`) gets no tooltip, since it already renders the label as
+  visible text.
 - `ds-hint`'s trigger (a raw `<button>`, not `ds-button`) gets its own
   internal `<ds-tooltip>` with content `triggerLabel`, independent of the
   same trigger's existing click-triggered `ds-popup`/`ds-drawer` hint-content

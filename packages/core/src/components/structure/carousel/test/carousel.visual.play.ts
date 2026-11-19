@@ -7,6 +7,7 @@ const VARIANTS = [
   'slides-with-large-controls',
   'slides-no-controls',
   'product',
+  'product-with-dots',
   'brand-icons',
 ] as const
 
