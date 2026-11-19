@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { CORE_TOKY_CONFIG, TokyConfigError } from '@helvetia-design/tokens/toky-config'
+import { CORE_TOKY_CONFIG, resolveTokyConfig, TokyConfigError } from '@helvetia-design/tokens/toky-config'
 import { CORE_CLIENT_SETTINGS, getTokyConfig, loadTokyConfig, parseTokyConfigSource, toClientSettings } from './config'
 
 const originalEnv = { ...process.env }
@@ -56,6 +56,41 @@ describe('parseTokyConfigSource', () => {
   )
 })
 
+describe('resolveTokyConfig', () => {
+  it.each([
+    [{ editableLayers: ['Component'] }, /editableLayers\[0\]: expected one of/],
+    [{ editableLayers: ['🧩 Component', '🧩 Component'] }, /editableLayers: contains duplicates/],
+    [{ tokenFile: '../Base.tokens.json' }, /tokenFile: expected a file name/],
+    [{ tokenFile: 'tokens/Base.tokens.json' }, /tokenFile: expected a file name/],
+    [{ tokenFile: 'Base.json' }, /tokenFile: expected a file name/],
+    [{ previewUrl: 'playground.html' }, /previewUrl: expected an absolute URL/],
+    [{ figmaModes: [] }, /figmaModes: expected at least one mode/],
+    [{ figmaModes: ['Default', 'Default'] }, /figmaModes: contains duplicates/],
+    [{ referenceTokens: { package: '@helvetia-design/tokens' } }, /referenceTokens\.file: expected a non-empty string/],
+    [{ referenceTokens: 'Base.tokens.json' }, /referenceTokens: expected an object or null/],
+    [{ repo: 'extensions' }, /repo: expected an object/],
+    [{ repo: { owner: '' } }, /repo\.owner: expected a non-empty string/],
+    [{ brandsIndexPath: '' }, /brandsIndexPath: expected a non-empty string or null/],
+    [[], /expected an object/],
+  ])('rejects %j', (overrides, issue) => {
+    expect(() => resolveTokyConfig(overrides)).toThrow(issue)
+  })
+
+  it('accepts null for the nullable fields', () => {
+    expect(
+      resolveTokyConfig({ brandsIndexPath: null, figmaResponsiveCollection: null, referenceTokens: null }),
+    ).toMatchObject({ brandsIndexPath: null, figmaResponsiveCollection: null, referenceTokens: null })
+  })
+
+  it('drops $schema and never shares arrays with the core defaults', () => {
+    const config = resolveTokyConfig({ $schema: './toky.config.schema.json' })
+
+    expect(config).not.toHaveProperty('$schema')
+    expect(config.figmaModes).not.toBe(CORE_TOKY_CONFIG.figmaModes)
+    expect(config.editableLayers).not.toBe(CORE_TOKY_CONFIG.editableLayers)
+  })
+})
+
 describe('loadTokyConfig', () => {
   it('returns the core defaults without a source and without touching the network', async () => {
     const fetchMock = vi.fn()
@@ -98,7 +133,7 @@ describe('loadTokyConfig', () => {
   })
 
   it('rejects a config that resolveTokyConfig rejects', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(rawResponse('{"editableLayers":["Component"],"teem":"x"}')))
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(rawResponse('{"teem":"x"}')))
 
     const result = loadTokyConfig('helvetia-design/extensions:toky.config.json')
     await expect(result).rejects.toBeInstanceOf(TokyConfigError)

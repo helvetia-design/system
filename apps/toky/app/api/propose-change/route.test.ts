@@ -659,6 +659,30 @@ describe('POST /api/propose-change', () => {
       expect(resolveReadRef).not.toHaveBeenCalled()
     })
 
+    it('applies editableLayers and the path checks to brand overrides too', async () => {
+      getTokyConfig.mockResolvedValue(resolveTokyConfig({ editableLayers: ['🧩 Component'] }))
+      const globalOverride: TokenDiffEntry = {
+        kind: 'update',
+        layer: 'Global',
+        oldPath: ['🌐 Global', '🌈 Color', 'Black'],
+        newPath: ['🌐 Global', '🌈 Color', 'Black'],
+        type: 'color',
+        value: { hex: '#111111' },
+        before: { hex: '#000000' },
+      }
+      const smuggled = { ...componentCreate, newPath: ['🧩 Component', 42, 'X'] } as unknown as TokenDiffEntry
+
+      const locked = await POST(makeRequest({ diff: [], description: '', brandDiffs: { Zurich: [globalOverride] } }))
+      expect(locked.status).toBe(403)
+      expect(await locked.json()).toEqual({ error: 'The layer "🌐 Global" is read-only in this Toky instance.' })
+
+      const malformed = await POST(makeRequest({ diff: [], description: '', brandDiffs: { Zurich: [smuggled] } }))
+      expect(malformed.status).toBe(400)
+      expect(await malformed.json()).toEqual({ error: 'Every token path must be an array of non-empty strings.' })
+
+      expect(resolveReadRef).not.toHaveBeenCalled()
+    })
+
     it('rejects every edit when editableLayers is empty', async () => {
       getTokyConfig.mockResolvedValue(resolveTokyConfig({ editableLayers: [] }))
       const response = await POST(makeRequest({ diff: [componentCreate], description: '' }))
