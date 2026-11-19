@@ -1771,9 +1771,8 @@ export namespace Components {
         "disabled": boolean;
         /**
           * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
-          * @default ''
          */
-        "download": string;
+        "download"?: string;
         /**
           * Specifies the URL of the page the link goes to.
           * @default ''
@@ -7009,7 +7008,6 @@ declare namespace LocalJSX {
         "disabled"?: boolean;
         /**
           * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
-          * @default ''
          */
         "download"?: string;
         /**
