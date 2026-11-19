@@ -67,6 +67,7 @@ For comprehensive technical information, see the dedicated documentation files:
 - **[SECURITY.md](SECURITY.md)** — Security policy and guidelines
 - **[SECRETS.md](docs/SECRETS.md)** — GitHub Actions secrets inventory: purpose and required permissions
 - **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — Community standards
+- **[apl-gap-analysis.md](docs/apl-gap-analysis.md)** — App Pattern Library components marked "partially available": per-component gaps and open design decisions
 
 ## Agent skills
 
