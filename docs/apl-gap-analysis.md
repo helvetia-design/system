@@ -53,6 +53,47 @@ The Design System already answers this question the same way twice: `ds-phone-in
 `ds-datepicker` are both a text field plus a panel, and both are separate components that reuse the
 input's field shell rather than props on `ds-input`.
 
+### Isn't building our own too much work?
+
+`ds-select` uses a third-party library called [slim-select](https://www.npmjs.com/package/slim-select)
+(`4.6.2`, wrapped in `select.picker.ts`), and the APL uses Angular Material. The fair concern is that
+a dropdown is a lot of work, so we should stay on a library. Three things argue against that here.
+
+**The hard part is already solved, and not by slim-select.** The genuinely difficult piece of any
+dropdown is placement: opening upwards when there is no room below, staying attached while the page
+scrolls, avoiding the screen edges. `ds-popup` already does this with `@floating-ui/dom`. We would not
+be dropping a library and writing it ourselves, but using a more focused one we already ship.
+
+**We have already built most of an autocomplete, twice.** `ds-phone-input` is a text field with a
+filterable dropdown: a search field, a list, keyboard navigation, an active-option marker for screen
+readers and a "no results" state. That is the bulk of the work, already shipped — and
+[ADR-0023](adr/0023-ds-phone-input-bespoke-country-picker.md) records that it deliberately did not use
+slim-select. So this would be the third one, which is an argument for extracting shared code, not for
+avoiding the component.
+
+**What is actually new is small:**
+
+| Need                                           | Status                             |
+| ---------------------------------------------- | ---------------------------------- |
+| Field, label, hint, error, required marker     | `ds-input` — have it               |
+| Panel placement and screen-edge handling       | `ds-popup` / floating-ui — have it |
+| Panel styling, "no results" text, clear button | `ds-select` — have it              |
+| Debounce                                       | `ds-input` — have it               |
+| Keyboard navigation in the list                | written twice, needs extracting    |
+| Combobox screen-reader semantics               | **new**                            |
+| Filtering, bold matching text, async loading   | **new**                            |
+
+**The select route has a cost too.** `ds-select` is used in nearly every app. Allowing free text
+changes what its value can be for every existing consumer — a breaking change with a wide blast
+radius. A new sibling component changes nothing that exists today.
+
+**Open: one spike before deciding.** slim-select does have a feature for accepting typed values, so it
+may be possible to keep it inside `ds-autocomplete` and drive it from the field. That has not been
+tested. Half a day would settle it with evidence.
+
+Worth noting: the APL used Material and still ended up with no component — three hand-written examples
+and six empty styling files. The library did not save that work.
+
 APL page: [/theme-demo/autocomplete](https://www.helvetia.com/corp/app-patternlibrary/theme-demo/autocomplete) ·
 Used by: All · Confluence currently says _"Normal Text Input component > not needed"_, which does not
 hold.
