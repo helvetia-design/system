@@ -97,6 +97,12 @@ true`, with visibility driven by a real `BOOLEAN` component property** —
   `swapComponent(<same-named new variant>)` — overrides such as fills survive — and `setProperties`
   with the new keys. Delete the old set only when it has 0 instances. Re-check doc instances that
   must show the default variant (Copy me, Variations).
+- **`swapComponent` keeps overrides on layers with the same name** (seen 19.11.2026, `ds-accordion`
+  Behavior card): the template's placeholder `Component` has a `label` with centered, wrapping
+  text and padding overrides; swapped to Accordion, whose text layer is also `label`, the
+  instance kept them (centered summary, extra padding). Replace a template placeholder with a
+  fresh `variant.createInstance()` at the same index (then remove the placeholder) instead of
+  swapping, and check `instance.overrides` afterwards — only `width` / `height` may remain.
 
 ## Auto-layout and positioning
 
@@ -119,6 +125,10 @@ true`, with visibility driven by a real `BOOLEAN` component property** —
   offset just extends the page's visible bounding box past the documentation frames, so "parked"
   content still shows up as loose debris in a page-level screenshot. Use a large negative
   coordinate (e.g. `y: -10000`).
+- **`SPACE_BETWEEN` ignores a bound `itemSpacing`** (seen 19.11.2026, `ds-accordion`): with
+  `primaryAxisAlignItems = 'SPACE_BETWEEN'` the gap is "auto", so a `FILL` child runs into its
+  neighbour (gap 0) although `itemSpacing` stays bound. For CSS `justify-content: space-between`
+  - `gap` + a `flex: 1` child, use `primaryAxisAlignItems = 'MIN'` with the child `FILL`.
 
 ## Vector/SVG import
 

@@ -323,7 +323,12 @@ variant (mechanics: `conventions/build-mechanics.md` → "Slots").
    `frame.componentPropertyReferences = { slotContentId: key, visible: showKey }` (`visible` only
    for an open slot). It turns into a `SLOT` node. The part's own gap and padding space it — the
    skill writes no spacing here.
-3. Default fill: the confirmed `defaultFill` (family slots), or empty for an open slot. Fill a
+3. Default fill: the confirmed `defaultFill` (family slots), or empty for an open slot — except
+   an **open content slot that holds body content** (`ds-accordion` `content`): fill it on every
+   variant where it shows with one text node `text` ("Lorem ipsum dolor sit amet, consectetur
+   adipisicing elit."), `FILL` width, wrapping, bound to `🧩 Component/Text/Typo/Paragraph/*` and
+   `🔗 Alias/🔤 Text/Color/Primary` (user decision 19.11.2026; replaced by a `Text` instance once
+   Text is in Figma, TODO.md). Fill a
    slot in an instance by `appendChild`, never with `setProperties`; turn on its `show` boolean
    first, or the slot isn't reachable.
 4. Add slots before the grid layout (step 4 of "Labeled component set"), like text properties.
