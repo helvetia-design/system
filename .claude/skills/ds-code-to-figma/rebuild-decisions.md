@@ -87,7 +87,7 @@ Built 18.11.2026 — full record in `packages/core/src/components/indicators/spi
   `target`, `rel`, `download`, `name`, `value`, `noWrap`, `a11yControls`, `a11yLabel`,
   `a11yHaspopup`.
 - **Tooltip** (`a11yTitle`, user decision 19.11.2026): `show tooltip` boolean (default off) on the
-  enabled hover / focus variants — an exposed `TooltipAnchor` instance (`build-mechanics.md` →
+  enabled hover variants — an exposed `TooltipAnchor` instance (`build-mechanics.md` →
   Tooltip anchor): its `placement` = `tooltipPlacement`, its exposed Tooltip's `content` =
   `a11yTitle`.
 - **Not built yet:** `brandIcon` / `brandSize` (needs the Brand Icon run first; adds a `device:`

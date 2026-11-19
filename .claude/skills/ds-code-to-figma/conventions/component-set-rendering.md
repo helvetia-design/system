@@ -25,8 +25,8 @@ top (row axes), largest/last at the right or bottom**:
 1. **T-shirt scale:** `3xs · 2xs · xs · sm · base · md · lg · xl · 2xl · 3xl`. A component uses
    only the subset it has. With `base` as the code default it moves to the front per rule A and
    the rest keep scale order: `base · xs · sm · md · lg`.
-2. **`state`:** `default / hover / focus / active` (only those the component has), interaction
-   states only. Component-state variants (`disabled`, `loading`, `invalid`, …) follow as extra
+2. **`state`:** `default / hover / active` (only those the component has), interaction
+   states only; focus is never a state. Component-state variants (`disabled`, `loading`, `invalid`, …) follow as extra
    columns (one per blocked state, a group of interaction-state columns per interactive one) in prop declaration order (`../PHASE-2-PROPOSE.md` → "Component-state columns"). `readonly` is out of scope for
    Figma.
 3. **Boolean axes:** `false` first, then `true` (unless the code default is `true`).

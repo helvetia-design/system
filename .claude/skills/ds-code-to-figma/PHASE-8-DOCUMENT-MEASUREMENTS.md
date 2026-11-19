@@ -42,7 +42,7 @@ marker by hand instead.
 | `Spec/Gap`           | (`3064:1397`) hatched `spacing` fill, stretches in both axes                                                                                                                                                                                                      | gap hatch                             |
 | `Spec/Icon size`     | (`3282:1362`) overlay box: 25% `size` fill + 1px outline, no text                                                                                                                                                                                                 | icon / glyph size                     |
 | `Spec/Corner radius` | (`3282:1361`) `corner` (`top-right`/`top-left`/`bottom-right`/`bottom-left`), resize = circle size, `Value`, `Number`, `Show number`                                                                                                                              | radius                                |
-| `Spec/Leader`        | (`3282:1424`) `kind` × `side` (`right`/`left`/`top`/`bottom`), `Value`, `Number`, `Show number`; `top`/`bottom` are vertical (the instance's height sets the length)                                                                                              | type, border width, focus ring        |
+| `Spec/Leader`        | (`3282:1424`) `kind` × `side` (`right`/`left`/`top`/`bottom`), `Value`, `Number`, `Show number`; `top`/`bottom` are vertical (the instance's height sets the length)                                                                                              | type, border width                    |
 | `Spec/Text box`      | (`4243:1353`) dashed `type` outline, resize = text box                                                                                                                                                                                                            | text part's line box                  |
 | `Spec/Outline`       | (`2046:38`) dashed orange outline, stretches in both axes                                                                                                                                                                                                         | hit area                              |
 | `Spec/Marker`        | (`3064:1541`) `kind` (`size`/`spacing`/`shape`/`type`), `Number`                                                                                                                                                                                                  | table row numbers                     |
@@ -108,10 +108,10 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
    in the `drawnState` if set (else default state; see "Shape visibility"), with the same content
    as Copy me, centered; rename it after the set. Set the card `title` to the option and color
    (`Drawing — base · secondary`).
-3. **Extra instances.** One per distinct `instance` value in `measurements.rows` (`focus`: the
-   `focus` state; `min-content`: shortest realistic label, e.g. `OK`): clone the main instance and
+3. **Extra instances.** One per distinct `instance` value in `measurements.rows` (e.g.
+   `min-content`: shortest realistic label, e.g. `OK`): clone the main instance and
    swap or set it, same `drawnColor`, side by side with 120px between them, centered under the
-   main instance. Each gets a caption under it (`Focus`, `Min content`): clone the
+   main instance. Each gets a caption under it (`Min content`): clone the
    `caption` prototype, set its text and name it `caption-<instance>`. The prototype is visible on
    purpose: Figma deletes a node that is added to slot content and then hidden (seen 18.11.2026 —
    the earlier hidden prototype vanished this way), so never hide it.
@@ -152,12 +152,12 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
      number.
    - **radius** → `Spec/Corner radius` on a free corner, `corner=top-right` preferred. The
      instance _is_ the circle: resize it to `2r × 2r` and place it with its corner on the
-     component's matching corner (top-right: `x = right − 2r`, `y = top`). The leader starts on the arc, ends on the near end of the pill (vertically centered), and the label follows by
+     component's matching corner (top-right: `x = right − 2r`, `y = top`). A full radius (`9999`)
+     renders as half the shorter side, so `2r` = that side: on a round component the circle is
+     the component's own size (`ds-close` base: 24 × 24). The leader starts on the arc, ends on the near end of the pill (vertically centered), and the label follows by
      constraints. Figma ignores moving or resizing a layer inside an instance, so never try to
      adjust the `Circle` itself.
-   - **border width / focus ring** → `Spec/Leader` (`kind=shape`) with the `Dot` on the border
-     (or on the ring, for the focus instance; a two-color ring reads `2 + 3px ring`) — its center exactly on the middle of the border
-     or ring, so the 3px dot never covers the edge it measures — and the pill outside the
+   - **border width** → `Spec/Leader` (`kind=shape`) with the `Dot` on the border — its center exactly on the middle of the border, so the 3px dot never covers the edge it measures — and the pill outside the
      instance. The radius marker is never shrunk like the dots: its circle always has the radius
      it marks (`2r × 2r`). On the main
      instance it shares the right side with the type leader: put the border dot low on the right
@@ -201,8 +201,7 @@ each text node's current fonts before setting `characters`.
   (`Size/Base = 48` — not `·`, which reads as "times"). Clone or delete option cells so every row has as many as the header. The
   full token name goes into the cell's layer name, so it's visible on selection without widening
   the table.
-- **One token for every option** (`Button/Spinner/Size`, a color-only border width, an Alias focus
-  size) → delete every option cell but the first; it is `FILL` and spans the option columns (the
+- **One token for every option** (`Button/Spinner/Size`, a color-only border width) → delete every option cell but the first; it is `FILL` and spans the option columns (the
   template's `row-3`). **A token per option with the same px** (`Size/Base/Gap`, `Size/SM/Gap`, …)
   keeps one cell per option (`Base/Gap = 8`, `SM/Gap = 8`, …) — no `*` shorthand, so a spanning
   cell always means a single token.

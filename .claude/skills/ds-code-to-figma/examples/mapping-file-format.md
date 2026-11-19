@@ -65,7 +65,7 @@ props:
   figmaPropertyType: excluded # generated — no property
   states:
   figmaProperty: state
-  options: [default, hover, focus, active] # interaction states only
+  options: [default, hover, active] # interaction states only; focus is ignored
   sources:
   hover: ":hover (spinner.host.scss)"
   componentStates: # component-state props → own false/true variants (PHASE-2-PROPOSE.md); interactive (Phase 1 step 3) decides the columns
@@ -132,11 +132,11 @@ props:
   width: hug # hug | fill — from the behavior probe
   overflow: truncate # truncate | wrap | overflow (flag overflow in the triage)
   rows: # numbered in this order on the drawn card and in the table: size → spacing → shape → type
-  - property: Min height # Width | Height | Size (w = h) | Min/Max width/height | Padding X/Y/L/R | Gap | Radius | Border width | Focus ring | Text (<part>)
+  - property: Min height # Width | Height | Size (w = h) | Min/Max width/height | Padding X/Y/L/R | Gap | Radius | Border width | Text (<part>)
     kind: size # size | spacing | shape | type
     group: limit # fixed | inner spacing | limit | behavior | derived | outer margin | hit area | context-dependent | typography
     show: drawn # drawn (marker + table row) | table (table row only, rare) | skip
-    instance: main # drawn rows only: main | min-content | focus | … — see conventions/measurements.md → "Section layout"
+    instance: main # drawn rows only: main | min-content | … — see conventions/measurements.md → "Section layout"
     source: button.host.scss:42 # the SCSS declaration that sets it
     values: # one per option; measured px + its token (exact Figma variable name)
     base: { px: 48, token: 🧩 Component/Button/Size/Base/MinHeight }
