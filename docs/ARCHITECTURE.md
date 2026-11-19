@@ -346,6 +346,11 @@ Both modes share the exact same styling logic:
 - **Snapshots:** Stored in `e2e/` directory
 - **Purpose:** Detect unintended visual changes between builds
 
+### SSR Screenshot Tests
+
+- **Location:** `packages/core/src/components/<component>/test/<component>.ssr.play.ts`
+- **Purpose:** Render `<component>.visual.html` with `renderToString`, take a screenshot before and after hydration, and compare both against the desktop baseline of the visual test. The variant list lives in `<component>.variants.ts`. See [ADR 0039](adr/0039-ssr-tests-compare-against-visual-baselines.md).
+
 ### Accessibility Tests
 
 - **Location:** `packages/core/src/components/<component>/test/<component>.a11y.play.ts`

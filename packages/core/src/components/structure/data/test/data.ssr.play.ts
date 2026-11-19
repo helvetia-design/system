@@ -1,23 +1,25 @@
-import { DsData, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './data.variants'
+
+const baseline = visualBaseline(TAG)
+const FIXME: Record<string, string> = {
+  horizontal: 'SSR: horizontal ds-data-item grows 24px on hydration (layout shift) (#327)',
+  multiline: 'SSR: multiline ds-data section shrinks 24px on hydration (layout shift) (#327)',
+}
+
+const PAGE_URL = `/components/structure/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(
-      page,
-      `
-        <ds-data>
-          <ds-data-item>
-            <ds-data-label slot="label">Name</ds-data-label>
-            <ds-data-value>John Doe</ds-data-value>
-          </ds-data-item>
-        </ds-data>
-      `,
-      renderToString,
-      testInfo,
-    )
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      test.fixme(variant in FIXME, FIXME[variant])
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const data = new DsData(page.locator('ds-data'))
-    await data.assertItemCount(1)
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
 })

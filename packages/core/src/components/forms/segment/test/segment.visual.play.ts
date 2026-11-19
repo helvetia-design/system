@@ -1,6 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'segment'
+import { HOST_VARIANTS, TAG } from './segment.variants'
 
 const STYLE_VARIANTS = [
   'basic',
@@ -11,20 +10,6 @@ const STYLE_VARIANTS = [
   'disabled',
   'invalid',
   'invalid-disabled',
-]
-
-const HOST_VARIANTS = [
-  'basic',
-  'description',
-  'icon',
-  'long-content',
-  'vertical',
-  'disabled',
-  'invalid',
-  'invalid-slot',
-  'invalid-disabled',
-  'wide',
-  'form',
 ]
 
 const image = screenshot(TAG)

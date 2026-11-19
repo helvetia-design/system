@@ -1,21 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'tabs'
-
-const VARIANTS = [
-  'basic',
-  'inverted',
-  'colors',
-  'no-border',
-  'fullwidth-icons',
-  'badge',
-  'brand-icons',
-  'vertical',
-  'vertical-cols',
-  'navigation',
-  'navigation-vertical',
-  'carousel',
-] as const
+import { TAG, VARIANTS } from './tabs.variants'
 
 const image = screenshot(TAG)
 

@@ -1,12 +1,19 @@
-import { DsNotification, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './notification.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/overlays/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(page, `<ds-notification>Notification message</ds-notification>`, renderToString, testInfo)
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const dsNotification = new DsNotification(page.locator('ds-notification'))
-    await dsNotification.assertToBeVisible()
-    await dsNotification.assertToContainText('Notification message')
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
 })

@@ -1,11 +1,19 @@
-import { DsClose, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './close.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/actions/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(page, `<ds-close></ds-close>`, renderToString, testInfo)
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const dsClose = new DsClose(page.locator('ds-close'))
-    await dsClose.assertToBeVisible()
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
 })
