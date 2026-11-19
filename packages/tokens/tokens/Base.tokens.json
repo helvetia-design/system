@@ -22548,31 +22548,11 @@
             }
           }
         },
-        "Gap": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.↔️ Space.Gap.3XS}",
-          "$extensions": {
-            "com.figma.variableId": "VariableID:13:2846",
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ]
-          }
-        },
         "MinHeight": {
           "$type": "dimension",
           "$value": "{🔗 Alias.📏 Size.Control.SM}",
           "$extensions": {
             "com.figma.variableId": "VariableID:13:2847",
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ]
-          }
-        },
-        "MinWidth": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.📏 Size.Counter.MinWidth}",
-          "$extensions": {
-            "com.figma.variableId": "VariableID:13:2848",
             "com.figma.scopes": [
               "ALL_SCOPES"
             ]
@@ -22698,6 +22678,26 @@
                 }
               }
             }
+          }
+        },
+        "Gap": {
+          "$type": "dimension",
+          "$value": "{🔗 Alias.↔️ Space.Gap.2XS}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:13:2846",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "MinWidth": {
+          "$type": "dimension",
+          "$value": "{🌐 Global.📏 Dimension.Size.64}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:13:2848",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
           }
         }
       },
