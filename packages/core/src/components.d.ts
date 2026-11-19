@@ -3737,6 +3737,11 @@ export namespace Components {
          */
         "contentWidth": number | undefined;
         /**
+          * When true, the tooltip never presents, even on hover/focus of the trigger.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * Hides the tooltip and cleans up the position updater.
          */
         "dismiss": () => Promise<boolean>;
@@ -9184,6 +9189,11 @@ declare namespace LocalJSX {
          */
         "contentWidth"?: number | undefined;
         /**
+          * When true, the tooltip never presents, even on hover/focus of the trigger.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * Offset in pixels from the trigger element to the tooltip. Defaults to the `--ds-tooltip-offset` token when not set.
           * @default undefined
          */
@@ -9962,6 +9972,7 @@ declare namespace LocalJSX {
         "offset": number | undefined;
         "contentWidth": number | undefined;
         "open": boolean;
+        "disabled": boolean;
     }
 
     interface IntrinsicElements {
