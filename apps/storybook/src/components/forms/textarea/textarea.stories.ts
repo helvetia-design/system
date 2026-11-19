@@ -16,7 +16,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-textarea ${props(args)}></ds-textarea>`),
+  ...withRender(({ slot, ...args }) => `<ds-textarea ${props(args, tag)}></ds-textarea>`),
 }
 
 export default meta

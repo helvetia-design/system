@@ -11,7 +11,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ ...args }) => `<ds-progress-bar ${props(args)}></ds-progress-bar>`),
+  ...withRender(({ ...args }) => `<ds-progress-bar ${props(args, tag)}></ds-progress-bar>`),
 }
 
 export default meta

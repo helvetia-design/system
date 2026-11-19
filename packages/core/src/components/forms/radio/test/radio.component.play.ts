@@ -249,3 +249,29 @@ test.describe('radio-group', () => {
     await tony.assertToBeUnchecked()
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat a bare required attribute as true', async ({ page }) => {
+    await page.mount(`<ds-radio required value="a">Label</ds-radio>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await expect(radio.el).toHaveJSProperty('required', true)
+    await expect(radio.nativeInput).toHaveJSProperty('required', true)
+  })
+
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-radio required="false" value="a">Label</ds-radio>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await expect(radio.el).toHaveJSProperty('required', false)
+    await expect(radio.nativeInput).toHaveJSProperty('required', false)
+  })
+
+  test('should treat required="false" on the group as false', async ({ page }) => {
+    await page.mount(
+      `<ds-radio-group name="heroes" label="Label" required="false"><ds-radio value="a">A</ds-radio></ds-radio-group>`,
+    )
+
+    await expect(page.locator('ds-radio-group')).toHaveJSProperty('required', false)
+  })
+})

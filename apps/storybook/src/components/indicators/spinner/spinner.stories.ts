@@ -10,7 +10,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag: 'ds-spinner' }),
   },
-  ...withRender(({ ...args }) => `<ds-spinner ${props(args)}></ds-spinner>`),
+  ...withRender(({ ...args }) => `<ds-spinner ${props(args, 'ds-spinner')}></ds-spinner>`),
 }
 
 export default meta

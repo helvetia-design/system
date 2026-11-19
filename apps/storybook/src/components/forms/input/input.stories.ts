@@ -16,7 +16,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ ...args }) => `<ds-input ${props(args)}></ds-input>`),
+  ...withRender(({ ...args }) => `<ds-input ${props(args, tag)}></ds-input>`),
 }
 
 export default meta

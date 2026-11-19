@@ -1,4 +1,5 @@
 import {
+  AttrDeserialize,
   AttachInternals,
   Component,
   Element,
@@ -14,6 +15,7 @@ import {
 import { HTMLStencilElement } from '@stencil/core/internal'
 import isNaN from 'lodash/isNaN'
 import {
+  deserializeBooleanAttribute,
   inheritAttributes,
   debounceEvent,
   hasValue,
@@ -243,6 +245,11 @@ export class Slider implements DsComponentInterface, FieldInterface {
   @Prop()
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * If `true`, disables the automatic `invalid`/`invalidText` behavior that the `@helvetia-design/angular` integration

@@ -17,7 +17,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     args => `
-<ds-tabs ${props(args)}>
+<ds-tabs ${props(args, 'ds-tabs')}>
   <ds-tab name="a">Tab A</ds-tab>
   <ds-tab name="b">Tab B</ds-tab>
   <ds-tab name="c">Tab C</ds-tab>

@@ -156,6 +156,15 @@ test.describe('form reset', () => {
   })
 })
 
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-slider label="Label" required="false"></ds-slider>`)
+    const slider = new DsSlider(page.locator('ds-slider'))
+
+    await expect(slider.el).toHaveJSProperty('required', false)
+  })
+})
+
 test.describe('moved in the DOM', () => {
   test('should still render and change value after being moved', async ({ page }) => {
     await page.mount(`<ds-slider label="Label" min="0" max="100" value="20"></ds-slider>`)

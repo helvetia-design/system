@@ -1,4 +1,5 @@
 import {
+  AttrDeserialize,
   AttachInternals,
   Component,
   Element,
@@ -12,6 +13,7 @@ import {
   Watch,
 } from '@stencil/core'
 import {
+  deserializeBooleanAttribute,
   Logger,
   type LogInstance,
   stopEventBubbling,
@@ -188,6 +190,11 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * Defines the layout of the input

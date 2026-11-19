@@ -34,7 +34,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag: 'ds-sheet' }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-sheet ${props(args)}>${slot}</ds-sheet>`),
+  ...withRender(({ slot, ...args }) => `<ds-sheet ${props(args, 'ds-sheet')}>${slot}</ds-sheet>`),
 }
 
 export default meta
@@ -47,6 +47,8 @@ export default meta
 const Story = StoryFactory<Args>(meta)
 
 export const Basic = Story({
-  ...withRender(({ slot, ...args }) => `<ds-sheet style="position:relative" ${props(args)}>${slot}</ds-sheet>`),
+  ...withRender(
+    ({ slot, ...args }) => `<ds-sheet style="position:relative" ${props(args, 'ds-sheet')}>${slot}</ds-sheet>`,
+  ),
 })
 Basic.storyName = '🧩 Basic'

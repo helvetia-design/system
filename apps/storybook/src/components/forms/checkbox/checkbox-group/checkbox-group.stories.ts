@@ -15,7 +15,7 @@ const meta: Meta<Args> = {
     ...withComponentControls({ tag: 'ds-checkbox-group' }),
   },
   ...withRender(
-    ({ slot, ...args }) => `<ds-checkbox-group ${props(args)}>
+    ({ slot, ...args }) => `<ds-checkbox-group ${props(args, 'ds-checkbox-group')}>
     <ds-checkbox>Item 1</ds-checkbox>
     <ds-checkbox>Item 2</ds-checkbox>
   </ds-checkbox-group>`,

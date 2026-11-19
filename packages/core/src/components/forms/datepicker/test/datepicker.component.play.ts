@@ -256,3 +256,13 @@ test.describe('moved in the DOM', () => {
     await date.assertValue('20.07.2026')
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-datepicker label="Label" required="false"></ds-datepicker>`)
+    const datepicker = new DsDatepicker(page.locator('ds-datepicker'))
+
+    await expect(datepicker.el).toHaveJSProperty('required', false)
+    await expect(datepicker.nativeInput).toHaveJSProperty('required', false)
+  })
+})
