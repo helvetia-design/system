@@ -1,10 +1,24 @@
 import kebabCase from 'lodash/kebabCase'
 import { components } from '../assets/data/components.json'
 
-export const props = (args: any): string => {
+const findProp = (tag: string, propName: string) =>
+  components.find(c => c.tag === tag)?.props?.find(p => p.name === propName)
+
+const isDefaultTrue = (tag: string, propName: string): boolean => {
+  const prop = findProp(tag, propName)
+  return prop !== undefined && 'default' in prop && prop.default === 'true'
+}
+
+export const props = (args: any, tag?: string): string => {
   return Object.keys(args)
     .filter(key => !key.startsWith('on'))
-    .filter(key => args[key] !== false && args[key] !== undefined && args[key] !== null && args[key] !== '')
+    .filter(
+      key =>
+        (args[key] !== false || (tag !== undefined && isDefaultTrue(tag, key))) &&
+        args[key] !== undefined &&
+        args[key] !== null &&
+        args[key] !== '',
+    )
     .map(key => (args[key] === true ? `${kebabCase(key)}="true"` : `${kebabCase(key)}="${args[key]}"`))
     .join(' ')
 }
@@ -31,10 +45,7 @@ const parseUnionType = (unionType: string): string[] =>
  * @returns An array of possible values for the prop
  */
 export const getPropValues = (tag: string, propName: string): string[] => {
-  const component = (components as any[]).find(c => c.tag === tag)
-  if (!component) return []
-
-  const prop = component.props?.find((p: any) => p.name === propName)
+  const prop = findProp(tag, propName)
   if (!prop) return []
 
   return parseUnionType(prop.type)

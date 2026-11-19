@@ -17,7 +17,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     ({ label, ...args }) => `
-<ds-hint label="${label}" ${props(args)}>
+<ds-hint label="${label}" ${props(args, tag)}>
   This is helpful information.
 </ds-hint>
     `,
@@ -34,7 +34,7 @@ export const Hint = Story({
   },
   ...withRender(
     ({ label, ...args }) => `
-<ds-hint label="${label}" ${props(args)}>
+<ds-hint label="${label}" ${props(args, tag)}>
   Spider-Man is a superhero in Marvel Comics. He was created by writer Stan Lee and artist Steve Ditko.
 </ds-hint>
     `,
@@ -48,7 +48,7 @@ export const WithCustomStyling = Story({
   },
   ...withRender(
     ({ ...args }) => `
-<ds-hint ${props(args)}>
+<ds-hint ${props(args, tag)}>
   <span slot="title">What is a deductible?</span>
   <p style="font-size: 0.875rem">A deductible is the amount you pay out of pocket before your insurance covers the rest.</p>
 </ds-hint>
@@ -64,7 +64,7 @@ export const CustomTriggerLabel = Story({
   },
   ...withRender(
     ({ label, triggerLabel, ...args }) => `
-<ds-hint label="${label}" triggerLabel="${triggerLabel}" ${props(args)}>
+<ds-hint label="${label}" triggerLabel="${triggerLabel}" ${props(args, tag)}>
   This trigger button has a custom accessible label.
 </ds-hint>
     `,
@@ -80,7 +80,7 @@ export const PlacementTop = Story({
   ...withRender(
     ({ label, placement, ...args }) => `
 <div style="padding: 2rem 0">
-  <ds-hint label="${label}" placement="${placement}" ${props(args)}>
+  <ds-hint label="${label}" placement="${placement}" ${props(args, tag)}>
     The popup panel opens above the trigger on desktop viewports.
   </ds-hint>
 </div>
@@ -96,7 +96,7 @@ export const PlacementBottom = Story({
   },
   ...withRender(
     ({ label, placement, ...args }) => `
-<ds-hint label="${label}" placement="${placement}" ${props(args)}>
+<ds-hint label="${label}" placement="${placement}" ${props(args, tag)}>
   The popup panel opens below the trigger on desktop viewports.
 </ds-hint>
     `,
@@ -112,7 +112,7 @@ export const PlacementLeft = Story({
   ...withRender(
     ({ label, placement, ...args }) => `
 <div style="padding-left: 2rem">
-  <ds-hint label="${label}" placement="${placement}" ${props(args)}>
+  <ds-hint label="${label}" placement="${placement}" ${props(args, tag)}>
     The popup panel opens to the left of the trigger on desktop viewports.
   </ds-hint>
 </div>
@@ -128,7 +128,7 @@ export const CustomCloseLabel = Story({
   },
   ...withRender(
     ({ label, closeLabel, ...args }) => `
-<ds-hint label="${label}" closeLabel="${closeLabel}" ${props(args)}>
+<ds-hint label="${label}" closeLabel="${closeLabel}" ${props(args, tag)}>
   The close button inside the drawer shows a custom label on touch viewports.
 </ds-hint>
     `,
@@ -144,7 +144,7 @@ export const Inline = Story({
     ({ label, ...args }) => `
 <p style="line-height: 1.6">
   Your premium is calculated based on your risk profile
-  <ds-hint label="${label}" ${props(args)}>
+  <ds-hint label="${label}" ${props(args, tag)}>
     Your risk profile combines age, driving history, and vehicle type to determine your premium.
   </ds-hint>
   and the selected coverage options.
@@ -160,7 +160,7 @@ export const MigrationSubcomponents = Story({
   },
   ...withRender(
     ({ label, ...args }) => `
-<ds-hint label="${label}" ${props(args)}>
+<ds-hint label="${label}" ${props(args, tag)}>
   <ds-hint-title>Spider-Man (legacy)</ds-hint-title>
   <ds-hint-text>This uses deprecated sub-components and will be removed in a future version.</ds-hint-text>
 </ds-hint>
@@ -175,7 +175,7 @@ export const MigrationSlots = Story({
   },
   ...withRender(
     ({ label, ...args }) => `
-<ds-hint ${props(args)}>
+<ds-hint ${props(args, tag)}>
   <span slot="title">Spider-Man (legacy)</span>
   <ds-hint-text>This uses deprecated slot structure and will be removed in a future version.</ds-hint-text>
 </ds-hint>

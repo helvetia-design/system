@@ -148,3 +148,13 @@ test.describe('form reset', () => {
     expect(changeSpy).toHaveReceivedEventDetail(100)
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-number-input label="Label" required="false"></ds-number-input>`)
+    const numberInput = new DsNumberInput(page.locator('ds-number-input'))
+
+    await expect(numberInput.el).toHaveJSProperty('required', false)
+    await expect(numberInput.nativeInput).toHaveJSProperty('required', false)
+  })
+})

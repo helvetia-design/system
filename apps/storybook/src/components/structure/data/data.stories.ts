@@ -25,7 +25,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-data ${props(args)}>${slot}</ds-data>`),
+  ...withRender(({ slot, ...args }) => `<ds-data ${props(args, tag)}>${slot}</ds-data>`),
 }
 
 export default meta
@@ -122,7 +122,7 @@ export const Editable = Story({
     <ds-card-title>Account Details</ds-card-title>
   </ds-card-header>
   <ds-card-content>
-    <ds-data ${props(args)}>${slot}</ds-data>
+    <ds-data ${props(args, tag)}>${slot}</ds-data>
   </ds-card-content>
 </ds-card>`,
   ),

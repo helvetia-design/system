@@ -21,6 +21,11 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 async function writeFileAtomic(path, contents) {
+  // skip unchanged content: these files live in the watched `src`, so rewriting them re-triggers the watch build forever
+  const current = await readFile(path, 'utf-8').catch(() => null)
+  if (current === contents) {
+    return
+  }
   const tmpPath = `${path}.${process.pid}.${Date.now()}.tmp`
   await writeFile(tmpPath, contents)
   await rename(tmpPath, path)

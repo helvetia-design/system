@@ -1,6 +1,19 @@
-import { Component, Element, Event, EventEmitter, h, Listen, Method, Prop, State, Watch } from '@stencil/core'
+import {
+  AttrDeserialize,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Listen,
+  Method,
+  Prop,
+  State,
+  Watch,
+} from '@stencil/core'
 import { DsComponentInterface } from '@global'
 import {
+  deserializeBooleanAttribute,
   inheritAttributes,
   Logger,
   type LogInstance,
@@ -146,6 +159,11 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
   @Prop()
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * If `true`, the select is non-interactive and excluded from form submission.

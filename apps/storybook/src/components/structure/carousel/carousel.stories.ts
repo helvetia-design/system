@@ -107,7 +107,7 @@ const meta: Meta<Args> = {
     ...withComponentControls({ tag: 'ds-carousel' }),
   },
   ...withRender(
-    ({ ...args }) => `<ds-carousel ${props(args)}>${SLIDE_ITEMS}
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')}>${SLIDE_ITEMS}
 </ds-carousel>`,
   ),
 }
@@ -155,7 +155,7 @@ export const SlideNoControls = Story({
     controls: 'none',
   },
   ...withRender(
-    ({ ...args }) => `<ds-carousel ${props(args)}>${NO_CONTROLS_ITEMS}
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')}>${NO_CONTROLS_ITEMS}
 </ds-carousel>`,
   ),
 })
@@ -166,7 +166,7 @@ export const SlideNoControlsHtml = Story({
     controls: 'none',
   },
   ...withRender(
-    ({ ...args }) => `<ds-carousel ${props(args)}>${NO_CONTROLS_ITEMS}
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')}>${NO_CONTROLS_ITEMS}
 </ds-carousel>`,
   ),
 })
@@ -182,7 +182,7 @@ export const Product = Story({
     label: 'Products',
   },
   ...withRender(
-    ({ ...args }) => `<ds-carousel ${props(args)} style="max-width: 600px">${PRODUCT_ITEMS}
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')} style="max-width: 600px">${PRODUCT_ITEMS}
 </ds-carousel>`,
   ),
 })
@@ -195,7 +195,7 @@ export const ProductHtml = Story({
     label: 'Products',
   },
   ...withRender(
-    ({ ...args }) => `<ds-carousel ${props(args)} style="max-width: 600px">${PRODUCT_ITEMS}
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')} style="max-width: 600px">${PRODUCT_ITEMS}
 </ds-carousel>`,
   ),
 })
@@ -212,7 +212,9 @@ export const ProductBrandIcons = Story({
     steps: 3,
   },
   ...withRender(
-    ({ ...args }) => `<ds-carousel ${props(args)} style="--carousel-item-width: 10rem">${BRAND_ICON_ITEMS}
+    ({
+      ...args
+    }) => `<ds-carousel ${props(args, 'ds-carousel')} style="--carousel-item-width: 10rem">${BRAND_ICON_ITEMS}
 </ds-carousel>`,
   ),
 })
@@ -226,7 +228,9 @@ export const ProductBrandIconsHtml = Story({
     steps: 3,
   },
   ...withRender(
-    ({ ...args }) => `<ds-carousel ${props(args)} style="--carousel-item-width: 10rem">${BRAND_ICON_ITEMS}
+    ({
+      ...args
+    }) => `<ds-carousel ${props(args, 'ds-carousel')} style="--carousel-item-width: 10rem">${BRAND_ICON_ITEMS}
 </ds-carousel>`,
   ),
 })

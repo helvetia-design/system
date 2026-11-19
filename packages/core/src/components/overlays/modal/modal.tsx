@@ -121,16 +121,12 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
   }
 
   componentDidLoad(): void {
-    this.dialogEl?.addEventListener('cancel', this.handleCancel)
-    this.dialogEl?.addEventListener('close', this.handleNativeClose)
     if (this.open) {
       this.runOpen()
     }
   }
 
   disconnectedCallback(): void {
-    this.dialogEl?.removeEventListener('cancel', this.handleCancel)
-    this.dialogEl?.removeEventListener('close', this.handleNativeClose)
     this.scrollHandler.disconnect()
   }
 
@@ -259,6 +255,8 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
           aria-label={this.label || undefined}
           aria-describedby="modal-body"
           onClick={this.handleBackdropClick}
+          onCancel={this.handleCancel}
+          onClose={this.handleNativeClose}
         >
           {this.closable && <ds-close part="close" onClick={() => this.dismiss(undefined, 'close')} />}
           <h2 id="modal-title" part="title">

@@ -18,6 +18,7 @@
  * transform ever changes; `test/css-token-lookup.test.mjs` cross-checks a sample against the
  * real compiled output to catch drift.
  */
+import { pathToFileURL } from 'node:url'
 import { kebabCase } from 'change-case'
 import { flattenTokens, loadTokenFile } from './tokens.mjs'
 
@@ -112,7 +113,7 @@ export function resolveCssVars(index, cssVarNames) {
 // CLI: `node css-token-lookup.mjs <Base.tokens.json path> --var <name> [--var <name> ...]`
 // or `--all` to dump the whole index as JSON. Lets the skill resolve tokens with one Bash call
 // instead of writing ad hoc Node/Figma-plugin code per run.
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const [basePath, ...rest] = process.argv.slice(2)
   if (!basePath) {
     console.error('Usage: css-token-lookup.mjs <Base.tokens.json path> [--var <cssVarName> ...] [--all]')

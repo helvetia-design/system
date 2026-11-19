@@ -291,6 +291,10 @@ _Avoid_: child component, inner component
 An optional nested component that its host positions out of flow on the host's own box, e.g. `ds-badge` on the top-right corner of `ds-button`, `ds-tab` or `ds-card`. Optional means it can be present or absent — slotted by the consumer, or rendered by the host behind a prop. The host owns the placement; the attachment owns only its own look. Declared on the host with an `@attachment` JSDoc tag. A nested component that is always present at a fixed place is not an attachment.
 _Avoid_: anchor, overlay, positioned slot, badge slot
 
+**Inverted**:
+A component shown on a dark surface. It is a state of the surface, not a color: it combines with any color the component offers, and every color has its own inverted look (see [ADR-0038](../../docs/adr/0038-inverted-is-not-a-color.md)).
+_Avoid_: white, dark mode, inverted color
+
 ### Usage-Category Taxonomy
 
 Every component directory lives under a lowercase-plural **category** folder:

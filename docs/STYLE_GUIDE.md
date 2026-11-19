@@ -334,6 +334,7 @@ export class Checkbox implements DsComponentInterface {
 - Call `this.internals.setFormValue(value)` whenever the value changes so the form sees the current value.
 - Pass `null` to unset the field (e.g. unchecked checkbox).
 - `formAssociated: true` also enables the native form-reset lifecycle (`formResetCallback`).
+- Stencil reads any present boolean attribute on a form-associated component as `true`, so `required="false"` would stay required. Give such boolean props an `@AttrDeserialize('<prop>')` method named `deserialize<Prop>` that returns `deserializeBooleanAttribute(value)` from `@utils`.
 
 ### Section Dividers
 

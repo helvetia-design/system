@@ -112,6 +112,39 @@ test.describe('disabled', () => {
     await expect(pagination.previousButton).toBeHidden()
     await expect(pagination.nextButton).toBeHidden()
   })
+
+  test('should not fire dsChange via keyboard when disabled', async ({ page }) => {
+    await page.mount(`<ds-pagination page-range="2" total-pages="20" value="5" disabled></ds-pagination>`)
+    const pagination = new DsPagination(page.locator('ds-pagination'))
+    const changeSpy = await pagination.el.spyOnEvent('dsChange')
+
+    await expect(pagination.el.locator('button[part="page"]').first()).toBeDisabled()
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await pagination.assertCurrentPage(5)
+  })
+})
+
+test.describe('totalPages', () => {
+  test('should render no pages when totalPages is 0', async ({ page }) => {
+    await page.mount(`<ds-pagination total-pages="0"></ds-pagination>`)
+    const pagination = new DsPagination(page.locator('ds-pagination'))
+
+    await expect(pagination.el.locator('button[part="page"]')).toHaveCount(0)
+    await pagination.assertNextToBeDisabled()
+  })
+})
+
+test.describe('focus order', () => {
+  test('should match the visual order: previous, pages, next', async ({ page }) => {
+    await page.mount(`<ds-pagination total-pages="3" value="2"></ds-pagination>`)
+    const pagination = new DsPagination(page.locator('ds-pagination'))
+
+    const order = await pagination.el.locator('#nav > *').evaluateAll(els => els.map(el => el.getAttribute('part')))
+    expect(order).toEqual(['previous', 'list', 'next'])
+  })
 })
 
 test.describe('value', () => {

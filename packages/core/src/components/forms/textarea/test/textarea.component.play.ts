@@ -99,3 +99,13 @@ test.describe('form reset', () => {
     await textarea.assertValue('Initial value')
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-textarea label="Label" required="false"></ds-textarea>`)
+    const textarea = new DsTextarea(page.locator('ds-textarea'))
+
+    await expect(textarea.el).toHaveJSProperty('required', false)
+    await expect(textarea.nativeTextarea).toHaveJSProperty('required', false)
+  })
+})
