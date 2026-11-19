@@ -44,6 +44,6 @@ Separate bot token used only in the release/snapshot flows.
 - **Purpose:** `FIGMA_API_TOKEN` authenticates `scripts/figma-sync/{pull,conflict-check}.mjs` against the Figma REST API; `FIGMA_FILE_KEY` identifies the target Figma file (not a credential, just stored as a secret alongside the token).
 - **Required permissions:** a Figma personal access token with read access to the target file.
 
-## Callers of the reusable Figma workflows
+## Other repos running `scripts/figma-sync`
 
-`figma-sync.yml` and `figma-conflict-check.yml` also run as reusable workflows (`workflow_call`) for a second token source, today `helvetia-design/extensions`. The calling repo passes its own `FIGMA_API_TOKEN`, `FIGMA_FILE_KEY`, and `DS_BOT_GITHUB_TOKEN` as secrets; none of this repo's secrets are used. The caller's `DS_BOT_GITHUB_TOKEN` needs the same permissions as above, scoped to the calling repo, including branch-protection bypass on its `main` for the variableId write-back. It also checks out this repo, which is public, so it needs no extra access here.
+A second token source, today `helvetia-design/extensions`, has its own Figma workflows. They check out this repo and run `scripts/figma-sync` with that repo's own `FIGMA_API_TOKEN`, `FIGMA_FILE_KEY`, and `DS_BOT_GITHUB_TOKEN`; none of this repo's secrets are used. Its `DS_BOT_GITHUB_TOKEN` needs the same permissions as above, scoped to that repo, including branch-protection bypass on its `main` for the variableId write-back. This repo is public, so checking it out needs no extra access.

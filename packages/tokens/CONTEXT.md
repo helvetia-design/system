@@ -156,7 +156,7 @@ Each token in `Base.tokens.json` carries a `$extensions.com.figma.variableId` (a
 
 Two independent implementations keep this projection in sync, sharing the same vocabulary, `variableId` identity rule, and `.figma-sync-state.json` baseline below — see [ADR-0016](../../docs/adr/0016-github-action-supersedes-plugin-pull.md) for why the direction split this way:
 
-- **The Figma Sync GitHub Action** (`.github/workflows/figma-sync.yml`, `figma-conflict-check.yml`) — automatic, server-to-server via the Figma REST API. Handles Pull (from Code) only, triggered whenever Toky's `toky/update-main` branch merges into `main`. Both workflows are also reusable (`workflow_call`) for a second token source, see "Second token source" below.
+- **The Figma Sync GitHub Action** (`.github/workflows/figma-sync.yml`, `figma-conflict-check.yml`) — automatic, server-to-server via the Figma REST API. Handles Pull (from Code) only, triggered whenever Toky's `toky/update-main` branch merges into `main`. A second token source runs the same scripts from its own workflows, see "Second token source" below.
 - **Toky** (see [`apps/toky/CONTEXT.md`](../../apps/toky/CONTEXT.md)) — developer-driven, manual, via a button in the Toky web app. Handles Pull (from Figma) only. This direction was originally planned as Phase 3 of a designer-facing Figma plugin ([ADR-0016](../../docs/adr/0016-github-action-supersedes-plugin-pull.md)); that plugin was never built, and [Toky ADR-0002](../../apps/toky/docs/adr/0002-pull-from-figma-button.md) moved this direction into Toky instead.
 
 #### Figma Sync — Language
@@ -207,7 +207,7 @@ _Avoid_: partial typography token, override token
 
 #### Second token source
 
-The sync scripts (`scripts/figma-sync`) serve more than one token source. Core is the default. A second source, today `helvetia-design/extensions` with `packages/tokens/tokens/Extensions.tokens.json`, calls `figma-sync.yml` and `figma-conflict-check.yml` as reusable workflows. Both workflows only act on Toky's `toky/update-main` branch (a merged PR for the sync, an open PR for the conflict check), in core and in a calling repo. The variableId write-back goes to the source's `repo.ref` from its Toky config unless `TARGET_BRANCH` is set. The workflows check out the caller into `token-source/` and run the scripts with `TOKY_CONFIG_PATH` (the caller's `toky.config.json`) and `TOKENS_ROOT` (the caller's checkout).
+The sync scripts (`scripts/figma-sync`) serve more than one token source. Core is the default. A second source, today `helvetia-design/extensions` with `packages/tokens/tokens/Extensions.tokens.json`, has its own `figma-sync.yml` and `figma-conflict-check.yml`. They check out this repo, compile `packages/tokens`, and run `scripts/figma-sync` with `TOKY_CONFIG_PATH` (the source's `toky.config.json`) and `TOKENS_ROOT` (the source's checkout). The workflows in both repos only act on Toky's `toky/update-main` branch (a merged PR for the sync, an open PR for the conflict check). The variableId write-back goes to `GITHUB_REPOSITORY` at the source's `repo.ref` from its Toky config, unless `TARGET_BRANCH` is set.
 
 Every value the scripts need comes from the resolved Toky config (`./toky-config` below): token file, sync-state path, brands (`brandsIndexPath: null` means none), Figma collection and modes, responsive collection (`null` means none), and reference tokens. The extension source writes to its own collection "Extension Tokens" with one mode `Default`; the bootstrap creates both on the first run.
 
