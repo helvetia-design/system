@@ -188,3 +188,26 @@ proven on a real run: confirm each point on the first build and update this sect
   master change would move it. Why: a Figma drop shadow is drawn from the layer's own fill, so on a transparent
   background (`secondary`, `ghost`, `link`) a shadow ring renders as nothing, and its spread only
   renders with clipping on (seen on `ds-button`, 19.11.2026).
+
+## Tooltip anchor
+
+- **A component that renders `ds-tooltip` internally nests the shared `TooltipAnchor` set** — a
+  Figma-only helper on `Core / Utilities` (`6411:7`, key `7acb7deab1ff4f7c89bc15ce980c38a098f2eae1`),
+  like Focus ring (user decision 19.11.2026). `placement` (`bottom · top · right · left`): each
+  variant is an empty 48 × 48 trigger area holding one transparent auto-layout `wrapper` outside
+  it, with the exposed `Tooltip` inside. The wrapper's padding toward the trigger is bound to
+  `🧩 Component/Tooltip/Offset`, the Tooltip is centered along the trigger and aligned to its side.
+- **Wrappers are a fixed size** (bottom / top 200 tall, left / right 400 wide, the other axis
+  stretched to the trigger), pinned to their edge. Why: a hugging frame pinned to the right or
+  bottom edge grows _toward_ the trigger when the text gets longer (seen 19.11.2026: `right` with
+  long text covered the trigger). Figma can't bind an absolute child's x / y, so the gap lives in
+  the wrapper's padding.
+- **Per hover / focus variant** (the states that open the tooltip in code; not disabled /
+  loading): an instance named `tooltip-anchor`, `layoutPositioning = 'ABSOLUTE'`, `x = y = 0`,
+  resized to the variant, constraints `STRETCH` both, visibility bound to a `show tooltip`
+  boolean (default `false`, so the set grid stays clean). Expose it (`isExposedInstance`) when
+  the component has a placement prop or passes the tooltip text in; otherwise leave it at
+  `bottom` and set the text on it. **Set any override before binding visibility** — a hidden
+  instance returns no children.
+- The anchor never changes the parent's size; the tooltip overflows its bounds, so a clipping
+  parent cuts it off (Variations entries: center the entry, or widen its gap).

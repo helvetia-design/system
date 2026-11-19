@@ -3,7 +3,7 @@
 > **Status: done (19.11.2026)** — Phases 1–8 built and confirmed by the user — rebuild of the Close component in the DS Core Components
 > file, tokens from the DS Foundation library. Decisions from earlier runs:
 > `.claude/skills/ds-code-to-figma/rebuild-decisions.md` → "Close". Only the native `<button>` path
-> is modeled; the tooltip is left out (hover overlay).
+> is modeled. The tooltip was added 19.11.2026 (`show tooltip`, see Notes).
 
 ```yaml
 sets: # default set first
@@ -36,10 +36,14 @@ props:
     figmaPropertyType: top-level-split (rule 2) # → CloseInverted
   - name: disabled
     figmaPropertyType: component state (blocked)
+  - name: '(ds-tooltip)' # always rendered by the native path (close.tsx:144), shown on hover / focus
+    figmaProperty: show tooltip
+    figmaPropertyType: boolean # default false
+    shownWhen: 'state=hover | focus, disabled=false'
   - name: '[excluded]'
     figmaPropertyType: excluded
-    note: 'button, buttonColor, buttonSize — only the native <button> path is modeled (rebuild-decisions.md); ds-tooltip — hover overlay.'
-  # Generated: the i18n label ("Close") is only aria-label + tooltip text — no property.
+    note: 'button, buttonColor, buttonSize — only the native <button> path is modeled (rebuild-decisions.md).'
+  # Generated: the i18n label ("Close") is aria-label + tooltip text — fixed `Close` override on the Tooltip, no property.
 
 states:
   figmaProperty: state
@@ -61,9 +65,28 @@ nested:
   - childTag: '(focus ring)'
     figmaComponentKey: 2454d0fabf5c8fcb51b8b44de7a4fec90e9120c8 # Focus ring set, Core / Utilities
     note: 'focus-shadow mixin → focus-ring instance on every state=focus variant (inverted=true in CloseInverted); round host → ring radii full'
-  # ds-button (button path) and ds-tooltip excluded — see props.
+  - childTag: '(tooltip anchor)' # Figma-only helper, Core / Utilities (build-mechanics.md → Tooltip anchor); added 19.11.2026
+    figmaComponentKey: 7acb7deab1ff4f7c89bc15ce980c38a098f2eae1 # TooltipAnchor set
+    exposed: false # placement fixed at bottom — ds-close has no placement prop
+    note: 'In every state=hover | focus variant with disabled=false (4 + 4): `tooltip-anchor` instance, absolute, x/y 0, sized to the variant, constraints STRETCH both, placement=bottom. Visibility bound to `show tooltip`.'
+  - childTag: ds-tooltip # inside the anchor
+    childMappingFile: ../../overlays/tooltip/tooltip.figma.md
+    figmaComponentKey: 153b91930d626839058d24ce00415275c0f74f04
+    exposed: false # not reachable from Close (anchor not exposed); generated text, fixed `content` = Close
+  # ds-button (button path) excluded — see props.
 
-variations: [] # no show booleans — Variations placeholder deleted
+variations: # section re-added 19.11.2026 for show tooltip (cloned from Button's, same template Section)
+  figmaSectionNodeId: '6408:1888'
+  sets:
+    - set: Close
+      previewNodeId: null
+      entries:
+        - {
+            caption: 'show tooltip · hover',
+            props: { show tooltip: true, state: hover },
+            snapshot: close-tooltip,
+            nodeId: 'I6408:1888;2192:7515;2192:5066;6408:1891;2192:7499;6408:1967',
+          } # entry centered so the card doesn't clip the tooltip
 
 tokens: # all checked in the Foundation file (19.11.2026)
   - { cssVar: --ds-close-size-base, figmaVariable: 🧩 Component/Close/Size/Base, resolved: true } # 24
@@ -136,6 +159,7 @@ tokens: # all checked in the Foundation file (19.11.2026)
       figmaVariable: 🔗 Alias/✨ Interaction/Focus/Color/Inverted,
       resolved: true,
     } # via Focus ring
+  - { cssVar: --ds-tooltip-offset, figmaVariable: 🧩 Component/Tooltip/Offset, resolved: true } # 8 — bound inside TooltipAnchor
 # No breakpoint mixins → no device: section.
 
 completeness:
@@ -212,6 +236,11 @@ measurements: # confirmed by the user 19.11.2026, measured on the dev server
 - **X size (user decision 19.11.2026):** code draws the X at `size − padding` (14 / 18). Figma
   can't calculate that, and the per-side padding (5 / 7) isn't a token either, so the X frame is a
   literal 14 / 18. Code follow-up: a `Close/Icon/Size` token.
+- **Tooltip (user decision 19.11.2026):** `show tooltip` (default off) shows the nested `Tooltip`
+  ("Close") below the button, centered, 8px away, through a `TooltipAnchor` instance fixed at
+  `placement=bottom` and not exposed — `ds-close` has no placement prop. The
+  `close-tooltip` snapshot shows it shifted left: floating-ui's `shift` against the viewport
+  edge, not a different placement.
 - **Button dependency:** none — the `button` path (a `ds-button`) is excluded, so `TODO.md`'s
   "Close → Button" dependency doesn't apply to this build.
 
