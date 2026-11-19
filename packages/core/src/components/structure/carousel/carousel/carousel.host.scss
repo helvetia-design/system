@@ -178,12 +178,12 @@
 }
 
 :host(.is-tile.has-overflow) .carousel-outer::before {
-  left: calc(var(--_carousel-scroll-btn-size) + var(--_carousel-scroll-btn-gap));
+  left: 0;
   background: linear-gradient(to right, var(--_carousel-scroll-fade-background), transparent);
 }
 
 :host(.is-tile.has-overflow) .carousel-outer::after {
-  right: calc(var(--_carousel-scroll-btn-size) + var(--_carousel-scroll-btn-gap));
+  right: 0;
   background: linear-gradient(to left, var(--_carousel-scroll-fade-background), transparent);
 }
 
