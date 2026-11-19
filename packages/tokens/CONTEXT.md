@@ -156,7 +156,7 @@ Each token in `Base.tokens.json` carries a `$extensions.com.figma.variableId` (a
 
 Two independent implementations keep this projection in sync, sharing the same vocabulary, `variableId` identity rule, and `.figma-sync-state.json` baseline below — see [ADR-0016](../../docs/adr/0016-github-action-supersedes-plugin-pull.md) for why the direction split this way:
 
-- **The Figma Sync GitHub Action** (`.github/workflows/figma-sync.yml`, `figma-conflict-check.yml`) — automatic, server-to-server via the Figma REST API. Handles Pull (from Code) only, triggered whenever Toky's `toky/update-next` branch merges into `next`.
+- **The Figma Sync GitHub Action** (`.github/workflows/figma-sync.yml`, `figma-conflict-check.yml`) — automatic, server-to-server via the Figma REST API. Handles Pull (from Code) only, triggered whenever Toky's `toky/update-main` branch merges into `main`. Both workflows are also reusable (`workflow_call`) for a second token source, see "Second token source" below.
 - **Toky** (see [`apps/toky/CONTEXT.md`](../../apps/toky/CONTEXT.md)) — developer-driven, manual, via a button in the Toky web app. Handles Pull (from Figma) only. This direction was originally planned as Phase 3 of a designer-facing Figma plugin ([ADR-0016](../../docs/adr/0016-github-action-supersedes-plugin-pull.md)); that plugin was never built, and [Toky ADR-0002](../../apps/toky/docs/adr/0002-pull-from-figma-button.md) moved this direction into Toky instead.
 
 #### Figma Sync — Language
@@ -166,11 +166,11 @@ The stable key used to match one token to one Figma Variable across syncs: `$ext
 _Avoid_: token name (as identity — names can change; a rename is not a delete+add)
 
 **Pull (from Code)**:
-Synchronization that reads `*.tokens.json` from GitHub and writes matching Figma Variables. Origin is GitHub; destination is Figma. Performed exclusively by the Figma Sync GitHub Action (see [ADR-0016](../../docs/adr/0016-github-action-supersedes-plugin-pull.md)). When Pull creates a Figma Variable for a token that had no `variableId` yet, the new id is written back to `next` as a direct bot commit, not a PR — the one deliberate exception to "GitHub writes are always PR-mediated" in this domain (see [ADR-0017](../../docs/adr/0017-direct-commit-variableid-backfill.md)).
+Synchronization that reads `*.tokens.json` from GitHub and writes matching Figma Variables. Origin is GitHub; destination is Figma. Performed exclusively by the Figma Sync GitHub Action (see [ADR-0016](../../docs/adr/0016-github-action-supersedes-plugin-pull.md)). When Pull creates a Figma Variable for a token that had no `variableId` yet, the new id is written back to `main` as a direct bot commit, not a PR — the one deliberate exception to "GitHub writes are always PR-mediated" in this domain (see [ADR-0017](../../docs/adr/0017-direct-commit-variableid-backfill.md)).
 _Avoid_: import, download, push (a Pull moves data INTO Figma — "push to Figma," though a natural-sounding phrase, names the wrong direction in this glossary)
 
 **Pull (from Figma)**:
-Synchronization that reads Figma Variables and stages the resulting `*.tokens.json` changes as Toky working changes for review, eventually opening a GitHub pull request. Origin is Figma; destination is GitHub, always via PR review, never a direct commit to `next`. Formerly named "Push (to Code)" — renamed for consistency with how Toky itself refers to this direction (see [`apps/toky/CONTEXT.md`](../../apps/toky/CONTEXT.md)); avoid "push" for this direction, same reasoning as the entry above, just mirrored.
+Synchronization that reads Figma Variables and stages the resulting `*.tokens.json` changes as Toky working changes for review, eventually opening a GitHub pull request. Origin is Figma; destination is GitHub, always via PR review, never a direct commit to `main`. Formerly named "Push (to Code)" — renamed for consistency with how Toky itself refers to this direction (see [`apps/toky/CONTEXT.md`](../../apps/toky/CONTEXT.md)); avoid "push" for this direction, same reasoning as the entry above, just mirrored.
 _Avoid_: push (to Code), export, publish, upload
 
 **Sync baseline**:
@@ -204,6 +204,24 @@ _Avoid_: inherited text, partial typography
 **Part modifier**:
 A single-property Component token (e.g. `Text.Weight.Bold`) that overrides exactly one part of a text part's typography token, for a prop or state that changes only that one part (a weight prop, a selected day). A prop or state that changes two or more parts gets its own typography token instead.
 _Avoid_: partial typography token, override token
+
+#### Second token source
+
+The sync scripts (`scripts/figma-sync`) serve more than one token source. Core is the default. A second source, today `helvetia-design/extensions` with `packages/tokens/tokens/Extensions.tokens.json`, calls `figma-sync.yml` and `figma-conflict-check.yml` as reusable workflows. Both workflows only act on Toky's `toky/update-main` branch (a merged PR for the sync, an open PR for the conflict check), in core and in a calling repo. The variableId write-back goes to the source's `repo.ref` from its Toky config unless `TARGET_BRANCH` is set. The workflows check out the caller into `token-source/` and run the scripts with `TOKY_CONFIG_PATH` (the caller's `toky.config.json`) and `TOKENS_ROOT` (the caller's checkout).
+
+Every value the scripts need comes from the resolved Toky config (`./toky-config` below): token file, sync-state path, brands (`brandsIndexPath: null` means none), Figma collection and modes, responsive collection (`null` means none), and reference tokens. The extension source writes to its own collection "Extension Tokens" with one mode `Default`; the bootstrap creates both on the first run.
+
+**Reference tokens**:
+Tokens of another source that a token may alias but the sync never creates, updates, or deletes. For the extension source they are core's `Base.tokens.json`, resolved from the token package's `node_modules` (the pinned core version) or from `REFERENCE_TOKENS_FILE`. A reference resolves in the own tree first, then in the reference tree. An alias to a reference token uses that token's committed `variableId`. A reference that resolves in neither tree, or a reference token without a `variableId`, fails the run before any write.
+_Avoid_: imported tokens, shared tokens (nothing is copied)
+
+### Package exports
+
+Besides the CSS, JS, and docs JSON, the package exports what a second token source builds against:
+
+- `./tokens/base` — the raw `tokens/Base.tokens.json`, including `$extensions.com.figma.variableId`.
+- `./build` — the Style Dictionary setup (transforms, formats, base CSS transforms), so a second source names and serializes tokens like core.
+- `./toky-config` — the `TokyConfig` type, its JSON schema, `CORE_TOKY_CONFIG`, and `resolveTokyConfig(overrides)`. Toky and the sync scripts read instance-specific values from it.
 
 ## Key Concepts
 
@@ -477,7 +495,7 @@ Decisions specific to this package (Figma Variable identity, brand modes, sync b
 - [ADR-0014](../../docs/adr/0014-git-data-api-atomic-commits.md) — GitHub writes use the Git Data API for atomic commits
 - [ADR-0015](../../docs/adr/0015-git-committed-sync-baseline.md) — Sync baseline is a git-committed file
 - [ADR-0016](../../docs/adr/0016-github-action-supersedes-plugin-pull.md) — A GitHub Action, not the plugin, owns Pull (from Code)
-- [ADR-0017](../../docs/adr/0017-direct-commit-variableid-backfill.md) — VariableId backfill is a direct commit to `next`, not a PR
+- [ADR-0017](../../docs/adr/0017-direct-commit-variableid-backfill.md) — VariableId backfill is a direct commit, not a PR (the ADR names `next`; the workflow now targets `main`)
 - [ADR-0018](../../docs/adr/0018-non-blocking-conflict-check.md) — Conflict check comments, it doesn't block the merge
 - [ADR-0019](../../docs/adr/0019-pull-auto-deletes-figma-variables.md) — Pull deletes the Figma Variable when a token is removed
 - [ADR-0020](../../docs/adr/0020-figma-sync-action-standalone-script.md) — The Figma Sync Action's code stays standalone, not shared with apps/toky

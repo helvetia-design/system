@@ -4,6 +4,25 @@ on:
   pull_request:
     branches: [main]
     paths: ['packages/tokens/tokens/*.tokens.json']
+  # Called from a repo with a second token source (helvetia-design/extensions). The job condition
+  # below checks the caller's event; the caller sets its own pull_request branches/paths filter.
+  workflow_call:
+    inputs:
+      toky-config-path:
+        description: "Path of the caller's toky.config.json, relative to the caller's repo root"
+        type: string
+        required: true
+      system-ref:
+        description: 'Ref of helvetia-design/system whose sync scripts run'
+        type: string
+        default: main
+    secrets:
+      FIGMA_API_TOKEN:
+        required: true
+      FIGMA_FILE_KEY:
+        required: true
+      DS_BOT_GITHUB_TOKEN:
+        required: true
 
 permissions:
   contents: read
@@ -11,19 +30,36 @@ permissions:
 jobs:
   check:
     name: 🔍 Figma Conflict Check
-    if: github.head_ref == 'toky/update-next'
+    if: github.head_ref == 'toky/update-main'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      # Set only in a called run. The caller's PR checkout goes to token-source/; this repo stays at
+      # the workspace root, where ./.github/workflows/actions/* resolves.
+      EXTERNAL_SOURCE: ${{ (inputs.toky-config-path || '') != '' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v7
         with:
+          repository: helvetia-design/system
+          ref: ${{ env.EXTERNAL_SOURCE == 'true' && (inputs.system-ref || 'main') || '' }}
+          fetch-depth: 1
+
+      - name: Check out the calling token source
+        if: env.EXTERNAL_SOURCE == 'true'
+        uses: actions/checkout@v7
+        with:
+          path: token-source
           fetch-depth: 1
 
       - uses: ./.github/workflows/actions/setup-environment
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # The sync scripts only import dist/out-tsc/toky-config.js; the CSS build is not needed.
+      - name: Compile token package
+        run: pnpm --filter @helvetia-design/tokens exec tsc
 
       # Comment-only, never blocks merge (docs/adr/0018-non-blocking-conflict-check.md)
       # — a script error here still fails the job (a real operational
@@ -35,4 +71,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
           FIGMA_API_TOKEN: ${{ secrets.FIGMA_API_TOKEN }}
           FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
+          TOKY_CONFIG_PATH: ${{ env.EXTERNAL_SOURCE == 'true' && format('{0}/token-source/{1}', github.workspace, inputs.toky-config-path) || '' }}
+          TOKENS_ROOT: ${{ env.EXTERNAL_SOURCE == 'true' && format('{0}/token-source', github.workspace) || '' }}
         run: node scripts/figma-sync/conflict-check.mjs

@@ -10,8 +10,33 @@ on:
         description: 'Dry run (resolve + report, no writes to Figma)'
         type: boolean
         default: false
+  # Called from a repo with a second token source (helvetia-design/extensions). The job condition
+  # below checks the caller's event, so the caller uses the same two triggers as above.
+  workflow_call:
+    inputs:
+      toky-config-path:
+        description: "Path of the caller's toky.config.json, relative to the caller's repo root"
+        type: string
+        required: true
+      system-ref:
+        description: 'Ref of helvetia-design/system whose sync scripts run'
+        type: string
+        default: main
+      dry-run:
+        description: 'Dry run (resolve + report, no writes to Figma)'
+        type: boolean
+        default: false
+    secrets:
+      FIGMA_API_TOKEN:
+        required: true
+      FIGMA_FILE_KEY:
+        required: true
+      DS_BOT_GITHUB_TOKEN:
+        required: true
 
-concurrency: ${{ github.workflow }}
+# Per repo, not per workflow name: in a called run github.workflow is the caller's name, and a
+# caller holding the same group would block this run.
+concurrency: figma-sync-${{ github.repository }}
 
 permissions:
   contents: read
@@ -22,11 +47,27 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'toky/update-main')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      # Set only in a called run. The caller's checkout goes to token-source/; this repo stays at
+      # the workspace root, where ./.github/workflows/actions/* resolves.
+      EXTERNAL_SOURCE: ${{ (inputs.toky-config-path || '') != '' }}
+      DRY_RUN_INPUT: ${{ inputs.dry_run || inputs.dry-run || false }}
     steps:
       - name: Check out code
         uses: actions/checkout@v7
         with:
+          repository: helvetia-design/system
+          ref: ${{ inputs.system-ref || 'main' }}
+          fetch-depth: 1
+          token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
+
+      - name: Check out the calling token source
+        if: env.EXTERNAL_SOURCE == 'true'
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ github.repository }}
           ref: main
+          path: token-source
           fetch-depth: 1
           token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
 
@@ -35,11 +76,31 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # The sync scripts only import dist/out-tsc/toky-config.js; the CSS build is not needed.
+      - name: Compile token package
+        run: pnpm --filter @helvetia-design/tokens exec tsc
+
+      - name: Point the sync scripts at the calling token source
+        if: env.EXTERNAL_SOURCE == 'true'
+        shell: bash
+        env:
+          TOKY_CONFIG_PATH: ${{ github.workspace }}/token-source/${{ inputs.toky-config-path }}
+          TOKENS_ROOT: ${{ github.workspace }}/token-source
+        run: |
+          {
+            echo "TOKY_CONFIG_PATH=$TOKY_CONFIG_PATH"
+            echo "TOKENS_ROOT=$TOKENS_ROOT"
+          } >> "$GITHUB_ENV"
+          package_dir=$(node --input-type=module -e "const { resolveSyncInputs } = await import('./scripts/figma-sync/lib/config.mjs'); console.log(resolveSyncInputs().tokensPackageDir)")
+          # Only the token package's dependencies: they hold the reference token file.
+          cd "$TOKENS_ROOT"
+          pnpm install --frozen-lockfile --ignore-scripts --filter "./$package_dir"
+
       - name: Pull tokens to Figma
         id: sync
         shell: bash
         env:
-          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          DRY_RUN: ${{ env.DRY_RUN_INPUT }}
           FIGMA_API_TOKEN: ${{ secrets.FIGMA_API_TOKEN }}
           FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
         run: node scripts/figma-sync/pull.mjs
@@ -49,9 +110,10 @@ jobs:
       # Needs the bot token to have branch-protection bypass rights on `main`. Runs after every
       # real (non-dry-run) sync, not just one that added/removed variableIds — the baseline's
       # resolvedValue needs refreshing even on a value-only run, or the next PR touching that
-      # token gets a false conflict against a stale value.
+      # token gets a false conflict against a stale value. A called run commits to the caller
+      # (GITHUB_REPOSITORY).
       - name: Write back new/removed variableIds + baseline (direct commit)
-        if: ${{ !inputs.dry_run }}
+        if: env.DRY_RUN_INPUT != 'true'
         shell: bash
         env:
           NEW_IDS_FILE: ${{ steps.sync.outputs.new_ids_file }}

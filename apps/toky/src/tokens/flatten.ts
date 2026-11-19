@@ -1,7 +1,8 @@
+import type { TokenLayerKey } from '@helvetia-design/tokens/toky-config'
 import { RESPONSIVE_DIMENSION_EXTENSION_KEY } from './types'
 import type { FigmaId, FlatToken, ResponsiveDimensionValue, TokenLayer } from './types'
 
-const LAYER_KEYS: Record<string, TokenLayer> = {
+export const LAYER_KEYS: Record<TokenLayerKey, TokenLayer> = {
   '🌐 Global': 'Global',
   '🔗 Alias': 'Alias',
   '📱 Device': 'Device',
@@ -165,9 +166,10 @@ function resolveNestedReferences(value: unknown, byPath: Map<string, FlatToken>)
   return result
 }
 
-export function resolveReferences(tokens: FlatToken[]): FlatToken[] {
+/** Resolves `tokens`; `referenceTokens` are read-only targets that resolve but are not returned. */
+export function resolveReferences(tokens: FlatToken[], referenceTokens: FlatToken[] = []): FlatToken[] {
   const byPath = new Map<string, FlatToken>()
-  for (const token of tokens) {
+  for (const token of [...referenceTokens, ...tokens]) {
     byPath.set(token.path.join('.'), token)
   }
 
@@ -216,6 +218,6 @@ export function resolveReferences(tokens: FlatToken[]): FlatToken[] {
   })
 }
 
-export function parseTokenDocument(doc: Record<string, unknown>): FlatToken[] {
-  return resolveReferences(flattenTokenDocument(doc))
+export function parseTokenDocument(doc: Record<string, unknown>, referenceTokens: FlatToken[] = []): FlatToken[] {
+  return resolveReferences(flattenTokenDocument(doc), referenceTokens)
 }

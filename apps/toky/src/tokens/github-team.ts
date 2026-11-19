@@ -1,12 +1,14 @@
-import { REPO_OWNER, TEAM_SLUG, encodeGithubUrlSegment, requireGithubOrgToken } from './github'
+import { getTokyConfig } from './config'
+import { encodeGithubUrlSegment, requireGithubOrgToken } from './github'
 
 // GET /orgs/{org}/teams/{team_slug}/memberships/{username} — 200 with
 // state: "active" means the user is a confirmed team member; state:
 // "pending" means they've been invited but haven't accepted yet, which does
 // not grant access. 404 means they aren't on the team (or the team/org
-// doesn't exist). Any other status is unexpected. See docs/adr/0004.
+// doesn't exist). Any other status is unexpected. See docs/adr/0004 and 0005.
 export async function isTeamMember(username: string): Promise<boolean> {
-  const url = `https://api.github.com/orgs/${REPO_OWNER}/teams/${TEAM_SLUG}/memberships/${encodeGithubUrlSegment(username)}`
+  const { repo, team } = await getTokyConfig()
+  const url = `https://api.github.com/orgs/${repo.owner}/teams/${encodeGithubUrlSegment(team)}/memberships/${encodeGithubUrlSegment(username)}`
 
   const response = await fetch(url, {
     cache: 'no-store',
@@ -25,6 +27,6 @@ export async function isTeamMember(username: string): Promise<boolean> {
 
   const body = await response.text()
   throw new Error(
-    `Failed to check ${TEAM_SLUG} team membership for ${username}: ${response.status} ${response.statusText} — ${body}`,
+    `Failed to check ${team} team membership for ${username}: ${response.status} ${response.statusText} — ${body}`,
   )
 }
