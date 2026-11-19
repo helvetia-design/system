@@ -185,6 +185,26 @@ describe('findConflicts', () => {
     it('shows the raw variableId when Figma aliases a variable no token source knows', () => {
       expect(run(['Alias', 'Space', 'MD'], 'VariableID:404:1')).toMatchObject([{ figmaValue: '{VariableID:404:1}' }])
     })
+
+    it('resolves an alias to the device sub-id of a responsive reference token', () => {
+      const deviceToken = (path: string[], id: string) => ({
+        path,
+        type: 'dimension',
+        value: { kind: 'literal', value: { value: 0, unit: 'px' } },
+        variableId: { mobile: `${id}:m`, tablet: `${id}:t`, desktop: `${id}:d`, device: `${id}:device` },
+      })
+      const conflicts = findConflicts({
+        existingState: state({ kind: 'reference', path: ['Device', 'Space', 'None'] }),
+        currentBaseTokens: [aliasToken(['Device', 'Space', 'XS'])],
+        figmaVariablesById: { 'VariableID:1:1': { valuesByMode: { [modeId]: aliasOf('VariableID:8:1:device') } } },
+        modeId,
+        referenceTokens: [
+          deviceToken(['Device', 'Space', 'None'], 'VariableID:8:1'),
+          deviceToken(['Device', 'Space', 'XS'], 'VariableID:8:2'),
+        ],
+      })
+      expect(conflicts).toEqual([])
+    })
   })
 
   it('skips a token whose variableId has no live Figma variable (deleted, or never actually pushed)', () => {

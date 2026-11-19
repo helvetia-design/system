@@ -11,7 +11,7 @@
  * conflicts need a per-brand pass this check doesn't build yet.
  */
 import { pathKey } from './alias.mjs'
-import { figmaLiteralValueFor, isFigmaValueEqual } from './figma-value.mjs'
+import { figmaLiteralValueFor, flattenVariableId, isFigmaValueEqual } from './figma-value.mjs'
 
 export const COMMENT_MARKER = '<!-- figma-sync-conflict-check -->'
 
@@ -19,7 +19,7 @@ function buildPathByVariableId(existingState, currentBaseTokens, referenceTokens
   const pathById = new Map()
   for (const [id, entry] of Object.entries(existingState.entries)) pathById.set(id, pathKey(entry.tokenPath))
   for (const token of [...referenceTokens, ...currentBaseTokens]) {
-    if (typeof token.variableId === 'string') pathById.set(token.variableId, pathKey(token.path))
+    for (const { id } of flattenVariableId(token.variableId)) pathById.set(id, pathKey(token.path))
   }
   return pathById
 }
