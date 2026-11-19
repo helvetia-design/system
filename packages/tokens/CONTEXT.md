@@ -496,7 +496,7 @@ Decisions specific to this package (Figma Variable identity, brand modes, sync b
 - [ADR-0015](../../docs/adr/0015-git-committed-sync-baseline.md) — Sync baseline is a git-committed file
 - [ADR-0016](../../docs/adr/0016-github-action-supersedes-plugin-pull.md) — A GitHub Action, not the plugin, owns Pull (from Code)
 - [ADR-0017](../../docs/adr/0017-direct-commit-variableid-backfill.md) — VariableId backfill is a direct commit, not a PR (the ADR names `next`; the workflow now targets `main`)
-- [ADR-0018](../../docs/adr/0018-non-blocking-conflict-check.md) — Conflict check comments, it doesn't block the merge
+- [ADR-0018](../../docs/adr/0018-non-blocking-conflict-check.md) — Conflict check comments, it doesn't block the merge (the ADR names `toky/update-next`; the workflow now targets `toky/update-main`)
 - [ADR-0019](../../docs/adr/0019-pull-auto-deletes-figma-variables.md) — Pull deletes the Figma Variable when a token is removed
 - [ADR-0020](../../docs/adr/0020-figma-sync-action-standalone-script.md) — The Figma Sync Action's code stays standalone, not shared with apps/toky
 - [ADR-0034](../../docs/adr/0034-figma-variable-type-change-recreates-variable.md) — A changed Figma variable type deletes and recreates the variable

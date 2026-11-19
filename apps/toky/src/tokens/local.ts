@@ -53,10 +53,7 @@ export function localBrandTokensPath(config: TokyConfig, name: string): string {
   return path.join(localTokensDir(config), `${name}.tokens.json`)
 }
 
-// Every `*.tokens.json` sibling of Base.tokens.json, same rule page.tsx's
-// loadTokensFromLocalDisk uses to build the brand list shown in the editor —
-// kept here too so route.ts can check a brandDiffs name against what
-// actually exists on disk without duplicating the filter.
+// Every `*.tokens.json` sibling of `config.tokenFile` is a brand override file.
 export async function listLocalTokenBrandFiles(config: TokyConfig): Promise<string[]> {
   if (config.brandsIndexPath === null) return []
   const entries = await readdir(localTokensDir(config))
