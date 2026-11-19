@@ -1,17 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'file-upload'
-
-const VARIANTS = [
-  'basic',
-  'disabled',
-  'invalid',
-  'invalid-slot',
-  'valid',
-  'warning',
-  'loading',
-  'no-file-list',
-] as const
+import { TAG, VARIANTS } from './file-upload.variants'
 
 const image = screenshot(TAG)
 

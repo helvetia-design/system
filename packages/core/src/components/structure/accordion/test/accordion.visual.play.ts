@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'accordion'
-const VARIANTS = ['basic', 'nested', 'markers', 'left-markers', 'stack-item', 'accordions', 'button-accordion']
+import { TAG, VARIANTS } from './accordion.variants'
 
 const image = screenshot(TAG)
 

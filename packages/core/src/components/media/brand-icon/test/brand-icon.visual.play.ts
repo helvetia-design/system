@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'brand-icon'
-const VARIANTS = ['basic', 'svg-content', 'states', 'sizes', 'tile']
+import { TAG, VARIANTS } from './brand-icon.variants'
 
 const image = screenshot(TAG)
 

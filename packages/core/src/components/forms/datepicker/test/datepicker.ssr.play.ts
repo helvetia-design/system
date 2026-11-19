@@ -1,11 +1,23 @@
-import { DsDatepicker, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './datepicker.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/forms/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(page, `<ds-datepicker label="Date of birth"></ds-datepicker>`, renderToString, testInfo)
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      test.fixme(
+        variant === 'inline',
+        'SSR: inline calendar is rendered twice after hydration, server copy stays empty (#328)',
+      )
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const date = new DsDatepicker(page.locator('ds-datepicker'))
-    await date.assertToBeVisible()
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
 })
