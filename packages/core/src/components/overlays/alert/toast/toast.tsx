@@ -173,13 +173,13 @@ export class Toast implements DsComponentInterface, AlertComponent, DsConfigObse
 
   /**
    * @internal
-   * Emitted when the alert got paused, either by mouse enter or by calling the pause method.
+   * Emitted when the alert got paused, either by mouse enter or by focus.
    */
   @Event() dsDidPause!: EventEmitter<void>
 
   /**
    * @internal
-   * Emitted when the alert got resumed, either by mouse leave or by calling the resume method.
+   * Emitted when the alert got resumed, either by mouse leave or by focus leaving the alert.
    */
   @Event() dsDidResume!: EventEmitter<void>
 
@@ -249,6 +249,16 @@ export class Toast implements DsComponentInterface, AlertComponent, DsConfigObse
     }
   }
 
+  private pause = () => {
+    this.didPause = true
+    this.dsDidPause.emit()
+  }
+
+  private resume = () => {
+    this.didPause = false
+    this.dsDidResume.emit()
+  }
+
   /**
    * RENDER
    * ─────────────────────────────────────────────────────
@@ -282,13 +292,14 @@ export class Toast implements DsComponentInterface, AlertComponent, DsConfigObse
           [`is-${this.color}`]: this.color !== undefined,
         }}
         style={durationVariable}
-        onMouseEnter={() => {
-          this.didPause = true
-          this.dsDidPause.emit()
-        }}
+        onMouseEnter={this.pause}
         onMouseLeave={() => {
-          this.didPause = false
-          this.dsDidResume.emit()
+          if (!this.el.matches(':focus-within')) this.resume()
+        }}
+        onFocusin={this.pause}
+        onFocusout={(ev: FocusEvent) => {
+          const focusStaysInside = ev.relatedTarget instanceof Node && this.el.contains(ev.relatedTarget)
+          if (!focusStaysInside && !this.el.matches(':hover')) this.resume()
         }}
       >
         {/* --------------------------------------*/}

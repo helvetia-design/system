@@ -71,6 +71,9 @@ jobs:
       - name: Test token usage
         run: pnpm test:token-usage
 
+      - name: Test scripts
+        run: pnpm test:scripts
+
       - name: Generate SBOM
         if: github.event_name == 'push'
         run: pnpm sbom --sbom-format cyclonedx --out sbom.cdx.json

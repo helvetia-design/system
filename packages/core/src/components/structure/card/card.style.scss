@@ -97,14 +97,14 @@ $host-selector: ('#card');
 // --------------------------------
 @include hybrid.styles($css-selector, $use-host) {
   picture {
-    --picture-img-radius: var(--_card-radius);
+    --picture-radius: var(--_card-radius);
   }
 }
 
 @include hybrid.host($use-host) {
   :host {
     ::slotted(picture) {
-      --picture-img-radius: var(--_card-radius);
+      --picture-radius: var(--_card-radius);
     }
   }
 }

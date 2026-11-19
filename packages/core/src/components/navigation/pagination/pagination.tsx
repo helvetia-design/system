@@ -222,6 +222,7 @@ export class Pagination implements DsComponentInterface, DsBreakpointObserver {
    */
 
   private selectPage(pageNumber: number) {
+    if (this.disabled) return
     this.value = pageNumber
     this.dsChangeEventEmitter.emit(this.value)
   }
@@ -263,6 +264,7 @@ export class Pagination implements DsComponentInterface, DsBreakpointObserver {
             aria-current={isActive ? 'true' : undefined}
             aria-label={pageNumber.toString()}
             title={pageNumber.toString()}
+            disabled={this.disabled}
             onClick={() => this.selectPage(pageNumber)}
           />
         </li>
@@ -281,6 +283,7 @@ export class Pagination implements DsComponentInterface, DsBreakpointObserver {
             'is-sm': this.isMobile || hasValue(this.size),
           }}
           aria-current={isActive ? 'true' : undefined}
+          disabled={this.disabled}
           onClick={() => this.selectPage(pageNumber)}
         >
           {pageNumber}
@@ -345,6 +348,13 @@ export class Pagination implements DsComponentInterface, DsBreakpointObserver {
               <ds-icon name="caret-left" size="sm" disabled={this.value < 2} />
             </button>
           )}
+          {hasBasicNavigationButtons ? (
+            <ul class={{ dots: hasValue(this.variant) }} part="list">
+              {items}
+            </ul>
+          ) : (
+            <DotsWithText></DotsWithText>
+          )}
           {!this.disabled && (
             <button
               id="next"
@@ -354,22 +364,15 @@ export class Pagination implements DsComponentInterface, DsBreakpointObserver {
               class={{
                 'ds-button': true,
                 'is-square': true,
-                'is-disabled': this.value === this.totalPages,
+                'is-disabled': this.value >= this.totalPages,
                 [buttonColor]: true,
                 [buttonSize]: true,
               }}
-              disabled={this.value === this.totalPages}
+              disabled={this.value >= this.totalPages}
               onClick={() => this.next()}
             >
-              <ds-icon name="caret-right" size="sm" disabled={this.value === this.totalPages} />
+              <ds-icon name="caret-right" size="sm" disabled={this.value >= this.totalPages} />
             </button>
-          )}
-          {hasBasicNavigationButtons ? (
-            <ul class={{ dots: hasValue(this.variant) }} part="list">
-              {items}
-            </ul>
-          ) : (
-            <DotsWithText></DotsWithText>
           )}
         </nav>
       </Host>
