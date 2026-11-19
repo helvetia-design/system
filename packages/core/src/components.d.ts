@@ -633,7 +633,7 @@ export namespace Components {
     interface DsCarousel {
         "configChanged": (state: DsConfigState) => Promise<void>;
         /**
-          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `none` hides all controls.
+          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `large-below` shows large round arrow buttons centered below the track. `none` hides all controls.
           * @default 'dots'
          */
         "controls": CarouselControls;
@@ -5772,7 +5772,7 @@ declare namespace LocalJSX {
      */
     interface DsCarousel {
         /**
-          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `none` hides all controls.
+          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `large-below` shows large round arrow buttons centered below the track. `none` hides all controls.
           * @default 'dots'
          */
         "controls"?: CarouselControls;

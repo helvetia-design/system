@@ -27,11 +27,23 @@ test.describe('a11y — image variant', () => {
     await page.mount(`<ds-carousel label="Image gallery" value="s2">${ITEMS}</ds-carousel>`)
     await a11y('ds-carousel')
   })
+
+  test('below controls', async ({ page, a11y }) => {
+    await page.mount(`<ds-carousel label="Image gallery" controls="large-below">${ITEMS}</ds-carousel>`)
+    await a11y('ds-carousel')
+  })
 })
 
 test.describe('a11y — tile variant', () => {
   test('basic', async ({ page, a11y }) => {
     await page.mount(`<ds-carousel variant="tile" controls="large" label="Products">${PRODUCT_ITEMS}</ds-carousel>`)
+    await a11y('ds-carousel')
+  })
+
+  test('below controls', async ({ page, a11y }) => {
+    await page.mount(
+      `<ds-carousel variant="tile" controls="large-below" label="Products">${PRODUCT_ITEMS}</ds-carousel>`,
+    )
     await a11y('ds-carousel')
   })
 })

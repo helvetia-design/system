@@ -24941,6 +24941,11 @@
                 "ALL_SCOPES"
               ]
             }
+          },
+          "Disabled": {
+            "$type": "color",
+            "$value": "{🔗 Alias.🔤 Text.Color.Disabled}",
+            "$description": "Icon color of a below-track scroll button that cannot scroll further."
           }
         },
         "Background": {
@@ -24973,6 +24978,11 @@
                 "ALL_SCOPES"
               ]
             }
+          },
+          "Disabled": {
+            "$type": "color",
+            "$value": "{🔗 Alias.🎨 Surface.Disabled}",
+            "$description": "Background color of a below-track scroll button that cannot scroll further."
           }
         },
         "Size": {
@@ -25031,6 +25041,18 @@
               ]
             }
           }
+        }
+      },
+      "ScrollBtnBelow": {
+        "Gap": {
+          "$type": "dimension",
+          "$value": "{🔗 Alias.↔️ Space.Gap.Base}",
+          "$description": "Space between the slide track and the below-track scroll buttons."
+        },
+        "ButtonGap": {
+          "$type": "dimension",
+          "$value": "{🌐 Global.📏 Dimension.Space.56}",
+          "$description": "Space between the two below-track scroll buttons."
         }
       },
       "Gap": {
