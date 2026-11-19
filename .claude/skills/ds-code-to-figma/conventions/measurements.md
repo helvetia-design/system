@@ -140,7 +140,7 @@ Callouts stay the exception, never the default: a callout adds a line that measu
 it should also signal "this dimension is too small for its own pill".
 
 **Units**: drawing pills carry the unit (`24px`) — a pill is read on its own. Table cells don't
-(`Base/PaddingX · 24`); the footnote says `Values in px.` once.
+(`Base/PaddingX = 24`); the footnote says `Values in px` once.
 
 **Fills**: only spacing gets a fill (padding tint, gap hatch) and an icon overlay its light box.
 Shape markers stay outlines — the radius circle gets no fill, because half of it lies outside the

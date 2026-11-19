@@ -92,7 +92,8 @@ the owner, e.g. `ButtonGroup`'s slot holds `Button` instances).
 
 ## 5. Anatomy
 
-The owner's `anatomy:` list merges, in DOM order of the owner's default instance:
+The owner's `anatomy:` list merges, in DOM order of the owner's default instance (the final
+letters follow the drawing, left to right — `../PHASE-7-DOCUMENT-ANATOMY.md` step 2):
 
 - the owner's own `@part`s (`A tablist`),
 - **one entry per contained sub-component** (`B Tab (ds-tab)`, `C Tab panel (ds-tab-panel)`),
