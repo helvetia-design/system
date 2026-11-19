@@ -54,7 +54,7 @@ export const Basic = Story({
   args: {
     required: undefined,
   },
-  ...withRender(({ slot, ...args }) => `<ds-label ${props(args)}>${slot}</ds-label>`),
+  ...withRender(({ slot, ...args }) => `<ds-label ${props(args, tag)}>${slot}</ds-label>`),
 })
 Basic.storyName = '🧩 Basic'
 

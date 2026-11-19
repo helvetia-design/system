@@ -1,6 +1,20 @@
-import { Component, Element, Event, EventEmitter, Fragment, h, Listen, Method, Prop, State, Watch } from '@stencil/core'
+import {
+  AttrDeserialize,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  Fragment,
+  h,
+  Listen,
+  Method,
+  Prop,
+  State,
+  Watch,
+} from '@stencil/core'
 import { defaultConfig, DsComponentInterface, DsConfigState, DsLanguage, DsRegion, ListenToConfig } from '@global'
 import {
+  deserializeBooleanAttribute,
   debounceEvent,
   FocusHandler,
   FormControl,
@@ -179,6 +193,11 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
   @Prop()
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form.

@@ -64,10 +64,9 @@ The Stencil config in `packages/core/stencil.config.ts` uses environment variabl
 | Variable                | Purpose                                     |
 | ----------------------- | ------------------------------------------- |
 | `IS_DS_DEVELOPMENT`     | Enable dev/watch mode                       |
-| `BAL_DOCUMENTATION`     | Build documentation site                    |
+| `DS_DOCUMENTATION`      | Build documentation site                    |
 | `DS_RELEASE`            | Production release mode                     |
 | `DS_PLAYWRIGHT_TESTING` | E2E test mode                               |
-| `DS_TESTING`            | Unit test mode                              |
 | `CI`                    | CI environment (auto-set in GitHub Actions) |
 
 ## TypeScript and Build System

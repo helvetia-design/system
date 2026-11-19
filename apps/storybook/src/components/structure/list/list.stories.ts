@@ -11,7 +11,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     ({ ...args }) => `
-<ds-list ${props(args)}>
+<ds-list ${props(args, 'ds-list')}>
   <ds-item label="Item 1"></ds-item>
   <ds-item label="Item 2" description="This is a description for item"></ds-item>
   <ds-item>
@@ -76,7 +76,7 @@ export const LinkedList = Story({
   args: {},
   ...withRender(
     ({ ...args }) => `
-<ds-list ${props(args)}>
+<ds-list ${props(args, 'ds-list')}>
   <ds-item variant="link" label="Internal Link" href="www.helvetia.com" target="_blank"></ds-item>
   <ds-item
     variant="link"
@@ -140,7 +140,7 @@ export const DownloadList = Story({
   args: {},
   ...withRender(
     ({ ...args }) => `
-<ds-list ${props(args)}>
+<ds-list ${props(args, 'ds-list')}>
   <ds-item variant="button" action-icon="download" label="Document" description="PDF - 98KB">
     <ds-icon name="file" slot="icon"></ds-icon>
   </ds-item>
@@ -230,7 +230,7 @@ export const Inverted = Story({
   ...withRender(
     ({ ...args }) => `
 <div class="bg-primary p-base">
-  <ds-list ${props(args)}>
+  <ds-list ${props(args, 'ds-list')}>
     <ds-item variant="link" label="Internal Link" href="www.helvetia.com" target="_blank"></ds-item>
     <ds-item
       variant="link"
@@ -297,7 +297,7 @@ export const AccordionList = Story({
   args: {},
   ...withRender(
     ({ ...args }) => `
-<ds-list ${props(args)}>
+<ds-list ${props(args, 'ds-list')}>
   <ds-item
     accordion-group="group1"
     variant="accordion"
@@ -335,7 +335,7 @@ export const AccordionListNested = Story({
   args: {},
   ...withRender(
     ({ ...args }) => `
-<ds-list ${props(args)}>
+<ds-list ${props(args, 'ds-list')}>
   <ds-item variant="accordion" label="Switzerland" label-level="h4">
     <ds-list slot="accordion-content" class="ml-lg">
       <ds-item variant="accordion" label="Bern">
@@ -390,7 +390,7 @@ export const OrderedList = Story({
   },
   ...withRender(
     ({ ...args }) => `
-        <ds-list ${props(args)}>
+        <ds-list ${props(args, 'ds-list')}>
           <ds-item variant="link" href="www.helvetia.com" target="_blank">
             <ds-badge color="success" size="lg" slot="icon">
               <ds-icon name="check"></ds-icon>

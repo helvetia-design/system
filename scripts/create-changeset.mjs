@@ -8,7 +8,7 @@ import prompts from 'prompts'
 import { readFile, rm, writeFile } from 'node:fs/promises'
 import { join, resolve, dirname } from 'node:path'
 import { execSync } from 'node:child_process'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const workspaceRoot = resolve(__dirname, '..')
@@ -44,8 +44,9 @@ export function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (!arg.startsWith('--')) continue
-    const [key, ...valueParts] = arg.slice(2).split('=')
-    const inlineValue = valueParts.length ? valueParts.join('=') : undefined
+    const eq = arg.indexOf('=')
+    const key = eq === -1 ? arg.slice(2) : arg.slice(2, eq)
+    const inlineValue = eq === -1 ? undefined : arg.slice(eq + 1)
     if (inlineValue !== undefined) {
       args[key] = inlineValue
     } else if (argv[i + 1] && !argv[i + 1].startsWith('--')) {
@@ -58,15 +59,16 @@ export function parseArgs(argv) {
 }
 
 /**
- * Extract the plain `<name>.md` filename from `changeset add --empty` stdout.
- * Throws on anything else so no path is ever built from garbled output.
+ * Extract the generated changeset filename from `changeset add --empty` stdout.
+ * Throws unless it is a plain `*.md` name, so the caller can never touch anything but that file.
  */
 export function parseChangesetFilename(stdout) {
-  const match = [...stdout.matchAll(/\.changeset[\\/]([\w-]+\.md)/g)].at(-1)
-  if (!match) {
-    throw new Error(`Could not find changeset filename in CLI output: ${stdout.trim() || '(empty)'}`)
+  const matches = [...String(stdout).matchAll(/\.changeset[\\/]([\w-]+\.md)/g)]
+  const filename = matches.at(-1)?.[1]
+  if (!filename) {
+    throw new Error(`Could not read changeset filename from CLI output:\n${stdout}`)
   }
-  return match[1]
+  return filename
 }
 
 /**
@@ -98,13 +100,13 @@ ${frontmatter}
 `
 
   // Generate filename using changeset CLI
-  const stdout = exec('pnpm exec changeset add --empty')
-  const filepath = join(workspaceRoot, '.changeset', parseChangesetFilename(stdout))
+  const filename = parseChangesetFilename(exec('pnpm exec changeset add --empty'))
+  const filepath = join(workspaceRoot, '.changeset', filename)
 
   // Setup cleanup on error
   cleanUp = async () => rm(filepath, { force: true })
 
-  // Write changeset file
+  // Overwrite the empty changeset the CLI created
   await writeFile(filepath, content, { encoding: 'utf-8' })
 
   console.log('')
@@ -238,6 +240,6 @@ async function main() {
   await runInteractive()
 }
 
-if (resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main()
 }

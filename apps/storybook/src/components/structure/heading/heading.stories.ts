@@ -62,7 +62,7 @@ export const Basic = Story({
     space: 'bottom',
     inverted: false,
   },
-  ...withRender(({ slot, ...args }) => `<ds-heading ${props(args)}>${slot}</ds-heading>`),
+  ...withRender(({ slot, ...args }) => `<ds-heading ${props(args, tag)}>${slot}</ds-heading>`),
 })
 Basic.storyName = '🧩 Basic'
 
@@ -131,7 +131,7 @@ export const Spacing = Story({
 Spacing.storyName = '🌍 Spacing'
 
 export const AutoLevel = Story({
-  ...withRender(({ slot, ...args }) => `<ds-heading auto-level="h5" ${props(args)}>${slot}</ds-heading>`),
+  ...withRender(({ slot, ...args }) => `<ds-heading auto-level="h5" ${props(args, tag)}>${slot}</ds-heading>`),
   args: {
     slot: 'This heading is actual a H1 level, but since it requires more than one line we shrink it until it matches or is the same level as the auto-level.',
     level: 'h1',

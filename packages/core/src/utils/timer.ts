@@ -10,19 +10,24 @@ export function createPausableTimer(callback: () => void, delay: number): Pausab
   let remaining = delay
 
   function resume() {
+    if (timerId !== undefined) return
     start = Date.now()
-    timerId = window.setTimeout(callback, remaining)
+    timerId = window.setTimeout(() => {
+      timerId = undefined
+      callback()
+    }, remaining)
   }
 
   function pause() {
-    if (timerId) {
-      clearTimeout(timerId)
-      remaining -= Date.now() - start
-    }
+    if (timerId === undefined) return
+    clearTimeout(timerId)
+    timerId = undefined
+    remaining -= Date.now() - start
   }
 
   function clear() {
-    if (timerId) clearTimeout(timerId)
+    clearTimeout(timerId)
+    timerId = undefined
   }
 
   resume()

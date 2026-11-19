@@ -9,7 +9,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag: 'ds-brand-icon' }),
   },
-  ...withRender(args => `<ds-brand-icon ${props(args)}></ds-brand-icon>`),
+  ...withRender(args => `<ds-brand-icon ${props(args, 'ds-brand-icon')}></ds-brand-icon>`),
 }
 
 export default meta

@@ -14,7 +14,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     ({ ...args }) => `
-<ds-button-group ${props(args)}>
+<ds-button-group ${props(args, tag)}>
   <ds-button color="primary">Primary</ds-button>
   <ds-button color="secondary">Secondary</ds-button>
 </ds-button-group>`,

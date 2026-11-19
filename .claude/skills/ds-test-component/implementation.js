@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const { globSync } = require('glob')
 const { resolveComponentPath } = require('../_shared/component-categories')
+const { playwrightComponentsDir } = require('../_shared/ds-context')
 
 const REPO_ROOT = path.resolve(__dirname, '../../..')
 
@@ -151,7 +152,7 @@ async function promptSlots(slots) {
 function generateTestFiles(componentName, componentInfo, visualProps, slotsToDemo) {
   const testDir = path.join(resolveComponentPath(REPO_ROOT, componentName), 'test')
 
-  const poDir = path.join(REPO_ROOT, 'packages/playwright/src/lib/components')
+  const poDir = playwrightComponentsDir(REPO_ROOT)
 
   const files = []
 

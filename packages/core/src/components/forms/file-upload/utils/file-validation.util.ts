@@ -12,6 +12,21 @@ type ValidateFileArrayReturn = {
   invalidFiles: FileUploadRejectedFile[]
 }
 
+// Mirrors the native `accept` attribute: `.ext` suffix, `type/*` wildcard or exact MIME type
+export const isFileAccepted = (file: File, accept: string): boolean => {
+  const name = file.name.toLowerCase()
+  const type = file.type.toLowerCase()
+  return accept
+    .toLowerCase()
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .some(entry => {
+      if (entry.startsWith('.')) return name.endsWith(entry)
+      if (entry.endsWith('/*')) return type.startsWith(entry.slice(0, -1))
+      return type === entry
+    })
+}
+
 export const validateFileArray = (state: File[], files: File[], fileOptions: FileOptions): ValidateFileArrayReturn => {
   const validFiles = []
   const newState = [...state]
@@ -22,7 +37,7 @@ export const validateFileArray = (state: File[], files: File[], fileOptions: Fil
     if (file) {
       const reasons: FileUploadRejectionReason[] = []
 
-      if (fileOptions.accept && fileOptions.accept.split(' ').join('').split(',').indexOf(file.type) === -1) {
+      if (fileOptions.accept && !isFileAccepted(file, fileOptions.accept)) {
         reasons.push('BAD_EXTENSION')
       }
 

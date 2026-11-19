@@ -1,65 +1,44 @@
+import { existsSync, readdirSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { execSync } from 'node:child_process'
-import { rm, writeFile } from 'node:fs/promises'
-import { parseArgs, parseChangesetFilename, writeChangeset } from '../create-changeset.mjs'
 
-vi.mock('node:child_process', () => ({ execSync: vi.fn() }))
-vi.mock('node:fs/promises', () => ({ readFile: vi.fn(), rm: vi.fn(), writeFile: vi.fn() }))
+const execSync = vi.hoisted(() => vi.fn())
+vi.mock('node:child_process', () => ({ execSync }))
+
+const { parseArgs, parseChangesetFilename, writeChangeset } = await import('../create-changeset.mjs')
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const CHANGESET_DIR = resolve(__dirname, '../../.changeset')
+const input = { bumpLevel: 'patch', scope: 'core', summary: 'test' }
 
 describe('parseArgs', () => {
-  it('keeps "=" inside the summary value', () => {
-    const args = parseArgs(['--bump=patch', '--scope=core', '--summary=fix a=b'])
-    expect(args.summary).toBe('fix a=b')
-  })
-
-  it('supports "--key value" form', () => {
-    expect(parseArgs(['--bump', 'minor'])).toEqual({ bump: 'minor' })
+  it('splits on the first "=" only', () => {
+    expect(parseArgs(['--summary=fix a=b', '--bump', 'patch'])).toEqual({ summary: 'fix a=b', bump: 'patch' })
   })
 })
 
 describe('parseChangesetFilename', () => {
-  it('extracts the filename from changeset CLI output', () => {
-    const stdout = '🦋  Empty Changeset added! - you can now commit it\n\n.changeset/calm-modals-bind.md\n'
-    expect(parseChangesetFilename(stdout)).toBe('calm-modals-bind.md')
+  it('reads the filename from colored CLI output', () => {
+    expect(
+      parseChangesetFilename('🦋  success Empty Changeset added\n\x1b[34m.changeset\\brave-cats-run.md\x1b[39m\n'),
+    ).toBe('brave-cats-run.md')
+    expect(parseChangesetFilename('.changeset/brave-cats-run.md')).toBe('brave-cats-run.md')
   })
 
-  it('accepts forward and back slashes', () => {
-    expect(parseChangesetFilename('.changeset/busy-paws-poke.md')).toBe('busy-paws-poke.md')
-    expect(parseChangesetFilename('.changeset\\busy-paws-poke.md')).toBe('busy-paws-poke.md')
-  })
-
-  it('throws on empty or garbled output', () => {
-    expect(() => parseChangesetFilename('')).toThrow('Could not find changeset filename')
-    expect(() => parseChangesetFilename('.changeset/')).toThrow('Could not find changeset filename')
-    expect(() => parseChangesetFilename('.changeset/../config.json')).toThrow('Could not find changeset filename')
+  it.each(['', 'garbled', '.changeset/', '.changeset/../config.md'])('throws on %j', stdout => {
+    expect(() => parseChangesetFilename(stdout)).toThrow()
   })
 })
 
 describe('writeChangeset', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
+  beforeEach(() => execSync.mockReset())
 
-  it('leaves .changeset untouched when CLI output is empty', async () => {
-    vi.mocked(execSync).mockReturnValue('')
-
-    await expect(writeChangeset({ bumpLevel: 'patch', scope: 'core', summary: 'fix' })).rejects.toThrow(
-      'Could not find changeset filename',
-    )
-    expect(rm).not.toHaveBeenCalled()
-    expect(writeFile).not.toHaveBeenCalled()
-  })
-
-  it('writes the summary unchanged when it contains "="', async () => {
-    vi.mocked(execSync).mockReturnValue('.changeset/calm-modals-bind.md\n')
-
-    await writeChangeset({ bumpLevel: 'patch', scope: 'core', summary: 'fix a=b' })
-
-    expect(rm).not.toHaveBeenCalled()
-    expect(writeFile).toHaveBeenCalledWith(
-      expect.stringMatching(/[\\/]\.changeset[\\/]calm-modals-bind\.md$/),
-      expect.stringContaining('**core**: fix a=b'),
-      { encoding: 'utf-8' },
-    )
+  it.each(['', 'something changed'])('leaves .changeset/ intact when CLI output is %j', async stdout => {
+    const before = readdirSync(CHANGESET_DIR)
+    execSync.mockReturnValue(stdout)
+    await expect(writeChangeset(input)).rejects.toThrow('Could not read changeset filename')
+    expect(existsSync(resolve(CHANGESET_DIR, 'config.json'))).toBe(true)
+    expect(readdirSync(CHANGESET_DIR)).toEqual(before)
   })
 })

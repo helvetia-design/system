@@ -16,7 +16,7 @@ const meta: Meta<Args> = {
     ...withComponentControls({ tag: 'ds-checkbox-group' }),
   },
   ...withRender(
-    ({ slot, ...args }) => `<ds-radio-group ${props(args)}>
+    ({ slot, ...args }) => `<ds-radio-group ${props(args, 'ds-radio-group')}>
     <ds-radio value="Apple">Apple</ds-radio>
     <ds-radio value="Strawberry">Strawberry</ds-radio>
     <ds-radio value="Banana">Banana</ds-radio>
@@ -183,7 +183,7 @@ export const TileStack = Story({
   },
   ...withRender(
     ({ ...args }) => `
-<ds-radio-group ${props(args)}>
+<ds-radio-group ${props(args, 'ds-radio-group')}>
   <ds-radio value="1" label-position="left">
     <ds-stack direction="row">
       <ds-icon svg='${BrandIconCarGreen}' size="xl" color="auto"></ds-icon>
@@ -220,7 +220,7 @@ export const TileStackCentered = Story({
   },
   ...withRender(
     ({ ...args }) => `
-<ds-radio-group ${props(args)}>
+<ds-radio-group ${props(args, 'ds-radio-group')}>
   <ds-radio value="1">
     <ds-stack layout="vertical" align="center">
       <ds-icon svg='${BrandIconCarGreen}' size="2xl" color="auto"></ds-icon>
@@ -255,7 +255,7 @@ export const TileStackMulticolorHideTrigger = Story({
   },
   ...withRender(
     ({ ...args }) => `
-<ds-radio-group ${props(args)}>
+<ds-radio-group ${props(args, 'ds-radio-group')}>
   <ds-radio value="1" tile-color="purple">
     <ds-stack layout="vertical" align="center">
       <ds-icon svg='${BrandIconCarPurple}' size="2xl" color="auto"></ds-icon>

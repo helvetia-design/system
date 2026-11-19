@@ -171,6 +171,23 @@ test.describe('component', () => {
 
       await expect(component.input).not.toHaveAttribute('multiple')
     })
+
+    test('should keep only one file of a multi-file drop when multiple is false', async ({ page }) => {
+      await page.mount(`<ds-file-upload label="Upload" multiple="false"></ds-file-upload>`)
+      const component = new DsFileUpload(page.locator('ds-file-upload'))
+
+      const dataTransfer = await page.evaluateHandle(() => {
+        const dt = new DataTransfer()
+        dt.items.add(new File(['a'], 'file1.txt', { type: 'text/plain' }))
+        dt.items.add(new File(['b'], 'file2.txt', { type: 'text/plain' }))
+        return dt
+      })
+      await component.dropZone.dispatchEvent('drop', { dataTransfer })
+      await page.waitForChanges()
+
+      await expect(component.fileList).toContainText('file1.txt')
+      await expect(component.fileList).not.toContainText('file2.txt')
+    })
   })
 
   test.describe('color variant', () => {
@@ -194,5 +211,14 @@ test.describe('component', () => {
 
       await expect(component.el).toHaveAttribute('color', 'warning')
     })
+  })
+})
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-file-upload label="Label" required="false"></ds-file-upload>`)
+    const fileUpload = new DsFileUpload(page.locator('ds-file-upload'))
+
+    await expect(fileUpload.el).toHaveJSProperty('required', false)
   })
 })

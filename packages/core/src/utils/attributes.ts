@@ -28,3 +28,12 @@ export const inheritAttributes = (el: HTMLElement | HTMLStencilElement, attribut
 
   return attributeObject
 }
+
+/**
+ * Deserializes a boolean attribute so that the string `"false"` yields `false`, as native HTML cannot express it.
+ */
+export const deserializeBooleanAttribute = (value: unknown): boolean => {
+  if (typeof value === 'boolean') return value
+  if (value === null || value === undefined) return false
+  return value !== 'false'
+}

@@ -11,7 +11,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ ...args }) => `<ds-pagination ${props(args)}></ds-pagination>`),
+  ...withRender(({ ...args }) => `<ds-pagination ${props(args, tag)}></ds-pagination>`),
 }
 
 export default meta

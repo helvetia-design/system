@@ -1,4 +1,5 @@
 import {
+  AttrDeserialize,
   AttachInternals,
   Component,
   Element,
@@ -13,6 +14,7 @@ import {
 } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import {
+  deserializeBooleanAttribute,
   formatLocaleNumber,
   inheritAttributes,
   isValueEmpty,
@@ -242,6 +244,11 @@ export class Counter implements DsComponentInterface, FieldInterface {
   @Prop()
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * If `true`, in Angular reactive forms the control will not be set invalid
