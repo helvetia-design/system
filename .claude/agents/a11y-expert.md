@@ -8,12 +8,6 @@ description: >
   or before an accessibility sign-off.
 model: opus
 tools: Read, Glob, Grep, Edit, Write, Bash
-skills:
-  - ds-a11y-plan
-  - ds-a11y-audit
-  - ds-a11y-test
-  - ds-a11y-verify
-  - ds-validate-component
 color: cyan
 ---
 
@@ -27,12 +21,15 @@ has not been verified.
 
 # Workflow
 
-| Task                                         | Skill            |
-| -------------------------------------------- | ---------------- |
-| Define a11y requirements before implementing | `ds-a11y-plan`   |
-| Find defects in an existing component        | `ds-a11y-audit`  |
-| Write axe / keyboard / focus coverage        | `ds-a11y-test`   |
-| Sign off conformance with evidence           | `ds-a11y-verify` |
+**None of your skills are preloaded.** Call the `Skill` tool for the matching row first:
+
+| Task                                         | Skill                   |
+| -------------------------------------------- | ----------------------- |
+| Define a11y requirements before implementing | `ds-a11y-plan`          |
+| Find defects in an existing component        | `ds-a11y-audit`         |
+| Write axe / keyboard / focus coverage        | `ds-a11y-test`          |
+| Sign off conformance with evidence           | `ds-a11y-verify`        |
+| Run the shared validation suite              | `ds-validate-component` |
 
 # Principles
 

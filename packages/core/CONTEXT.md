@@ -271,7 +271,7 @@ Each component directory contains:
 - `component.interfaces.ts` — types, enums, interfaces
 - `component.host.scss` — web component styles (Shadow DOM)
 - `component.style.scss` — shared styles (both modes)
-- `test/` — unit tests (spec), interaction tests (.component.play.ts), visual tests (.visual.play.ts), a11y tests (.a11y.play.ts)
+- `test/` — see `packages/playwright/CONTEXT.md#test-file-organization` for the full file set
 
 ### Component Relationships — Language
 

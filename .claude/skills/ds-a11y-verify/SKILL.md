@@ -22,17 +22,11 @@ Capture the actual output. "Tests pass" without it is not evidence.
 
 ## Phase 2: Know the automation gap
 
-The `a11y` fixture (`packages/playwright/src/lib/functions/a11y.ts`) runs axe with tags
-`wcag2a, wcag2aa, wcag21a, wcag21aa`.
-
-Two consequences:
-
-1. **No WCAG 2.2 rules run.** The installed `@axe-core/playwright` 4.14 ships them (including
-   `target-size`), but the tag list excludes them. So **2.4.11**, **2.5.7** and **2.5.8** are
-   never automatically checked, despite the project targeting 2.2 AA.
-2. **Axe never covers**, at any version: whether an accessible name is _meaningful_, logical
-   focus order, real AT announcements, keyboard operability of custom widgets, or whether an
-   `aria-live` update is actually useful.
+`packages/playwright/CONTEXT.md#accessibility-testing` explains why: the axe fixture's tag list
+excludes WCAG 2.2, so **2.4.11**, **2.5.7** and **2.5.8** are never automatically checked. Axe
+also never covers, at any version: whether an accessible name is _meaningful_, logical focus
+order, real AT announcements, keyboard operability of custom widgets, or whether an `aria-live`
+update is actually useful.
 
 Everything in that list is a manual check. Do not silently mark it PASS.
 

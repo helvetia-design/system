@@ -101,20 +101,9 @@ Use `pnpm <script>` or `turbo run <task>` to invoke tasks. Turborepo caches task
 
 ## Component File Structure
 
-Each component lives in `packages/core/src/components/<component>/`:
-
-```
-button/
-  button.tsx              # Stencil component (props, events, render)
-  button.interfaces.ts    # TypeScript types and enums
-  button.host.scss        # Shadow DOM styles (scoped to :host)
-  button.style.scss       # Shared CSS (web component + global)
-  test/
-    button.spec.ts              # Unit tests (Vitest)
-    button.component.play.ts    # Interaction tests (Playwright)
-    button.visual.play.ts       # Visual regression tests
-    button.a11y.play.ts         # Accessibility tests
-```
+See [packages/core/CONTEXT.md](../packages/core/CONTEXT.md) for the category taxonomy
+(`components/<category>/<name>/`) and [packages/playwright/CONTEXT.md](../packages/playwright/CONTEXT.md)
+for the full test file set.
 
 ## Component Class Organization
 
@@ -133,16 +122,9 @@ export class Button implements ComponentInterface, Loggable {
 }
 ```
 
-Methods must be organized by section with dividers:
-
-1. PUBLIC PROPERTY API
-2. LIFECYCLE
-3. PROPERTY VALIDATION
-4. PUBLIC LISTENERS
-5. PUBLIC METHODS
-6. EVENT HANDLERS
-7. PRIVATE METHODS
-8. RENDER
+Methods must be organized by section with dividers — see
+[STYLE_GUIDE.md](STYLE_GUIDE.md#section-dividers) for the order and what each section
+contains. `ds-lint-component` enforces it.
 
 ### Naming Conventions
 
@@ -246,41 +228,9 @@ The same naming pattern applies to private (`--_`) and modifier (`--mod-`) varia
 
 ## Design Token Naming
 
-Design tokens are organized in three layers, each with distinct naming patterns. All tokens use the `--ds-` prefix.
-
-### Global Layer
-
-Raw color scales with numbered intensity levels (1–5+). Used as base values for other layers:
-
-- Pattern: `--ds-global-[category]-[name]-[number]`
-- Examples:
-  - `--ds-global-color-primary-1` through `--ds-global-color-primary-5` (lightest to darkest)
-  - `--ds-global-color-danger-1` through `--ds-global-color-danger-4`
-  - `--ds-global-color-grey-1` through `--ds-global-color-grey-5`
-
-Global tokens are rarely used directly by components. Use Alias or Component tokens instead.
-
-### Alias Layer
-
-Semantic abstractions for consumers (colors, spacing, typography, etc.). Primary layer for component/app use:
-
-- Pattern: `--ds-alias-[category]-[subcategory]-[name]`
-- Examples:
-  - `--ds-alias-background-color-sky` (semantic name, resolves to global value)
-  - `--ds-alias-background-color-info`
-  - `--ds-alias-space-lg` → `1.5rem`
-  - `--ds-alias-text-size-base` → `1rem`
-  - `--ds-alias-radius-base` → `0.25rem`
-
-### Component Layer
-
-Per-component token overrides for specific design decisions. Used when styling a particular DS component:
-
-- Pattern: `--ds-[component]-[property]-[modifier]-[state]`
-- Examples:
-  - `--ds-button-color-primary-base-text` (button primary variant text color)
-  - `--ds-button-label-font-family` (button label typography)
-  - `--ds-modal-header-border-color` (modal header styling)
+See [packages/tokens/CONTEXT.md](../packages/tokens/CONTEXT.md) for the token architecture —
+four layers (Global → Alias → Device → Component), naming patterns per layer, and the naming
+anatomy for Component-layer tokens.
 
 ## Hybrid Component Model
 

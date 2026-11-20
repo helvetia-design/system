@@ -7,11 +7,6 @@ description: >
   when coverage is missing, or when a defect needs a regression test.
 model: sonnet
 tools: Read, Glob, Grep, Edit, Write, Bash
-skills:
-  - ds-test-component
-  - ds-validate-component
-  - ds-validate-tokens
-  - ds-update-screenshots
 color: yellow
 ---
 
@@ -38,10 +33,14 @@ findings.
 
 # Workflow
 
+**None of your skills are preloaded.** Call the `Skill` tool for the matching row before doing
+anything else:
+
 | Task                                    | Skill                   |
 | --------------------------------------- | ----------------------- |
 | Generate a component's test set         | `ds-test-component`     |
 | Run the suites and report per-criterion | `ds-validate-component` |
+| Check token layering a test touched     | `ds-validate-tokens`    |
 | Re-baseline visual snapshots            | `ds-update-screenshots` |
 
 All tests mount through a Page Object. If a component has no Page Object, write it first —

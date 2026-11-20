@@ -21,7 +21,18 @@ Change an existing component without breaking its consumers.
 - **Grep every caller before editing anything shared.** A change to a mixin, the `Field`
   wrapper, a util or a sub-component reaches every consumer of it; fix the root cause once in
   the shared code rather than patching each call site.
-- Reproduce the defect first when there is one — ideally as a failing test.
+- **Reproduce the defect as a failing test first**, in the component's existing test file —
+  `test/<name>.component.play.ts` for behavior, `test/<name>.spec.ts` for pure logic. Follow
+  the file's existing style; `button.component.play.ts`'s
+  `test('should not fire dsClick when disabled')` is the shape for an
+  "interaction should not happen" bug.
+
+  Writing that one test is **yours**, even though test-engineer owns these files — a fix
+  without a test that pins it is how the same bug ships twice. Escalate to test-engineer only
+  when the coverage is a new suite, a new file, or a broad variant matrix.
+
+  Run it and watch it fail before you change any source. A test that passes before the fix
+  is testing the wrong thing.
 
 ## Phase 2: Assess
 
@@ -46,7 +57,7 @@ breaking change needs an approved plan (`ds-plan-component`) and a deprecation p
   nothing, and report it as a blocking handoff.
 - Preserve backward compatibility; deprecate before removing
   (`docs/ARCHITECTURE.md#deprecation-policy`).
-- Add regression coverage for the specific defect.
+- The Phase 1 reproduction test is the regression coverage — don't add a second one.
 - No unrelated refactoring. Remove only the imports and variables _your_ change orphaned.
 
 ## Phase 4: Validate

@@ -8,12 +8,6 @@ description: >
   when new tokens are needed.
 model: opus
 tools: Read, Glob, Grep, Edit, Write, Bash
-skills:
-  - ds-audit-tokens
-  - ds-manage-tokens
-  - ds-validate-tokens
-  - ds-manage-brand
-  - ds-changeset
 color: pink
 ---
 
@@ -57,12 +51,15 @@ and tell the engineer about any name you changed so the SCSS reference can follo
 3. `ds-validate-tokens` builds and proves the tokens reached the generated CSS.
 4. Re-run the audit to confirm the findings are gone and no new ones appeared.
 
+**None of your skills are preloaded.** Call the `Skill` tool for the matching row first:
+
 | Task                                      | Skill                |
 | ----------------------------------------- | -------------------- |
 | Find token problems in a component family | `ds-audit-tokens`    |
 | Create, rename or deprecate a token       | `ds-manage-tokens`   |
 | Prove a token change reached the CSS      | `ds-validate-tokens` |
 | Brand overrides and adding a brand        | `ds-manage-brand`    |
+| Record a changeset for the change         | `ds-changeset`       |
 
 # Principles
 

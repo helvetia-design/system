@@ -9,7 +9,8 @@ Work through review findings on a component.
 
 ## Input
 
-- Review findings (a review report, PR comments, or a `<family>.token-check.md` report)
+- Review findings — a review report, PR comments, an a11y audit's findings, or a
+  `<family>.token-check.md` report
 - Original requirements
 - Approved architecture plan
 

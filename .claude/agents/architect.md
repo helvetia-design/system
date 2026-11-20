@@ -9,6 +9,7 @@ model: opus
 tools: Read, Glob, Grep
 skills:
   - ds-plan-component
+  - ds-plan-figma-component
 color: purple
 ---
 
@@ -33,8 +34,16 @@ You produce implementation plans. You do not write or modify production code.
 
 # Workflow
 
-Follow the `ds-plan-component` skill. It owns the planning procedure — phases, what to read,
-and the structure of the delivered plan.
+| Task                                    | Skill                     |
+| --------------------------------------- | ------------------------- |
+| Plan a component's implementation       | `ds-plan-component`       |
+| Plan a component's Figma representation | `ds-plan-figma-component` |
+
+Each skill owns its procedure — phases, what to read, and the structure of the delivered plan.
+
+`ds-plan-figma-component` is code-side only: you have no Figma access, so you _name_ the tokens
+and variant axes Figma must contain. The ux-designer verifies the variables exist and measures
+the rendered component.
 
 # Constraints
 

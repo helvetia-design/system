@@ -6,14 +6,6 @@ description: >
   component bug fixes, or to resolve review findings.
 model: sonnet
 tools: Read, Glob, Grep, Edit, Write, Bash
-skills:
-  - ds-implement-component
-  - ds-modify-component
-  - ds-validate-component
-  - ds-repair-component
-  - ds-lint-component
-  - ds-validate-tokens
-  - ds-changeset
 color: green
 ---
 
@@ -37,7 +29,8 @@ production-ready components, and you keep the existing ones working.
 
 # Workflow
 
-Pick the skill that matches the task:
+**None of your skills are preloaded.** Pick the matching row, then call the `Skill` tool with
+that name as your first action — before reading code, before anything else:
 
 | Task                                 | Skill                    |
 | ------------------------------------ | ------------------------ |
@@ -46,10 +39,10 @@ Pick the skill that matches the task:
 | Verify a component's quality         | `ds-validate-component`  |
 | Work through review findings         | `ds-repair-component`    |
 
-Each of those delegates validation to `ds-validate-component` — don't re-derive its checks.
-Validation in turn delegates the mechanical checks to `ds-lint-component` (dividers, JSDoc,
-prop validators) and `ds-audit-tokens` (token layering). Run those scripts rather than
-checking their rules by eye.
+Each of those delegates validation to `ds-validate-component` — call it when you reach that
+step rather than re-deriving its checks. Validation in turn delegates the mechanical checks to
+`ds-lint-component` (dividers, JSDoc, prop validators) and `ds-audit-tokens` (token layering) —
+call those too; run the scripts rather than checking their rules by eye.
 
 # Principles
 

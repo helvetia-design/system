@@ -212,7 +212,7 @@ function hasShadowRoot(repoRoot, componentName) {
 function generateVariantsTs(componentName, variants) {
   return `export const TAG = '${componentName}'
 
-export const HOST_VARIANTS = [${variants.map(v => `\n  '${v}',`).join('')}
+export const VARIANTS = [${variants.map(v => `\n  '${v}',`).join('')}
 ]
 `
 }
@@ -229,13 +229,13 @@ function generateSsrPlayTs(componentName, componentInfo, urlDir) {
   visualBaseline,
 } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
-import { HOST_VARIANTS, TAG } from './${componentName}.variants'
+import { TAG, VARIANTS } from './${componentName}.variants'
 
 const baseline = visualBaseline(TAG)
 const PAGE_URL = \`${urlDir}/test/\${TAG}.visual.html\`
 
 test.describe('ssr', () => {
-  HOST_VARIANTS.forEach(variant => {
+  VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
       const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
       const el = page.getByTestId(variant)
@@ -297,7 +297,7 @@ function generateVisualPlayTs(componentName, styleVariants, urlDir) {
     : ''
 
   return `import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-import { HOST_VARIANTS, TAG } from './${componentName}.variants'
+import { TAG, VARIANTS } from './${componentName}.variants'
 
 ${styleBlock}const image = screenshot(TAG)
 
@@ -323,7 +323,7 @@ ${
     await page.setupVisualTest(\`${urlDir}/test/\${TAG}.visual.html\`)
   })
 
-  HOST_VARIANTS.forEach(variant => {
+  VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
       const el = page.getByTestId(variant)
       await expectScreenshot(el, image(variant))

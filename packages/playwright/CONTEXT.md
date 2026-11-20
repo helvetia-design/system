@@ -96,6 +96,14 @@ A11y tests verify WCAG 2.2 AA compliance:
 - **Screen reader support** — Proper ARIA labels, roles, live regions
 - **Color contrast** — 4.5:1 for text, 3:1 for UI components
 
+**The axe fixture does not cover WCAG 2.2.** `a11y()` (`src/lib/functions/a11y.ts`) runs
+`AxeBuilder` tagged `wcag2a, wcag2aa, wcag21a, wcag21aa` — no `wcag22aa`, even though the
+installed `@axe-core/playwright` 4.14 ships those rules (including `target-size`). So **2.4.11
+Focus Not Obscured**, **2.5.7 Dragging Movements** and **2.5.8 Target Size** are never
+automatically checked here, and a green a11y suite is not WCAG 2.2 AA evidence by itself — those
+three need a manual pass (see `ds-a11y-verify`). This is the one place that explains why; other
+docs should link here rather than re-deriving it.
+
 ## Notable Patterns
 
 ### PO Organization
@@ -199,7 +207,8 @@ Client-only components (`ds-modal`, `ds-toast`, `ds-snackbar`, see ADR 0031) kee
 
 ### Test File Organization
 
-Each component needs test files in `packages/core/src/components/<component>/test/`:
+Each component needs test files in `packages/core/src/components/<category>/<component>/test/`
+(see `packages/core/CONTEXT.md` for the category taxonomy):
 
 - `<component>.spec.ts` — Unit tests (Vitest)
 - `<component>.component.play.ts` — Interaction tests (Playwright)

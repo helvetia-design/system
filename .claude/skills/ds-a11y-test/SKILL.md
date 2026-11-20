@@ -15,7 +15,13 @@ Write the automated accessibility coverage for a component.
 | `test/<name>.component.play.ts` | keyboard, focus order, and ARIA-state assertions |
 
 Keyboard and focus behavior belongs in the **component** test, not the a11y test — the axe
-fixture only scans a static tree. Both run from `packages/core`.
+fixture only scans a static tree, so it cannot press a key. Both run from `packages/core`.
+
+`.component.play.ts` is test-engineer's file, and you may add keyboard, focus-order and
+ARIA-state tests to it anyway — that is an explicit carve-out in `docs/agents/ds-team.md`,
+because the APG keyboard contract is your judgment to encode. Add to the existing file in its
+existing style; don't restructure it, and leave its non-a11y tests alone. A whole new suite or
+file still goes to test-engineer.
 
 ## The axe fixture
 
