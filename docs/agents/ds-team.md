@@ -5,14 +5,14 @@ agent — it dispatches the agents below and holds no component context of its o
 
 ## The agents
 
-| Agent                    | Model  | Writes                                                                                   | Read-only |
-| ------------------------ | ------ | ---------------------------------------------------------------------------------------- | :-------: |
-| `architect`              | opus   | nothing — plans only                                                                     |     ✓     |
-| `component-engineer`     | sonnet | `packages/core/src/components/**`, `index.ts`, `test/*.visual.html`, `test/*.style.html` |           |
-| `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `*.po.ts`                           |           |
-| `a11y-expert`            | opus   | `.a11y.play.ts`, a11y reports                                                            |           |
-| `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                      |           |
-| `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                  |           |
+| Agent                    | Model  | Writes                                                                                         | Read-only |
+| ------------------------ | ------ | ---------------------------------------------------------------------------------------------- | :-------: |
+| `architect`              | opus   | nothing — plans only                                                                           |     ✓     |
+| `component-engineer`     | sonnet | `packages/core/src/components/**`, `index.ts`, `test/*.visual.html`, `test/*.style.html`       |           |
+| `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts` |           |
+| `a11y-expert`            | opus   | `.a11y.play.ts`, a11y reports                                                                  |           |
+| `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                            |           |
+| `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                        |           |
 
 File ownership is **disjoint by design** — that is what makes the parallel steps below safe.
 An agent that finds a defect outside its own files reports it; it never reaches across.
@@ -161,16 +161,31 @@ the engineer's SCSS reference can follow.
 
 **4 · Build out — parallel.** Three agents, three disjoint file sets:
 
-| Agent                  | Skill                   | Writes                        |
-| ---------------------- | ----------------------- | ----------------------------- |
-| test-engineer          | `ds-test-component`     | unit, interaction, visual, PO |
-| a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` only          |
-| documentation-engineer | `ds-document-component` | `apps/storybook/src/**`       |
+| Agent                  | Skill                   | Writes                             |
+| ---------------------- | ----------------------- | ---------------------------------- |
+| test-engineer          | `ds-test-component`     | unit, interaction, visual, SSR, PO |
+| a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` only               |
+| documentation-engineer | `ds-document-component` | `apps/storybook/src/**`            |
 
-`ds-test-component` **reads** the approved fixture — its `<section data-testid="…">` values
-become the `VARIANTS` array in `.visual.play.ts`. It writes neither the fixture nor
-`.a11y.play.ts`, and it errors out if the fixture is missing, which keeps the gate above from
-being skipped.
+`ds-test-component` **reads** the approved fixture and writes the variant list from it:
+
+```
+test/<name>.visual.html        ← component-engineer, human-approved
+  └─ test/<name>.variants.ts   → TAG + HOST_VARIANTS
+       ├─ .visual.play.ts      (host suite)
+       └─ .ssr.play.ts         (same variants, same baselines)
+```
+
+One list, two suites — the SSR test calls `visualBaseline(TAG)`, so it compares against the
+_visual_ test's snapshots. That is why both must iterate the same `HOST_VARIANTS`: a variant
+added to one and not the other produces a missing-baseline failure rather than a diff.
+
+`.ssr.play.ts` is generated only when the component has a `.host.scss` — a CSS-only component
+renders as plain classed HTML with no shadow root to hydrate, so there is nothing for an SSR
+test to assert (`form`, `link`, `table`, `grid`, `picture`, `time-input` have none).
+
+It writes neither the fixture nor `.a11y.play.ts`, and it errors out if the fixture is missing,
+which keeps the gate above from being skipped.
 
 **5 · Review — parallel, read-only.** `ds-audit-tokens` ∥ `ds-a11y-audit`. Both produce
 findings files and converge on one repair round. (A `code-reviewer` agent joins here once

@@ -160,10 +160,23 @@ function generateTestFiles(componentName, componentInfo, visualProps, slotsToDem
   const variants = readVariantsFromFixture(path.join(testDir, `${componentName}.visual.html`))
   const urlDir = componentUrlDir(REPO_ROOT, componentName)
 
+  const stylePath = path.join(testDir, `${componentName}.style.html`)
+  const styleVariants = fs.existsSync(stylePath) ? readVariantsFromFixture(stylePath) : null
+
+  // variants.ts — one list, shared by the visual and SSR suites.
+  const variantsTs = generateVariantsTs(componentName, variants)
+  files.push({ path: path.join(testDir, `${componentName}.variants.ts`), content: variantsTs, type: 'variants' })
+
   // Generate visual.play.ts
-  const visualPlayTs = generateVisualPlayTs(componentName, variants, urlDir)
+  const visualPlayTs = generateVisualPlayTs(componentName, styleVariants, urlDir)
   const visualPlayTsPath = path.join(testDir, `${componentName}.visual.play.ts`)
   files.push({ path: visualPlayTsPath, content: visualPlayTs, type: 'visual' })
+
+  // SSR only where there is a shadow root to hydrate: CSS-only components have no .host.scss.
+  if (hasShadowRoot(REPO_ROOT, componentName)) {
+    const ssrPlayTs = generateSsrPlayTs(componentName, componentInfo, urlDir)
+    files.push({ path: path.join(testDir, `${componentName}.ssr.play.ts`), content: ssrPlayTs, type: 'ssr' })
+  }
 
   // Generate component.play.ts
   const componentPlayTs = generateComponentPlayTs(componentName, componentInfo)
@@ -185,6 +198,66 @@ function generateTestFiles(componentName, componentInfo, visualProps, slotsToDem
   return files
 }
 
+/**
+ * SSR/hydration only means something where there is a shadow root. A CSS-only component
+ * (`.style.scss`, no `.host.scss`) renders as plain classed HTML, so it gets no SSR test —
+ * see the component-type taxonomy in packages/core/CONTEXT.md.
+ */
+function hasShadowRoot(repoRoot, componentName) {
+  const dir = resolveComponentPath(repoRoot, componentName)
+  return globSync(`${dir}/*.host.scss`).length > 0
+}
+
+/** One variant list, imported by both the visual and the SSR suite. */
+function generateVariantsTs(componentName, variants) {
+  return `export const TAG = '${componentName}'
+
+export const HOST_VARIANTS = [${variants.map(v => `\n  '${v}',`).join('')}
+]
+`
+}
+
+function generateSsrPlayTs(componentName, componentInfo, urlDir) {
+  const className = 'Ds' + componentName.charAt(0).toUpperCase() + componentName.slice(1)
+
+  return `import {
+  ${className},
+  expectScreenshot,
+  mountSsr,
+  setupSsrVisualTest,
+  test,
+  visualBaseline,
+} from '@helvetia-design/playwright'
+import { renderToString } from '@helvetia-design/core/hydrate'
+import { HOST_VARIANTS, TAG } from './${componentName}.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = \`${urlDir}/test/\${TAG}.visual.html\`
+
+test.describe('ssr', () => {
+  HOST_VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
+
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
+  })
+})
+
+test.describe('mountSsr', () => {
+  test('renders and hydrates', async ({ page }, testInfo) => {
+    await mountSsr(page, \`<ds-${componentName}>Content</ds-${componentName}>\`, renderToString, testInfo)
+
+    const ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)} = new ${className}(page.locator('ds-${componentName}'))
+    await ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)}.assertToBeVisible()
+  })
+})
+`
+}
+
 /** The dev server mirrors the source tree, so the URL carries the category folder. */
 function componentUrlDir(repoRoot, componentName) {
   const abs = resolveComponentPath(repoRoot, componentName)
@@ -202,7 +275,8 @@ function readVariantsFromFixture(fixturePath) {
     throw new Error(
       `Missing visual fixture: ${fixturePath}\n` +
         'The component-engineer builds test/<name>.visual.html (ds-implement-component, Phase 5).\n' +
-        'Ask for it before generating visual tests — do not author it here.',
+        'Ask for it before generating visual tests — do not author it here.\n' +
+        'A CSS-only component has test/<name>.style.html instead and no .tsx, so it never reaches here.',
     )
   }
   const html = fs.readFileSync(fixturePath, 'utf-8')
@@ -214,21 +288,27 @@ function readVariantsFromFixture(fixturePath) {
   return unique
 }
 
-function generateVisualPlayTs(componentName, variants, urlDir) {
-  return `import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = '${componentName}'
-const VARIANTS = [${variants.map(v => `\n  '${v}',`).join('')}
+function generateVisualPlayTs(componentName, styleVariants, urlDir) {
+  const styleBlock = styleVariants
+    ? `const STYLE_VARIANTS = [${styleVariants.map(v => `\n  '${v}',`).join('')}
 ] as const
 
-const image = screenshot(TAG)
+`
+    : ''
 
-test.describe('style', () => {
+  return `import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
+import { HOST_VARIANTS, TAG } from './${componentName}.variants'
+
+${styleBlock}const image = screenshot(TAG)
+
+${
+  styleVariants
+    ? `test.describe('style', () => {
   test.beforeEach('Setup', async ({ page }) => {
     await page.setupVisualTest(\`${urlDir}/test/\${TAG}.style.html\`)
   })
 
-  VARIANTS.forEach(variant => {
+  STYLE_VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
       const el = page.getByTestId(variant)
       await expectScreenshot(el, image(\`style-\${variant}\`))
@@ -236,12 +316,14 @@ test.describe('style', () => {
   })
 })
 
-test.describe('host', () => {
+`
+    : ''
+}test.describe('host', () => {
   test.beforeEach('Setup', async ({ page }) => {
     await page.setupVisualTest(\`${urlDir}/test/\${TAG}.visual.html\`)
   })
 
-  VARIANTS.forEach(variant => {
+  HOST_VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
       const el = page.getByTestId(variant)
       await expectScreenshot(el, image(variant))

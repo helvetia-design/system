@@ -28,8 +28,9 @@ Output files:
 
 - `button.visual.play.ts` — Playwright visual regression tests
 - `button.component.play.ts` — Event and behavior tests
-- `button.variants.ts` — Variant list shared by the visual and SSR tests
-- `button.ssr.play.ts` — SSR screenshots before and after hydration (not for client-only components)
+- `button.variants.ts` — `TAG` + `HOST_VARIANTS`, derived from the fixture, shared by the
+  visual and SSR tests
+- `button.ssr.play.ts` — SSR screenshots before and after hydration (only when the component has a `.host.scss`)
 - `button.po.ts` — Page object in `packages/playwright/src/lib/components/`
 - `button.util.spec.ts` — Unit tests (if `.util.ts` exists)
 
@@ -48,6 +49,24 @@ gets taken over a component nobody has looked at.
 
 A variant with no section gets no screenshot, so an incomplete fixture silently means
 incomplete visual coverage. Report the sections you found.
+
+The chain:
+
+```
+test/<name>.visual.html        ← component-engineer, human-approved
+  └─ test/<name>.variants.ts   → TAG + HOST_VARIANTS
+       ├─ .visual.play.ts      (host suite)
+       └─ .ssr.play.ts         (same variants, same baselines)
+```
+
+`.ssr.play.ts` uses `visualBaseline(TAG)`, so it reuses the **visual test's** snapshots rather
+than keeping its own. Both suites must therefore iterate the same `HOST_VARIANTS` — which is
+why the list lives in one file. Adding a variant to one suite only yields a missing-baseline
+error, not a diff.
+
+**SSR is skipped for CSS-only components.** No `.host.scss` means no shadow root to hydrate,
+so there is nothing to assert — `form`, `link`, `table`, `grid`, `picture` and `time-input`
+have no SSR test for this reason.
 
 ## What Gets Generated
 

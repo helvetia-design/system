@@ -109,8 +109,10 @@ module, then `<main class="ds-container">` holding one `<section>` per variant g
 Rules:
 
 - **One `<section data-testid="…">` per variant group**, with a `<span>` label. Those
-  `data-testid` values are the contract: `ds-test-component` reads them to build the
-  `VARIANTS` array in `.visual.play.ts`. A variant with no section gets no screenshot.
+  `data-testid` values are the contract: `ds-test-component` reads them into
+  `test/<name>.variants.ts`, which drives **both** the visual suite and the SSR suite
+  (`.ssr.play.ts` renders this same page with `renderToString` and screenshots it before and
+  after hydration). A variant with no section gets no screenshot in either.
 - Cover **every** prop value, state (disabled, invalid, loading, selected), size, slot
   arrangement and the inverted-on-dark rendering. This is the one artifact that shows the
   whole surface at once.
