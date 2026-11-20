@@ -37380,29 +37380,26 @@
         },
         {
           "name": "download",
-          "type": "string",
+          "type": "string | undefined",
           "complexType": {
             "original": "string",
-            "resolved": "string",
+            "resolved": "string | undefined",
             "references": {}
           },
           "mutable": false,
           "attr": "download",
           "reflectToAttr": false,
           "docs": "This attribute instructs browsers to download a URL instead of navigating to\nit, so the user will be prompted to save it as a local file. If the attribute\nhas a value, it is used as the pre-filled file name in the Save prompt\n(the user can still change the file name if they want).",
-          "docsTags": [
-            {
-              "name": "default",
-              "text": "''"
-            }
-          ],
-          "default": "''",
+          "docsTags": [],
           "values": [
             {
               "type": "string"
+            },
+            {
+              "type": "undefined"
             }
           ],
-          "optional": false,
+          "optional": true,
           "required": false,
           "getter": false,
           "setter": false

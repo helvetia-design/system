@@ -1,5 +1,6 @@
 import type { HostElement } from '@stencil/core/internal'
 import type { DsPage } from '../../types'
+import { heldPages } from './held-pages'
 
 export const waitForChanges = async (page: DsPage, timeoutMs = 300) => {
   try {
@@ -10,6 +11,8 @@ export const waitForChanges = async (page: DsPage, timeoutMs = 300) => {
        */
       return
     }
+    // The held bundle request keeps the network busy, and no component can change before it loads.
+    if (heldPages.has(page)) return
     await page.evaluate(() => {
       // BROWSER CONTEXT
       return new Promise<void>(resolve => {

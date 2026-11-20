@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'spinner'
-const VARIANTS = ['basic', 'label', 'sizes', 'inverted', 'circle-variation']
+import { TAG, VARIANTS } from './spinner.variants'
 
 const image = screenshot(TAG)
 

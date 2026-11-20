@@ -13,7 +13,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag: 'ds-logo' }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-logo ${props(args)}>${slot}</ds-logo>`),
+  ...withRender(({ slot, ...args }) => `<ds-logo ${props(args, 'ds-logo')}>${slot}</ds-logo>`),
 }
 
 export default meta

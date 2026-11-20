@@ -16,6 +16,14 @@ function routingFetchMock() {
     if (url.includes('/contents/packages/tokens/.figma-sync-state.json')) {
       return new Response('not found', { status: 404 })
     }
+    if (url.includes('/contents/packages/tokens/tokens/Extensions.tokens.json')) {
+      return jsonResponse({
+        sha: 'ext-file-sha',
+        content: Buffer.from(
+          JSON.stringify({ '🧩 Component': { Card: { Gap: { $type: 'dimension', $value: '{🔗 Alias.Gap}' } } } }),
+        ).toString('base64'),
+      })
+    }
     if (url.includes('/contents/packages/tokens/tokens/Base.tokens.json')) {
       return jsonResponse({ sha: 'base-file-sha', content: Buffer.from('{}').toString('base64') })
     }
@@ -51,6 +59,8 @@ beforeEach(() => {
   delete process.env.REMOVED_IDS_FILE
   delete process.env.TARGET_BRANCH
   delete process.env.TOKENS_DIR_OVERRIDE
+  delete process.env.TOKY_CONFIG_PATH
+  delete process.env.TOKENS_ROOT
 })
 
 afterEach(() => {
@@ -142,5 +152,33 @@ describe('backfill-commit.mjs value-only sync (no new/removed ids)', () => {
     const refreshed = JSON.parse(readFileSync(join(repoRoot, '.figma-sync-state.json'), 'utf-8'))
     expect(refreshed.lastSyncedCommit).toBe('merge-sha-2')
     expect(refreshed.entries['VariableID:1:1'].resolvedValue.value.components).toEqual([0.6, 0, 0])
+  })
+})
+
+describe('backfill-commit.mjs extension source', () => {
+  it('reads and writes the token file and sync state named by the Toky config', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'figma-sync-ext-backfill-'))
+    const configPath = join(root, 'toky.config.json')
+    writeFileSync(configPath, JSON.stringify({ tokenFile: 'Extensions.tokens.json', brandsIndexPath: null }))
+    process.env.TOKY_CONFIG_PATH = configPath
+    process.env.TOKENS_ROOT = root
+    delete process.env.REMOVED_IDS
+    process.env.NEW_IDS = JSON.stringify([{ path: ['🧩 Component', 'Card', 'Gap'], variableId: 'VariableID:ext:1' }])
+    const fetchMock = routingFetchMock()
+    vi.stubGlobal('fetch', fetchMock)
+
+    await import('../backfill-commit.mjs')
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    const urls = fetchMock.mock.calls.map(([url]) => url as string)
+    expect(urls.some(url => url.includes('/contents/packages/tokens/tokens/Base.tokens.json'))).toBe(false)
+    expect(urls.some(url => url.includes('/contents/packages/tokens/tokens/Extensions.tokens.json'))).toBe(true)
+
+    const treeCall = fetchMock.mock.calls.find(([url, init]) => init?.method === 'POST' && url.endsWith('/git/trees'))
+    const treePaths = JSON.parse(treeCall?.[1]?.body as string).tree.map((entry: { path: string }) => entry.path)
+    expect(treePaths).toEqual([
+      'packages/tokens/tokens/Extensions.tokens.json',
+      'packages/tokens/.figma-sync-state.json',
+    ])
   })
 })

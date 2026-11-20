@@ -15,7 +15,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     args => `
-<ds-steps ${props(args)}>
+<ds-steps ${props(args, 'ds-steps')}>
   <ds-step name="a" label="Cart"></ds-step>
   <ds-step name="b" label="Shipping"></ds-step>
   <ds-step name="c" label="Payment"></ds-step>

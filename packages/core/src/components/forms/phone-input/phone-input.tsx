@@ -1,7 +1,20 @@
-import { Component, Element, Event, EventEmitter, h, Listen, Method, Prop, State, Watch } from '@stencil/core'
+import {
+  AttrDeserialize,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Listen,
+  Method,
+  Prop,
+  State,
+  Watch,
+} from '@stencil/core'
 import { AttachInternals, HTMLStencilElement } from '@stencil/core/internal'
 import { DsComponentInterface, defaultConfig, DsConfigState, DsLanguage, DsRegion, ListenToConfig } from '@global'
 import {
+  deserializeBooleanAttribute,
   inheritAttributes,
   Logger,
   type LogInstance,
@@ -199,6 +212,11 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
   @Prop()
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form.

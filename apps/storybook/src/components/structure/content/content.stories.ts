@@ -13,7 +13,7 @@ const meta: Meta<Args> = {
     ...withComponentControls({ tag: 'ds-content' }),
   },
   ...withRender(
-    ({ slot, ...args }) => `<ds-content ${props(args)}>
+    ({ slot, ...args }) => `<ds-content ${props(args, 'ds-content')}>
   <ds-label>The Content Component</ds-label>
   <ds-text>${slot}</ds-text>
 </ds-content>`,
@@ -44,7 +44,7 @@ BasicHtml.storyName = '🌍 Basic'
 
 export const Alignment = Story({
   ...withRender(
-    ({ ...args }) => `<ds-content ${props(args)}>
+    ({ ...args }) => `<ds-content ${props(args, 'ds-content')}>
   <ds-label>The Content Component</ds-label>
   <ds-text>Content helps to align text nodes inside a section.</ds-text>
 </ds-content>`,
@@ -67,7 +67,7 @@ AlignmentHtml.storyName = '🌍 Alignment'
 
 export const Layout = Story({
   ...withRender(
-    ({ ...args }) => `<ds-content ${props(args)}>
+    ({ ...args }) => `<ds-content ${props(args, 'ds-content')}>
   <ds-label>The Content Component</ds-label>
   <ds-text>Content helps to align text nodes inside a section.</ds-text>
 </ds-content>`,

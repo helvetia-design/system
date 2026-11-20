@@ -17,9 +17,9 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-app-footer ${props(args)}>${slot}</ds-close>`),
+  ...withRender(({ slot, ...args }) => `<ds-app-footer ${props(args, tag)}>${slot}</ds-close>`),
   // ...withRender(({ slot, logoSlot, linksSlot, socialLinksSlot, ...args }) => {
-  //   let html = `<ds-app-footer ${props(args)}>`
+  //   let html = `<ds-app-footer ${props(args, tag)}>`
   //   if (slot) html += slot
   //   if (logoSlot) html += `<div slot="logo">${logoSlot}</div>`
   //   if (socialLinksSlot) html += socialLinksSlot

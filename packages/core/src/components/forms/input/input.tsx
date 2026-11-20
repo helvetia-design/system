@@ -1,4 +1,16 @@
-import { Component, Element, Event, EventEmitter, h, Listen, Method, Prop, State, Watch } from '@stencil/core'
+import {
+  AttrDeserialize,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Listen,
+  Method,
+  Prop,
+  State,
+  Watch,
+} from '@stencil/core'
 import isNil from 'lodash/isNil'
 import {
   ACTION_KEYS,
@@ -11,6 +23,7 @@ import {
   ListenToConfig,
 } from '@global'
 import {
+  deserializeBooleanAttribute,
   debounceEvent,
   FormControl,
   FormControlInterface,
@@ -278,6 +291,11 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
   @Prop()
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * If `true`, the element will have its spelling and grammar checked.

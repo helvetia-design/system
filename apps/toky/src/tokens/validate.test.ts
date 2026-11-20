@@ -273,3 +273,96 @@ describe('validateWorkingTokens', () => {
     })
   })
 })
+
+describe('validateWorkingTokens with reference tokens', () => {
+  const referenceTokens = [
+    makeToken({
+      path: ['🔗 Alias', '↔️ Space', 'Padding', 'SM'],
+      name: '↔️ Space.Padding.SM',
+      layer: 'Alias',
+      type: 'dimension',
+      rawValue: { value: 8, unit: 'px' },
+    }),
+    makeToken({
+      path: ['🧩 Component', 'Button', 'Color', 'PrimaryBase', 'Text'],
+      name: 'Button.Color.PrimaryBase.Text',
+      layer: 'Component',
+    }),
+  ]
+  const options = { referenceTokens }
+
+  it('accepts a Component token that references a reference token', () => {
+    const items = [
+      working('a', {
+        name: 'PolicyCard.Padding',
+        layer: 'Component',
+        type: 'dimension',
+        referenceTarget: '🔗 Alias.↔️ Space.Padding.SM',
+      }),
+    ]
+    expect(validateWorkingTokens(items, options)).toEqual([])
+  })
+
+  it('flags a reference that resolves in neither tree', () => {
+    const items = [working('a', { name: 'PolicyCard.Padding', layer: 'Component', referenceTarget: '🔗 Alias.Nope' })]
+    expect(validateWorkingTokens(items, options)).toContainEqual({
+      tokenKey: 'a',
+      message: '"🔗 Alias/Nope" does not match an existing token.',
+      severity: 'error',
+    })
+  })
+
+  it('accepts a reference to another own token', () => {
+    const items = [
+      working('a', {
+        name: 'PolicyCard.Gap',
+        layer: 'Component',
+        type: 'dimension',
+        rawValue: { value: 4, unit: 'px' },
+      }),
+      working('b', { name: 'PolicyCard.Padding', layer: 'Component', referenceTarget: '🧩 Component.PolicyCard.Gap' }),
+    ]
+    expect(validateWorkingTokens(items, options)).toEqual([])
+  })
+
+  it('flags a token outside the Component layer (rule 1)', () => {
+    const items = [working('a', { name: 'Color.Brand', layer: 'Global' })]
+    expect(validateWorkingTokens(items, options)).toContainEqual({
+      tokenKey: 'a',
+      message: 'Only 🧩 Component tokens are allowed in this token source.',
+      severity: 'error',
+    })
+  })
+
+  it('flags a CSS variable name that already exists in the reference tokens, even under another path (rule 3)', () => {
+    const items = [working('a', { name: 'Button.Color.Primary.Base.Text', layer: 'Component' })]
+    expect(validateWorkingTokens(items, options)).toContainEqual({
+      tokenKey: 'a',
+      message: 'The CSS variable --ds-button-color-primary-base-text already exists in the reference tokens.',
+      severity: 'error',
+    })
+  })
+
+  it('flags a responsive token (rule 4)', () => {
+    const size = { value: 8, unit: 'px' }
+    const items = [
+      working('a', {
+        name: 'PolicyCard.Gap',
+        layer: 'Component',
+        type: 'dimension',
+        rawValue: size,
+        responsive: { mobile: size, tablet: size, desktop: size },
+      }),
+    ]
+    expect(validateWorkingTokens(items, options)).toContainEqual({
+      tokenKey: 'a',
+      message: 'Responsive values are not allowed here — reference a 📱 Device token instead.',
+      severity: 'error',
+    })
+  })
+
+  it('applies none of these rules without reference tokens', () => {
+    const items = [working('a', { name: 'Color.Brand', layer: 'Global' })]
+    expect(validateWorkingTokens(items, { referenceTokens: null })).toEqual([])
+  })
+})

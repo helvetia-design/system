@@ -28,6 +28,8 @@ Output files:
 
 - `button.visual.play.ts` — Playwright visual regression tests
 - `button.component.play.ts` — Event and behavior tests
+- `button.variants.ts` — Variant list shared by the visual and SSR tests
+- `button.ssr.play.ts` — SSR screenshots before and after hydration (not for client-only components)
 - `button.po.ts` — Page object in `packages/playwright/src/lib/components/`
 - `button.util.spec.ts` — Unit tests (if `.util.ts` exists)
 
@@ -161,6 +163,61 @@ Located in: `packages/playwright/src/lib/components/button.po.ts`
   - Edge cases (undefined, null, empty string, invalid values)
   - Type variations (if function accepts multiple types)
 - Ready to run with `pnpm test`
+
+### 6. SSR Tests
+
+**variants.ts** — Holds the variant list. Playwright does not allow a test file to import another test file, so the visual and SSR tests both import this file:
+
+```ts
+export const TAG = 'button'
+
+export const VARIANTS = ['basic', 'variants', 'disabled'] as const
+```
+
+The visual test imports `TAG` and `VARIANTS` from it instead of declaring them.
+
+**ssr.play.ts** — Renders `visual.html` with `renderToString`, takes one screenshot before and one after hydration, and compares both against the desktop baseline of the visual test:
+
+```ts
+import { renderToString } from '@helvetia-design/core/hydrate'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
+import { TAG, VARIANTS } from './button.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/actions/${TAG}/test/${TAG}.visual.html`
+
+test.describe('ssr', () => {
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
+
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
+  })
+})
+```
+
+Rules:
+
+- Desktop only. No new baseline files unless the component renders in the browser only (below).
+- Components that finish rendering in the browser need their own first screenshot: `visualBaseline(TAG, `${TAG}.ssr.play.ts`)(`${variant}-ssr-static`)`. Update these baselines locally in the Playwright Linux image on amd64, filtered with `-g` to these tests. The `/update-screenshots` bot does not run the SSR project.
+- A component that shifts on hydration is a bug. Fix it or mark the test with `test.fixme` and the issue number.
+- Client-only components (`ds-modal`, `ds-toast`, `ds-snackbar`, see ADR 0031) keep the `mountSsr()` form with an inline snippet:
+
+```ts
+import { renderToString } from '@helvetia-design/core/hydrate'
+import { DsModal, mountSsr, test } from '@helvetia-design/playwright'
+
+test.describe('ssr', () => {
+  test('renders and hydrates', async ({ page }, testInfo) => {
+    await mountSsr(page, '<ds-modal id="modal"></ds-modal>', renderToString, testInfo)
+    await new DsModal(page.locator('ds-modal')).assertToBeClosed()
+  })
+})
+```
 
 ## Workflow
 

@@ -154,6 +154,8 @@ Every component migration also decides about the legacy config call. Follow `sha
 
 Inside a batch (see `shared/batch.md`), a `migration.md` runs only its Rewrite step, on the batch file list. It skips its Scan display, its Confirm step and its stop. It still applies `shared/field.md`. It skips the icon import and Registration rules and `shared/legacy-config.md`, which the batch runs once at the end. It hands the outcome of its Report items back to the batch instead of writing its own report section.
 
+A report-only migration is a `migration.md` whose first heading ends with `(report only)`, such as `nav` and `stage`. It covers a legacy component with no `ds-*` target. It edits no source file and only writes report entries with a suggested replacement. Skip the icon scan and the icon rules of `shared/icons.md`, and write each `I` item as `not applicable, report-only migration`. Run `shared/legacy-config.md` as usual: the component stays, so the legacy config call stays. Inside a batch, such a file adds its report entries and no edits.
+
 Vue is not a supported target. The scanners read `.vue` files only so that `shared/legacy-config.md` and **Cleanup** see every `bal-*` tag that is left. A component migration or a batch never rewrites a `.vue` file. Show its findings with the others, marked as not migrated, and leave the file unchanged. In the Report step, list each such file under "Needs your attention" as a Vue file that this skill does not migrate, with its findings. The legacy config call and the legacy imports stay until the consumer migrates those files by hand.
 
 #### Unmapped props and handlers
@@ -229,7 +231,7 @@ If `types` is not empty, show it as a note: a component migration rewrites the l
 
 If `suggested` is empty, report that none of the used components has an available migration, then stop.
 
-Build a picker from every entry in `suggested`, showing its `name` and `total`. Wait for one choice, then ask the cascade question below.
+Build a picker from every entry in `suggested`, showing its `name` and `total`. Mark a report-only entry (`nav`, `stage`) as "report only", because choosing it writes report entries and rewrites nothing. Wait for one choice, then ask the cascade question below.
 
 #### Cascade question
 
@@ -288,7 +290,7 @@ Migrate every legacy icon left in the project, following `shared/icons.md`. Comp
 Delete what Init kept for the transition, once the migration is complete, following `shared/cleanup.md`. Run this step last, after **Components**, **CSS utils** and **Assets**.
 
 1. Run `scan-cleanup.mjs` from the Scan section of `shared/cleanup.md`. It runs `scan-migratable.mjs` first. It also runs the **CSS utils** scan and keeps the `css/core` line while a `css/core` class is left.
-   - When `status` is `incomplete`, do not edit files. List every entry in `outstanding.suggested` with its `total` and say to migrate it with **Components** first. List every entry in `outstanding.notYet` with its `total` as a component that this version of the skill cannot migrate, which the consumer must replace by hand. List every entry in `outstanding.types` with its `total` as legacy types that the consumer must replace by hand, because removing the `@baloise/ds-*` dependency breaks every file that still imports them. List every line in `outstanding.hidden` (path, line, snippet) as a `bal-*` tag that the scan cannot attribute to a component, which the consumer must migrate by hand. Stop.
+   - When `status` is `incomplete`, do not edit files. List every entry in `outstanding.suggested` with its `total` and say to migrate it with **Components** first. For a report-only entry (`nav`, `stage`), say instead that the consumer must rebuild it by hand, following its entry in `ds-migration-report.md`. List every entry in `outstanding.notYet` with its `total` as a component that this version of the skill cannot migrate, which the consumer must replace by hand. List every entry in `outstanding.types` with its `total` as legacy types that the consumer must replace by hand, because removing the `@baloise/ds-*` dependency breaks every file that still imports them. List every line in `outstanding.hidden` (path, line, snippet) as a `bal-*` tag that the scan cannot attribute to a component, which the consumer must migrate by hand. Stop.
    - When `status` is `nothing-to-clean-up`, do not edit files. Say there is nothing to clean up. List every line in `keep.lines`, every entry in `keep.dependencies` and every file in `unreadable` as in step 2. Stop.
 2. When `status` is `ready`, show what the step deletes: every line in `remove.lines` (path, line, snippet) and every entry in `remove.dependencies` (manifest, field, name). Then show what stays: every line in `keep.lines` and every entry in `keep.dependencies` with the pointer that the Scan section of `shared/cleanup.md` gives for its `reason`, and every file in `unreadable`. Say that the scan skips build output such as `dist` and `build`, and ask the consumer to check build tooling outside the scanned files for legacy references. Ask one yes/no: delete every listed line and dependency? On no, stop with the files unchanged.
 3. Apply the Lines section of `shared/cleanup.md`.

@@ -1,12 +1,18 @@
-export const REPO_OWNER = 'helvetia-design'
-export const REPO_NAME = 'system'
-export const TEAM_SLUG = 'toky'
-export const TOKENS_DIR = 'packages/tokens/tokens'
-export const TOKEN_FILE_PATH = `${TOKENS_DIR}/Base.tokens.json`
-export const BRANDS_INDEX_PATH = 'packages/tokens/src/index.ts'
+import path from 'node:path'
+import type { TokyConfig } from '@helvetia-design/tokens/toky-config'
+import { getTokyConfig } from './config'
 
-export function brandFilePath(name: string): string {
-  return `${TOKENS_DIR}/${name}.tokens.json`
+export function tokenFilePath(config: TokyConfig): string {
+  return `${config.tokensDir}/${config.tokenFile}`
+}
+
+export function brandFilePath(config: TokyConfig, name: string): string {
+  return `${config.tokensDir}/${name}.tokens.json`
+}
+
+/** The token package's manifest, one level above `tokensDir`, e.g. `packages/tokens/package.json`. */
+export function tokenPackageJsonPath(config: TokyConfig): string {
+  return path.posix.join(path.posix.dirname(config.tokensDir), 'package.json')
 }
 
 export function requireGithubToken(): string {
@@ -30,8 +36,12 @@ export function requireGithubOrgToken(): string {
   return token
 }
 
-export function getGithubRef(): string {
-  return process.env.TOKY_GITHUB_REF ?? 'main'
+export function githubRefFor(config: TokyConfig): string {
+  return process.env.TOKY_GITHUB_REF ?? config.repo.ref
+}
+
+export async function getGithubRef(): Promise<string> {
+  return githubRefFor(await getTokyConfig())
 }
 
 // Percent-encodes a GitHub content path or ref for safe interpolation into
@@ -41,9 +51,11 @@ export function encodeGithubUrlSegment(value: string): string {
   return value.split('/').map(encodeURIComponent).join('/')
 }
 
-export async function fetchBaseTokensFile(ref: string = getGithubRef()): Promise<string> {
+export async function fetchBaseTokensFile(ref?: string): Promise<string> {
   const token = requireGithubToken()
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${TOKEN_FILE_PATH}?ref=${encodeGithubUrlSegment(ref)}`
+  const config = await getTokyConfig()
+  const filePath = tokenFilePath(config)
+  const url = `https://api.github.com/repos/${config.repo.owner}/${config.repo.name}/contents/${encodeGithubUrlSegment(filePath)}?ref=${encodeGithubUrlSegment(ref ?? githubRefFor(config))}`
 
   const response = await fetch(url, {
     // Next.js caches server-side fetches by default — this must always hit
@@ -58,9 +70,7 @@ export async function fetchBaseTokensFile(ref: string = getGithubRef()): Promise
 
   if (!response.ok) {
     const body = await response.text()
-    throw new Error(
-      `Failed to fetch ${TOKEN_FILE_PATH} from GitHub: ${response.status} ${response.statusText} — ${body}`,
-    )
+    throw new Error(`Failed to fetch ${filePath} from GitHub: ${response.status} ${response.statusText} — ${body}`)
   }
 
   return response.text()

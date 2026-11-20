@@ -19,6 +19,10 @@ export class DsCarousel extends PageObject {
     await this.dot(index).click()
   }
 
+  scrollBtnBelow(direction: 'prev' | 'next'): Locator {
+    return this.el.locator(`.scroll-btn-below--${direction}`)
+  }
+
   async selectItem(name: string) {
     await this.item(name).click()
   }

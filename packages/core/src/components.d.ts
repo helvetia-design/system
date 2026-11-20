@@ -633,7 +633,7 @@ export namespace Components {
     interface DsCarousel {
         "configChanged": (state: DsConfigState) => Promise<void>;
         /**
-          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `none` hides all controls.
+          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `large-below` shows large round arrow buttons centered below the track. `none` hides all controls.
           * @default 'dots'
          */
         "controls": CarouselControls;
@@ -1771,9 +1771,8 @@ export namespace Components {
         "disabled": boolean;
         /**
           * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
-          * @default ''
          */
-        "download": string;
+        "download"?: string;
         /**
           * Specifies the URL of the page the link goes to.
           * @default ''
@@ -3737,6 +3736,11 @@ export namespace Components {
           * @default undefined
          */
         "contentWidth": number | undefined;
+        /**
+          * When true, the tooltip never presents, even on hover/focus of the trigger.
+          * @default false
+         */
+        "disabled": boolean;
         /**
           * Hides the tooltip and cleans up the position updater.
          */
@@ -5773,7 +5777,7 @@ declare namespace LocalJSX {
      */
     interface DsCarousel {
         /**
-          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `none` hides all controls.
+          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `large-below` shows large round arrow buttons centered below the track. `none` hides all controls.
           * @default 'dots'
          */
         "controls"?: CarouselControls;
@@ -7009,7 +7013,6 @@ declare namespace LocalJSX {
         "disabled"?: boolean;
         /**
           * This attribute instructs browsers to download a URL instead of navigating to it, so the user will be prompted to save it as a local file. If the attribute has a value, it is used as the pre-filled file name in the Save prompt (the user can still change the file name if they want).
-          * @default ''
          */
         "download"?: string;
         /**
@@ -9186,6 +9189,11 @@ declare namespace LocalJSX {
          */
         "contentWidth"?: number | undefined;
         /**
+          * When true, the tooltip never presents, even on hover/focus of the trigger.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * Offset in pixels from the trigger element to the tooltip. Defaults to the `--ds-tooltip-offset` token when not set.
           * @default undefined
          */
@@ -9964,6 +9972,7 @@ declare namespace LocalJSX {
         "offset": number | undefined;
         "contentWidth": number | undefined;
         "open": boolean;
+        "disabled": boolean;
     }
 
     interface IntrinsicElements {

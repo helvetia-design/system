@@ -1,25 +1,5 @@
 import { DsDatepicker, E2ELocator, expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'datepicker'
-const VARIANTS = [
-  'basic',
-  'form',
-  'min-max',
-  'free-solo',
-  'default-date',
-  'allowed-dates',
-  'disabled',
-  'invalid',
-  'invalid-slot',
-  'valid',
-  'warning',
-  'loading',
-  'long-content',
-  'slots',
-  'form-reset',
-  'autocomplete',
-  'inline',
-]
+import { TAG, VARIANTS } from './datepicker.variants'
 
 const VARIANTS_WITH_PICKER = ['basic', 'min-max', 'default-date', 'allowed-dates']
 

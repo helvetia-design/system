@@ -27,10 +27,15 @@
  *   - LOCAL_GIT_COMMIT=true: also runs a real `git commit` via the CLI
  *     (TOKENS_DIR_OVERRIDE must point inside a git working tree).
  * Never set either in figma-sync.yml.
+ *
+ * TOKY_CONFIG_PATH/TOKENS_ROOT (optional, shared with pull.mjs): the token file and sync-state
+ * paths come from the source's Toky config (lib/config.mjs). The target repo is always
+ * GITHUB_REPOSITORY (lib/github.mjs).
  */
 import { readFileSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { relative, resolve } from 'node:path'
 import { applyVariableIdPatch, buildSyncState, loadSyncStateFile } from './lib/baseline.mjs'
+import { resolveSyncInputs } from './lib/config.mjs'
 import { commitFiles, getFileContent } from './lib/github.mjs'
 import { commitFilesLocally } from './lib/local-git.mjs'
 import { flattenTokens, loadTokenFile } from './lib/tokens.mjs'
@@ -41,13 +46,13 @@ function requireEnv(name) {
   return value
 }
 
-async function runRemote({ newIds, removedIds, syncedAt }) {
-  const TOKEN_FILE_PATH = 'packages/tokens/tokens/Base.tokens.json'
-  const SYNC_STATE_PATH = 'packages/tokens/.figma-sync-state.json'
+async function runRemote({ newIds, removedIds, syncedAt, inputs }) {
+  const TOKEN_FILE_PATH = inputs.repoTokenFilePath
+  const SYNC_STATE_PATH = inputs.repoSyncStatePath
 
   const token = requireEnv('GITHUB_TOKEN')
   const mergeCommitSha = requireEnv('MERGE_COMMIT_SHA')
-  const branch = process.env.TARGET_BRANCH ?? 'main'
+  const branch = process.env.TARGET_BRANCH ?? inputs.config.repo.ref
 
   const files = []
 
@@ -79,20 +84,21 @@ async function runRemote({ newIds, removedIds, syncedAt }) {
   console.log(`Committed to ${branch}: ${result.sha} (${message.split('\n')[0]})`)
 }
 
-function patchLocalFiles({ newIds, removedIds, syncedAt }) {
-  const tokensDir = resolve(process.env.TOKENS_DIR_OVERRIDE)
+function patchLocalFiles({ newIds, removedIds, syncedAt, inputs }) {
+  const { tokensDir, tokenFilePath } = inputs
+  const repoRoot = resolve(tokensDir, '..')
   const mergeCommitSha = process.env.MERGE_COMMIT_SHA ?? 'local-test'
 
   const files = []
 
-  const currentTree = loadTokenFile(resolve(tokensDir, 'Base.tokens.json'))
+  const currentTree = loadTokenFile(tokenFilePath)
   const patchedTree = newIds.length > 0 ? applyVariableIdPatch(currentTree, newIds) : currentTree
   const patchedTokens = flattenTokens(patchedTree)
   if (newIds.length > 0) {
-    files.push({ path: 'tokens/Base.tokens.json', content: JSON.stringify(patchedTree, null, 2) + '\n' })
+    files.push({ path: relative(repoRoot, tokenFilePath), content: JSON.stringify(patchedTree, null, 2) + '\n' })
   }
 
-  const existingState = loadSyncStateFile(resolve(tokensDir, '..', '.figma-sync-state.json'))
+  const existingState = loadSyncStateFile(inputs.syncStateFile)
   const syncState = buildSyncState({
     existingState,
     baseTokens: patchedTokens,
@@ -100,7 +106,7 @@ function patchLocalFiles({ newIds, removedIds, syncedAt }) {
     syncedAt,
     removedVariableIds: removedIds,
   })
-  files.push({ path: '.figma-sync-state.json', content: JSON.stringify(syncState, null, 2) + '\n' })
+  files.push({ path: relative(repoRoot, inputs.syncStateFile), content: JSON.stringify(syncState, null, 2) + '\n' })
 
   return { tokensDir, files, message: buildCommitMessage(newIds, removedIds) }
 }
@@ -150,13 +156,14 @@ async function main() {
   // (e.g. a color edit to an already-synced token) still needs its baseline entry's resolvedValue
   // refreshed, or the next PR touching that token gets a false conflict against the stale value.
   const syncedAt = new Date().toISOString()
+  const inputs = resolveSyncInputs()
 
   if (!process.env.TOKENS_DIR_OVERRIDE) {
-    await runRemote({ newIds, removedIds, syncedAt })
+    await runRemote({ newIds, removedIds, syncedAt, inputs })
   } else if (process.env.LOCAL_GIT_COMMIT === 'true') {
-    runLocalGitCommit({ newIds, removedIds, syncedAt })
+    runLocalGitCommit({ newIds, removedIds, syncedAt, inputs })
   } else {
-    runLocalWriteOnly({ newIds, removedIds, syncedAt })
+    runLocalWriteOnly({ newIds, removedIds, syncedAt, inputs })
   }
 }
 

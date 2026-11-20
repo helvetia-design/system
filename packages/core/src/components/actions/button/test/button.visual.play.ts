@@ -1,26 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'button'
-const VARIANTS = [
-  'basic',
-  'shadow',
-  'badge',
-  'link',
-  'colors',
-  'inverted',
-  'sizes',
-  'wide',
-  'long-content',
-  'flat',
-  'disabled',
-  'html-tags',
-  'square',
-  'icon',
-  'loading',
-  'group',
-  'two-row-button-group',
-  'group-column',
-]
+import { HOST_VARIANTS, TAG, VARIANTS } from './button.variants'
 
 const image = screenshot(TAG)
 
@@ -42,7 +21,7 @@ test.describe('host', () => {
     await page.setupVisualTest(`/components/actions/${TAG}/test/${TAG}.visual.html`)
   })
 
-  VARIANTS.filter(variant => variant !== 'html-tags').forEach(variant => {
+  HOST_VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
       const el = page.getByTestId(variant)
       await expectScreenshot(el, image(variant))

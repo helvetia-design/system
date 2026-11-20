@@ -35,6 +35,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # The sync scripts import packages/tokens/dist/out-tsc/toky-config.js (scripts/figma-sync/lib/config.mjs).
+      - name: Compile token package
+        run: pnpm --filter @helvetia-design/tokens exec tsc
+
       - name: Pull tokens to Figma
         id: sync
         shell: bash

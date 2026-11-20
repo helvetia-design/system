@@ -19,7 +19,7 @@ const meta: Meta<Args> = {
     ...withComponentControls({ tag }),
   },
   ...withRender(
-    ({ slot, slotAction, ...args }) => `<ds-snackbar ${props(args)}>
+    ({ slot, slotAction, ...args }) => `<ds-snackbar ${props(args, tag)}>
     ${slot}
     <ds-button slot="action">${slotAction}</ds-button>
   </ds-snackbar>`,
@@ -45,7 +45,7 @@ export const WithBrandIcon = Story({
     closable: true,
   },
   ...withRender(
-    ({ slot, slotAction, ...args }) => `<ds-snackbar svg='${BrandIconCarCrashWithAnimalGreen}' ${props(args)}>
+    ({ slot, slotAction, ...args }) => `<ds-snackbar svg='${BrandIconCarCrashWithAnimalGreen}' ${props(args, tag)}>
   ${slot}
   <ds-button slot="action">${slotAction}</ds-button>
 </ds-snackbar>`,

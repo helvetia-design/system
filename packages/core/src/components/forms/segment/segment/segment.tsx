@@ -1,5 +1,18 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, h, Listen, Method, Prop, State } from '@stencil/core'
 import {
+  AttrDeserialize,
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Listen,
+  Method,
+  Prop,
+  State,
+} from '@stencil/core'
+import {
+  deserializeBooleanAttribute,
   Logger,
   type LogInstance,
   stopEventBubbling,
@@ -143,6 +156,11 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * The value of the segment group.

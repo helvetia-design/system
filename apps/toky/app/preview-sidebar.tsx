@@ -15,7 +15,6 @@ import type { SearchSelectOption } from './search-select'
 
 export const PREVIEW_TAB_ICON = MonitorIcon
 
-const DEFAULT_PREVIEW_URL = 'http://localhost:4000/playground.html'
 const PLAYGROUND_PAGE = '/playground.html'
 
 type PreviewBreakpoint = 'mobile' | 'tablet' | 'desktop'
@@ -52,8 +51,8 @@ const BREAKPOINT_LABEL: Record<PreviewBreakpoint, string> = {
 // connection-refused) - a missed `ready` handshake within this window is the next best signal.
 const READY_TIMEOUT_MS = 3000
 
-function getPreviewUrl(): string {
-  return process.env.NEXT_PUBLIC_DS_PREVIEW_URL || DEFAULT_PREVIEW_URL
+function getPreviewUrl(configuredUrl: string): string {
+  return process.env.NEXT_PUBLIC_DS_PREVIEW_URL || configuredUrl
 }
 
 // "/components/badge/test/badge.visual.html" -> "components/badge/badge" - drops the fixed
@@ -75,14 +74,17 @@ export function PreviewSidebar({
   width,
   onWidthChange,
   syncStatus,
+  configuredUrl,
 }: {
   tokens: PreviewToken[]
   brand: string | null
   width: number
   onWidthChange: (width: number) => void
   syncStatus: SyncStatus
+  // The Toky config's `previewUrl`; NEXT_PUBLIC_DS_PREVIEW_URL still wins when set.
+  configuredUrl: string
 }) {
-  const previewUrl = getPreviewUrl()
+  const previewUrl = getPreviewUrl(configuredUrl)
   const previewOrigin = useMemo(() => {
     try {
       return new URL(previewUrl).origin
@@ -279,10 +281,10 @@ export function PreviewSidebar({
         />
         {timedOut && !ready && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/95 p-4 text-center text-sm text-muted-foreground">
-            <span>Preview server isn&apos;t running — start it with</span>
+            <span>No preview server answers at</span>
             <br />
             <br />
-            <code className="rounded bg-muted px-1 py-0.5 font-mono">pnpm --filter core start</code>
+            <code className="rounded bg-muted px-1 py-0.5 font-mono">{previewUrl}</code>
           </div>
         )}
       </div>

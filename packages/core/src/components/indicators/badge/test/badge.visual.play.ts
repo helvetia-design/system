@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'badge'
-const VARIANTS = ['basic', 'colors', 'sizes', 'icon', 'list', 'card-position', 'button-position', 'tabs-position']
+import { TAG, VARIANTS } from './badge.variants'
 
 const image = screenshot(TAG)
 

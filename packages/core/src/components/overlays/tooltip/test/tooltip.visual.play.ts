@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'tooltip'
-const VARIANTS = ['basic', 'placement-top', 'placement-right', 'placement-bottom', 'placement-left', 'content-width']
+import { TAG, VARIANTS } from './tooltip.variants'
 
 const image = screenshot(TAG)
 

@@ -91,11 +91,12 @@ function findNamedCollectionAndModes(meta, collectionName, requiredModeNames) {
 }
 
 /**
- * Resolves the brand collection and a brand-name -> modeId map — one Figma
- * mode per brand (docs/adr/0012-brand-modes-not-collections.md).
+ * Resolves the brand collection and a mode-name -> modeId map — the source's own modes (`Base` for
+ * core, `Default` for an extension source) plus one Figma mode per brand
+ * (docs/adr/0012-brand-modes-not-collections.md).
  */
-export function findCollectionAndModes(meta, brandNames, collectionName = 'Design Tokens') {
-  const { collectionId, modeIds } = findNamedCollectionAndModes(meta, collectionName, ['Base', ...brandNames])
+export function findCollectionAndModes(meta, brandNames, collectionName, modeNames) {
+  const { collectionId, modeIds } = findNamedCollectionAndModes(meta, collectionName, [...modeNames, ...brandNames])
   return { collectionId, modeIdByBrand: modeIds }
 }
 
@@ -107,6 +108,15 @@ export function findCollectionAndModes(meta, brandNames, collectionName = 'Desig
 export function findResponsiveCollectionAndModes(meta, collectionName = 'Design Responsive Tokens') {
   const { collectionId, modeIds } = findNamedCollectionAndModes(meta, collectionName, ['Mobile', 'Tablet', 'Desktop'])
   return { collectionId, modeIdByBreakpoint: modeIds }
+}
+
+/** Ids of the collections named in `collectionNames` (null entries are ignored). */
+export function findCollectionIdsByName(meta, collectionNames) {
+  return new Set(
+    Object.values(meta.variableCollections)
+      .filter(collection => collectionNames.includes(collection.name))
+      .map(collection => collection.id),
+  )
 }
 
 /**

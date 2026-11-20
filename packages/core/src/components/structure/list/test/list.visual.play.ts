@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'list'
-const VARIANTS = ['basic', 'ordered', 'linked', 'download', 'accordion', 'nested-accordion']
+import { TAG, VARIANTS, VARIANTS_HOST } from './list.variants'
 
 const image = screenshot(TAG)
 
@@ -17,8 +15,6 @@ test.describe('style', () => {
     })
   })
 })
-
-const VARIANTS_HOST = ['basic', 'ordered', 'linked', 'download', 'accordion', 'nested-accordion']
 
 test.describe('host', () => {
   test.beforeEach('Setup', async ({ page }) => {
