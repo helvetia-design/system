@@ -58,7 +58,7 @@ For comprehensive technical information, see the dedicated documentation files:
 - **[STYLE_GUIDE.md](../docs/STYLE_GUIDE.md)** — Code standards, naming conventions, best practices
 - **[SECURITY.md](../SECURITY.md)** — Security policy and guidelines
 - **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** — Community standards
-- **[SKILLS.md](../docs/SKILLS.md)** — Claude Code skills for automating component tasks
+- **[agents/ds-team.md](../docs/agents/ds-team.md)** — Specialist agents, the skills each owns, and the component/bugfix/feature workflows
 
 ## Domain Documentation
 

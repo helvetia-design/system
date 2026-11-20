@@ -70,6 +70,14 @@ For comprehensive technical information, see the dedicated documentation files:
 
 ## Agent skills
 
+### DS team
+
+Six specialist agents with disjoint file ownership, 22 `ds-*` skills, and the workflows for a
+new component, a bug fix and a feature. **You are the orchestrator** — dispatch them, don't do
+their work. See `docs/agents/ds-team.md`.
+
+A bug fix is one agent (`component-engineer`), not the full pipeline.
+
 ### Issue tracker
 
 Issues tracked in GitHub Issues. See `docs/agents/issue-tracker.md`.

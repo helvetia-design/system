@@ -27,13 +27,9 @@ Output: Summary of changes written to files.
 
 ## What Gets Checked
 
-**Design Tokens**
-
-- Component styles use `--ds-alias-*` tokens (approved alias tokens)
-- Component styles use `--ds-component-*` tokens (component-specific tokens)
-- Component styles use `--_*` tokens (private/local variables)
-- Global `--ds-*` tokens are only allowed in `vars.local()` setup context as defaults
-- Flags usage of old or non-existent global tokens directly in styles
+**Design tokens are NOT checked here** — use the `ds-audit-tokens` skill, which owns token
+layering, naming anatomy and Figma-readiness. This skill had its own token check; it
+misclassified every real component token (`--ds-button-*`) as a global and was removed.
 
 **Documentation**
 

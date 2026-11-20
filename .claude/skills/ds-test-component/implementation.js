@@ -156,21 +156,14 @@ function generateTestFiles(componentName, componentInfo, visualProps, slotsToDem
 
   const files = []
 
-  // Generate visual.html
-  const visualHtml = generateVisualHtml(componentName, visualProps, slotsToDemo)
-  const visualHtmlPath = path.join(testDir, `${componentName}.visual.html`)
-  // fs.writeFileSync(visualHtmlPath, visualHtml); // Would write in real implementation
-  files.push({ path: visualHtmlPath, content: visualHtml, type: 'visual' })
+  // The fixture is the engineer's; its data-testid sections tell us what to screenshot.
+  const variants = readVariantsFromFixture(path.join(testDir, `${componentName}.visual.html`))
+  const urlDir = componentUrlDir(REPO_ROOT, componentName)
 
   // Generate visual.play.ts
-  const visualPlayTs = generateVisualPlayTs(componentName, visualProps, slotsToDemo)
+  const visualPlayTs = generateVisualPlayTs(componentName, variants, urlDir)
   const visualPlayTsPath = path.join(testDir, `${componentName}.visual.play.ts`)
   files.push({ path: visualPlayTsPath, content: visualPlayTs, type: 'visual' })
-
-  // Generate a11y.play.ts
-  const a11yPlayTs = generateA11yPlayTs(componentName, visualProps, slotsToDemo)
-  const a11yPlayTsPath = path.join(testDir, `${componentName}.a11y.play.ts`)
-  files.push({ path: a11yPlayTsPath, content: a11yPlayTs, type: 'a11y' })
 
   // Generate component.play.ts
   const componentPlayTs = generateComponentPlayTs(componentName, componentInfo)
@@ -192,49 +185,47 @@ function generateTestFiles(componentName, componentInfo, visualProps, slotsToDem
   return files
 }
 
-function generateVisualHtml(componentName, visualProps, slotsToDemo) {
-  return `<!doctype html>
-<html dir="ltr" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-    <link rel="stylesheet" href="/assets/section.css" />
-    <link rel="stylesheet" href="/assets/tokens/base.tokens.css" />
-    <link rel="stylesheet" href="/assets/css/design-system.local.min.css" />
-    <link rel="stylesheet" href="/assets/css/utilities.min.css" />
-    <script type="module" src="/build/design-system.esm.js"></script>
-    <script nomodule src="/build/design-system.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <!-- Basic -->
-      <section data-testid="basic">
-        <span>Basic</span>
-        <ds-${componentName}>Default Content</ds-${componentName}>
-      </section>
-
-      <!-- Variants generated from props would go here -->
-      <!-- States: disabled, loading, invalid, etc. -->
-      <!-- Slots: icon, label, badge, etc. -->
-    </main>
-  </body>
-</html>`
+/** The dev server mirrors the source tree, so the URL carries the category folder. */
+function componentUrlDir(repoRoot, componentName) {
+  const abs = resolveComponentPath(repoRoot, componentName)
+  const idx = abs.indexOf(`${path.sep}components${path.sep}`)
+  return abs.slice(idx).split(path.sep).join('/')
 }
 
-function generateVisualPlayTs(componentName, visualProps, slotsToDemo) {
+/**
+ * The visual fixture is the component-engineer's artifact, not ours — it is how a human
+ * reviews the component before any test exists. We read its `data-testid` sections to learn
+ * which variants to screenshot; a variant with no section gets no test.
+ */
+function readVariantsFromFixture(fixturePath) {
+  if (!fs.existsSync(fixturePath)) {
+    throw new Error(
+      `Missing visual fixture: ${fixturePath}\n` +
+        'The component-engineer builds test/<name>.visual.html (ds-implement-component, Phase 5).\n' +
+        'Ask for it before generating visual tests — do not author it here.',
+    )
+  }
+  const html = fs.readFileSync(fixturePath, 'utf-8')
+  const ids = [...html.matchAll(/data-testid="([^"]+)"/g)].map(m => m[1])
+  const unique = [...new Set(ids)]
+  if (unique.length === 0) {
+    throw new Error(`No <section data-testid="..."> found in ${fixturePath} — nothing to screenshot.`)
+  }
+  return unique
+}
+
+function generateVisualPlayTs(componentName, variants, urlDir) {
   return `import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
 
 const TAG = '${componentName}'
-const VARIANTS = [
-  'basic',
-  // Add more variants
-]
+const VARIANTS = [${variants.map(v => `\n  '${v}',`).join('')}
+] as const
 
 const image = screenshot(TAG)
 
 test.describe('style', () => {
   test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(\`/components/\${TAG}/test/\${TAG}.style.html\`)
+    await page.setupVisualTest(\`${urlDir}/test/\${TAG}.style.html\`)
   })
 
   VARIANTS.forEach(variant => {
@@ -247,7 +238,7 @@ test.describe('style', () => {
 
 test.describe('host', () => {
   test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(\`/components/\${TAG}/test/\${TAG}.visual.html\`)
+    await page.setupVisualTest(\`${urlDir}/test/\${TAG}.visual.html\`)
   })
 
   VARIANTS.forEach(variant => {
@@ -257,18 +248,6 @@ test.describe('host', () => {
     })
   })
 })
-`
-}
-
-function generateA11yPlayTs(componentName, visualProps, slotsToDemo) {
-  return `import { test } from '@helvetia-design/playwright'
-
-test('basic', async ({ page, a11y }) => {
-  await page.mount(\`<ds-${componentName}>Content</ds-${componentName}>\`)
-  await a11y('ds-${componentName}')
-})
-
-// Add comprehensive a11y tests for all variants, colors, states
 `
 }
 
@@ -391,8 +370,8 @@ function reportGeneration(componentName, files) {
   console.log(`  1. Review the generated files`)
   console.log(`  2. Fill in event handlers and state assertions`)
   console.log(`  3. Run visual tests: pnpm play -- --grep "${componentName}"`)
-  console.log(`  4. Run a11y tests: pnpm play -- --grep "a11y"`)
-  console.log(`  5. Run unit tests: pnpm test -- ${componentName}.util.spec.ts\n`)
+  console.log(`  4. Run unit tests: pnpm test -- ${componentName}.util.spec.ts`)
+  console.log(`  5. a11y coverage (.a11y.play.ts) is the a11y-expert's — hand it off\n`)
 }
 
 module.exports = {

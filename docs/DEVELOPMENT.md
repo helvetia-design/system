@@ -149,13 +149,9 @@ pnpm lint && pnpm format && pnpm spell
 
 ## Claude Code Skills
 
-This repository includes **Claude Code skills** — specialized AI-powered tools for component development. Use these commands in Claude Code to automate common tasks:
+This repository includes **Claude Code skills** — specialized AI-powered tools for component development — and a team of specialist agents that use them.
 
-```bash
-/ds-sync-visual-tests <component-name>    # Generate visual regression tests
-```
-
-For a complete list of available skills and how to use them, see [SKILLS.md](SKILLS.md). How to test the published consumer installer (`npx @helvetia-design/skills add`) is in [packages/skills/CONTEXT.md](../packages/skills/CONTEXT.md#testing).
+For the agents, the skills each one owns, and the workflows for a new component, a bug fix and a feature, see [agents/ds-team.md](agents/ds-team.md). How to test the published consumer installer (`npx @helvetia-design/skills add`) is in [packages/skills/CONTEXT.md](../packages/skills/CONTEXT.md#testing).
 
 ## Versioning and Publishing
 

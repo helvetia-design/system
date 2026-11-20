@@ -414,17 +414,9 @@ Use this checklist when creating a component from scratch:
 
 ## Changesets & Release Process
 
-All changes affecting end users must be documented in a changeset:
-
-```bash
-pnpm changeset
-```
-
-This creates a `.md` file in `.changeset/` describing the changes. Choose version bump:
-
-- **`patch`** — bug fixes, non-breaking style tweaks
-- **`minor`** — new features, new components
-- **`major`** — breaking changes (prop renames, removed elements, behavior changes)
+All changes affecting end users must be documented in a changeset. Use the `ds-changeset`
+skill to create one — it drives the repo's `scripts/create-changeset.mjs` CLI non-interactively
+and leaves the result unstaged for review.
 
 **Why changesets matter:** When PRs are merged into `next`, the `prepare-release.yml` workflow scans all changesets and opens a "Changeset Release PR" that aggregates all changes into a single version bump. This PR is reviewed by the core team, then merged to trigger the actual npm publication via `release.yml`.
 

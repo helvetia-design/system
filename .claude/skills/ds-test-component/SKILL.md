@@ -1,15 +1,16 @@
 ---
 name: ds-test-component
-description: Auto-generate all test files for DS components including visual, a11y, component, page object, and unit tests. Use when creating new components or setting up comprehensive test coverage.
+description: Auto-generate a DS component's unit, interaction and visual test files plus its Playwright Page Object. Use when creating new components or setting up test coverage. Accessibility tests (.a11y.play.ts) are the a11y-expert's — this skill does not write them.
 ---
 
 # Test Component
 
-Auto-generates all test files for a Helvetia Design System component in one command.
+Auto-generates a component's unit, interaction and visual test files plus its Playwright Page
+Object. It reads the component-engineer's visual fixture; it never writes one.
 
 ## Quick Start
 
-Generate all tests for a component:
+Generate tests for a component:
 
 ```bash
 ds-test-component button
@@ -18,31 +19,39 @@ ds-test-component button
 Process:
 
 1. Parse component props, events, slots, parts, states
-2. Show checklists for visual props and slots
-3. Generate 6 file types (or fewer if not applicable)
-4. Report summary with test counts
+2. Read the visual fixture's `data-testid` sections
+3. Show checklists for visual props and slots
+4. Generate the test files (or fewer if not applicable)
+5. Report summary with test counts
 
 Output files:
 
-- `button.visual.html` — Visual test fixture with variant sections
 - `button.visual.play.ts` — Playwright visual regression tests
-- `button.a11y.play.ts` — Comprehensive accessibility tests
 - `button.component.play.ts` — Event and behavior tests
 - `button.po.ts` — Page object in `packages/playwright/src/lib/components/`
 - `button.util.spec.ts` — Unit tests (if `.util.ts` exists)
+
+**Not written here:**
+
+| File                                 | Owner                                         |
+| ------------------------------------ | --------------------------------------------- |
+| `button.visual.html` / `.style.html` | component-engineer (`ds-implement-component`) |
+| `button.a11y.play.ts`                | a11y-expert (`ds-a11y-test`)                  |
+
+The **visual fixture is an input, not an output.** The component-engineer builds it so a human
+can review the component before any test exists; this skill reads its
+`<section data-testid="…">` values to decide what to screenshot. If the fixture is missing the
+skill stops with an error — ask for it rather than authoring one, or the screenshot baseline
+gets taken over a component nobody has looked at.
+
+A variant with no section gets no screenshot, so an incomplete fixture silently means
+incomplete visual coverage. Report the sections you found.
 
 ## What Gets Generated
 
 ### 1. Visual Tests
 
-**visual.html** — Test fixture with sections:
-
-- **Basic** — Minimal component demo with auto-detected common props
-- **Enum variants** — All color/size values in one section per enum
-- **State variants** — Separate section per state (disabled, loading, invalid, etc.)
-- **Slot demos** — One section per slot, auto-detected from `render()` JSX
-
-**visual.play.ts** — Playwright tests:
+**visual.play.ts** — Playwright tests, with `VARIANTS` read from the engineer's fixture:
 
 - "style" suite: screenshots from `button.style.html`
 - "host" suite: screenshots from `button.visual.html`
@@ -67,7 +76,7 @@ const image = screenshot(TAG)
 ```ts
 test.describe('host', () => {
   test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(`/components/${TAG}/test/${TAG}.visual.html`)
+    await page.setupVisualTest(`/components/${CATEGORY}/${TAG}/test/${TAG}.visual.html`)
   })
 
   VARIANTS.forEach(variant => {
@@ -84,7 +93,7 @@ test.describe('host', () => {
 ```ts
 test.describe('style', () => {
   test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(`/components/${TAG}/test/${TAG}.style.html`)
+    await page.setupVisualTest(`/components/${CATEGORY}/${TAG}/test/${TAG}.style.html`)
   })
 
   VARIANTS.forEach(variant => {
@@ -97,7 +106,7 @@ test.describe('style', () => {
 
 test.describe('host', () => {
   test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(`/components/${TAG}/test/${TAG}.visual.html`)
+    await page.setupVisualTest(`/components/${CATEGORY}/${TAG}/test/${TAG}.visual.html`)
   })
 
   VARIANTS.forEach(variant => {
@@ -117,16 +126,7 @@ test.describe('host', () => {
 - **Scalable** — works for any number of variants
 - **Consistent** — matches the tag component pattern
 
-### 2. Accessibility Tests
-
-**a11y.play.ts** — Comprehensive a11y coverage:
-
-- Axe-core checks (auto-detected violations)
-- Semantic checks (ARIA labels, roles, heading hierarchy)
-- Contrast checks (WCAG AA compliance)
-- Tests all variants (colors, sizes, states)
-
-### 3. Component Tests
+### 2. Component Tests
 
 **component.play.ts** — Behavior tests:
 
@@ -138,7 +138,7 @@ test.describe('host', () => {
 - **Slot tests** — Verify each slot renders correctly
 - **Value tests** — If component has `value` prop, test `hasValue()` assertion
 
-### 4. Page Object
+### 3. Page Object
 
 **button.po.ts** — Page object for testing:
 
@@ -151,7 +151,7 @@ test.describe('host', () => {
 
 Located in: `packages/playwright/src/lib/components/button.po.ts`
 
-### 5. Unit Tests (if applicable)
+### 4. Unit Tests (if applicable)
 
 **button.util.spec.ts** — Tests for utility functions:
 
@@ -198,9 +198,7 @@ Which to demo? (deselect unwanted)
 ### Step 4: Files Generated
 
 ```
-✓ button.visual.html (8 variant sections)
-✓ button.visual.play.ts (16 visual tests)
-✓ button.a11y.play.ts (12 a11y tests)
+✓ button.visual.play.ts (16 visual tests, from 8 fixture sections)
 ✓ button.component.play.ts (8 event + 4 state tests)
 ✓ button.po.ts (5 parts + 4 assertions)
 ✓ button.util.spec.ts (4 utils, 18 test cases)
@@ -210,7 +208,7 @@ Next: Review files, run tests: pnpm play, pnpm test
 
 ## Example: Button Component
 
-### Generated visual.html sections:
+### Fixture sections it reads (authored by the component-engineer):
 
 ```html
 <!-- Basic -->
