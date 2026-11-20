@@ -1330,17 +1330,19 @@ describe('findCollectionAndModes', () => {
   }
 
   it('maps each brand name to its mode id by exact name match', () => {
-    const { collectionId, modeIdByBrand } = findCollectionAndModes(meta, ['Zurich'])
+    const { collectionId, modeIdByBrand } = findCollectionAndModes(meta, ['Zurich'], 'Design Tokens', ['Base'])
     expect(collectionId).toBe('VariableCollectionId:1')
     expect(modeIdByBrand).toEqual({ Base: 'm1', Zurich: 'm2' })
   })
 
   it('throws if a brand has no matching Figma mode', () => {
-    expect(() => findCollectionAndModes(meta, ['Unknown'])).toThrow(/No Figma mode named "Unknown"/)
+    expect(() => findCollectionAndModes(meta, ['Unknown'], 'Design Tokens', ['Base'])).toThrow(
+      /No Figma mode named "Unknown"/,
+    )
   })
 
-  it('throws if no collection is named "Design Tokens" (the default)', () => {
-    expect(() => findCollectionAndModes({ variableCollections: {} }, [])).toThrow(
+  it('throws if no collection is named "Design Tokens"', () => {
+    expect(() => findCollectionAndModes({ variableCollections: {} }, [], 'Design Tokens', ['Base'])).toThrow(
       /No Figma variable collection named "Design Tokens"/,
     )
   })
@@ -1356,7 +1358,9 @@ describe('findCollectionAndModes', () => {
         },
       },
     }
-    const { collectionId, modeIdByBrand } = findCollectionAndModes(multiCollectionMeta, ['Zurich'], 'Design Tokens')
+    const { collectionId, modeIdByBrand } = findCollectionAndModes(multiCollectionMeta, ['Zurich'], 'Design Tokens', [
+      'Base',
+    ])
     expect(collectionId).toBe('VariableCollectionId:1')
     expect(modeIdByBrand).toEqual({ Base: 'm1', Zurich: 'm2' })
   })

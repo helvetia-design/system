@@ -1,21 +1,17 @@
-import { DsAppNavbar, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './app-navbar.variants'
+
+const baseline = visualBaseline(TAG)
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(
-      page,
-      `
-        <ds-app-navbar>
-          <a href="/" slot="brand">Logo</a>
-          <a href="/about" slot="menu-start">About</a>
-        </ds-app-navbar>
-      `,
-      renderToString,
-      testInfo,
-    )
+  VARIANTS.forEach(({ name, file }) => {
+    test(name, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, `/components/navigation/${TAG}/test/${file}`, renderToString)
 
-    const navbar = new DsAppNavbar(page.locator('ds-app-navbar'))
-    await navbar.assertToBeVisible()
+      await expectScreenshot(page, baseline(name))
+      await ssr.hydrate()
+      await expectScreenshot(page, baseline(name))
+    })
   })
 })

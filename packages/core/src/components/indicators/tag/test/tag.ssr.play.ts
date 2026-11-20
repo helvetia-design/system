@@ -1,15 +1,31 @@
-import { DsTag, expect, mountSsr, test } from '@helvetia-design/playwright'
+import {
+  expect,
+  expectScreenshot,
+  mountSsr,
+  setupSsrVisualTest,
+  test,
+  visualBaseline,
+} from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './tag.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/indicators/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(page, `<ds-tag closable>My tag</ds-tag>`, renderToString, testInfo)
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const dsTag = new DsTag(page.locator('ds-tag'))
-    await dsTag.assertToBeVisible()
-    await dsTag.assertToContainText('My tag')
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
+})
 
+test.describe('mountSsr', () => {
   test('renders ds-tag-group and hydrates', async ({ page }, testInfo) => {
     await mountSsr(
       page,

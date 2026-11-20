@@ -16,7 +16,7 @@ Bot PAT used for day-to-day repo automation.
 
 - **Used in:** `figma-sync.yml`, `prepare-release.yml`, `screenshots.yml`, `create-issue-branch.yml`, `figma-conflict-check.yml`
 - **Purpose:** checkout auth, `changesets/action` PR/ref creation, git commits (`EndBug/add-and-commit`), PR comments, issue-branch creation, Figma conflict-check API calls
-- **Required permissions:** fine-grained PAT scoped to `helvetia-design/system` with **Contents: Read and write** and **Pull requests: Read and write**. Contents write is what `changesets/action` needs to create the `changeset-release/main` ref — see the "Resource not accessible by personal access token" failure this doc followed from. Also needs **branch-protection bypass rights on `main`**, per the comment at [`figma-sync.yml:45-47`](../.github/workflows/figma-sync.yml) and [`docs/adr/0017-direct-commit-variableid-backfill.md`](adr/0017-direct-commit-variableid-backfill.md) (the ADR describes the same exception for the `next` branch; the figma-sync workflow applies it to `main`), since most of this repo's automation otherwise requires PRs.
+- **Required permissions:** fine-grained PAT scoped to `helvetia-design/system` with **Contents: Read and write** and **Pull requests: Read and write**. Contents write is what `changesets/action` needs to create the `changeset-release/main` ref — see the "Resource not accessible by personal access token" failure this doc followed from. Also needs **branch-protection bypass rights on `main`**, per the comment on the write-back step in [`figma-sync.yml`](../.github/workflows/figma-sync.yml) and [`docs/adr/0017-direct-commit-variableid-backfill.md`](adr/0017-direct-commit-variableid-backfill.md) (the ADR describes the same exception for the `next` branch; the figma-sync workflow applies it to `main`), since most of this repo's automation otherwise requires PRs.
 
 ## `DS_BOT_RELEASE_TOKEN`
 
@@ -43,3 +43,7 @@ Separate bot token used only in the release/snapshot flows.
 - **Used in:** `figma-sync.yml`, `figma-conflict-check.yml`
 - **Purpose:** `FIGMA_API_TOKEN` authenticates `scripts/figma-sync/{pull,conflict-check}.mjs` against the Figma REST API; `FIGMA_FILE_KEY` identifies the target Figma file (not a credential, just stored as a secret alongside the token).
 - **Required permissions:** a Figma personal access token with read access to the target file.
+
+## Other repos running `scripts/figma-sync`
+
+A second token source, today `helvetia-design/extensions`, has its own Figma workflows. They check out this repo and run `scripts/figma-sync` with that repo's own `FIGMA_API_TOKEN`, `FIGMA_FILE_KEY`, and `DS_BOT_GITHUB_TOKEN`; none of this repo's secrets are used. Its `DS_BOT_GITHUB_TOKEN` needs the same permissions as above, scoped to that repo, including branch-protection bypass on its `main` for the variableId write-back. This repo is public, so checking it out needs no extra access.

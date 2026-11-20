@@ -51,26 +51,32 @@ function buildCollectionBootstrapPayload(
   return { variableCollections, variableModes }
 }
 
-export function buildBootstrapPayload(brandNames, collectionName = 'Design Tokens') {
+/**
+ * `modeNames` are the source's own modes (`Base` for core, `Default` for an extension source): the
+ * first one renames the auto-created default mode, the rest and every brand are created.
+ */
+export function buildBootstrapPayload(brandNames, collectionName, modeNames) {
+  const [defaultModeName, ...otherModeNames] = modeNames
   const collectionTempId = 'temp-collection-bootstrap'
-  const baseModeTempId = 'temp-mode-Base'
+  const baseModeTempId = `temp-mode-${defaultModeName}`
 
   const { variableCollections, variableModes } = buildCollectionBootstrapPayload(
     collectionName,
-    'Base',
-    brandNames,
+    defaultModeName,
+    [...otherModeNames, ...brandNames],
     collectionTempId,
     baseModeTempId,
   )
 
-  return { variableCollections, variableModes, collectionTempId, baseModeTempId, brandNames }
+  return { variableCollections, variableModes, collectionTempId, baseModeTempId, brandNames, modeNames }
 }
 
 export function resolveBootstrapIds(bootstrap, tempIdToRealId) {
   const collectionId = tempIdToRealId[bootstrap.collectionTempId]
-  const modeIdByBrand = { Base: tempIdToRealId[bootstrap.baseModeTempId] }
+  const [defaultModeName, ...otherModeNames] = bootstrap.modeNames
+  const modeIdByBrand = { [defaultModeName]: tempIdToRealId[bootstrap.baseModeTempId] }
 
-  for (const brand of bootstrap.brandNames) {
+  for (const brand of [...otherModeNames, ...bootstrap.brandNames]) {
     modeIdByBrand[brand] = tempIdToRealId[`temp-mode-${brand}`]
   }
 

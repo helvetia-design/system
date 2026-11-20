@@ -88,6 +88,9 @@ export class SliderPickerController {
   private init() {
     const { targetEl, min, max, step, value, disabled, invalid } = this.config
 
+    // SSR serializes the server-side noUiSlider DOM; mock-doc has no replaceChildren().
+    while (targetEl.firstChild) targetEl.removeChild(targetEl.firstChild)
+
     this.slider = noUiSlider.create(targetEl, {
       range: { min: Math.min(min, max), max: Math.max(min, max) },
       start: value,

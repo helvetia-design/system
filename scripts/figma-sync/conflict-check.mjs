@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Entry point for figma-conflict-check.yml (docs/plans/figma-sync-action-plan.md §4).
- * Runs on the open toky/update-next PR: reads the PR branch's own checked-out
+ * Runs on the open toky/update-main PR: reads the PR branch's own checked-out
  * token files + local .figma-sync-state.json baseline, cross-checks against
  * live Figma variable values, and posts/updates a single PR comment listing
  * any conflicts. Never fails the check itself
@@ -15,25 +15,21 @@
  * read tokens/baseline from a local scratch directory instead of
  * packages/tokens/tokens.
  *
+ * TOKY_CONFIG_PATH/TOKENS_ROOT (optional, shared with pull.mjs): token file, sync state,
+ * collection, mode, and reference tokens come from the source's Toky config (lib/config.mjs).
+ * REFERENCE_TOKENS_FILE overrides the config's referenceTokens file.
+ *
  * PR_NUMBER/GITHUB_TOKEN (optional together): if either is unset, skips
  * GitHub entirely and prints the comment body to stdout instead of
  * posting/updating it — lets you check the conflict-detection + comment
  * formatting with only Figma credentials, no PR or GitHub token needed.
  */
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { loadSyncStateFile } from './lib/baseline.mjs'
+import { resolveReferenceTokensFile, resolveSyncInputs } from './lib/config.mjs'
 import { buildCommentBody, COMMENT_MARKER, findConflicts } from './lib/conflict.mjs'
 import { findCollectionAndModes, getLocalVariables } from './lib/figma.mjs'
 import { createIssueComment, findMarkedComment, updateIssueComment } from './lib/github.mjs'
 import { flattenTokens, loadTokenFile } from './lib/tokens.mjs'
-
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const workspaceRoot = resolve(__dirname, '../..')
-const TOKENS_DIR = process.env.TOKENS_DIR_OVERRIDE
-  ? resolve(process.env.TOKENS_DIR_OVERRIDE)
-  : resolve(workspaceRoot, 'packages/tokens/tokens')
-const SYNC_STATE_FILE = resolve(TOKENS_DIR, '..', '.figma-sync-state.json')
 
 function requireEnv(name) {
   const value = process.env[name]
@@ -41,25 +37,41 @@ function requireEnv(name) {
   return value
 }
 
+function loadReferenceTokens(inputs) {
+  const referenceTokensFile = resolveReferenceTokensFile(inputs)
+  return referenceTokensFile ? flattenTokens(loadTokenFile(referenceTokensFile)) : []
+}
+
 async function main() {
   const figmaToken = requireEnv('FIGMA_API_TOKEN')
   const figmaFileKey = requireEnv('FIGMA_FILE_KEY')
   const prNumber = process.env.PR_NUMBER
   const githubToken = process.env.GITHUB_TOKEN
+  const inputs = resolveSyncInputs()
+  const { tokenFilePath, syncStateFile, collectionName, modeNames } = inputs
 
-  const base = loadTokenFile(resolve(TOKENS_DIR, 'Base.tokens.json'))
+  const base = loadTokenFile(tokenFilePath)
   const currentBaseTokens = flattenTokens(base)
-  const existingState = loadSyncStateFile(SYNC_STATE_FILE)
+  const existingState = loadSyncStateFile(syncStateFile)
 
-  const localVariables = await getLocalVariables(figmaFileKey, figmaToken)
-  const { modeIdByBrand } = findCollectionAndModes(localVariables, [])
-
-  const conflicts = findConflicts({
-    existingState,
-    currentBaseTokens,
-    figmaVariablesById: localVariables.variables,
-    modeId: modeIdByBrand.Base,
-  })
+  let conflicts = []
+  if (existingState) {
+    const localVariables = await getLocalVariables(figmaFileKey, figmaToken)
+    if (Object.values(localVariables.variableCollections).some(c => c.name === collectionName)) {
+      const { modeIdByBrand } = findCollectionAndModes(localVariables, [], collectionName, modeNames)
+      conflicts = findConflicts({
+        existingState,
+        currentBaseTokens,
+        figmaVariablesById: localVariables.variables,
+        modeId: modeIdByBrand[modeNames[0]],
+        referenceTokens: loadReferenceTokens(inputs),
+      })
+    } else {
+      console.log(`No Figma collection "${collectionName}" yet (source never synced) — nothing can conflict.`)
+    }
+  } else {
+    console.log('No sync baseline yet (source never synced) — nothing can conflict.')
+  }
 
   console.log(`Found ${conflicts.length} conflict(s).`)
   const body = buildCommentBody(conflicts)

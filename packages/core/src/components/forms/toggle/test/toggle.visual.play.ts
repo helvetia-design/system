@@ -1,6 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'toggle'
+import { HOST_VARIANTS, TAG } from './toggle.variants'
 
 const STYLE_VARIANTS = [
   'basic',
@@ -11,16 +10,6 @@ const STYLE_VARIANTS = [
   'required',
   'field',
   'field-invalid',
-  'form',
-]
-const HOST_VARIANTS = [
-  'basic',
-  'no-label',
-  'disabled',
-  'invalid',
-  'invalid-disabled',
-  'invalid-slot',
-  'required',
   'form',
 ]
 

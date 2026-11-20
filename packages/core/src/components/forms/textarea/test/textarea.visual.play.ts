@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'textarea'
-const VARIANTS = ['basic', 'disabled', 'invalid', 'invalid-slot', 'valid', 'warning', 'rows', 'long-content']
+import { TAG, VARIANTS } from './textarea.variants'
 
 const image = screenshot(TAG)
 

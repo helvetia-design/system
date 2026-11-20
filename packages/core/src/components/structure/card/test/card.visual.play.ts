@@ -1,17 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'card'
-const VARIANTS = [
-  'basic',
-  'tile',
-  'centered',
-  'colors',
-  'spaces',
-  'combi-header',
-  'fullheight',
-  'images',
-  'image-teaser',
-]
+import { TAG, VARIANTS } from './card.variants'
 
 const image = screenshot(TAG)
 

@@ -4,7 +4,14 @@ import { KEY_BY_LAYER } from './flatten'
 import { toSlashPath } from './format'
 import { flattenFigmaId } from './figma-map'
 import { invalidSegments } from './path'
-import { TEXT_DECORATION_VALUES, TEXT_TRANSFORM_VALUES } from '@helvetia-design/tokens/css-preview'
+import {
+  RESPONSIVE_DIMENSION_CSS_SUFFIXES,
+  TEXT_DECORATION_VALUES,
+  TEXT_TRANSFORM_VALUES,
+  TYPOGRAPHY_CSS_SUFFIXES,
+  tokenNameToCssVar,
+} from '@helvetia-design/tokens/css-preview'
+import type { FlatToken } from './types'
 
 export interface ValidationError {
   tokenKey: string
@@ -24,7 +31,22 @@ function isEmptyValue(value: unknown): boolean {
   return value === '' || value === undefined || value === null
 }
 
-export function validateWorkingTokens(working: WorkingToken[]): ValidationError[] {
+function emittedCssNames(path: string[], type: string, responsive: boolean): string[] {
+  const base = tokenNameToCssVar(path)
+  if (type === 'typography') return Object.values(TYPOGRAPHY_CSS_SUFFIXES).map(suffix => `${base}-${suffix}`)
+  if (responsive) return [base, ...Object.values(RESPONSIVE_DIMENSION_CSS_SUFFIXES).map(suffix => `${base}-${suffix}`)]
+  return [base]
+}
+
+export interface ValidationOptions {
+  /** Set for a token source that extends another one; enables the extension token rules. */
+  referenceTokens: FlatToken[] | null
+}
+
+export function validateWorkingTokens(
+  working: WorkingToken[],
+  { referenceTokens }: ValidationOptions = { referenceTokens: null },
+): ValidationError[] {
   const errors: ValidationError[] = []
 
   const pathCounts = new Map<string, number>()
@@ -33,7 +55,10 @@ export function validateWorkingTokens(working: WorkingToken[]): ValidationError[
     pathCounts.set(key, (pathCounts.get(key) ?? 0) + 1)
   }
 
-  const validPaths = new Set(pathCounts.keys())
+  const validPaths = new Set([...pathCounts.keys(), ...(referenceTokens ?? []).map(token => token.path.join('.'))])
+  const referenceCssNames = new Set(
+    (referenceTokens ?? []).flatMap(token => emittedCssNames(token.path, token.type, token.responsive !== null)),
+  )
 
   // A shadow token's figmaId is 5 sub-ids, not 1 (see
   // docs/plans/shadow-token-type-plan.md) — flattenFigmaId turns either
@@ -126,6 +151,33 @@ export function validateWorkingTokens(working: WorkingToken[]): ValidationError[
         errors.push({
           tokenKey: id,
           message: `Responsive value is missing ${missing.join(', ')}.`,
+          severity: 'error',
+        })
+      }
+    }
+
+    if (referenceTokens) {
+      if (token.layer !== 'Component') {
+        errors.push({
+          tokenKey: id,
+          message: `Only ${KEY_BY_LAYER.Component} tokens are allowed in this token source.`,
+          severity: 'error',
+        })
+      }
+      if (token.responsive) {
+        errors.push({
+          tokenKey: id,
+          message: `Responsive values are not allowed here — reference a ${KEY_BY_LAYER.Device} token instead.`,
+          severity: 'error',
+        })
+      }
+      const collision = emittedCssNames(pathFor(token.layer, token.name), token.type, token.responsive !== null).find(
+        name => referenceCssNames.has(name),
+      )
+      if (collision) {
+        errors.push({
+          tokenKey: id,
+          message: `The CSS variable --${collision} already exists in the reference tokens.`,
           severity: 'error',
         })
       }

@@ -1,15 +1,7 @@
 import { DsSelect, expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
+import { HOST_VARIANTS, TAG } from './select.variants'
 
-const TAG = 'select'
 const VARIANTS = ['basic', 'disabled', 'invalid', 'invalid-slot', 'valid', 'warning'] as const
-
-const HOST_VARIANTS: { testId: string; selectId: string; options: string[]; multiple?: boolean }[] = [
-  { testId: 'basic', selectId: 'basic', options: ['Italy'] },
-  { testId: 'searchable', selectId: 'searchable', options: ['Germany'] },
-  { testId: 'clearable', selectId: 'clearable', options: ['France'] },
-  { testId: 'multiple', selectId: 'multi', options: ['German', 'Italian'], multiple: true },
-  { testId: 'grouped', selectId: 'grouped', options: ['Basel'] },
-]
 
 const HTML_OPTIONS_VARIANTS: { testId: string; selectId: string; options: string[] }[] = [
   { testId: 'flat', selectId: 'flat', options: ['Italy'] },

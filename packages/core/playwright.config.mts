@@ -73,6 +73,16 @@ export default defineConfig({
       name: '🧬 SSR',
       testMatch: '**/*.ssr.play.ts',
       use: { ...devices['Desktop Chrome'] },
+      // Resolves visualBaseline() names to the desktop baselines of the visual tests.
+      snapshotPathTemplate: '{testDir}/{testFileDir}/{arg}-🖼️-Visual-💻-Desktop-Chrome{-snapshotSuffix}{ext}',
+      // Replaces the top-level `expect` block as a whole, so it repeats the timeout.
+      expect: {
+        timeout: 5000,
+        toHaveScreenshot: {
+          maxDiffPixelRatio: 0.02,
+          threshold: 0.2,
+        },
+      },
     },
     {
       name: '🖼️ Visual / 💻 Desktop Chrome',

@@ -81,6 +81,8 @@ import { countDirectReferences } from '@/src/tokens/graph'
 import { getNextCell } from '@/src/tokens/keyboard'
 import type { NavigationKey } from '@/src/tokens/keyboard'
 import type { SyncStatus } from '@/src/tokens/github-write'
+import { CORE_CLIENT_SETTINGS } from '@/src/tokens/config'
+import type { TokyClientSettings } from '@/src/tokens/config'
 import { validateWorkingTokens } from '@/src/tokens/validate'
 import type { FlatToken, ResponsiveDimensionValue, TokenLayer } from '@/src/tokens/types'
 import { BrandsSidebar } from './brands-sidebar'
@@ -418,6 +420,7 @@ type RenderPopoverHeader = (
 // doesn't get a new array identity, and thus a wasted re-render, on every
 // unrelated render of the table.
 const EMPTY_ERRORS: string[] = []
+const EMPTY_TOKENS: FlatToken[] = []
 
 interface CodeUsageLocation {
   package: 'core' | 'css'
@@ -2085,6 +2088,23 @@ function renderDetachButton(
   )
 }
 
+function renderReadOnlyValue(
+  type: string,
+  referenceTarget: string | null,
+  value: unknown,
+  hex: string | null,
+  swatchAlphaPercent: number | null,
+): ReactNode {
+  return (
+    <div className="flex h-8 items-center gap-2 px-2 text-xs">
+      {hex !== null && renderColorSwatch(hex, swatchAlphaPercent ?? 100)}
+      <span className="truncate">
+        {referenceTarget ? toSlashPath(referenceTarget) : referenceValueSummary(type, value)}
+      </span>
+    </div>
+  )
+}
+
 interface TokenRowBrandInfo {
   brand: string
   token: FlatToken
@@ -2164,6 +2184,7 @@ interface TokenRowProps {
   isCodeUsageOpen: boolean
   usageCount: number
   brandInfo: TokenRowBrandInfo | null
+  readOnly: boolean
   cellRefs: { current: Map<string, HTMLInputElement> }
   focusSnapshot: { current: { id: string; col: number; value: string } | null }
   handlers: TokenRowHandlers
@@ -2195,6 +2216,7 @@ const TokenRow = memo(function TokenRow({
   isCodeUsageOpen,
   usageCount,
   brandInfo,
+  readOnly,
   cellRefs,
   focusSnapshot,
   handlers,
@@ -2229,6 +2251,7 @@ const TokenRow = memo(function TokenRow({
                 }}
                 aria-label={`Name for ${token.name || 'token'}`}
                 value={nameText}
+                readOnly={readOnly}
                 onChange={e => handlers.onNameChange(id, e.target.value)}
                 onBlur={() => handlers.onNameBlur(id)}
                 onFocus={e => (focusSnapshot.current = { id, col: 0, value: e.target.value })}
@@ -2243,21 +2266,27 @@ const TokenRow = memo(function TokenRow({
             </div>
           </TableCell>
           <TableCell className="max-h-8 p-0 px-1">
-            <button
-              type="button"
-              aria-label={`Description for ${token.name || 'token'}`}
-              onClick={() => handlers.onEdit(id)}
-              className="flex h-8 w-full items-center truncate px-1 text-left text-sm outline-none hover:bg-muted/30 focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {token.description ? (
-                <span className="truncate">{token.description}</span>
-              ) : (
-                <span className="truncate text-muted-foreground">Add description</span>
-              )}
-            </button>
+            {readOnly ? (
+              <span className="flex h-8 items-center truncate px-1 text-sm">{token.description}</span>
+            ) : (
+              <button
+                type="button"
+                aria-label={`Description for ${token.name || 'token'}`}
+                onClick={() => handlers.onEdit(id)}
+                className="flex h-8 w-full items-center truncate px-1 text-left text-sm outline-none hover:bg-muted/30 focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {token.description ? (
+                  <span className="truncate">{token.description}</span>
+                ) : (
+                  <span className="truncate text-muted-foreground">Add description</span>
+                )}
+              </button>
+            )}
           </TableCell>
           <TableCell className="max-h-8 p-0 px-1">
-            {token.type === 'color' ? (
+            {readOnly ? (
+              renderReadOnlyValue(token.type, token.referenceTarget, token.resolvedValue, hex, swatchAlphaPercent)
+            ) : token.type === 'color' ? (
               <div className="group/tag flex items-center gap-1">
                 <Popover open={isPopoverOpen} onOpenChange={open => handlers.onPopoverOpenChange(id, open)}>
                   <PopoverTrigger
@@ -2830,7 +2859,19 @@ const TokenRow = memo(function TokenRow({
               </div>
             </TableCell>
           )}
+          {brandInfo && readOnly && (
+            <TableCell className="max-h-8 p-0 px-1">
+              {renderReadOnlyValue(
+                brandInfo.token.type,
+                brandInfo.token.referenceTarget,
+                brandInfo.resolvedValue,
+                brandInfo.hex,
+                brandInfo.swatchAlphaPercent,
+              )}
+            </TableCell>
+          )}
           {brandInfo &&
+            !readOnly &&
             (() => {
               const {
                 brand,
@@ -3394,22 +3435,28 @@ const TokenRow = memo(function TokenRow({
                   <EllipsisIcon />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handlers.onEdit(id)}>
-                    <PencilIcon />
-                    Edit
-                  </DropdownMenuItem>
+                  {!readOnly && (
+                    <DropdownMenuItem onClick={() => handlers.onEdit(id)}>
+                      <PencilIcon />
+                      Edit
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={() => handlers.onShowGraph(id, toSlashPath(token.name))}>
                     <NetworkIcon />
                     Show reference graph
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handlers.onDuplicate(id)}>
-                    <CopyIcon />
-                    Duplicate
-                  </DropdownMenuItem>
-                  <DropdownMenuItem variant="destructive" onClick={() => handlers.onDelete(id, token)}>
-                    <Trash2Icon />
-                    Delete
-                  </DropdownMenuItem>
+                  {!readOnly && (
+                    <DropdownMenuItem onClick={() => handlers.onDuplicate(id)}>
+                      <CopyIcon />
+                      Duplicate
+                    </DropdownMenuItem>
+                  )}
+                  {!readOnly && (
+                    <DropdownMenuItem variant="destructive" onClick={() => handlers.onDelete(id, token)}>
+                      <Trash2Icon />
+                      Delete
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -3446,6 +3493,8 @@ export function TokenEditor({
   syncStatus,
   localTokensMode = false,
   initialBrand = null,
+  referenceTokens = EMPTY_TOKENS,
+  settings = CORE_CLIENT_SETTINGS,
 }: {
   tokens: FlatToken[]
   defaultBranch: string
@@ -3465,7 +3514,13 @@ export function TokenEditor({
   // `?brand=` from the URL, read server-side. Only honoured if it names a real
   // brand — anything else (typo, deleted brand) falls back to Base.
   initialBrand?: string | null
+  // Read-only tokens of another source (Toky config `referenceTokens`), already resolved: offered
+  // in the reference picker and used to resolve own references, never shown as rows or written.
+  referenceTokens?: FlatToken[]
+  settings?: TokyClientSettings
 }) {
+  const editableLayers = useMemo(() => new Set(settings.editableLayers), [settings.editableLayers])
+  const creatableLayers = LAYERS.filter(layer => editableLayers.has(layer))
   const router = useRouter()
   const { data: session } = useSession()
   // searchText is what the input actually shows (updates every keystroke,
@@ -3796,47 +3851,47 @@ export function TokenEditor({
 
   const originalById = useMemo(() => new Map(tokens.map(t => [t.path.join('.'), t])), [tokens])
 
-  const referenceOptions = useMemo(() => {
-    const paths = working
-      .filter(w => w.token.name.trim() !== '')
-      .map(w => pathFor(w.token.layer, w.token.name).join('.'))
-    return [...new Set(paths)].sort()
-  }, [working])
+  const referenceCandidates = useMemo(
+    () => [
+      ...referenceTokens.map(token => ({ path: token.path.join('.'), token })),
+      ...working
+        .filter(w => w.token.name.trim() !== '')
+        .map(w => ({ path: pathFor(w.token.layer, w.token.name).join('.'), token: w.token })),
+    ],
+    [working, referenceTokens],
+  )
+
+  const referenceOptions = useMemo(
+    () => [...new Set(referenceCandidates.map(candidate => candidate.path))].sort(),
+    [referenceCandidates],
+  )
 
   // A candidate's token type — lets renderReferenceSearch's `typeFilter` restrict candidates to
   // (e.g.) only `color` tokens for BorderColorField, instead of every token in the file.
-  const referenceTypeByPath = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const w of working) {
-      if (w.token.name.trim() === '') continue
-      map.set(pathFor(w.token.layer, w.token.name).join('.'), w.token.type)
-    }
-    return map
-  }, [working])
+  const referenceTypeByPath = useMemo(
+    () => new Map(referenceCandidates.map(({ path, token }) => [path, token.type])),
+    [referenceCandidates],
+  )
 
   // A candidate's layer — lets renderReferenceSearch's `layerFilter` restrict candidates to
   // (e.g.) Global primitives only, so BorderColorField points straight at a Global color instead
   // of an Alias-layer indirection like Border.Color.*.
-  const referenceLayerByPath = useMemo(() => {
-    const map = new Map<string, TokenLayer>()
-    for (const w of working) {
-      if (w.token.name.trim() === '') continue
-      map.set(pathFor(w.token.layer, w.token.name).join('.'), w.token.layer)
-    }
-    return map
-  }, [working])
+  const referenceLayerByPath = useMemo(
+    () => new Map(referenceCandidates.map(({ path, token }) => [path, token.layer])),
+    [referenceCandidates],
+  )
 
   // Swatch preview for the Reference picker — only color-typed tokens get an entry, so
   // SearchSelect can render a swatch purely by checking whether a path has one.
   const referenceColorByPath = useMemo(() => {
     const map = new Map<string, string>()
-    for (const w of working) {
-      if (w.token.type !== 'color' || w.token.name.trim() === '') continue
-      const hex = getColorHex(w.token.referenceTarget ? w.token.resolvedValue : w.token.rawValue)
-      if (hex) map.set(pathFor(w.token.layer, w.token.name).join('.'), hex)
+    for (const { path, token } of referenceCandidates) {
+      if (token.type !== 'color') continue
+      const hex = getColorHex(token.referenceTarget ? token.resolvedValue : token.rawValue)
+      if (hex) map.set(path, hex)
     }
     return map
-  }, [working])
+  }, [referenceCandidates])
 
   // Line-preview for the Reference picker — only border-typed tokens get an entry, so a border
   // reference row (e.g. picking a whole Border.Composite.* alias) shows a little solid/dashed/
@@ -3844,42 +3899,39 @@ export function TokenEditor({
   // summary composite types don't read as naturally.
   const referenceBorderPreviewByPath = useMemo(() => {
     const map = new Map<string, { color: string; cssStyle: string }>()
-    for (const w of working) {
-      if (w.token.type !== 'border' || w.token.name.trim() === '') continue
+    for (const { path, token } of referenceCandidates) {
+      if (token.type !== 'border') continue
       // Always the fully resolved value, never rawValue — a border whose own color/style
       // sub-fields are references (not the whole token) has an unresolved reference string
       // in rawValue.color, which getColorHex can't turn into a swatch. resolvedValue chases
       // those sub-field references too (flatten.ts's resolveNestedReferences), so it's the
       // only shape guaranteed to hold a literal color here.
-      if (!isBorderValue(w.token.resolvedValue)) continue
-      const hex = getColorHex(w.token.resolvedValue.color)
+      if (!isBorderValue(token.resolvedValue)) continue
+      const hex = getColorHex(token.resolvedValue.color)
       if (!hex) continue
-      map.set(pathFor(w.token.layer, w.token.name).join('.'), {
-        color: hex,
-        cssStyle: cssBorderStyleFor(w.token.resolvedValue.style),
-      })
+      map.set(path, { color: hex, cssStyle: cssBorderStyleFor(token.resolvedValue.style) })
     }
     return map
-  }, [working])
+  }, [referenceCandidates])
 
   // Resolved-value summary for the reference picker (e.g. "1.5rem", "#F05D4D")
   // — shown on the right of each candidate row so picking a target doesn't
   // require guessing what it resolves to from its name alone.
   const referenceDetailByPath = useMemo(() => {
     const map = new Map<string, string>()
-    for (const w of working) {
+    for (const { path, token } of referenceCandidates) {
       // A shadow's resolved value is an array of layer objects — formatted as raw JSON
       // by referenceValueSummary, which floods the row and pushes neighboring rows out
       // of view. Shadow rows show only their name/path, same as borderPreview replacing
       // detail for border rows below. Typography's summary is two reference chips
       // (size · family) rather than a short literal, which is just as wide and crowds
       // out the name/path label the same way — typography rows show only name/path too.
-      if (w.token.name.trim() === '' || w.token.type === 'shadow' || w.token.type === 'typography') continue
-      const resolved = w.token.referenceTarget ? w.token.resolvedValue : w.token.rawValue
-      map.set(pathFor(w.token.layer, w.token.name).join('.'), referenceValueSummary(w.token.type, resolved))
+      if (token.type === 'shadow' || token.type === 'typography') continue
+      const resolved = token.referenceTarget ? token.resolvedValue : token.rawValue
+      map.set(path, referenceValueSummary(token.type, resolved))
     }
     return map
-  }, [working])
+  }, [referenceCandidates])
 
   // A dimension token's value normalized to px, regardless of its own unit —
   // enables SearchSelect's exact-value dimension matching, so searching
@@ -3887,14 +3939,14 @@ export function TokenEditor({
   // a substring match, which would also hit a displayed "14px").
   const referenceDimensionPxByPath = useMemo(() => {
     const map = new Map<string, number>()
-    for (const w of working) {
-      if (w.token.name.trim() === '' || w.token.type !== 'dimension') continue
-      const resolved = w.token.referenceTarget ? w.token.resolvedValue : w.token.rawValue
+    for (const { path, token } of referenceCandidates) {
+      if (token.type !== 'dimension') continue
+      const resolved = token.referenceTarget ? token.resolvedValue : token.rawValue
       if (!isDimensionValue(resolved)) continue
-      map.set(pathFor(w.token.layer, w.token.name).join('.'), convertDimensionUnit(resolved, 'px').value)
+      map.set(path, convertDimensionUnit(resolved, 'px').value)
     }
     return map
-  }, [working])
+  }, [referenceCandidates])
 
   const referenceSearchOptions = useMemo(
     () =>
@@ -3921,7 +3973,10 @@ export function TokenEditor({
     ],
   )
 
-  const errors = useMemo(() => validateWorkingTokens(working), [working])
+  const errors = useMemo(
+    () => validateWorkingTokens(working, { referenceTokens: settings.hasReferenceTokens ? referenceTokens : null }),
+    [working, referenceTokens, settings.hasReferenceTokens],
+  )
   const blockingErrors = useMemo(() => errors.filter(error => error.severity === 'error'), [errors])
   // Only blocking errors get the cell red-flagged inline — warnings (e.g. a
   // Component token aliasing Global directly) are advisory and surface
@@ -3962,12 +4017,15 @@ export function TokenEditor({
     if (!selectedBrand) return { brandResolvedByPath: null, brandResolvedById: null }
     const overrides = new Map((brandWorking[selectedBrand] ?? []).map(w => [w.id, w.token]))
     const merged = working.map(w => ({ id: w.id, token: overrides.get(w.id) ?? w.token }))
-    const resolved = resolveReferences(merged.map(m => m.token))
+    const resolved = resolveReferences(
+      merged.map(m => m.token),
+      referenceTokens,
+    )
     return {
       brandResolvedByPath: new Map(resolved.map(t => [t.path.join('.'), t])),
       brandResolvedById: new Map(merged.map((m, index) => [m.id, resolved[index]])),
     }
-  }, [selectedBrand, working, brandWorking])
+  }, [selectedBrand, working, brandWorking, referenceTokens])
 
   // Same shape as referenceSearchOptions, but for the reference picker shown
   // inside the selected brand's column — swatches/details there must reflect
@@ -4077,7 +4135,9 @@ export function TokenEditor({
       badge: diff.length + pendingBrands.length + totalBrandDiffCount,
     },
     { id: 'problems', label: 'Problems', icon: TriangleAlertIcon, badge: problems.length },
-    { id: 'brands', label: 'Brands', icon: SwatchBookIcon, badge: selectedBrand?.slice(0, 4) },
+    ...(settings.hasBrands
+      ? [{ id: 'brands', label: 'Brands', icon: SwatchBookIcon, badge: selectedBrand?.slice(0, 4) }]
+      : []),
     { id: 'figma', label: 'Pull from Figma', icon: FigmaIcon, badge: pullBadgeCount },
     { id: 'preview', label: 'Preview', icon: PREVIEW_TAB_ICON },
   ]
@@ -4091,7 +4151,10 @@ export function TokenEditor({
   function setWorkingResolved(updater: (prev: WorkingToken[]) => WorkingToken[]) {
     setWorking(prev => {
       const updated = updater(prev)
-      const resolved = resolveReferences(updated.map(w => w.token))
+      const resolved = resolveReferences(
+        updated.map(w => w.token),
+        referenceTokens,
+      )
       return updated.map((w, index) => ({ ...w, token: resolved[index] }))
     })
   }
@@ -4787,6 +4850,8 @@ export function TokenEditor({
   // not just appended) so it lands in the same group and the row order stays
   // predictable. Renaming is left to the user — the Name field gets focused next.
   function duplicateRow(id: string) {
+    const sourceLayer = working.find(w => w.id === id)?.token.layer
+    if (!sourceLayer || !editableLayers.has(sourceLayer)) return
     const newId = `new-${draftIdCounter++}`
     setWorking(prev => {
       const sourceIndex = prev.findIndex(w => w.id === id)
@@ -5422,6 +5487,7 @@ export function TokenEditor({
     // HEADER_ROW_HEIGHT).
     const textSizeClass = depth === 0 ? 'text-base' : depth === 1 ? 'text-sm' : 'text-xs'
     const isEditing = depth !== 0 && editingGroup?.layer === layer && editingGroup?.group === group
+    const layerEditable = editableLayers.has(layer)
     return (
       // sticky (and its bg/top) live on the row, not the cell — a sticky
       // *cell* stays pinned visually, but the <tr> around it doesn't move
@@ -5521,23 +5587,25 @@ export function TokenEditor({
                     <NetworkIcon />
                     Show reference graph
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => openAddTokenDialog(layer, group)}>
-                    <PlusIcon />
-                    Add token
-                  </DropdownMenuItem>
-                  {depth !== 0 && (
+                  {layerEditable && (
+                    <DropdownMenuItem onClick={() => openAddTokenDialog(layer, group)}>
+                      <PlusIcon />
+                      Add token
+                    </DropdownMenuItem>
+                  )}
+                  {layerEditable && depth !== 0 && (
                     <DropdownMenuItem onClick={() => startEditingGroup(layer, group)}>
                       <PencilIcon />
                       Rename
                     </DropdownMenuItem>
                   )}
-                  {depth !== 0 && (
+                  {layerEditable && depth !== 0 && (
                     <DropdownMenuItem onClick={() => duplicateGroup(layer, group)}>
                       <CopyIcon />
                       Duplicate
                     </DropdownMenuItem>
                   )}
-                  {depth !== 0 && (
+                  {layerEditable && depth !== 0 && (
                     <DropdownMenuItem variant="destructive" onClick={() => openDeleteGroupDialog(layer, group, depth)}>
                       <Trash2Icon />
                       Delete
@@ -5914,6 +5982,8 @@ export function TokenEditor({
         brandOriginal: brandTokens,
         brandWorking,
         figmaMeta: json,
+        source: { collection: settings.figmaCollection, modes: settings.figmaModes },
+        referenceTokens,
       })
       setPullPlan(plan)
       setPullSelection(allPullEntryKeys(plan))
@@ -6212,23 +6282,27 @@ export function TokenEditor({
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <Button
-              type="button"
-              onClick={() => {
-                setDraft(emptyDraft())
-                setNamePrefixLocked(null)
-                setCreateDialogOpen(true)
-              }}
-            >
-              <PlusIcon />
-              Create
-            </Button>
-            <BrandSwitcher
-              realBrands={tokenBrands}
-              pendingBrands={pendingBrands}
-              selectedBrand={selectedBrand}
-              onSelectBrand={selectBrand}
-            />
+            {creatableLayers.length > 0 && (
+              <Button
+                type="button"
+                onClick={() => {
+                  setDraft(emptyDraft(creatableLayers[0]))
+                  setNamePrefixLocked(null)
+                  setCreateDialogOpen(true)
+                }}
+              >
+                <PlusIcon />
+                Create
+              </Button>
+            )}
+            {settings.hasBrands && (
+              <BrandSwitcher
+                realBrands={tokenBrands}
+                pendingBrands={pendingBrands}
+                selectedBrand={selectedBrand}
+                onSelectBrand={selectBrand}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -6379,6 +6453,7 @@ export function TokenEditor({
                     isCodeUsageOpen={openCodeUsageId === id}
                     usageCount={usageCount}
                     brandInfo={brandInfo}
+                    readOnly={!editableLayers.has(token.layer)}
                     cellRefs={cellRefs}
                     focusSnapshot={focusSnapshot}
                     handlers={rowHandlers}
@@ -6410,7 +6485,7 @@ export function TokenEditor({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {LAYERS.map(layer => (
+                    {creatableLayers.map(layer => (
                       <SelectItem key={layer} value={layer}>
                         <span aria-hidden="true">{LAYER_EMOJI[layer]}</span> {layer}
                       </SelectItem>
@@ -7053,23 +7128,25 @@ export function TokenEditor({
                         </Button>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <Label>Used in code</Label>
-                        {codeUsage && codeUsage.count > 0 ? (
-                          <ul className="space-y-1 rounded-lg border p-2 text-sm text-muted-foreground">
-                            {codeUsage.locations.map(location => (
-                              <li key={`${location.package}/${location.file}`} className="flex gap-2">
-                                <Badge variant="outline" className="shrink-0">
-                                  {location.package}
-                                </Badge>
-                                <span className="truncate">{location.file}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-sm text-muted-foreground">Not used in code.</p>
-                        )}
-                      </div>
+                      {!settings.hasReferenceTokens && (
+                        <div className="space-y-1.5">
+                          <Label>Used in code</Label>
+                          {codeUsage && codeUsage.count > 0 ? (
+                            <ul className="space-y-1 rounded-lg border p-2 text-sm text-muted-foreground">
+                              {codeUsage.locations.map(location => (
+                                <li key={`${location.package}/${location.file}`} className="flex gap-2">
+                                  <Badge variant="outline" className="shrink-0">
+                                    {location.package}
+                                  </Badge>
+                                  <span className="truncate">{location.file}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">Not used in code.</p>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <DialogFooter>
@@ -7293,6 +7370,7 @@ export function TokenEditor({
           width={sidebarWidth}
           onWidthChange={setSidebarWidth}
           syncStatus={syncStatus}
+          configuredUrl={settings.previewUrl}
         />
       )}
       <SidebarActivityBar

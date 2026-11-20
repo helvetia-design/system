@@ -86,6 +86,7 @@ export function buildChangesetContent(
   description: string,
   newBrands: string[] = [],
   brandDiffs: Record<string, TokenDiffEntry[]> = {},
+  packageName: string = CHANGESET_PACKAGE,
 ): string {
   const bumpLevel = bumpLevelForDiff(diff, newBrands)
   const summary = description.trim() || summarizeDiff(diff, newBrands, brandDiffs)
@@ -99,7 +100,7 @@ export function buildChangesetContent(
   ]
 
   return `---
-'${CHANGESET_PACKAGE}': ${bumpLevel}
+'${packageName}': ${bumpLevel}
 ---
 
 ${bodyLines.join('\n')}

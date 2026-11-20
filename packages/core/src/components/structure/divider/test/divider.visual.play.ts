@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'divider'
-const VARIANTS = ['basic', 'colors', 'dashed', 'dashed-vertical', 'horizontal', 'vertical'] as const
+import { TAG, VARIANTS } from './divider.variants'
 
 const image = screenshot(TAG)
 
