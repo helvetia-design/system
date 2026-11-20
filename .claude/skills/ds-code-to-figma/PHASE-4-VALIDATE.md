@@ -9,7 +9,7 @@ Verify the built Figma component set against the confirmed mapping file `<name>.
 - The confirmed `<name>.figma.md` — variant grouping and grid sketch from Phase 2.
 - `figma.config.json`'s `componentLibraryFileKey`.
 - The component's name, category folder, JSDoc lead, and `packages/core/package.json` `version`.
-- Every resolved Figma variable id from Phase 1 (`tokens:` list) and every nested DS component's
+- Every Foundation variable name from Phase 1 (`tokens:` list) and every nested DS component's
   Figma component key (Phase 1, step 4).
 - The component's visual test: `test/<name>.visual.html` and the `*-Desktop-Chrome-linux.png`
   snapshots in `test/<name>.visual.play.ts-snapshots/`.
@@ -67,7 +67,9 @@ worst of all reports (`fail` > `blocked` > `pass`) and decides [Next Phase](#nex
 
 4. **Check token and nested-component bindings** on every variant:
    a. Every fill, stroke, spacing, radius, size and text style is bound to a variable from the
-   Phase 1 `tokens:` list — no hardcoded value, no variable outside that list. **Every bound
+   Phase 1 `tokens:` list — no hardcoded value, no variable outside that list. Compare by name:
+   every bound variable is a Foundation library variable (`remote: true`) whose name is in the
+   list; a binding to a local variable of the component file is a `fail`. **Every bound
    paint's stored colour and opacity equal the variable's resolved value for that node**
    (`variable.resolveForConsumer(node).value`, alpha included); a mismatch is a `fail` even when
    the binding itself is correct (see `conventions/build-mechanics.md` → "Color and paint").
@@ -84,7 +86,7 @@ worst of all reports (`fail` > `blocked` > `pass`) and decides [Next Phase](#nex
    c. Every icon slot and fixed icon (`conventions/content-selection-and-mitigations.md` → "Fixed icons": same checks, minus the swap property and preferred values) from the mapping file is a directly nested glyph library instance (no Icon wrapper); every icon slot has its `INSTANCE_SWAP` property (lowercase name,
    bound on every variant), the right `preferredValues` (icon library, plus brand-icon library
    where applicable), and no exposed nested instance properties. The glyph's size and vector fill
-   match code on **every variant and state**: the fill's bound variable id equals the slot's
+   match code on **every variant and state**: the fill's bound variable (by name) equals the slot's
    `colorSource` entry for that state. An unbound fill is a `fail` even when it looks right — the
    glyphs default to navy, which matches navy parents by accident.
    **Hidden icons:** a layer hidden in the main component (a `show` boolean that defaults to

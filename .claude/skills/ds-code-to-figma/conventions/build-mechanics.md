@@ -11,12 +11,30 @@ phase or section. See `../CONVENTIONS.md` for the index.
   node, also when nested inside another frame (`control`). On a single component,
   `component.createSlot()` does both; the slot can then be moved into a nested frame. Preferred
   instances: `set.editComponentProperty(key, { preferredValues: [{ type: 'COMPONENT_SET', key }] })`.
-  `setProperties` can't set a slot: fill it in an instance with `appendChild`. `slot.clone()`
+  `setProperties` can't set a slot: fill it in an instance with `appendChild`. Component
+  properties are listed in creation order and can't be reordered through the API — create each
+  `show` boolean right before the property it shows. `slot.clone()`
   returns a plain frame. Not allowed: `GRID` layout on a slot, a slot nested inside another slot.
   An empty slot keeps a size (100 × 100 by default) and takes the parent's gap; a hidden slot
   can't be found in an instance — bind a boolean to its `visible` and turn it on first.
   Cloning a slot off an existing slotted component (e.g. `Preview`) loses slot settings like
   `layoutMode` — don't build slots that way.
+- **A node added to slot content and then hidden is deleted** (seen 18.11.2026 on the template's
+  `stage`): `visible = false` on a node appended into a slot's content (also deeper, e.g.
+  `drawn-spec` › `stage`) removes it — `getNodeByIdAsync` returns `null` and it's gone from the
+  parent. Never keep a hidden prototype inside slot content; keep it visible and delete it when
+  unused (the Measurements `caption` prototype works this way).
+- **Inserting into slot content invalidates node handles you already hold** (19.11.2026,
+  migrating the Anatomy markers): after `insertChild` into a slot's content, earlier handles to
+  its siblings' descendants throw "node does not exist". Read everything first, then mutate, and
+  re-fetch the parent by id (`getNodeByIdAsync`) after each insert. Find a child's index by `id`
+  (`children.findIndex(c => c.id === n.id)`) — `indexOf` returns `-1` there.
+- **Transparency goes on the layer, never on a variable-bound paint** (18.11.2026): an instance
+  resets a bound paint's opacity to 100%, so a master with a 12% bound fill shows solid in every
+  copy. Put the color at 100% on a child layer and set that layer's `opacity` instead — the
+  `Spec/Gap` (`tint` 12%, `Hatch` 60%), `Spec/Inset` (`tint` 35%) and `Spec/Icon size` (`tint`
+  25%) masters work this way. `get_screenshot` can lag behind such a change: check the render in
+  Figma, not only on the screenshot.
 - **Figma hard-rejects moving a subtree that itself contains `SLOT` instances into _another_
   slot's contents** — `Cannot move node. Node is not allowed SLOT node`. A documentation frame is
   already 2 slot-levels deep internally (Anatomy/Measurements each nest a `Preview` inside a `Preview`)
@@ -130,7 +148,7 @@ imported.width)`, then move **all** `imported.children` (via `findAll`, not `fin
   alpha: a transparent token on an opaque placeholder renders as a solid shape. (From: `ds-close`,
   05.11.2026 — transparent `base` background rendered as a black circle, navy icon as black.)
 - **Every skill-authored label/annotation text on the documentation page — never the component's
-  own content — binds its fill to `🔗 Alias/🔤 Text/Color/Primary` (`VariableID:137:288`), never a
+  own content — binds its fill to the Foundation variable `🔗 Alias/🔤 Text/Color/Primary`, never a
   hardcoded literal color**, even when the literal happens to match the token's resolved value
   exactly. Covers things this skill builds as chrome around the real component (Measurements card titles, Component Set sub-labels). Does not cover text that's part of the real
   component/master being documented. When in doubt which color a piece of skill-authored text
@@ -156,8 +174,17 @@ proven on a real run: confirm each point on the first build and update this sect
 
 ## Focus states
 
-- **Every focus state is built as absolutely positioned ring frames with outside strokes — never
-  as `DROP_SHADOW` effects.** Use one ring frame per CSS `box-shadow` spread, stacked in the same
-  order, with stroke weights/colors bound to the focus tokens. A Figma drop shadow is derived from
-  the layer's own alpha, so on a component with a fully transparent background a drop-shadow ring
-  renders as nothing.
+- **Every focus state uses the shared `Focus ring` component — never `DROP_SHADOW` effects.**
+  The set lives on the `Core / Utilities` page (`6284:21`, key
+  `2454d0fabf5c8fcb51b8b44de7a4fec90e9120c8`): `inverted` (`Focus/Color/Base` or `Inverted`) ×
+  `inset` (`focus-shadow` → outer 5 + white 2 outside the host; `focus-inset-shadow` → start 5 +
+  end 3 inside it), every stroke weight and color bound to the `🔗 Alias/✨ Interaction/Focus/*`
+  variables. Per focus variant: append an instance named `focus-ring` as the **last** child,
+  `layoutPositioning = 'ABSOLUTE'`, `x = y = 0`, resized to the variant, constraints `STRETCH`;
+  keep `clipsContent = false` on the variant, or the outer rings are cut off. Set the ring frames'
+  corner radii to the host radius + offset (outer +5, inner +2; inset = host radius; round hosts:
+  full) on **every** instance — the master is neutral (48 × 48, host radius 0, since 19.11.2026),
+  and a radius equal to the master's value is inherited, not kept as an override, so a later
+  master change would move it. Why: a Figma drop shadow is drawn from the layer's own fill, so on a transparent
+  background (`secondary`, `ghost`, `link`) a shadow ring renders as nothing, and its spread only
+  renders with clipping on (seen on `ds-button`, 19.11.2026).

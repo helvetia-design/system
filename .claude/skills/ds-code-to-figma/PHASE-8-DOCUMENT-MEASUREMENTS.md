@@ -52,8 +52,9 @@ marker by hand instead.
 outline, solid number bubble first, value text in the kind color — colors in `conventions/measurements.md` →
 "Labels"), and `Spec/Dimension` puts it on the outer side of its line, 4px from the tick ends
 (above a `top` line, left of a `left` line, …), so it never covers the ticks. Dashed and solid lines are the same
-1px rectangle (dashed = one-side dashed stroke), so both sit centered between the end ticks. Legacy, don't
-use for new Measurements: `Spec/Dimension` `kind=icon`, `Spec/Radius`, `Spec/Legend item`, `Spec/Callout`.
+1px rectangle (dashed = one-side dashed stroke), so both sit centered between the end ticks. The old
+`Spec/Dimension` `kind=icon`, `Spec/Radius`, `Spec/Legend item` and `Spec/Callout` were deleted
+from the Annotations page (18.11.2026, unused).
 
 After changing an annotation component, instances already placed can keep a stale layout or
 even a stale render (seen on `ds-button`: the radius pill showed a leftover rectangle of its old
@@ -75,7 +76,7 @@ layout":
 
 | Card        | Content frame | Layer names touched                                                                                                                        |
 | ----------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Drawing     | `drawn-spec`  | `title`, `stage` (`Component`, hidden `caption` + example `Spec/*` markers)                                                                |
+| Drawing     | `drawn-spec`  | `title`, `stage` (`Component`, `caption` prototype + example `Spec/*` markers, `padding-clip`)                                             |
 | Sizes table | `sizes-table` | `title`, `table` › `header` (`number`, `Property`, one cell per option), `row-<n>` (`number` › `Spec/Marker`, property, cells), `footnote` |
 | Behavior    | `behavior`    | `title`, `columns` › `stretched` (`Component`, `label`)                                                                                    |
 
@@ -98,8 +99,9 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
 
 ### 2. Drawing
 
-1. **Clear the example.** Delete every `Spec/*` marker in `stage`; keep `Component` (the template's
-   example instance), the hidden `caption` prototype and `stage` itself (no auto-layout, so
+1. **Clear the example.** Delete every `Spec/*` marker and the `padding-clip` frame (the example's
+   padding tints) in `stage`; keep `Component` (the template's
+   example instance), the `caption` prototype (the `<caption>` text under the example) and `stage` itself (no auto-layout, so
    markers sit at calculated positions; `FILL` wide, fixed height).
 2. **Main instance.** `swapComponent` the cloned `Component` to the default set's `drawnOption`
    variant in the `drawnColor` option (see `conventions/measurements.md` → "Border visibility"),
@@ -109,14 +111,18 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
 3. **Extra instances.** One per distinct `instance` value in `measurements.rows` (`focus`: the
    `focus` state; `min-content`: shortest realistic label, e.g. `OK`): clone the main instance and
    swap or set it, same `drawnColor`, side by side with 120px between them, centered under the
-   main instance. Each gets a caption under it (`Focus`, `Min content`): clone the hidden
-   `caption` prototype, make the clone visible, set its text and name it `caption-<instance>`.
+   main instance. Each gets a caption under it (`Focus`, `Min content`): clone the
+   `caption` prototype, set its text and name it `caption-<instance>`. The prototype is visible on
+   purpose: Figma deletes a node that is added to slot content and then hidden (seen 18.11.2026 —
+   the earlier hidden prototype vanished this way), so never hide it.
    Delete the prototype afterwards — also when there are no extra instances.
 4. **`stage` height.** Leave enough room around each instance for its markers and resize the
    stage's height to fit everything (only the height — its width stays `FILL`), so nothing is
    clipped.
 5. Number every shown row in `measurements.rows` order (`size → spacing → shape → type`): the Sizes table
-   reads 1, 2, 3, … top to bottom, and every number appears exactly once on the drawing.
+   reads 1, 2, 3, … top to bottom, and every number appears on the drawing. A part the instance
+   repeats (left and right padding, every gap, an icon on each side) gets the same marker and
+   number on every occurrence, so no copy looks unmeasured.
 6. Place each row's marker on its `instance`, per `conventions/measurements.md` → "Kinds and visual
    vocabulary": an instance of the `Spec/*` main component from step 0 (`createInstance()`, then
    the variant via `setProperties`) — never a drawn shape, never a detached instance. Every marker
@@ -191,18 +197,22 @@ each text node's current fonts before setting `characters`.
 - **One row per `rows` entry with `show` `drawn` or `table`**, in `rows` order: clone `row-1` for
   every row and delete the template's other rows, then rename them `row-1`, `row-2`, … Per row:
   set `Spec/Marker`'s `kind` and `Number` (the number from Drawing step 5), the property text (and its
-  layer name), and one cell per option with the token's last two path segments and px
-  (`Size/Base · 48`). Clone or delete option cells so every row has as many as the header. The
+  layer name), and one cell per option with the token's last two path segments, `=` and the px
+  (`Size/Base = 48` — not `·`, which reads as "times"). Clone or delete option cells so every row has as many as the header. The
   full token name goes into the cell's layer name, so it's visible on selection without widening
   the table.
-- **Same value for every option** → delete every option cell but the first; it is `FILL` and spans
-  the option columns (the template's `row-3`). When the token differs per option but the px
-  doesn't (`Size/SM/Gap`, `Size/Base/Gap`, …), write the shared part with `*` (`*/Gap · 8`).
-- **A row with no token** shows `no token` in place of the token (`no token · 2 + 3`).
-- `footnote`: set its text to what the type cells abbreviate (font family, `size / weight /
-line-height`) and the unit (`Values in px.`).
+- **One token for every option** (`Button/Spinner/Size`, a color-only border width, an Alias focus
+  size) → delete every option cell but the first; it is `FILL` and spans the option columns (the
+  template's `row-3`). **A token per option with the same px** (`Size/Base/Gap`, `Size/SM/Gap`, …)
+  keeps one cell per option (`Base/Gap = 8`, `SM/Gap = 8`, …) — no `*` shorthand, so a spanning
+  cell always means a single token.
+- **A row with no token** shows `no token` in place of the token (`no token = 2 + 3`).
+- `footnote`: line 1 is the unit and the spanning rule — `Values in px. A value spanning
+all columns applies to every size.` (drop the second sentence when
+  no row spans); line 2 is what the type cells abbreviate — `Text: <font family>, size / weight /
+line height.`
 - **Context-dependent** cells list each mode: `M 16 · T 16 · D 24`.
-- **Type** rows show size, then weight and line-height: `Size/Base · 16 / 700 / 1.3`.
+- **Type** rows show size, then weight and line-height: `Size/Base = 16 / 700 / 1.3`.
 - Column widths come from the content: the number column is fixed (20), the property column is
   as wide as its longest entry + 12, and the option columns share the rest equally (`FILL`). Equal
   option columns keep the values comparable; a cell only wraps when even that isn't enough —
@@ -238,7 +248,7 @@ into `<name>.figma.md`'s `measurements:` (`show`, `reason`), so a re-run produce
 ## Completion Criteria
 
 - Every `rows` entry with `show: drawn` has its number on exactly one instance of the drawn card
-  (a symmetric padding or a repeated gap may repeat the same number) and one numbered table row;
+  (a repeated part — padding on both sides, every gap, an icon on each side — repeats the same number) and one numbered table row;
   nothing with `show: skip` appears.
 - Every marker label is number bubble + value; every leader points away from the component center.
 - Marker colors and line styles follow `conventions/measurements.md`; no marker overlaps another or the
@@ -248,7 +258,7 @@ into `<name>.figma.md`'s `measurements:` (`show`, `reason`), so a re-run produce
 - Every nested `Preview` is `FILL` wide and `HUG` high; nothing is clipped.
 - Every card comes from the cloned template placeholder; none of the template's example content
   is left (example markers, rows, option cells, the `Component` placeholder instance, the hidden
-  `caption` prototype).
+  `caption` prototype — `<caption>`).
 - Measurements shows the default set's instances only, never an `…Inverted` set.
 - The section has been iterated on and confirmed with the user in Figma.
 

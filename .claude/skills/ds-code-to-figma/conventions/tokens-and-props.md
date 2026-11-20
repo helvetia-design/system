@@ -5,15 +5,36 @@ cross-phase rules.
 
 ## Resolving tokens
 
-- **Resolve a CSS var to its Figma variable id locally, from `Base.tokens.json`, not by
-  enumerating Figma's variable collections.** Every token already pushed to Figma carries its
-  real variable id in `$extensions["com.figma.variableId"]` — `scripts/figma-sync/lib/css-token-lookup.mjs`
-  turns that into a direct `--ds-*` → id lookup with zero Figma API calls (see
-  `PHASE-1-ANALYZE.md` step 5). Reserve a live Figma search (`search_design_system`,
-  `get_variable_defs`) for the one case this can't cover: finding an existing token for a value
-  with no CSS-var binding at all (a hardcoded literal, or an inherited attribute) — and even then,
-  remember those tools only search published libraries, while the real tokens are local to the
-  component-library file.
+- **Resolve a CSS var to its token name locally, from `Base.tokens.json`.**
+  `scripts/figma-sync/lib/css-token-lookup.mjs` turns a `--ds-*` var into the token `path`; the
+  path joined with `/` is the Figma variable name in Foundation (`PHASE-1-ANALYZE.md` step 5).
+  The `com.figma.variableId` values in `Base.tokens.json` belong to the component file's old
+  local token copy — don't bind by them.
+
+## Binding Foundation variables
+
+Tokens live in the **Foundation** library (`figma.config.json` → `foundationLibraryFileKey`,
+collections in `foundationVariableCollections`); components bind to them, never to a local
+variable collection of the component file. Checked 17.11.2026:
+
+- **From the component file, Foundation variables can't be listed or searched** —
+  `teamLibrary.getVariablesInLibraryCollectionAsync` returns 0 and `search_design_system` finds
+  none, although the variables are published and designers see them in the picker. **Importing
+  by key works:** `figma.variables.importVariableByKeyAsync(key)` returns the library variable
+  (`remote: true`, id `VariableID:<key>/<id>`), which binds like any variable.
+- **So read the name → key map from the Foundation file itself**, once per run, in a read-only
+  `use_figma` call on `foundationLibraryFileKey`:
+  `(await figma.variables.getLocalVariablesAsync()).map(v => [v.name, v.key])`. Keep only the
+  names the component needs. Phase 1 uses the same read to check every name exists; Phase 3
+  imports each by key and binds it.
+- Names follow the token path: `🔗 Alias/🔤 Text/Color/Primary`; a responsive token has one
+  variable per breakpoint (`<path>/Mobile`, `/Tablet`, `/Desktop`) and, when the token sync
+  created one, a routing variable `<path>/Device` in `Design Responsive Tokens`.
+- **Never create a variable** in Foundation or in the component file. A missing token or routing
+  variable is a hard stop: list it and ask the user to add it through the repo and the token
+  sync (stop and list, user decision 17.11.2026).
+- A remote alias resolves with `variable.resolveForConsumer(node)`; use it to read a value
+  (text `lineHeight` / `textDecoration`, paint colors).
 - **No visual attribute is ever assumed — every value on every Figma node needs an explicit,
   resolved design token, even if the component's own SCSS never sets that attribute at all.** An
   inherited attribute (e.g. `color`/`font-size` on a text part that relies on Shadow DOM

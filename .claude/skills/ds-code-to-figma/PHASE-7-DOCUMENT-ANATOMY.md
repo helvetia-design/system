@@ -35,11 +35,11 @@ Build this right after "Copy me" is confirmed, before
 
 **Edit the template's worked example in place — clone, never build.** The cloned frame's
 `Section` whose `Title` is `kind=anatomy` already holds it: `Section` (`Flat`) › one nested
-`Preview` (`Default`) › slot › `diagram-area` (component instance + one `marker-<letter>` group per
-part, each with `leader`, `dot`, `letter`) and `legend` (one `Anatomy/Legend item` instance per part). Sizing, layer
+`Preview` (`Default`) › slot › `diagram-area` (component instance + one `marker-<letter>`
+`Anatomy/Marker` instance per part) and `legend` (one `Anatomy/Legend item` instance per part). Sizing, layer
 names, fonts and colors come from that clone; this skill writes no fill, stroke, font or spacing
-value here. **Hard stop** if the `kind=anatomy` placeholder, `diagram-area`, `marker-A`, `legend` or
-the `Anatomy/Legend item` component is missing.
+value here. **Hard stop** if the `kind=anatomy` placeholder, `diagram-area`, `marker-A`, `legend`,
+or the `Anatomy/Marker` or `Anatomy/Legend item` component is missing.
 
 1. **Component — whatever shows the parts best.** Every part in `anatomy:` must be visible on an
    instance. Start from the default variant (`swapComponent` on the template instance); turn on
@@ -49,14 +49,20 @@ the `Anatomy/Legend item` component is missing.
    side with 48px between them, together centred horizontally in `diagram-area`, all on the
    cloned `y`. Name each instance after what it shows (`Button`, `Button (loading)`) and say which
    instance carries which markers when you ask for confirmation.
-2. **Markers — one per `anatomy:` entry.** Clone `marker-A` for each part, delete the unused ones,
-   rename each to `marker-<letter>` and keep the groups in letter order. Set each `letter` text.
+2. **Markers — one `Anatomy/Marker` instance per `anatomy:` entry.** The component lives on
+   `🧰 Annotations` (find it by name; `6299:425` is a hint only): a dot with the letter and a
+   leader that stretches with the instance height. Clone `marker-A` for each part and delete the
+   unused ones. Never detach or restyle an instance, and never draw a marker by hand. **Letters follow the drawing, not the code** (user decision 19.11.2026): once every dot
+   is placed, letter the markers A, B, C, … from left to right by dot position, so the diagram
+   reads in alphabetical order. Rename each instance `marker-<letter>`, keep them in letter
+   order, set each `Letter` text property with `setProperties` (look the key up by prefix), and write the final letters back to `<name>.figma.md`'s
+   `anatomy:` (in letter order). A sub-letter (`B1`) keeps its parent's letter.
    - Dots at `y = 16`; the component keeps its cloned `y`.
-   - Each dot is centred horizontally on the part it labels; move the whole `marker-<letter>` group,
-     never its children one by one. A part that encloses others (e.g. the container) gets its
+   - Each dot is centred horizontally on the part it labels (instance `x` = part centre − 12). A part that encloses others (e.g. the container) gets its
      marker on the straight part of its top edge (between the corner radii), as far from the other
      markers as possible.
-   - Each `leader` runs from the bottom of its dot to **4px above the part's visible top**
+   - Each leader runs from the bottom of its dot to **4px above the part's visible top**: set the
+     instance height (`resize(24, h)`) so its bottom lands there
      (`absoluteRenderBounds` — for text that's the glyphs, not the text box). Same 4px for every
      part. A part with no fill or stroke of its own (e.g. a bare wrapper frame) has no visible
      edge — its `absoluteRenderBounds` is just the frame box. Measure the topmost visible
@@ -84,8 +90,10 @@ Phase 3 deleted it) and Measurements in the cloned frame, so nothing is appended
 
 ## Completion Criteria
 
-- `diagram-area` holds the fewest instances of the real component that show every part, and exactly one `marker-<letter>` per
+- `diagram-area` holds the fewest instances of the real component that show every part, and exactly one `marker-<letter>` `Anatomy/Marker` instance per
   `anatomy:` entry, in letter order, positioned per the rules above.
+- Letters run A, B, C, … from left to right by dot position, and `anatomy:` in `<name>.figma.md`
+  uses the same letters.
 - `legend` holds exactly one `Anatomy/Legend item` instance per part, in letter order, with only
   its text properties set.
 - The section has been iterated on and confirmed with the user in Figma (unless the placeholder was deleted).

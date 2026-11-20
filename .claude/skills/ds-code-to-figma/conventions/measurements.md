@@ -115,9 +115,9 @@ the end of their line — there the line is the connection.
 | hit area  | warning-6 `#C97612`                        | warning-1 `#FFF9E8` | 3.3:1 (see below)  |
 
 Warning-6 stays below AA (4.5:1) on purpose (user decision, 17.11.2026): the hit-area outline has
-no value text today, only the legacy `Spec/Dimension` `kind=icon` uses it with text. Spacing
-overlays keep their opacity on the bound paint (padding tint 35%, gap hatch 60% / 12%), the icon
-overlay its 25%. Variable names are the palette names in the table (`Success/5`, `Success/1`, …,
+no value text today. Spacing
+overlays carry their opacity on the layer, not on the bound paint (padding `tint` 35%, gap `tint`
+12% and `Hatch` 60%), the icon overlay's `tint` 25% — see `build-mechanics.md`. Variable names are the palette names in the table (`Success/5`, `Success/1`, …,
 `Warning/6`, `Warning/1`); both Design Tokens modes (Base, OrangeVacations) have the same values.
 
 **Gaps are measured from the tick ends**, not from the line: the end ticks stick out 3px on both
@@ -140,7 +140,7 @@ Callouts stay the exception, never the default: a callout adds a line that measu
 it should also signal "this dimension is too small for its own pill".
 
 **Units**: drawing pills carry the unit (`24px`) — a pill is read on its own. Table cells don't
-(`Base/PaddingX · 24`); the footnote says `Values in px.` once.
+(`Base/PaddingX = 24`); the footnote says `Values in px` once.
 
 **Fills**: only spacing gets a fill (padding tint, gap hatch) and an icon overlay its light box.
 Shape markers stay outlines — the radius circle gets no fill, because half of it lies outside the

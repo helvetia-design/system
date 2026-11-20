@@ -35,6 +35,12 @@ batch and grouping sign-off happen once for the whole family; Phases 6–8 run f
 - 🛑 **Unresolvable CSS-var token** (step 5): any value bound to `var(--ds-...)` with no matching
   Figma variable — ask the user to pick an existing token or explicitly accept a one-off
   hardcode. Never guess, never invent a new token.
+- 🛑 **Token not in Foundation** (step 5): the repo has the token, but the Foundation library has no
+  variable with that name — not synced yet. List the names and ask the user to run the token sync.
+- 🛑 **Missing Device routing variable** (step 5a): a responsive binding whose `<path>/Device`
+  variable doesn't exist in Foundation's `Design Responsive Tokens` — **stop and list** (name and
+  the Mobile / Tablet / Desktop variables it should point to) for the token pipeline. Never
+  create it in Foundation or in the component file.
 - 🛑 **Unresolvable attribute with no CSS-var binding at all** (step 5): a hardcoded literal or an
   inherited attribute the component's own code never sets — same hard stop as above, no exemption
   for "the code doesn't mention it."
@@ -125,6 +131,11 @@ batch and grouping sign-off happen once for the whole family; Phases 6–8 run f
 - 🟡 **Iteration before moving on**: confirm Measurements with the user before finishing the skill.
 
 ## Cross-cutting
+
+- 🛑 **Foundation not usable**: the read of the Foundation file fails, or importing a variable by
+  key into the component file fails (library not published or not added to the file) — stop and
+  ask the user to publish Foundation and add it to the component file. An empty library listing
+  from the component file alone is not a stop (known Figma quirk, `conventions/tokens-and-props.md`).
 
 - 🟡 **`figma.config.json` placeholder file key**: if `componentLibraryFileKey` is still
   `REPLACE_WITH_FIGMA_FILE_KEY`, stop before doing anything else and ask for the real key

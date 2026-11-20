@@ -19,7 +19,7 @@ import { ICON_COLORS, ICON_SIZES, type IconColor, type IconSize } from './icon.i
 /**
  * Icon displays SVG icons with customizable color, size, rotation, and optional tile background.
  *
- * @part icon - The SVG icon element wrapper.
+ * @part inner - The SVG icon element wrapper.
  */
 @Component({
   tag: 'ds-icon',
