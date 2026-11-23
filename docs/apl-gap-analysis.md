@@ -26,7 +26,7 @@ demo page. Those are scope decisions, not oversights.
 | 7   | Progress Spinner/Spinner | pending                  |
 | 8   | Section                  | pending                  |
 | 9   | Select Box               | pending                  |
-| 10  | Slider                   | pending                  |
+| 10  | Slider                   | [below](#10-slider)      |
 | 11  | Snackbar                 | pending                  |
 | 12  | Teaser Button            | pending                  |
 
@@ -229,3 +229,108 @@ hold.
 `ux-ng-material-common/.../ux-ng-person-search/ux-ng-person-search.component.html` (icons, no-results) ·
 `ux-ng-material-library/.../pipe/highlight.pipe.ts` ·
 `demo-ux-ng-material-theme/chips/demo-code/chips-autocomplete-demo-code.component.{ts,html}`
+
+---
+
+## 10. Slider
+
+**Recommendation: keep `ds-slider` and add four settings.** Unlike Autocomplete, both sides exist and do
+the same job, so this is a short list of missing options rather than a decision about a new component.
+Everything missing is already supported by the library `ds-slider` is built on, so these are settings
+and styling, not new machinery.
+
+This is also the counter-example to the Autocomplete discussion, and worth putting next to it: here we
+did stay on a third-party library (noUiSlider `15.8.1`), the APL stayed on Material, and the result is
+the two implementations differ by four cosmetic options. The library question is not the deciding
+factor — whether the component matches the platform is.
+
+APL page: [/theme-demo/slider](https://www.helvetia.com/corp/app-patternlibrary/theme-demo/slider) ·
+Used by: DiBe · Confluence estimate: 0.5
+
+### Gaps
+
+| #   | What's missing                       | Severity     | Note                                                                                              |
+| --- | ------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------- |
+| 1   | Tick marks along the track           | `Gap`        | On by default in the APL demo. noUiSlider calls them "pips" and already supports them.            |
+| 2   | Switch the value bubble on or off    | `Gap`        | APL can pin the bubble open or hide it. DS always shows it, but only while dragging or focused.   |
+| 3   | Labels at each end of the track      | `Gap`        | The APL demo prints min and max beside the track by hand. Not a Material feature either.          |
+| 4   | Hide the filled part of the track    | `Gap`        | APL ships a helper class for this. DS always fills from the start to the handle.                  |
+| 5   | A fixed width                        | `Partial`    | APL sets a pixel or percentage width inline. DS fills its container, which is usually better.     |
+| 6   | Show something other than the number | `Gap`        | Apps only. The one real APL slider holds a list position and displays a Swiss franc amount.       |
+| 7   | Two handles for a range              | `Gap`        | Material and noUiSlider both support it. The APL never uses it. Scope question.                   |
+| 8   | Label, hint, error, optional marker  | `Have it`    | DS is **ahead**: a Material slider cannot sit in a form field, so the APL demo fakes the label.   |
+| 9   | Disabled state                       | `Have it`    | Both have it, but see gap 15 for how the APL draws it.                                            |
+| 10  | Minimum, maximum and step size       | `Have it`    | Including changing the step size at runtime, which the one real APL slider needs.                 |
+| 11  | Keyboard operation                   | `Have it`    | Both support arrow keys.                                                                          |
+| 12  | Form submission, reset, debounce     | `Have it`    | DS only. No APL equivalent.                                                                       |
+| 13  | Brand colors on the filled track     | `Have it`    | DS only. Four brand colors. No APL equivalent.                                                    |
+| 14  | Visible focus indicator              | `Don't copy` | The APL switches the focus ring off. Keyboard users cannot see where they are. Fails WCAG 2.2 AA. |
+| 15  | Disabled drawn at 20% opacity        | `Don't copy` | Far below the contrast minimum. DS uses proper disabled tokens.                                   |
+| 16  | Accessible name on the demo slider   | `Don't copy` | The demo points the name at an element that does not exist, so the slider is unnamed.             |
+| 17  | Tick marks forced to white           | `Don't copy` | White at full opacity, so they vanish on the white card they are shown on.                        |
+
+### One bug found on our side
+
+`ds-slider` always tells screen readers that its handle is named by the field label and described by the
+hint, but those two elements are only rendered when a `label` or `description` is actually set. A
+`<ds-slider>` with no label therefore has a handle pointing at nothing, which means **no name at all**.
+Putting `aria-label` on the element does not help either: it lands on the wrapper, not on the handle.
+
+This matters beyond the APL comparison, because naming the handle with `aria-label` is exactly what the
+one real APL slider does. It is a small fix and independent of any design decision below.
+
+### Open questions for design
+
+1. Tick marks: on by default, or opt-in? The APL demo page has them on, its basic example has them off.
+2. Is the value bubble always visible, or only while the user is dragging or has focus? DS chose the
+   second, the APL demo shows the first.
+3. Are the min and max end labels part of the component, or left to the page?
+4. Is a two-handle range slider in scope at all? Nothing in the APL uses one today.
+5. Does the slider need to display something other than its own number — a currency amount, or a
+   position in a list? This is the only item that changes the component's shape rather than adding an
+   option.
+
+### Worth knowing
+
+- **The APL has no slider component of its own**, same as Autocomplete — it is plain Material. But
+  unlike Autocomplete the theming here is real: one stylesheet and five brand variants, not empty
+  files.
+- **There is exactly one real slider in the whole APL**, a premium calculator in the CMS library. It
+  needs a step size that changes at runtime, a name set via `aria-label`, and a formatted value
+  displayed next to the slider rather than inside it. It is also the source of gaps 6 and 16.
+- **Gaps 1 to 4 are all settings the underlying library already has.** That is why the 0.5 estimate
+  looks right, provided range sliders and value formatting stay out of scope.
+- **DS is the more complete component here.** It is form-associated, resets with the form, debounces,
+  emits focus/blur/click, renders on the server, and derives its invalid state from Angular form
+  errors. None of that exists on the APL side.
+
+### Proposed Confluence row
+
+| Column            | Value                                                                                              |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| **Status**        | Partially available (unchanged)                                                                    |
+| **APL Component** | None — plain Angular Material with APL styling on top                                              |
+| **DS Component**  | `ds-slider`                                                                                        |
+| **Category**      | Form                                                                                               |
+| **Description**   | Select a value from a range. `ds-slider` covers it; add tick marks, bubble control and end labels. |
+| **Effort Figma**  | 0.5 — tick marks, bubble, end labels                                                               |
+| **Effort Code**   | 0.5 for gaps 1 to 4. Separate estimate needed if questions 4 or 5 are answered yes.                |
+
+### Sources
+
+**Design System** — `forms/slider/slider.tsx` (`min:173`, `max:180`, `step:198`, `brandColor:147`,
+`debounce:210`, `required:247`, `value:95`) · `forms/slider/slider.picker.ts`
+(`connect: 'lower':101`, `tooltips: true:103`, `connectLabelToHandle:127-132`) ·
+`forms/slider/slider.host.scss` (`.noUi-tooltip:165`, shown only on hover/active/focus `:188-191`) ·
+`forms/input/field.util.tsx` (label rendered only when set `:55`, description `:81`) ·
+[ADR-0007](adr/0007-ds-slider-nouislider.md) · [ADR-0010](adr/0010-ds-slider-change-commit.md)
+
+**APL** (`osui-ux-ng-material`) —
+`demo-ux-ng-material-theme/slider/slider-demo.component.html` (demo page, helper class documented) ·
+`demo-ux-ng-material-theme/slider/demo-code/slider-configurable-demo-code.component.{html,ts}`
+(tick marks, bubble, min/max labels, width, broken name) ·
+`demo-ux-ng-material-theme/slider/demo-code/slider-default-demo-code.component.ts` ·
+`ux-ng-material-theme/overwrites/slider/slider.scss` (focus ring removed, 20% disabled, white ticks) ·
+`ux-ng-material-theme/overwrites/slider/theme/*.scss` (5 brand variants) ·
+`ux-ng-material-cms/.../interactive-graphic/ux-ng-interactive-graphic-area-chart.component.html`
+(the only real consumer)
