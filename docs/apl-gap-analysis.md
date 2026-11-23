@@ -13,6 +13,9 @@ database. This document lists, per component, what is missing and what we recomm
 Notes say **"apps only"** where a feature is used in real applications but is not shown on the APL
 demo page. Those are scope decisions, not oversights.
 
+**Every component below starts with a TL;DR.** Read those four lines first; the rest is the evidence
+behind them.
+
 ## Progress
 
 | #   | Component                | Analysed                 |
@@ -33,6 +36,12 @@ demo page. Those are scope decisions, not oversights.
 ---
 
 ## 1. Autocomplete
+
+**TL;DR — build a new `ds-autocomplete`.** The Design System has nothing like it, and neither
+`ds-input` nor `ds-select` is the right home for it. A working POC proved it needs no new design
+tokens, but it is the third hand-written dropdown list in the Design System, so a shared list piece
+should be extracted underneath. Remote search, which person and address lookup rely on, is a second
+phase with its own design input.
 
 **Recommendation: build a new `ds-autocomplete` component.** The Design System has no equivalent
 today, and neither existing component is the right home for it: a select has a closed set of values
@@ -234,6 +243,10 @@ hold.
 
 ## 2. Border
 
+**TL;DR — nothing to build.** The APL border page is five rounded-corner helper classes, and the
+Design System has a matching class for every one of them plus more. The status should move from
+"Partially available" to "Available".
+
 **Recommendation: close this one — it is already covered.** The Confluence row says it itself: not a
 component, use design tokens. The APL border page documents five rounded-corner helper classes, and
 the Design System has an equal or better class for every one of them. Nothing to build, in code or in
@@ -265,7 +278,8 @@ Used by: All · Confluence estimate: none
 
 ### Worth knowing
 
-- **The five APL helper classes are used nowhere in the APL library itself** — only on the demo page.
+- **No APL component uses the five helper classes itself.** They are there for applications to use,
+  and applications live outside the APL repository, so we cannot say how often they are used.
 - **The APL border page is about corners only.** Border lines are not documented there at all; the
   border color classes come out of each brand's color palette file. DS covers both in one place.
 - **DS generates these classes from the tokens**, so a token change updates every class. The APL
@@ -299,6 +313,11 @@ classes) · `ux-ng-material-theme/overwrites/border/theme/*.scss` (5 brands) ·
 ---
 
 ## 8. Section
+
+**TL;DR — no new component needed.** An APL section is a width-limited box with an optional grey
+background and an optional title, and `.ds-container` plus a background class plus `ds-heading`
+already cover all of it. The one decision: does this become a documented page pattern (our
+recommendation) or a real `ds-section` component?
 
 **Recommendation: no new component — use `.ds-container` with a background class.** An APL section is
 a width-constrained box with an optional grey background and an optional title, and the Design System
@@ -339,8 +358,9 @@ Used by: unknown · Confluence estimate: 0.25
   the screen size, which the APL does not do.
 - **The 0.25 estimate looks right** if the answer to question 1 is "a documented pattern". It is low if
   a real component with a title slot and padding rules is wanted.
-- **Nothing in the APL library uses the section component**, same as Border — it appears only on its
-  demo page.
+- **We cannot tell how widely it is used.** Consumers live outside the APL repository, no other APL
+  component builds on it, and the Confluence "Used by" column is empty. Someone with that knowledge
+  should fill it in before the status changes.
 
 ### Proposed Confluence row
 
@@ -371,6 +391,11 @@ Used by: unknown · Confluence estimate: 0.25
 ---
 
 ## 10. Slider
+
+**TL;DR — keep `ds-slider`, add four settings.** Tick marks, a switch for the value bubble, labels at
+both ends of the track, and hiding the filled part. All four are already supported by the library
+`ds-slider` is built on, so this is settings and styling rather than new machinery. Two scope
+questions are open: two-handle range sliders, and showing a formatted value instead of the number.
 
 **Recommendation: keep `ds-slider` and add four settings.** Unlike Autocomplete, both sides exist and do
 the same job, so this is a short list of missing options rather than a decision about a new component.
