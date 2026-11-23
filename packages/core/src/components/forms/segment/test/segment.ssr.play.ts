@@ -6,11 +6,7 @@ const baseline = visualBaseline(TAG)
 const ssrBaseline = visualBaseline(TAG, `${TAG}.ssr.play.ts`)
 // The selected item's indicator background is drawn in the browser.
 const SSR_STATIC: readonly string[] = ['invalid', 'invalid-slot']
-const GLOBAL_STYLE_MISSING =
-  'SSR: global stylesheet not adopted into the shadow root after hydration, native input keeps its UA margin (#326)'
 const FIXME: Record<string, string> = {
-  'basic': GLOBAL_STYLE_MISSING,
-  'icon': GLOBAL_STYLE_MISSING,
   'long-content': 'SSR: overflowing items switch to vertical layout only after hydration, box grows 57px (#327)',
 }
 const PAGE_URL = `/components/forms/${TAG}/test/${TAG}.visual.html`
