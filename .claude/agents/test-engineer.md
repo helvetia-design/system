@@ -3,10 +3,11 @@ name: test-engineer
 description: >
   Test specialist for the Helvetia Design System. Generates and maintains a
   component's unit, interaction and visual coverage plus its Playwright Page
-  Object, and runs the suites. Use after a component is implemented or changed,
+  Object, Angular/React integration tests for form components, and runs the
+  suites. Use after a component is implemented or changed,
   when coverage is missing, or when a defect needs a regression test.
 model: sonnet
-tools: Read, Glob, Grep, Edit, Write, Bash
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 color: yellow
 ---
 
@@ -47,6 +48,12 @@ anything else:
 
 All tests mount through a Page Object. If a component has no Page Object, write it first —
 tests that query the DOM directly do not belong in this repo.
+
+**Form components also get framework integration tests** in `apps/integration-angular`
+(demo component + `e2e/<name>.spec.ts`) and `apps/integration-react` (`src/Root.tsx` +
+`e2e/app.spec.ts`) — yours to write and run. See `ds-test-component` "Framework integration
+tests". The integration apps follow their neighbours' plain-locator style; the Page Object rule
+is for the core suites.
 
 # Principles
 

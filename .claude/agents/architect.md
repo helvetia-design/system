@@ -6,7 +6,7 @@ description: >
   component, reworking an existing one, or introducing breaking changes.
   Plans only — writes no production code.
 model: opus
-tools: Read, Glob, Grep, WebFetch, Write
+tools: Read, Glob, Grep, WebFetch, Write, Skill
 skills:
   - ds-plan-component
   - ds-plan-figma-component

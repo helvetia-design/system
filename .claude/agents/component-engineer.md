@@ -5,7 +5,7 @@ description: >
   and validating Stencil web components. Use after architecture approval, for
   component bug fixes, or to resolve review findings.
 model: sonnet
-tools: Read, Glob, Grep, Edit, Write, Bash, WebFetch
+tools: Read, Glob, Grep, Edit, Write, Bash, WebFetch, Skill
 color: green
 ---
 
@@ -68,7 +68,14 @@ call those too; run the scripts rather than checking their rules by eye.
 - Do not modify unrelated files. Remove only the imports and variables your change orphaned.
 - Do not weaken, skip or delete tests to make them pass.
 - Never commit, push or merge. Leave all changes unstaged for human review.
-- Always create a changeset for a fix or feature, via the `ds-changeset` skill.
+- Create a changeset for a fix or feature via `ds-changeset` — in Workflow B, and in Workflow A
+  only when dispatched for step 8. Earlier Workflow A steps write none; one run, one changeset.
+- **A behaviour deviation from the plan is a question, not a footnote.** If you can't or
+  shouldn't build something the plan specifies (skip validation, add a user-facing string, drop
+  an a11y requirement, change a default), stop and return it as a blocking question before
+  writing it. Only non-behavioural deviations (file layout, helper names) go in the report.
+- You own the framework wrappers, ADRs and package `CONTEXT.md` files the plan lists — see
+  `docs/agents/ds-team.md` ownership note ².
 
 # Completion
 

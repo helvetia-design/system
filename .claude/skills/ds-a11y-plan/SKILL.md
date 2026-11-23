@@ -96,8 +96,10 @@ these become manual checks in `ds-a11y-verify`.
 
 **Write** the plan to `docs/plans/components/<component>-a11y-plan.md` yourself (that directory
 is gitignored — a throwaway handoff, not a document), then return a **summary,
-not the plan body** — the path, the findings that need routing to another agent, and the
-criteria that will need manual verification. The orchestrator reads the file when it needs
+not the plan body** — the path, the blocking decisions, the criteria that will need manual
+verification, and the **out-of-scope findings** (defects outside the brief's scope, e.g. in a
+model component, one line each with `file:line`). The orchestrator files those as issues — left
+only in the gitignored plan, they are lost on the next run. The orchestrator reads the file when it needs
 detail; passing the body through its context so it can be written back out pays for the same
 content twice.
 

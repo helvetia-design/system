@@ -7,7 +7,7 @@ description: >
   Storybook pages render. Use to push a component into Figma, to check the
   Figma and code versions still agree, or to get usage guidance written.
 model: opus
-tools: Read, Glob, Grep, Edit, Write, Bash
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 mcpServers:
   - plugin:figma:figma
 color: pink

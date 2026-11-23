@@ -27,9 +27,17 @@ The orchestrator routes. It does not investigate.
 - **Dispatch the plan's whole file list, not just the obvious part.** Per-component `CONTEXT.md`,
   the framework barrels, the ADR and the changeset are named in the plan from the start; leaving
   them unassigned turns them into an extra agent run after the tests are already green.
+- **Out-of-scope findings become issues at the plan gate — never only a plan line.** Plans are
+  gitignored and overwritten by the next run, so a defect that lives only there is lost. Every
+  planner returns an "Out-of-scope findings" list next to its blocking decisions; the orchestrator
+  drafts one GitHub issue per finding (label `needs-triage`, see `issue-tracker.md`), shows the
+  drafts at the gate, files them on the human's OK with `gh issue create`, and links the numbers
+  in the brief. On `ds-country-select` eight phone-input a11y defects and two hardcoded values
+  surfaced this way and had nowhere to go.
 - **A known-broken environment is a documented fact, not a discovery.** Before an agent
-  investigates a failing suite, check the package's `CONTEXT.md` — the SSR hydration failure,
-  missing visual baselines for a new component, and `newSpecPage` being unusable are all recorded
+  investigates a failing suite, check `packages/playwright/CONTEXT.md` (SSR hydration failure,
+  missing visual baselines for a new component) and `packages/core/CONTEXT.md` "Testing
+  Requirements" (no component-level unit specs — Vitest covers pure helpers only). All are recorded
   there. Re-proving one costs a full Playwright run and changes nothing.
 
 Measured cost of ignoring this, for one component (`ds-country-select`, Workflow A): **~1.05M
@@ -40,17 +48,48 @@ environment facts was ~80k more, and is now recorded in the package `CONTEXT.md`
 
 ## The agents
 
-| Agent                       | Model  | Writes                                                                                         | Read-only |
-| --------------------------- | ------ | ---------------------------------------------------------------------------------------------- | :-------: |
-| 🏛️ `architect`              | opus   | `docs/plans/components/**` — plans only, never production code                                 |           |
-| 🧩 `component-engineer`     | sonnet | `packages/core/src/components/**`, `index.ts`, `test/*.visual.html`, `test/*.style.html`       |           |
-| 🧪 `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts` |           |
-| ♿️ `a11y-expert`            | opus   | `.a11y.play.ts` (axe + keyboard/focus/ARIA state), a11y reports                                |           |
-| 🧬 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                            |           |
-| 📖 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                        |           |
-| 🎨 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                |           |
+| Agent                       | Model  | Writes                                                                                                                              | Read-only |
+| --------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- | :-------: |
+| 🏛️ `architect`              | opus   | `docs/plans/components/**` — plans only, never production code                                                                      |           |
+| 🧩 `component-engineer`     | sonnet | `packages/core/src/components/**`, `test/*.visual.html`, `test/*.style.html`, framework wrappers², ADRs, package `CONTEXT.md` files |           |
+| 🧪 `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts`, framework integration tests³        |           |
+| ♿️ `a11y-expert`            | opus   | `.a11y.play.ts` (axe + keyboard/focus/ARIA state), a11y reports                                                                     |           |
+| 🧬 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                                                                 |           |
+| 📖 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                                                             |           |
+| 🎨 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                                                     |           |
 
 Plus 🐙 the **orchestrator** — the main session, which dispatches but owns no files.
+
+² **Framework wrappers and the other cross-package files** are the component-engineer's, because
+they change in lockstep with the component's public API:
+
+- **Every form component gets an Angular wrapper with a value accessor** —
+  `packages/angular/src/forms/ds-<name>.ts`, same shape as the others: `withValueAccessor` mixin
+  (`value-accessor.ts`), `NG_VALUE_ACCESSOR` provider, `host: { 'data-ds-form-control': '' }`,
+  generated `Ds<Name>Inputs`/`Outputs`. Copy `ds-select.ts` (scalar value) or `ds-input.ts`
+  (text) and export it from `packages/angular/src/index.ts`. Without it `formControlName` and
+  `ngModel` silently do nothing — the proxy alone is not a form control.
+- `packages/react/src/wrappers.ts` and `wrappers.server.ts`
+- `docs/adr/**`, `packages/*/CONTEXT.md` and the component's own `CONTEXT.md`
+
+³ **Framework integration tests** are the test-engineer's — for **every form component**, and for
+any component whose events or wrappers change. They prove the wrapper works in a real app, which
+no core suite can:
+
+| App                        | Writes                                                                                     | Proves                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `apps/integration-angular` | `src/app/<name>-demo/**`, its entry in `src/app/app.ts` + `app.html`, `e2e/<name>.spec.ts` | `ngModel` and reactive form: initial value, user change, `setValue`, disabled, touched + invalid |
+| `apps/integration-react`   | the component's block in `src/Root.tsx`, its tests in `e2e/app.spec.ts`                    | renders without console errors, event updates React state                                        |
+
+Model: `select-demo` + `e2e/select.spec.ts`, and the `ds-phone-input` test in the React
+`app.spec.ts`. Run after `pnpm app:angular` / `pnpm app:react`'s build step has built core +
+the framework package: `pnpm --filter integration-angular play:run e2e/<name>.spec.ts`, and
+`pnpm --filter integration-react build && pnpm --filter integration-react play:run`.
+
+`packages/core/src/index.ts` exports `Components` plus a few shared interfaces — a new component
+needs no entry there unless the plan names a public interface type. Generated files
+(`components.d.ts`, Angular `generated/*`, `apps/storybook/.storybook/story-paths.json` from
+`scripts/build-docs.mjs`) are never hand-edited and never assigned.
 
 Each agent's symbol is its label everywhere in a run: the orchestrator prefixes a dispatch and
 a status line with it, and an agent prefixes its own completion report. One glance says who is
@@ -130,22 +169,22 @@ checks can be shared with any agent whose tools can execute it.
 Agents hand over **files, never prose**. This keeps the orchestrator's context small and makes
 a run resumable.
 
-| Artifact                                          | Written by         | Read by                                 |
-| ------------------------------------------------- | ------------------ | --------------------------------------- |
-| `docs/plans/components/<component>-brief.md`      | orchestrator       | architect, a11y-expert                  |
-| `docs/plans/components/<component>-plan.md`       | architect¹         | component-engineer, test-engineer, docs |
-| `docs/plans/components/<component>-a11y-plan.md`  | a11y-expert¹       | component-engineer, test-engineer       |
-| `docs/plans/components/<component>-figma-plan.md` | architect¹         | ux-designer                             |
-| `test/<name>.visual.html`                         | component-engineer | **human review**, test-engineer         |
-| `<family>.token-check.md`                         | token-engineer     | token-engineer, architect               |
-| a11y audit findings                               | a11y-expert        | component-engineer                      |
-| `<name>.figma.md`                                 | ux-designer        | ux-designer, next family that nests it  |
-| `<name>.figma-validation.md`                      | ux-designer        | ux-designer, component-engineer         |
-| anatomy + do's/don'ts copy                        | ux-designer        | documentation-engineer                  |
+| Artifact                                          | Written by         | Read by                                                      |
+| ------------------------------------------------- | ------------------ | ------------------------------------------------------------ |
+| `docs/plans/components/<component>-brief.md`      | orchestrator       | every agent, first — `## Gate decisions` overrides the plans |
+| `docs/plans/components/<component>-plan.md`       | architect¹         | component-engineer, test-engineer, docs                      |
+| `docs/plans/components/<component>-a11y-plan.md`  | a11y-expert¹       | component-engineer, test-engineer                            |
+| `docs/plans/components/<component>-figma-plan.md` | architect¹         | ux-designer                                                  |
+| `test/<name>.visual.html`                         | component-engineer | **human review**, test-engineer                              |
+| `<family>.token-check.md`                         | token-engineer     | token-engineer, architect                                    |
+| a11y audit findings                               | a11y-expert        | component-engineer                                           |
+| `<name>.figma.md`                                 | ux-designer        | ux-designer, next family that nests it                       |
+| `<name>.figma-validation.md`                      | ux-designer        | ux-designer, component-engineer                              |
+| anatomy + do's/don'ts copy                        | ux-designer        | documentation-engineer                                       |
 
 ¹ Each planner **writes its own plan file** — the architect's `Write` is scoped to
 `docs/plans/components/**` and nothing else — and returns only a summary: the path, the blocking
-decisions needing human approval, and any token gaps. They write different files, so they stay
+decisions needing human approval, any token gaps, and the out-of-scope findings to file as issues. They write different files, so they stay
 safe to run in parallel. Returning the plan body so the orchestrator can write it back out pays
 for the same content twice, once as input and once as output.
 
@@ -188,6 +227,30 @@ Work the design tree to an empty frontier: scope and scale, the real data set, w
 actually variants, what is explicitly out. Facts are the orchestrator's job — dispatch `Explore`
 for anything in the repo rather than asking the human. Decisions are the human's.
 
+**Always-ask checklist.** These recur on every component and otherwise come back as plan-gate
+decisions or as silent engineer deviations — settle them in step 0:
+
+| Applies to         | Question                                                                     |
+| ------------------ | ---------------------------------------------------------------------------- |
+| every component    | Which shipped component is the model? What's the delta from it?              |
+| every component    | New user-facing strings (incl. visually hidden labels, live-region text)?    |
+| form controls      | Value type and `dsChange` detail shape (plain value like `ds-select`?)       |
+| form controls      | Unknown / disallowed value: clear, fall back, or keep?                       |
+| form controls      | `required` default and native validity (`setValidity`) — follow `CONTEXT.md` |
+| form controls      | `readonly` vs `disabled` semantics                                           |
+| overlays / popups  | Placement and flip; open state in `visual.html`                              |
+| mirrors of a model | Fix the model's known defects now, or file them (see out-of-scope findings)? |
+
+**Use the human's words.** Write only what was said into the brief; anything the orchestrator
+adds (an extra match rule, a default) is a question first. Name the term each concept gets
+when two could collide — on `ds-country-select` "filter" meant the popup search to one side and
+the `countries` allow-list to the other, and cost a gate round.
+
+**Check for leftovers of a discarded run** before grilling a new component: an existing
+`packages/core/src/components/<category>/<name>/` folder, `--ds-<name>-*` variables in
+`packages/tokens/dist`, a stale `docs/plans/components/<name>-*.md`. Name them in the brief so the
+engineer removes or reuses them instead of every agent reasoning about them.
+
 **Write the brief; do not carry the answers in context.** Same rule as every other handoff: the
 planners read the file, and the orchestrator passes the path. Restating a grilling round inside
 two dispatch prompts pays for it twice and loses the "out of scope" half, which is the half that
@@ -213,6 +276,16 @@ component as prior art on API shape — see "External prior art" below.
 > **Gate.** A human approves the plan before any code is written. The engineer must not
 > design the component itself.
 
+At the gate the orchestrator, from the planners' summaries only:
+
+1. puts the blocking decisions to the human, each with the planner's recommendation;
+2. drafts one issue per **out-of-scope finding** and files them on the human's OK;
+3. writes the answers into the brief's `## Gate decisions` section — the single record of what
+   overrides the plans. Plan files stay the planners' and are not patched.
+
+Every agent from step 2 on reads **brief → plan → a11y plan**, in that order, and the brief wins
+where they differ. The orchestrator's dispatch names that order; it does not restate decisions.
+
 **2 · Implement** — `ds-implement-component`. Writes component source, the `index.ts`
 export, and `test/<name>.visual.html` (plus `.style.html` for a CSS-only/hybrid component).
 Creates an _empty_ Storybook folder and generates no tests. It **reads tokens and
@@ -232,11 +305,11 @@ the engineer's SCSS reference can follow.
 **4 · Build out — three in parallel.** The three file sets are disjoint, so one dispatch each,
 no second round:
 
-| Agent                  | Skill                   | Writes                                            |
-| ---------------------- | ----------------------- | ------------------------------------------------- |
-| test-engineer          | `ds-test-component`     | unit, interaction, visual, SSR, PO                |
-| documentation-engineer | `ds-document-component` | `apps/storybook/src/**`                           |
-| a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` — axe + keyboard/focus/ARIA state |
+| Agent                  | Skill                   | Writes                                                                                      |
+| ---------------------- | ----------------------- | ------------------------------------------------------------------------------------------- |
+| test-engineer          | `ds-test-component`     | unit, interaction, visual, SSR, PO; Angular + React integration tests for a form component³ |
+| documentation-engineer | `ds-document-component` | `apps/storybook/src/**`                                                                     |
+| a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` — axe + keyboard/focus/ARIA state                                           |
 
 The a11y-expert may start before the Page Object exists: it uses local locators and reports
 the PO gap rather than waiting or editing `.po.ts`.
@@ -272,7 +345,9 @@ invalid finding is reported as `INVALID` with its reason, not silently applied.
 **7 · Verify** — `ds-a11y-verify` for per-criterion WCAG sign-off, `ds-validate-component` for
 the suites. Report axe-clean and WCAG 2.2 AA conformance as separate claims.
 
-**8 · Ship** — `ds-changeset`, minor. Everything is left **unstaged**; the human commits.
+**8 · Ship** — `ds-changeset`, minor. **The run's only changeset**, covering every package the
+run touched (core, tokens, angular, react); no earlier step writes one. Everything is left
+**unstaged**; the human commits.
 
 ---
 
@@ -366,6 +441,11 @@ with it: a change whose shape is already settled does not need a design tree.
 `ds-modify-component`, not `ds-implement-component` — backward compatibility and impact
 assessment are the point. A new prop reaches stories (`ds-manage-stories`) and tests; a new
 visual state reaches tokens too.
+
+**A form component's value, event or disabled/validity behaviour reaches the frameworks too.**
+The component-engineer checks the Angular value-accessor wrapper still fits (and adds one if a
+shipped form component lacks it); the test-engineer extends its `apps/integration-angular` and
+`apps/integration-react` tests (see ownership note ³).
 
 **"Public API changes?" means a new prop, event, method or slot** — those need the architect
 and the gate. **Adding a value to an existing enum does not.** Widening `BADGE_COLORS` is

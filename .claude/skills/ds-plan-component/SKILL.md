@@ -72,6 +72,13 @@ Read, in this order:
 2. The nearest precedent component's actual source in
    `packages/core/src/components/<category>/<name>/` — its `.tsx`, `.interfaces.ts`, and
    `.host.scss`.
+
+   **When the brief names a model component to mirror, plan the delta.** Read the model once
+   for the parts the brief changes, and write "as `<model>`" with a `file:line` for everything
+   else (props, events, form association, popup structure, token set). Re-deriving a shipped
+   component's design in full is where most of a mirror plan's cost goes — `ds-country-select`'s
+   plan took 70 tool calls, mostly re-documenting `ds-phone-input`.
+
 3. `docs/STYLE_GUIDE.md` and `docs/ARCHITECTURE.md` for naming and file conventions.
 4. `docs/adr/` for decisions that already bind this area.
 5. **External references** — [shadcn/ui](https://ui.shadcn.com/docs/components) for the
@@ -218,6 +225,9 @@ Return to the orchestrator, in under 30 lines:
 - the plan's path
 - the blocking decisions a human must approve, each with your recommended answer
 - the token gaps the token-engineer must fill
+- **out-of-scope findings** — defects or debt you found outside the brief's scope (e.g. in the
+  model component), one line each with `file:line`. The orchestrator files them as issues; a
+  finding left only in the plan is lost when the next run overwrites it
 - nothing else — the orchestrator reads the file when it needs detail
 
 Routing the plan body through the orchestrator's context so it can be written back out pays for

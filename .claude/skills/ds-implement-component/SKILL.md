@@ -22,6 +22,16 @@ Implement a new component from an approved architecture plan.
 **Stop and ask if essential requirements or an approved plan are missing.** Do not design the
 component yourself — that is `ds-plan-component`'s job.
 
+**Read `docs/plans/components/<name>-brief.md` first, then the plan, then the a11y plan.** The
+brief's `## Gate decisions` section is the human's ruling at the plan gate and overrides both
+plans where they differ.
+
+**A behaviour deviation is a question, not a footnote.** If the plan asks for something you
+can't or shouldn't build as written — skipping validation, an extra user-facing string, dropping
+an a11y requirement, a different default, a missing open-state fixture — stop and return it as a
+blocking question before writing it. Only non-behavioural deviations (file layout, helper names)
+belong in the final report's "Deviations" line.
+
 ## Phase 2: Load context
 
 Read:
@@ -101,9 +111,19 @@ Avoid unrelated changes, speculative options, and abstractions the plan didn't a
 
 ## Phase 4: Register
 
-- **Export from `packages/core/src/index.ts`** — the component class and its types, in
-  alphabetical order, plus any sub-component. Skip this and the types never ship. See
-  [REFERENCE.md](REFERENCE.md#registration-in-indexts).
+- **Framework wrappers** — the component ships through Stencil's generated `Components`; you
+  add only the hand-written parts:
+  - Angular — **required for every form component**: `packages/angular/src/forms/ds-<name>.ts`
+    with the value accessor like the others (`withValueAccessor`, `NG_VALUE_ACCESSOR` provider,
+    `host: { 'data-ds-form-control': '' }`, generated `Inputs`/`Outputs`). Copy `ds-select.ts`
+    (scalar value) or `ds-input.ts` (text); export it from `packages/angular/src/index.ts`. Add
+    a value-extraction special case only if the event detail is not the plain value. The
+    test-engineer proves it in `apps/integration-angular`.
+  - React: an entry in `packages/react/src/wrappers.ts` and `wrappers.server.ts`.
+  - Run `pnpm build` in `packages/core` to regenerate `components.d.ts` and the Angular
+    `generated/*` files — never hand-edit them.
+- **`packages/core/src/index.ts`** — only when the plan names a public interface type to export
+  (see [REFERENCE.md](REFERENCE.md#registration-in-indexts)); a new component needs no entry.
 - Create the mirrored Storybook folder `apps/storybook/src/components/<category>/<name>/`
   (empty folder only — its contents belong to the documentation agent).
 - Document for the linter as you go: JSDoc on every `@Prop`/`@Event`/`@Method`, every

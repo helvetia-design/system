@@ -6,7 +6,7 @@ description: >
   and developer guides. Use after a component is implemented or its API changed,
   when docs are missing or stale, or when writing system-level guidance.
 model: sonnet
-tools: Read, Glob, Grep, Edit, Write, Bash
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 skills:
   - ds-document-component
   - ds-manage-stories

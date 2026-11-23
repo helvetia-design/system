@@ -7,7 +7,7 @@ description: >
   evidence. Use when planning an interactive component, reviewing accessibility,
   or before an accessibility sign-off.
 model: opus
-tools: Read, Glob, Grep, Edit, Write, Bash
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 color: cyan
 ---
 

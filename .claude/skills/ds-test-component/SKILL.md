@@ -238,6 +238,41 @@ test.describe('ssr', () => {
 })
 ```
 
+## Framework integration tests (form components)
+
+**Every form component** — and any component whose events or framework wrapper change — also
+gets a test in the Angular and React integration apps. Core suites can't prove a wrapper works;
+these run the real `@helvetia-design/angular` / `@helvetia-design/react` package in a real app.
+Skip a framework only if the component has no wrapper there, and say so in the report.
+
+**Angular** — `apps/integration-angular`, modelled on `select-demo/` + `e2e/select.spec.ts`:
+
+- `src/app/<name>-demo/<name>-demo.ts` + `.html`: one `[(ngModel)]` instance and one reactive
+  `FormControl` instance, each with a `data-testid` value readout, plus buttons to `setValue`
+  and toggle disabled.
+- Register the demo in `src/app/app.ts` (import) and `src/app/app.html` (`<app-<name>-demo />`).
+- `e2e/<name>.spec.ts` asserts: initial value shown, a user change updates the model, `setValue`
+  updates the component, disabled toggles both ways, and touched + invalid after blur on a
+  required control.
+
+**React** — `apps/integration-react`, modelled on the `ds-phone-input` test:
+
+- Add the component to `src/Root.tsx` with a `data-testid` and a state readout.
+- Add tests to `e2e/app.spec.ts`: it renders (the existing no-console-errors test then covers
+  it), and its change event updates React state.
+
+**Run** — build core + the framework package first (the build half of `pnpm app:angular` /
+`pnpm app:react`), then only your tests:
+
+```bash
+pnpm --filter integration-angular play:run e2e/<name>.spec.ts
+pnpm --filter integration-react build && pnpm --filter integration-react play:run -g "<name>"
+```
+
+The wrapper itself (`packages/angular/src/forms/ds-<name>.ts`) is the component-engineer's. If
+`ngModel` or `formControlName` does nothing, the wrapper or its value accessor is missing:
+report it, don't add it.
+
 ## Workflow
 
 ### Step 1: Invoke
