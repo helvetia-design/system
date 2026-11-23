@@ -45,8 +45,8 @@ Edit each finding yourself, using the mapping below. Read the whole element when
 | `color="danger"` / `color="red"` | `color="danger"` | Both were aliases for the same background token in the legacy component. Collapse either spelling to `danger`. |
 | `color="warning"` / `color="yellow"` | `color="warning"` | Same as above: `yellow` was an alias for `warning`. Collapse to `warning`. |
 | `color="success"` / `color="green"` | `color="success"` | Same as above: `green` was an alias for `success`. Collapse to `success`. |
-| `color="purple"` | _(no equivalent)_ | Legacy used `purple` as its only "info"-like accent. `ds-badge` has no purple or info color. Drop the attribute and mention each one in the report. |
-| `color` not a string literal | see handling | Do not guess a runtime color. HTML: leave the expression. React and Angular: keep it when the expression's type only admits `disabled`, `danger`, `warning` or `success`. Otherwise apply Unmapped props and handlers (`SKILL.md`). Say in the report that these are the only styled colors now. |
+| `color="purple"` | _(no equivalent)_ | Legacy used `purple` as its only "info"-like accent. `ds-badge` has no `purple`. It has an `info` color, but whether `purple` maps to it is not decided. Drop the attribute and mention each one in the report. |
+| `color` not a string literal | see handling | Do not guess a runtime color. HTML: leave the expression. React and Angular: keep it when the expression's type only admits `disabled`, `info`, `danger`, `warning` or `success`. Otherwise apply Unmapped props and handlers (`SKILL.md`). Say in the report that these are the only styled colors now. |
 | `position="card"` / `position="button"` / `position="tabs"` | same | Copy as-is, including the `'...'`, `{"..."}`, and `{'...'}` forms. All three values are unchanged. |
 | _(none)_ | `pulse` | New prop. Nothing to migrate from. Leave it unset. |
 
@@ -78,7 +78,7 @@ Needs your attention when found:
 
 1. Every dropped `color="purple"`.
 2. Every badge with an `icon` whose slotted text now renders next to the icon, where only the icon showed before. The consumer decides whether to remove the now visible text.
-3. Every `color` left as a non-literal expression, with the framework outcome (left in HTML, kept or removed (Unmapped) in React and Angular) and the note that `disabled`, `danger`, `warning`, and `success` are the only styled colors now.
+3. Every `color` left as a non-literal expression, with the framework outcome (left in HTML, kept or removed (Unmapped) in React and Angular) and the note that `disabled`, `info`, `danger`, `warning`, and `success` are the only styled colors now.
 
 Coverage only, written to the file:
 

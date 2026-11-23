@@ -36,7 +36,7 @@ When the user gave a path list, pass those paths. Otherwise pass no files, so th
 node <this-skill-directory>/scripts/scan-css-utils.mjs <project-root> [<file> ...]
 ```
 
-The script prints one JSON object, `{ total, files: [{ file, findings: [{ line, snippet, classes: [{ from, to, group }] }] }], dynamic }`, and does not edit files. `files` has one entry per file, and its `findings` list every line with a class move. `total` counts those lines. `dynamic` lists the places the scan found but cannot rewrite, each with `file`, `line`, `snippet` and `reason`. A place whose only mapped classes are `core` or `core-lost` classes also has `group: 'core'`. Pass paths relative to `<project-root>`. When the JSON has an `unmatched` list, those arguments are not source files under `<project-root>`. Fix the paths and run the scan again before you continue.
+The script prints one JSON object, `{ total, files: [{ file, findings: [{ line, snippet, classes: [{ from, to, group }] }] }], dynamic }`, and does not edit files. `files` has one entry per file, and its `findings` list every line with a class move. `total` counts those lines. `dynamic` lists the places the scan found but cannot rewrite, each with `file`, `line`, `snippet` and `reason`. A place whose only mapped classes are `core` or `core-lost` classes also has `group: 'core'`. A place whose mapped classes mix `css/core` classes with other classes has `core: true` instead, and so does an `interpolation` or `template substitution` place whose `{{ … }}` or `${…}` part holds a string literal with a `css/core` class, such as `{{ striped ? 'table is-striped' : 'table' }}`. A place has at most one of the two. Pass paths relative to `<project-root>`. When the JSON has an `unmatched` list, those arguments are not source files under `<project-root>`. Fix the paths and run the scan again before you continue.
 
 The scan reads source files (`.ts`, `.tsx`, `.mts`, `.cts`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.vue`, `.html`, `.htm`) and stylesheets (`.css`, `.scss`, `.sass`, `.less`). In source files it reads these class contexts:
 
@@ -44,8 +44,8 @@ The scan reads source files (`.ts`, `.tsx`, `.mts`, `.cts`, `.js`, `.jsx`, `.mjs
 - static `ngClass="…"`, Angular `routerLinkActive="…"` and Vue `active-class="…"` and `exact-active-class="…"`
 - `className="…"`, `className={'…'}`, `className={"…"}` and ``className={`…`}`` in JSX, the literals of a `className` expression without a call, such as `className={ok ? 'table' : ''}`, and JSX `class={…}`
 - Angular `[class]`, `[ngClass]` and `[routerLinkActive]`, and Vue `:class`, `v-bind:class`, `:active-class` and `:exact-active-class`, with a string, an array, or an object whose keys are quoted or bare names (`{ container: wide }`)
-- Angular `[class.<name>]` and `@HostBinding('class.<name>')`
-- `classList.add`, `remove`, `toggle` and `contains` with string arguments
+- Angular `[class.<name>]`, `@HostBinding('class.<name>')`, and the string literals on the line of an `@HostBinding('class')` member, such as `@HostBinding('class') cls = 'table'`
+- `classList.add`, `remove`, `toggle` and `contains`, Renderer2 `addClass` and `removeClass`, and the arguments after `'class'` in `setAttribute(…, 'class', …)`, with string arguments
 - Angular `host: { class: '…' }` and `'[class.<name>]'` host keys
 
 Comments are skipped. In `.html`, `.htm` and `.vue`, only `<!--` is a comment outside `<script>` and `<style>`.
@@ -54,18 +54,18 @@ Show the findings grouped by file, with path, line, snippet and each `from` to `
 
 `dynamic` holds every place the scan found but cannot rewrite, with one of these reasons:
 
-- `template substitution` or `interpolation`: a class context with `${…}` or `{{ … }}`, such as ``className={`mb-small ${extra}`}`` or `class="mb-{{ size }}"`. The static parts are still in `files`. The substituted value may hold a legacy class. A template literal outside a class context, such as ``cx(`shadow-small ${x}`)``, is listed with this reason when its static text holds a mapped class.
+- `template substitution` or `interpolation`: a class context with `${…}` or `{{ … }}`, such as ``className={`mb-small ${extra}`}`` or `class="mb-{{ size }}"`. The static parts are still in `files`. The substituted value may hold a legacy class. The string literals inside the substitution, such as `'table'` in `{{ on ? 'table' : '' }}`, are not rewritten. When one of them holds a `css/core` class, the place has `core: true`. A template literal outside a class context, such as ``cx(`shadow-small ${x}`)``, is listed with this reason when its static text holds a mapped class.
 - `string concatenation`: a class context built with `+`, such as `className={'mb-small ' + extra}`.
-- `non-literal class binding`: a variable, a computed key (`[key]: cond`) or a spread inside `[ngClass]`, `[class]` or `:class`, such as `:class="classes"`, or a mapped object key inside a call in `className`, such as `className={cx({ grid: on })}`. Only a mapped object key adds a `classes` field to the place, with the same `from`, `to` and `group` entries as a finding. Such a place provably holds a Baloise class.
+- `non-literal class binding`: a variable, a computed key (`[key]: cond`) or a spread inside `[ngClass]`, `[class]` or `:class`, such as `:class="classes"`, or a mapped object key inside a call in `className`, bare or quoted, such as `className={cx({ grid: on })}` or `className={cx({ 'table': on })}`. Only a mapped object key adds a `classes` field to the place, with the same `from`, `to` and `group` entries as a finding. Such a place provably holds a Baloise class.
 - `string literal outside a class context`: a string that contains a mapped class, in code or in a bound attribute such as `:title="'radius-large'"`, `[attr.class]` or Vue `v-bind="{ class: 'grid' }"`. Examples are `const round = 'radius-normal p-small'` and the arguments of `cx(…)`. A literal that holds only unchanged classes, such as `'mt-normal'`, is not listed. A literal whose only mapped classes are `css/core` classes, such as `type: 'button'` or `color="'link'"`, is not listed either, for this reason and for `template substitution`. These words are common code values.
 - `selector`: a string that selects a mapped class, such as `querySelector('.grid')`, `By.css('.container')` or `'class.grid'`. A `css/core` class counts only in a compound that starts with a class, such as `'.table td'`, because a string like `'header.title'` is usually a translation key.
 - `selector in a stylesheet`: a selector of a mapped class, such as `.grid > .col` or `.border-primary-hovered`, in a stylesheet or a `<style>` block. The step never edits stylesheets. An `@extend .grid` line can show up here too; rewriting `@extend` is out of scope.
 - `class input`: a static attribute whose name ends in `Class` or `-class`, such as `styleClass="shadow-small"` on a PrimeNG component or `body-class="container"`. The component places these classes itself, so check where they land before you rewrite them by hand.
 - `possibly commented`: a class context in a `.tsx`, `.jsx` or `.js` file behind a `//` on the same line or inside `/* … */`. It is a real comment, or JSX text that the scan did not detect as JSX. Check which.
 
-The scan does not see a `css/core` class in a plain code string, such as `cx('table', x)` or a variable that holds `'table'`. This gap is on purpose, because words like `button` and `link` are common code values. The consumer checks such places by hand before **Cleanup** removes the `css/core` line.
+The scan does not see a `css/core` class alone in a plain code string, such as `cx('table', x)` or a variable that holds `'table'`. This gap is on purpose, because words like `button` and `link` are common code values. A string that mixes it with a mapped utility class, such as `'table shadow-small'`, is listed with `core: true`. The consumer checks such places by hand before **Cleanup** removes the `css/core` line.
 
-Every `dynamic` place is listed for the consumer to review. Every place without `group` keeps the Baloise utilities line, as the next sections say. The exception is a `non-literal class binding` place without `classes` that the user confirmed in **CSS utils** step 1 of `SKILL.md`. A place with `group: 'core'` keeps the legacy `css/core` line instead, which **Cleanup** removes.
+Every `dynamic` place is listed for the consumer to review. Every place without `group` keeps the Baloise utilities line, as the next sections say. The exception is a `non-literal class binding` place without `classes` that the user confirmed in **CSS utils** step 1 of `SKILL.md`. A place with `group: 'core'` keeps the legacy `css/core` line instead, which **Cleanup** removes. A place with `core: true` keeps both lines.
 
 ## Rewrite
 
@@ -81,7 +81,7 @@ Leave every `lost` and `core-lost` token unchanged, including a `container is-de
 
 After the rewrite, run the scan again without file arguments, so it covers the whole project.
 
-This decision ignores every `core` and `core-lost` move and every `dynamic` place with `group: 'core'`. Those classes depend on the legacy `css/core` line, not on the Baloise utilities line. **Cleanup** keeps that line while one of them is left.
+This decision ignores every `core` and `core-lost` move and every `dynamic` place with `group: 'core'`. Those classes depend on the legacy `css/core` line, not on the Baloise utilities line. A `dynamic` place with `core: true` counts here, because it can also hold a utility class. **Cleanup** keeps that line while one of them is left.
 
 A `dynamic` place with reason `non-literal class binding` that the user confirmed in **CSS utils** step 1 of `SKILL.md` does not count here. Match it by file, line and reason, not by snippet, because the rewrite may change static classes on the same line. Every other `dynamic` place counts, whatever its reason.
 

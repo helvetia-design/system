@@ -467,7 +467,7 @@ describe('scanBalRadio', () => {
 })
 
 describe('Detect', () => {
-  it('suggests radio when the project uses bal-radio and folds the group and icon tags in', () => {
+  it('suggests radio when the project uses bal-radio, folds the group tag in and lists the icon by hand', () => {
     const root = createScratchDir()
     write(
       root,
@@ -480,12 +480,12 @@ describe('Detect', () => {
       ].join('\n'),
     )
 
-    // bal-radio-group and bal-radio-icon have no migration of their own; the radio
-    // migration covers them, so they count towards radio rather than showing up as notYet.
+    // bal-radio-icon goes to byHand so a standalone icon cannot keep radio suggested forever.
     expect(scanMigratable(root)).toEqual({
-      suggested: [{ name: 'radio', total: 3 }],
+      suggested: [{ name: 'radio', total: 2 }],
       notYet: [],
       types: [],
+      byHand: [{ name: 'radio-icon', total: 1 }],
     })
   })
 })

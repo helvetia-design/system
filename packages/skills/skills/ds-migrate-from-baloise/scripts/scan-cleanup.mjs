@@ -43,10 +43,12 @@ const ASSETS_RES = [
   /@baloise\/ds-(?:brand-)?icons\b/,
 ]
 const UTILITIES_RE = /@baloise\/ds-styles\/(?:dist\/)?css\/utilities\//
+const LEGACY_CONFIG_RE =
+  /\b(?:initializeBaloiseDesignSystem|useBaloiseDesignSystem|provideBaloiseDesignSystem|BaloiseDesignSystemModule|updateBalLanguage)\b/
 
 export function scanCleanup(rootDir) {
   const root = realpathSync(resolve(rootDir))
-  const { suggested, notYet, types } = scanMigratable(root, [], { extensions: GATE_EXTENSIONS })
+  const { suggested, notYet, types, byHand = [] } = scanMigratable(root, [], { extensions: GATE_EXTENSIONS })
   const coreClassesLeft = hasCoreClasses(scanCssUtils(root))
 
   const hidden = []
@@ -75,8 +77,9 @@ export function scanCleanup(rootDir) {
     { extensions: EXTENSIONS },
   )
 
-  if (suggested.length > 0 || notYet.length > 0 || types.length > 0 || hidden.length > 0) {
-    return { status: 'incomplete', outstanding: { suggested, notYet, types, hidden: hidden.sort(byPosition) } }
+  if (suggested.length > 0 || notYet.length > 0 || types.length > 0 || byHand.length > 0 || hidden.length > 0) {
+    const outstanding = { suggested, notYet, types, hidden: hidden.sort(byPosition) }
+    return { status: 'incomplete', outstanding: byHand.length > 0 ? { ...outstanding, byHand } : outstanding }
   }
 
   const removeLines = lines
@@ -133,7 +136,7 @@ function hasCoreClasses({ files, dynamic }) {
   const moves = files.flatMap(entry => entry.findings.flatMap(finding => finding.classes))
   return (
     moves.some(move => CORE_GROUPS.has(move.group)) ||
-    dynamic.some(entry => entry.group === 'core' && entry.reason !== 'selector in a stylesheet')
+    dynamic.some(entry => (entry.group === 'core' || entry.core) && entry.reason !== 'selector in a stylesheet')
   )
 }
 
@@ -149,7 +152,7 @@ function collectLines(file, text, comments, dependencyKeys, coreClassesLeft, fou
     hasStringEntries: STRING_ENTRY_FILES.has(basename(file)),
     coreClassesLeft,
   }
-  const entries = plain.map((line, index) => classify(line, active[index] ?? '', context))
+  const entries = plain.map((line, index) => classify(line, active[index] ?? '', context, importOf(active, index)))
 
   entries.forEach((entry, index) => {
     if (!entry) return
@@ -164,7 +167,15 @@ function blankRanges(text, ranges) {
   return result
 }
 
-function classify(line, activeLine, { isPackageJson, isYaml, hasStringEntries, coreClassesLeft }) {
+// A multi-line import or export names its specifiers above the `from` line that names the package.
+function importOf(lines, index) {
+  if (!/^\s*\}\s*from\s/.test(lines[index])) return lines[index]
+  let start = Math.max(index - 1, 0)
+  while (start > 0 && !lines[start].includes('{')) start--
+  return lines.slice(start, index + 1).join('\n')
+}
+
+function classify(line, activeLine, { isPackageJson, isYaml, hasStringEntries, coreClassesLeft }, statementText) {
   const statement = activeLine.trim()
   if (TODO_RE.test(line) && statement === '') return { type: 'todo' }
   if (!LEGACY_RE.test(line)) return null
@@ -181,6 +192,7 @@ function classify(line, activeLine, { isPackageJson, isYaml, hasStringEntries, c
   if (REMOVE_RE.test(activeLine)) return keep('manual')
   if (ASSETS_RES.some(re => re.test(activeLine))) return keep('assets')
   if (UTILITIES_RE.test(activeLine)) return keep('css-utils')
+  if (LEGACY_CONFIG_RE.test(statementText)) return keep('legacy-config')
   return keep('manual')
 }
 
