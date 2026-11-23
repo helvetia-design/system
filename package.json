@@ -91,7 +91,7 @@
     "express": "catalog:",
     "fast-deep-equal": "catalog:",
     "fs-extra": "catalog:",
-    "glob": "13.0.6",
+    "glob": "14.0.6",
     "husky": "^9.1.7",
     "js-yaml": "5.5.0",
     "jsdom": "30.1.2",
