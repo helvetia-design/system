@@ -47,12 +47,11 @@ props:
     figmaPropertyType: variant
     figmaOptions: [base, sm] # implicit default named `base`
   - name: label
-    type: string
-    default: "''"
+    type: string # code default '' (the Figma default is `default:` below)
     figmaProperty: label
     figmaPropertyType: text
     node: label
-    default: Loading
+    default: Label # property name in sentence case (PHASE-2-PROPOSE.md → Naming); was `Loading` until 23.11.2026
     showBoolean: show label # hasValue(this.label) && <span part="label"> → `show label`, default false
   - name: labelPosition
     type: enum
@@ -331,3 +330,6 @@ measurements: # confirmed by the user 18.11.2026, measured on the dev server
   sync splits it into seven Foundation variables. Foundation has no text styles.
 - **Code drift (follow-up, not fixed here):** `spinner.tsx` `getColor()` hardcodes `#000d6e` /
   `#ffffff` as the SSR fallback.
+- **Label default (23.11.2026):** `Label` (the naming rule) on all four sets, was `Loading`. Found
+  by `scripts/check-mapping-coverage.mjs`. The label is hidden by default (`show label` off), so no
+  variant changed size. Header LAST UPDATED → 23.11.2026.

@@ -82,10 +82,16 @@ Built 18.11.2026 — full record in `packages/core/src/components/indicators/spi
   - `flat`: padding-x → `Global/Dimension/Space/0`; min height → 28px (hardcoded, accepted — no
     token; `Global/Font/Size/28` rejected as semantically wrong).
   - `shadow`: apply `Alias/Shadow/Box/Base` (`ghost` and `link`: `Alias/Shadow/Text`).
-  - `iconTurn`: rotate the nested icon instance 180°.
+  - `iconTurn`: **excluded** (user decision 20.11.2026) — it only turns `plus` (225°) and
+    `caret-up` / `caret-down` (180°), and Figma can't rotate a glyph nested in an instance
+    (relative-transform can't be overridden).
 - **Excluded** (no static visual difference, approved 04.11.2026): `elementType`, `href`,
-  `target`, `rel`, `download`, `name`, `value`, `noWrap`, `a11yControls`, `a11yTitle`,
-  `a11yLabel`, `a11yHaspopup`.
+  `target`, `rel`, `download`, `name`, `value`, `noWrap`, `a11yControls`, `a11yLabel`,
+  `a11yHaspopup`.
+- **Tooltip** (`a11yTitle`, user decision 19.11.2026): `show tooltip` boolean (default off) on the
+  enabled hover variants — an exposed `TooltipAnchor` instance (`build-mechanics.md` →
+  Tooltip anchor): its `placement` = `tooltipPlacement`, its exposed Tooltip's `content` =
+  `a11yTitle`.
 - **Not built yet:** `brandIcon` / `brandSize` (needs the Brand Icon run first; adds a `device:`
   section for the padding) and the `@attachment ds-badge top-right` (attachments plan, steps 3–5).
 - **Icons:** the right icon now follows the button size like the left one (code fix, 16.11.2026):
@@ -108,6 +114,8 @@ Built 18.11.2026 — full record in `packages/core/src/components/indicators/spi
   `<button>` path is modeled.
 - **Sets:** `Close` / `CloseInverted` (top-level split). `sm` was removed from the code 16.11.2026
   (below the 24 × 24 target size); `ds-tag` still sets the `sm` tokens directly.
+- **Tooltip** (user decision 19.11.2026): same `TooltipAnchor` as Button, not exposed —
+  `placement=bottom`, fixed text `Close` (no placement prop, generated text).
 - **The X** is an inline SVG in the component's SCSS: a static vector, no icon swap.
 - **Measurements:** `drawnState: hover` — the default background is transparent, so the circle
   the size line measures only shows on hover (user-confirmed).

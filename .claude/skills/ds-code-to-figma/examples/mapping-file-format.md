@@ -63,9 +63,13 @@ props:
   shownWhen: filled=false # the variant(s) where this node is visible (e.g. color=invalid)
 - name: pageNumber
   figmaPropertyType: excluded # generated — no property
+- name: '[excluded]' # several excluded props in one entry
+  figmaPropertyType: excluded
+  props: [href, target, rel] # every code prop name, as a list — names only in `note` don't count (scripts/check-mapping-coverage.mjs)
+  note: 'link attributes, no visual effect'
   states:
   figmaProperty: state
-  options: [default, hover, focus, active] # interaction states only
+  options: [default, hover, active] # interaction states only; focus is ignored
   sources:
   hover: ":hover (spinner.host.scss)"
   componentStates: # component-state props → own false/true variants (PHASE-2-PROPOSE.md); interactive (Phase 1 step 3) decides the columns
@@ -132,11 +136,11 @@ props:
   width: hug # hug | fill — from the behavior probe
   overflow: truncate # truncate | wrap | overflow (flag overflow in the triage)
   rows: # numbered in this order on the drawn card and in the table: size → spacing → shape → type
-  - property: Min height # Width | Height | Size (w = h) | Min/Max width/height | Padding X/Y/L/R | Gap | Radius | Border width | Focus ring | Text (<part>)
+  - property: Min height # Width | Height | Size (w = h) | Min/Max width/height | Padding X/Y/L/R | Gap | Radius | Border width | Text (<part>)
     kind: size # size | spacing | shape | type
     group: limit # fixed | inner spacing | limit | behavior | derived | outer margin | hit area | context-dependent | typography
     show: drawn # drawn (marker + table row) | table (table row only, rare) | skip
-    instance: main # drawn rows only: main | min-content | focus | … — see conventions/measurements.md → "Section layout"
+    instance: main # drawn rows only: main | min-content | … — see conventions/measurements.md → "Section layout"
     source: button.host.scss:42 # the SCSS declaration that sets it
     values: # one per option; measured px + its token (exact Figma variable name)
     base: { px: 48, token: 🧩 Component/Button/Size/Base/MinHeight }
@@ -224,6 +228,19 @@ slots:
     defaultFill: empty
     figmaPropertyKey: null # filled in by Phase 3 (start#123:4)
     showPropertyKey: null # the `show start` boolean, filled in by Phase 3
+```
+
+## figmaCheck field
+
+Optional input for `scripts/figma-check-set.mjs` (Phase 4, step 0): layers that exist only in some
+variants, and variant combinations the user approved beyond the default rules.
+
+```yaml
+figmaCheck:
+  conditionalLayers:
+    - name: tooltip-anchor # layer name inside the variant
+      when: { state: [hover], disabled: ['false'], loading: ['false'] } # present exactly here, absent elsewhere
+  allowedCombos: [] # e.g. 'disabled=true, invalid=true, size=base, state=default' (approved in Phase 2)
 ```
 
 ## Family fields

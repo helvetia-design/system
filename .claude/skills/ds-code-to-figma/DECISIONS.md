@@ -91,8 +91,8 @@ batch and grouping sign-off happen once for the whole family; Phases 6–8 run f
   title/lead text.
 - 🛑 **Storybook story ID unresolvable**: no `doc-config.ts` for the component — stop and ask
   rather than shipping a dead link.
-- 🟡 **First-variant checkpoint** (step 4): give the user a Figma link to the default
-  variant and wait for their confirmation in Figma before fanning out the rest of the component set — catches a structural
+- 🟡 **First-variant checkpoint** (step 4): give the user a Figma link to the `review` frame
+  holding only the default variant (template example stacks hidden) and wait for their confirmation in Figma before fanning out the rest of the component set — catches a structural
   mistake once, before it's replicated across every variant. For a family: once per set, in build
   order (contained sub-components → owner → wrapping sub-components).
 

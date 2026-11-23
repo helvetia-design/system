@@ -75,13 +75,14 @@ the measurements triage (6) are presented **once for the whole family** (`conven
      Sub-component mapping files have no `anatomy:`. The owner's list is skipped only when it has
      no `@part`s and no contained sub-components.
 3. Read the component's `<name>.host.scss` and scan for **states** (CSS pseudo-classes and state classes) —
-   `:hover`, `:focus`, `:active`, `:disabled`, and any loading- or invalid-related
-   class/attribute selector. Interaction states (`:hover`, `:focus`, `:active`) become the `state`
-   variant; component-state props (`disabled`, `loading`, `invalid`, …) become their own `false` /
+   `:hover`, `:active`, `:disabled`, and any loading- or invalid-related
+   class/attribute selector. Interaction states (`:hover`, `:active`) become the `state`
+   variant; focus (`:focus`, `:focus-visible`, `:focus-within`) is ignored — never a state;
+   component-state props (`disabled`, `loading`, `invalid`, …) become their own `false` /
    `true` variants (see `PHASE-2-PROPOSE.md` → mapping table, interaction-state and component-state
    rows).
    - **Per component state, check whether code still lets the user interact** while it's `true`:
-     **blocked** when the hover / active / focus styles are gated off (`:not(.is-disabled)`,
+     **blocked** when the hover / active styles are gated off (`:not(.is-disabled)`,
      `:not(:disabled)`, `pointer-events: none`) — e.g. `ds-button`'s `disabled` and `loading`;
      **interactive** when they still apply — e.g. `ds-input`'s `invalid` (the hover background
      still changes, the border stays danger) and `loading` (only adds the spinner). Decide from the
@@ -291,7 +292,7 @@ Tokens` collection has exactly those three. Any other mixin (`desktop-lg`, `desk
 
      `proposal` is `drawn` (marker + table row), `table` (table row only, rare), `behavior` or
      `skip`. `instance` says where a drawn row goes: `main`, or an extra instance (`min-content`,
-     `focus`, …) per `conventions/measurements.md` → "Section layout". Option columns follow the
+     …) per `conventions/measurements.md` → "Section layout". Option columns follow the
      code default first (`base | sm | lg`). When the proposed `drawnColor` isn't the default
      color option, list it with the rows that need a decision: the default, the proposed option
      and why (e.g. "`primary` draws the border in the fill color, so the 2px border and the

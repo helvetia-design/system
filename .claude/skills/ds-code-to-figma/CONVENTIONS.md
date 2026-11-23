@@ -27,7 +27,7 @@ user _approving_ it — never auto-appended.
   family resolution, lockstep phases, parent-set props, slots, anatomy and measurements (every phase).
 - [`conventions/build-mechanics.md`](conventions/build-mechanics.md) — general Figma Plugin API
   gotchas that apply across any phase: platform limits, variant-set mechanics, auto-layout
-  sizing, vector import, color/paint, focus states.
+  sizing, vector import, color/paint, focus (ignored).
 
 ## Glossary
 

@@ -26,6 +26,24 @@ Verify the built Figma component set against the confirmed mapping file `<name>.
 `<name>.figma-validation.md` each; step 2 (header) only for the owner. The family verdict is the
 worst of all reports (`fail` > `blocked` > `pass`) and decides [Next Phase](#next-phase).
 
+0. **Run the check scripts**, and copy their rows into the report unchanged — never edit a
+   script's verdict by hand. The steps below cover what the scripts don't; skip a sub-check only
+   when a script row covers it, and say which row.
+   - Now, before any Figma call: `node .claude/skills/ds-code-to-figma/scripts/check-mapping-coverage.mjs <name>`
+     — code vs. mapping file: family members and their mapping files, every `@Prop()` and `@part`
+     covered (a grouped entry lists its names in `props:`; names only in a `note` don't count), the
+     YAML parses, no `focus` state, text defaults per the naming rule. No Figma access.
+   - **After step 1** (it needs `figma-use` and the session): `node
+.claude/skills/ds-code-to-figma/scripts/figma-check-set.mjs <name>` prints read-only
+     `use_figma` code; pass it as `code` unchanged. It checks every set of the family (the owner's
+     and every sub-component's mapping file), per set: axes and options, every variant combination
+     (blocked / interactive), text properties (default, binding on every variant), reactions,
+     paint bindings to library variables, numeric bindings, conditional layers (`figmaCheck:` in
+     the mapping file — a layer that exists only in some variants, e.g. `tooltip-anchor`, needs an
+     entry there, or it isn't checked). `review` rows (unbound numbers) are a `fail` unless the
+     mapping file's `tokens:` lists that value as `bind: false`.
+   - **Not covered by the scripts** (do them by hand): glyph colors inside nested instances (4c,
+     via temporary instances), the header (2), layout against the template (5) and snapshots (6).
 1. Load `figma-use` (mandatory before any `use_figma` call; all calls in this phase are read-only,
    except the temporary instances in step 4c)
    and create a session against `figma.config.json`'s `componentLibraryFileKey`. **Locate the
@@ -51,7 +69,10 @@ worst of all reports (`fail` > `blocked` > `pass`) and decides [Next Phase](#nex
    has `true` only on `state=default`; an interactive one has `true` on every interaction state.
    **Text properties** (`PHASE-3-BUILD.md` → "Text properties"): every `figmaPropertyType: text`
    prop exists as a `TEXT` property with the agreed name and sentence-case default, created in
-   render order, and is bound (`componentPropertyReferences.characters`) on every variant where
+   render order. Check the default against the rule itself (the property name in sentence case,
+   `PHASE-2-PROPOSE.md` → "Naming"), not only against the mapping file: a mapping default that
+   breaks the rule is a `fail` too (seen on `ds-button`, 20.11.2026: `Button` instead of `Label`).
+   Every TEXT property is bound (`componentPropertyReferences.characters`) on every variant where
    its node exists. No consumer-authored text node is left unbound; no generated text is bound.
    Report found vs. expected bindings per property.
    b. **Top-level splits** — walk `PHASE-2-PROPOSE.md` → "Top-level splits" in order, per prop:
@@ -136,6 +157,9 @@ Labels`, set, `Grid`). Below the set, the set's fill covers every divider.
      template's `Inverted` stack — same fill and variable binding as that template node (the dark
      `Alias/Surface/Primary`, per `conventions/page-structure.md`). A light or missing background is a
      `fail`.
+     **Checkpoint leftovers** (`PHASE-3-BUILD.md` step 3/5): no `review` frame is left in `Sets`,
+     and every stack, label, bracket and divider in `Sets` is `visible`. A leftover `review` frame
+     or a hidden node is a `fail`.
      e. **Variations structure** (`PHASE-3-BUILD.md` → "Variations"): the `kind=variations`
      `Section` comes right after the `kind=copy-me` section in the `Documentation` column, with one `Preview` per covered set (none
      for an `…Inverted` set) and one instance per expected variation. Each instance's
@@ -165,6 +189,15 @@ Labels`, set, `Grid`). Below the set, the set's fill covers every divider.
    shown part (gap, position) or in the default variant itself (size, color of the whole
    component): the latter is a set bug that every instance has (seen on `ds-spinner`: default
    `size=sm`).
+   f. **Documentation drawings still fit their instances** (Anatomy, Measurements — owner only),
+   one check each. Anatomy: every marker's dot is centred on its part (marker `x` = part centre
+   − 12, ±1px) and its leader ends 4px above the part's visible top (±1px), per
+   `PHASE-7-DOCUMENT-ANATOMY.md` step 2; the instances are centred in `diagram-area`.
+   Measurements: each drawing's instances are centred in `stage`, every text box marker equals its
+   text node's bounds, and every dimension / gap / inset marker spans exactly the edges it
+   measures (±1px; take the edges from the instance's layers, not from the marker). Then one
+   screenshot of each, checked for markers that overlap each other. A drawing that wasn't read is
+   `not verified`.
 7. **Write the validation report** (see [Output](#output)).
 
 ## Rules
@@ -179,9 +212,11 @@ Labels`, set, `Grid`). Below the set, the set's fill covers every divider.
 
 ## Output
 
-`<name>.figma-validation.md` next to `<name>.figma.md`: one entry per check from steps 2–6 with its
-result (`pass` / `fail` / `not verified`), the affected node name/id, and for each failure what was
-expected vs. found — with the evidence required by [Rules](#rules). End with an overall verdict:
+`<name>.figma-validation.md` next to `<name>.figma.md`: one entry per check from steps 2–6 —
+every lettered sub-check included (e.g. 4e Interactions) — with its result (`pass` / `fail` / `not verified`), the affected node name/id, and for each failure what was
+expected vs. found — with the evidence required by [Rules](#rules). A check that wasn't run is
+listed as `not verified`, never left out (seen on `ds-button`, 20.11.2026: no Interactions entry hid
+missing reactions). End with an overall verdict:
 
 - `pass` — every check passed.
 - `fail` — at least one check failed.
