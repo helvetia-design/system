@@ -92,10 +92,10 @@ export class DataItem implements DsComponentInterface, DsConfigObserver {
     const value = this.el.querySelector('ds-data-value') as HTMLElement | null
 
     if (label && !label.getAttribute('slot')) {
-      label.slot = 'label'
+      label.setAttribute('slot', 'label')
     }
     if (value && !value.getAttribute('slot')) {
-      value.slot = ''
+      value.setAttribute('slot', '')
     }
 
     this.detectCustomLabel()

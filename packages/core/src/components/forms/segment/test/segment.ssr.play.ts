@@ -11,7 +11,8 @@ const GLOBAL_STYLE_MISSING =
 const FIXME: Record<string, string> = {
   'basic': GLOBAL_STYLE_MISSING,
   'icon': GLOBAL_STYLE_MISSING,
-  'long-content': 'SSR: overflowing items switch to vertical layout only after hydration, box grows 57px (#327)',
+  'long-content':
+    'SSR: the switch to vertical layout needs browser layout (ResizeObserver), so the box changes size on hydration; shift accepted (#327)',
 }
 const PAGE_URL = `/components/forms/${TAG}/test/${TAG}.visual.html`
 
