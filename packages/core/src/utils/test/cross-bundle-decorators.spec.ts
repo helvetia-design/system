@@ -1,7 +1,7 @@
 import { BUILD } from '@stencil/core/internal/app-data'
 import { afterAll, afterEach, beforeAll, describe, expect, expectTypeOf, test, vi } from 'vitest'
 import type * as Entry from '../../index'
-import { Logger, LogInstance } from '../log'
+import { Loggable, Logger, LogInstance } from '../log'
 import { OneOf, Type } from '../property-decorators'
 
 // Mirrors how Stencil 4.45 registerInstance exposes the host ref on a lazy instance of another bundle.
@@ -35,6 +35,7 @@ describe('package entry', () => {
     expectTypeOf<typeof Entry.OneOf>().toEqualTypeOf<typeof OneOf>()
     expectTypeOf<typeof Entry.Type>().toEqualTypeOf<typeof Type>()
     expectTypeOf<Entry.LogInstance>().toEqualTypeOf<LogInstance>()
+    expectTypeOf<Entry.Loggable>().toEqualTypeOf<Loggable>()
     expectTypeOf<Entry.DsComponentInterface>().toHaveProperty('el')
   })
 })

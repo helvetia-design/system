@@ -63,7 +63,7 @@ export {
 } from './utils/orientation'
 export { ScrollHandler } from './utils/scroll'
 export { Logger } from './utils/log'
-export type { LogInstance } from './utils/log'
+export type { Loggable, LogInstance } from './utils/log'
 export {
   ArrayOf,
   DateValue,
