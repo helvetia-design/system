@@ -1,5 +1,9 @@
 # button → Figma validation (Phase 4)
 
+> Run 4 — 23.11.2026, after Repair iteration 3: step 0 scripts re-run (rows unchanged), header (2),
+> doc-column order / leftovers (5d, 5e) and frame screenshot `6252:6` re-read; checks with no
+> frame write since run 3 carried over. Snapshots unchanged since 17.11.2026 → 6c unchanged.
+>
 > Run 3 — 23.11.2026, full re-run against the current `PHASE-4-VALIDATE.md` (step 0 scripts, new
 > 6f), after Repair iteration 2. Live file `NzMFv5HwO14Mmro8bWyvlO` (page `Core / Actions`, doc
 > frame `6252:6`), mapping `button.figma.md`. Read-only except step 4c's temporary instances
@@ -12,7 +16,7 @@
 | 0   | Script `check-mapping-coverage.mjs`    | **fail** — 1 row (`ds-button-group: mapping file` missing)                      |
 | 0   | Script `figma-check-set.mjs`           | **fail** — 1 row (`ds-button-group` mapping file missing); all 24 set rows pass |
 | 1   | Nodes located                          | pass                                                                            |
-| 2   | Header                                 | **fail** (LAST UPDATED)                                                         |
+| 2   | Header                                 | pass                                                                            |
 | 3a  | Props, naming, states, text properties | pass                                                                            |
 | 3b  | Top-level splits                       | pass                                                                            |
 | 3c  | Set count / names                      | pass                                                                            |
@@ -89,21 +93,21 @@ follow-up in `button.figma.md` → Notes, "Follow-up — ButtonGroup").
 (COMPONENT_SET) · `6252:11` variations, `6252:12` anatomy, `6252:13` measurements (Section
 instances). All found.
 
-## 2. Documentation frame header — fail
+## 2. Documentation frame header — pass
 
 Header `6252:7`.
 
-| Field          | Found                                                                    | Expected                                                                                                                                                                             | Result   |
-| -------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| kicker         | `Core / Actions`                                                         | same                                                                                                                                                                                 | pass     |
-| component      | `Button`                                                                 | same                                                                                                                                                                                 | pass     |
-| lead           | `Button provides a clickable element … supporting text, icons, or both.` | JSDoc lead `button.tsx:36`                                                                                                                                                           | pass     |
-| review-status  | `status=review`                                                          | same                                                                                                                                                                                 | pass     |
-| VERSION        | `v0.1.0`                                                                 | `packages/core/package.json` 0.1.0                                                                                                                                                   | pass     |
-| LAST UPDATED   | `20.11.2026`                                                             | `23.11.2026` — Repair iteration 2 wrote the Anatomy (`6252:12`) and Measurements (`6252:13`) sections of this frame on 23.11.2026; the standing rule re-sets the date on every write | **fail** |
-| link-storybook | `…/?path=/docs/components-actions-button-button--button`                 | `tabs[0].storyId` (`button.doc-config.ts:10`)                                                                                                                                        | pass     |
-| link-toky      | `https://helvetia-toky.vercel.app?filter=button`                         | same                                                                                                                                                                                 | pass     |
-| link-github    | `…/tree/main/packages/core/src/components/actions/button`                | same                                                                                                                                                                                 | pass     |
+| Field          | Found                                                                    | Expected                                                           | Result |
+| -------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------ |
+| kicker         | `Core / Actions`                                                         | same                                                               | pass   |
+| component      | `Button`                                                                 | same                                                               | pass   |
+| lead           | `Button provides a clickable element … supporting text, icons, or both.` | JSDoc lead `button.tsx:36`                                         | pass   |
+| review-status  | `status=review`                                                          | same                                                               | pass   |
+| VERSION        | `v0.1.0`                                                                 | `packages/core/package.json` 0.1.0                                 | pass   |
+| LAST UPDATED   | `23.11.2026` (`I6252:7;2389:15024`)                                      | `23.11.2026` — last frame write: Repair iterations 2–3, 23.11.2026 | pass   |
+| link-storybook | `…/?path=/docs/components-actions-button-button--button`                 | `tabs[0].storyId` (`button.doc-config.ts:10`)                      | pass   |
+| link-toky      | `https://helvetia-toky.vercel.app?filter=button`                         | same                                                               | pass   |
+| link-github    | `…/tree/main/packages/core/src/components/actions/button`                | same                                                               | pass   |
 
 ## 3. Prop / state mapping
 
@@ -288,8 +292,7 @@ Corner radius ⑦ at top-right (392–400, 61–69); leaders ⑥ border, ⑧ typ
 
 1. **0 / both scripts** — `ds-button-group` has no mapping file (family sub-component not built;
    known follow-up).
-2. **2 header** — LAST UPDATED `20.11.2026` → `23.11.2026`.
-3. **6c** — known stale snapshots; user re-baselines, no Figma change.
+2. **6c** — known stale snapshots; user re-baselines, no Figma change.
 
 ## Not verified
 
