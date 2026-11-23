@@ -15,7 +15,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-checkbox ${props(args)}>${slot}</ds-checkbox>`),
+  ...withRender(({ slot, ...args }) => `<ds-checkbox ${props(args, tag)}>${slot}</ds-checkbox>`),
 }
 
 export default meta

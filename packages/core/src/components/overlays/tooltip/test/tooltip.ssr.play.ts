@@ -1,19 +1,25 @@
-import { DsTooltip, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './tooltip.variants'
+
+const baseline = visualBaseline(TAG)
+const ssrBaseline = visualBaseline(TAG, `${TAG}.ssr.play.ts`)
+// The tooltip position is computed in the browser.
+const SSR_STATIC: readonly string[] = ['basic', 'placement-right', 'placement-bottom', 'content-width']
+const PAGE_URL = `/components/overlays/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(
-      page,
-      `
-        <button id="my-trigger">Hover over me</button>
-        <ds-tooltip reference="my-trigger">Tooltip content</ds-tooltip>
-      `,
-      renderToString,
-      testInfo,
-    )
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
-    await dsTooltip.assertToContainText('Tooltip content')
+      await expectScreenshot(
+        el,
+        SSR_STATIC.includes(variant) ? ssrBaseline(`${variant}-ssr-static`) : baseline(variant),
+      )
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
 })

@@ -1,4 +1,5 @@
 import {
+  AttrDeserialize,
   AttachInternals,
   Component,
   Element,
@@ -13,6 +14,7 @@ import {
 } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import {
+  deserializeBooleanAttribute,
   inheritAttributes,
   FormControl,
   FormControlInterface,
@@ -221,6 +223,11 @@ export class Textarea implements DsComponentInterface, FieldInterface, FormContr
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * The number of visible text lines for the control.

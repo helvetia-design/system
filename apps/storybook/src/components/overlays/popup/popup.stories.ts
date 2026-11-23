@@ -18,7 +18,7 @@ const meta: Meta<Args> = {
   },
   ...withRender(
     ({ ...args }) => `
-<ds-popup id="popup-story" ${props(args)}>
+<ds-popup id="popup-story" ${props(args, tag)}>
   <p>Popup content</p>
 </ds-popup>
 
@@ -35,7 +35,7 @@ export const Popup = Story({
   args: {},
   ...withRender(
     ({ ...args }) => `
-<ds-popup id="popup-story" ${props(args)}>
+<ds-popup id="popup-story" ${props(args, tag)}>
   <p>Popup content</p>
 </ds-popup>
 
@@ -52,7 +52,7 @@ export const PlacementTop = Story({
   },
   ...withRender(
     ({ placement, ...args }) => `
-<ds-popup id="popup-top" placement="${placement}" ${props(args)}>
+<ds-popup id="popup-top" placement="${placement}" ${props(args, tag)}>
   <p>Placed above the trigger.</p>
 </ds-popup>
 
@@ -69,7 +69,7 @@ export const PlacementRight = Story({
   },
   ...withRender(
     ({ placement, ...args }) => `
-<ds-popup id="popup-right" placement="${placement}" ${props(args)}>
+<ds-popup id="popup-right" placement="${placement}" ${props(args, tag)}>
   <p>Placed to the right.</p>
 </ds-popup>
 
@@ -87,7 +87,7 @@ export const PlacementLeft = Story({
   },
   ...withRender(
     ({ placement, ...args }) => `
-<ds-popup id="popup-left" placement="${placement}" ${props(args)}>
+<ds-popup id="popup-left" placement="${placement}" ${props(args, tag)}>
   <p>Placed to the left.</p>
 </ds-popup>
 
@@ -105,7 +105,7 @@ export const BackdropDismiss = Story({
   ...withRender(
     ({ ...args }) => `
 <ds-button data-popup="popup-backdrop">Open (click outside to close)</ds-button>
-<ds-popup id="popup-backdrop" ${props(args)}>
+<ds-popup id="popup-backdrop" ${props(args, tag)}>
   <p>Click anywhere outside to close.</p>
 </ds-popup>
     `,
@@ -122,7 +122,7 @@ export const BackdropOverlay = Story({
   ...withRender(
     ({ ...args }) => `
 <ds-button data-popup="popup-overlay">Open with backdrop</ds-button>
-<ds-popup id="popup-overlay" ${props(args)}>
+<ds-popup id="popup-overlay" ${props(args, tag)}>
   <p>Full-screen backdrop is visible behind the panel.</p>
 </ds-popup>
     `,
@@ -138,7 +138,7 @@ export const RoleListbox = Story({
   ...withRender(
     ({ role, ...args }) => `
 <ds-button id="trigger-listbox">Choose option</ds-button>
-<ds-popup id="popup-listbox" role="${role}" ${props(args)}>
+<ds-popup id="popup-listbox" role="${role}" ${props(args, tag)}>
   <ul role="group" style="list-style: none; margin: 0; padding: 0.5rem 0; min-width: 10rem">
     <li role="option" tabindex="0" style="padding: 0.5rem 1rem; cursor: pointer">Option A</li>
     <li role="option" tabindex="0" style="padding: 0.5rem 1rem; cursor: pointer">Option B</li>
@@ -185,7 +185,7 @@ export const Programmatic = Story({
     ({ ...args }) => `
 <ds-button id="trigger-prog">Open</ds-button>
 <ds-button id="trigger-prog-close">Close</ds-button>
-<ds-popup id="popup-prog" ${props(args)}>
+<ds-popup id="popup-prog" ${props(args, tag)}>
   <p>Opened and closed via <code>present()</code> / <code>dismiss()</code>.</p>
 </ds-popup>
 <script>
@@ -212,7 +212,7 @@ export const FocusTrap = Story({
   ...withRender(
     ({ ...args }) => `
 <ds-button data-popup="popup-focus">Open with form</ds-button>
-<ds-popup id="popup-focus" ${props(args)}>
+<ds-popup id="popup-focus" ${props(args, tag)}>
   <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.75rem; min-width: 16rem">
     <ds-input placeholder="First name"></ds-input>
     <ds-input placeholder="Last name"></ds-input>

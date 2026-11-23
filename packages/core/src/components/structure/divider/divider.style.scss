@@ -99,10 +99,26 @@ $css-selector: (hr, '.ds-divider');
 //
 // Colors
 // --------------------------------
-$colors: ('primary', 'secondary', 'default', 'inverted');
+$colors: ('primary', 'secondary', 'default');
 
 @mixin color($color) {
   --mod-divider-color: var(--ds-divider-color-#{$color});
+}
+
+@mixin invertedColor($color) {
+  --mod-divider-color: var(--ds-divider-color-inverted-#{$color});
+}
+
+@include hybrid.styles($css-selector, $use-host) {
+  &.is-inverted {
+    @include invertedColor('default');
+  }
+}
+
+@include hybrid.host($use-host) {
+  :host(.is-inverted) {
+    @include invertedColor('default');
+  }
 }
 
 @each $color in $colors {
@@ -110,11 +126,17 @@ $colors: ('primary', 'secondary', 'default', 'inverted');
     &.is-#{$color} {
       @include color($color);
     }
+    &.is-#{$color}.is-inverted {
+      @include invertedColor($color);
+    }
   }
 
   @include hybrid.host($use-host) {
     :host(.is-#{$color}) {
       @include color($color);
+    }
+    :host(.is-#{$color}.is-inverted) {
+      @include invertedColor($color);
     }
   }
 }

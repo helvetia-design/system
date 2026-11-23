@@ -44,7 +44,7 @@ export default meta
 const Story = StoryFactory<Args>(meta)
 
 export const Basic = Story({
-  ...withRender(({ slot, ...args }) => `<ds-button ${props(args)}>${slot}</ds-button>`),
+  ...withRender(({ slot, ...args }) => `<ds-button ${props(args, tag)}>${slot}</ds-button>`),
 })
 Basic.storyName = '🧩 Basic'
 
@@ -55,8 +55,8 @@ export const Group = Story({
   ...withRender(
     ({ slot, ...args }) => `
  <ds-button-group>
-  <ds-button ${props(args)}>${slot}</ds-button>
-  <ds-button ${props(args)}>${slot}</ds-button>
+  <ds-button ${props(args, tag)}>${slot}</ds-button>
+  <ds-button ${props(args, tag)}>${slot}</ds-button>
  </ds-button-group>
   `,
   ),

@@ -90,6 +90,13 @@ export class Tooltip implements DsComponentInterface {
   @Type('boolean')
   readonly open: boolean = false
 
+  /**
+   * When true, the tooltip never presents, even on hover/focus of the trigger.
+   */
+  @Prop()
+  @Type('boolean')
+  readonly disabled: boolean = false
+
   @Watch('contentWidth')
   contentWidthChanged(newValue: number | undefined) {
     if (newValue === undefined) {
@@ -109,23 +116,14 @@ export class Tooltip implements DsComponentInterface {
    */
   @Event() dsDidAnimate!: EventEmitter<TooltipDidAnimateDetail>
 
+  connectedCallback(): void {
+    // Reconnecting after a DOM move: componentDidLoad only runs once, but disconnectedCallback detached the trigger.
+    if (this.containerEl && !this.trigger) this.attachTrigger()
+  }
+
   componentDidLoad(): void {
     this.contentWidthChanged(this.contentWidth)
-
-    const trigger = this.triggerElement
-    if (!trigger) return
-
-    this.trigger = trigger
-    trigger.setAttribute('aria-describedby', this.tooltipId)
-
-    trigger.addEventListener('mouseenter', this.handlePresent)
-    trigger.addEventListener('focus', this.handlePresent)
-    trigger.addEventListener('mouseleave', this.handleDismiss)
-    trigger.addEventListener('blur', this.handleDismiss)
-
-    if (this.open) {
-      this.present()
-    }
+    this.attachTrigger()
   }
 
   disconnectedCallback(): void {
@@ -155,7 +153,7 @@ export class Tooltip implements DsComponentInterface {
   @Method()
   async present(): Promise<boolean> {
     const trigger = this.triggerElement
-    if (!trigger || !this.containerEl) return false
+    if (!trigger || !this.containerEl || this.disabled) return false
 
     this.dsWillAnimate.emit(true)
 
@@ -242,6 +240,23 @@ export class Tooltip implements DsComponentInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private attachTrigger(): void {
+    const trigger = this.triggerElement
+    if (!trigger) return
+
+    this.trigger = trigger
+    trigger.setAttribute('aria-describedby', this.tooltipId)
+
+    trigger.addEventListener('mouseenter', this.handlePresent)
+    trigger.addEventListener('focus', this.handlePresent)
+    trigger.addEventListener('mouseleave', this.handleDismiss)
+    trigger.addEventListener('blur', this.handleDismiss)
+
+    if (this.open) {
+      this.present()
+    }
+  }
 
   /**
    * Resolves the trigger-to-tooltip distance in pixels.

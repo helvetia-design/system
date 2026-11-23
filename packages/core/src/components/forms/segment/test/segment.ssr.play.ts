@@ -1,16 +1,33 @@
-import { DsSegment, mountSsr, test } from '@helvetia-design/playwright'
+import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { HOST_VARIANTS, TAG } from './segment.variants'
 
-const ITEMS = `
-  <ds-segment-item value="apple" label="Apple"></ds-segment-item>
-  <ds-segment-item value="strawberry" label="Strawberry"></ds-segment-item>
-`
+const baseline = visualBaseline(TAG)
+const ssrBaseline = visualBaseline(TAG, `${TAG}.ssr.play.ts`)
+// The selected item's indicator background is drawn in the browser.
+const SSR_STATIC: readonly string[] = ['invalid', 'invalid-slot']
+const GLOBAL_STYLE_MISSING =
+  'SSR: global stylesheet not adopted into the shadow root after hydration, native input keeps its UA margin (#326)'
+const FIXME: Record<string, string> = {
+  'basic': GLOBAL_STYLE_MISSING,
+  'icon': GLOBAL_STYLE_MISSING,
+  'long-content': 'SSR: overflowing items switch to vertical layout only after hydration, box grows 57px (#327)',
+}
+const PAGE_URL = `/components/forms/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(page, `<ds-segment name="fruits" label="Fruits">${ITEMS}</ds-segment>`, renderToString, testInfo)
+  HOST_VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      test.fixme(variant in FIXME, FIXME[variant])
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
 
-    const segment = new DsSegment(page.locator('ds-segment'))
-    await segment.assertToBeVisible()
+      await expectScreenshot(
+        el,
+        SSR_STATIC.includes(variant) ? ssrBaseline(`${variant}-ssr-static`) : baseline(variant),
+      )
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
   })
 })

@@ -1,5 +1,18 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, h, Listen, Method, Prop, State } from '@stencil/core'
 import {
+  AttrDeserialize,
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Listen,
+  Method,
+  Prop,
+  State,
+} from '@stencil/core'
+import {
+  deserializeBooleanAttribute,
   Logger,
   type LogInstance,
   stopEventBubbling,
@@ -143,6 +156,11 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * The value of the segment group.
@@ -300,7 +318,12 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   // Native radio never fires "change" when clicking an already-checked item,
   // so onClick is the only hook for deselection.
   private handleInputClick = (ev: MouseEvent, itemValue: any) => {
-    if (!this.allowEmptySelection || this.disabled || this.readonly) return
+    // Native radios ignore `readOnly`, so cancel the click to keep the checked state in sync with `value`
+    if (this.readonly) {
+      ev.preventDefault()
+      return
+    }
+    if (!this.allowEmptySelection || this.disabled) return
     if (this.value === itemValue) {
       ev.preventDefault()
       this.value = undefined

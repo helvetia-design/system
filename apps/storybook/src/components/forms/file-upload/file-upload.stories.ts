@@ -16,7 +16,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-file-upload ${props(args)}>${slot}</ds-file-upload>`),
+  ...withRender(({ slot, ...args }) => `<ds-file-upload ${props(args, tag)}>${slot}</ds-file-upload>`),
 }
 
 export default meta

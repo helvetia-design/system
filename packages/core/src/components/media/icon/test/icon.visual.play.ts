@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'icon'
-const VARIANTS = ['basic', 'override', 'inline', 'svg-content', 'shadow', 'turn', 'colors', 'states', 'sizes']
+import { TAG, VARIANTS } from './icon.variants'
 
 const image = screenshot(TAG)
 

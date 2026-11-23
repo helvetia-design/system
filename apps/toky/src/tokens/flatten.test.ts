@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { flattenTokenDocument, parseTokenDocument } from './flatten'
+import { flattenTokenDocument, parseTokenDocument, resolveReferences } from './flatten'
 
 const fixture = {
   '🌐 Global': {
@@ -252,5 +252,29 @@ describe('responsive dimension extension', () => {
       tablet: { value: 24, unit: 'px' },
       desktop: { value: 32, unit: 'px' },
     })
+  })
+})
+
+describe('resolveReferences with reference tokens', () => {
+  const reference = parseTokenDocument({
+    '🌐 Global': { '🌈 Color': { White: { $type: 'color', $value: { hex: '#FFFFFF' } } } },
+    '🔗 Alias': { Background: { $type: 'color', $value: '{🌐 Global.🌈 Color.White}' } },
+  })
+
+  it('resolves own tokens through the reference tree and returns only own tokens', () => {
+    const own = flattenTokenDocument({
+      '🧩 Component': {
+        Card: {
+          Background: { $type: 'color', $value: '{🔗 Alias.Background}' },
+          Missing: { $type: 'color', $value: '{🔗 Alias.Nope}' },
+        },
+      },
+    })
+
+    const resolved = resolveReferences(own, reference)
+
+    expect(resolved).toHaveLength(2)
+    expect(resolved[0].resolvedValue).toEqual({ hex: '#FFFFFF' })
+    expect(resolved[1].resolutionError).toBe('missing-reference')
   })
 })

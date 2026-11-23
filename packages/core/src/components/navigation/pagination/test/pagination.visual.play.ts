@@ -1,8 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'pagination'
-
-const HOST_VARIANTS = ['basic', 'alignment', 'ranges', 'disabled', 'sizes', 'dots']
+import { TAG, HOST_VARIANTS } from './pagination.variants'
 
 const image = screenshot(TAG)
 

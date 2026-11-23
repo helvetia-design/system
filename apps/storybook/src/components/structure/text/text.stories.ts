@@ -46,7 +46,7 @@ export default meta
 const Story = StoryFactory<Args>(meta)
 
 export const Basic = Story({
-  ...withRender(({ slot, ...args }) => `<ds-text ${props(args)}>${slot}</ds-text>`),
+  ...withRender(({ slot, ...args }) => `<ds-text ${props(args, tag)}>${slot}</ds-text>`),
 })
 Basic.storyName = '🧩 Basic'
 

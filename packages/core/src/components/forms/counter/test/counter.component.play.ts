@@ -210,3 +210,12 @@ test.describe('form reset', () => {
     await counter.assertValue('3')
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-counter label="Label" required="false"></ds-counter>`)
+    const counter = new DsCounter(page.locator('ds-counter'))
+
+    await expect(counter.el).toHaveJSProperty('required', false)
+  })
+})

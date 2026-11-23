@@ -14,7 +14,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ slot, ...args }) => `<ds-badge ${props(args)}>${slot}</ds-badge>`),
+  ...withRender(({ slot, ...args }) => `<ds-badge ${props(args, tag)}>${slot}</ds-badge>`),
 }
 
 export default meta

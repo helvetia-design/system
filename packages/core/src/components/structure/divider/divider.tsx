@@ -66,6 +66,13 @@ export class Divider implements DsComponentInterface {
   readonly dashed: boolean = false
 
   /**
+   * If `true` the divider is shown on a dark background.
+   */
+  @Prop()
+  @Type('boolean')
+  readonly inverted: boolean = false
+
+  /**
    * RENDER
    * ------------------------------------------------------
    */
@@ -81,6 +88,7 @@ export class Divider implements DsComponentInterface {
           [`is-${this.color}`]: hasValue(this.color),
           [`has-space-${space}`]: hasValue(this.space),
           [`is-dashed`]: this.dashed,
+          [`is-inverted`]: this.inverted,
         }}
       ></Host>
     )

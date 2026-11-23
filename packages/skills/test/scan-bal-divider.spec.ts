@@ -225,7 +225,7 @@ describe('divider migration.md', () => {
       'scan-bal-divider.mjs',
       'one yes/no',
       'space="2xs"',
-      'color="inverted"',
+      'Do **not** write `color="inverted"`',
       'dashed="true"',
       'no slot',
       '<ds-divider>',

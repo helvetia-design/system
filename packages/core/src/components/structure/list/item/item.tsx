@@ -133,7 +133,7 @@ export class Item implements DsComponentInterface {
    */
   @Prop()
   @Type('string')
-  readonly download: string = ''
+  readonly download?: string
 
   /**
    * Specifies the URL of the page the link goes to.
@@ -263,9 +263,7 @@ export class Item implements DsComponentInterface {
       if (this.rel) {
         attributes.rel = this.rel
       }
-      if (this.download) {
-        attributes.download = this.download
-      }
+      attributes.download = this.download
     }
 
     if (this.variant === 'button') {

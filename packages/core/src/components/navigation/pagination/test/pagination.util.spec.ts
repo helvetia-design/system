@@ -50,7 +50,7 @@ describe('generatePaginationControl', () => {
   })
 
   describe('near end (value >= totalPages - 3)', () => {
-    // With pageRange=2, totalPages=20: threshold = 17; trailing start = 20 - 9 + 3 = 14
+    // With pageRange=2, totalPages=20: threshold = 20 - 2 - 2 = 16; trailing start = 20 - 9 + 3 = 14
     it('shows first page, dots, then trailing pages when on last page', () => {
       const controls = generatePaginationControl(20, 20, 2)
       expect(types(controls)).toEqual(['page', 'dots', 'page', 'page', 'page', 'page', 'page', 'page', 'page'])
@@ -62,6 +62,20 @@ describe('generatePaginationControl', () => {
       const controls = generatePaginationControl(17, 20, 2)
       expect(types(controls)).toEqual(['page', 'dots', 'page', 'page', 'page', 'page', 'page', 'page', 'page'])
       expect(activeLabel(controls)).toBe('17')
+    })
+
+    it('uses pageRange for the near-end threshold (value = totalPages - 2 - pageRange)', () => {
+      const controls = generatePaginationControl(16, 20, 2)
+      expect(labels(controls)).toEqual(['1', '...', '14', '15', '16', '17', '18', '19', '20'])
+    })
+
+    it('never renders an ellipsis that hides no page (pageRange 3)', () => {
+      const controls = generatePaginationControl(26, 30, 3)
+      expect(labels(controls)).toEqual(['1', '...', '22', '23', '24', '25', '26', '27', '28', '29', '30'])
+    })
+
+    it('keeps the active page visible with pageRange 0', () => {
+      expect(activeLabel(generatePaginationControl(18, 20, 0))).toBe('18')
     })
   })
 
@@ -105,10 +119,9 @@ describe('generatePaginationControl', () => {
       expect(activeLabel(controls)).toBe('1')
     })
 
-    it('resets totalPages to 10 when totalPages is 0 or negative', () => {
-      // totalPages becomes 10, which is > numberOfPages=9 with pageRange=2
-      const controls = generatePaginationControl(5, 0, 2)
-      expect(labels(controls)[labels(controls).length - 1]).toBe('10')
+    it('renders no controls when totalPages is 0 or negative', () => {
+      expect(generatePaginationControl(1, 0, 2)).toEqual([])
+      expect(generatePaginationControl(1, -5, 2)).toEqual([])
     })
 
     it('resets pageRange to 2 when pageRange is negative', () => {

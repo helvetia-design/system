@@ -2,7 +2,8 @@ import NextAuth from 'next-auth'
 import type { DefaultSession } from 'next-auth'
 import type {} from 'next-auth/jwt'
 import GitHub from 'next-auth/providers/github'
-import { shouldRecheckTeamMembership } from './src/auth/team-membership'
+import { shouldRecheckTeamMembershipFor, teamIdFor } from './src/auth/team-membership'
+import { getTokyConfig } from './src/tokens/config'
 import { isTeamMember } from './src/tokens/github-team'
 
 declare module 'next-auth' {
@@ -19,6 +20,7 @@ declare module 'next-auth/jwt' {
     login?: string
     isTeamMember?: boolean
     teamCheckedAt?: number
+    teamCheckedFor?: string
   }
 }
 
@@ -37,9 +39,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.picture = (profile as { avatar_url?: string }).avatar_url
       }
 
-      if (token.login && shouldRecheckTeamMembership(token.teamCheckedAt)) {
-        token.isTeamMember = await isTeamMember(token.login)
-        token.teamCheckedAt = Date.now()
+      if (token.login) {
+        const teamId = teamIdFor(await getTokyConfig())
+        if (shouldRecheckTeamMembershipFor({ at: token.teamCheckedAt, teamId: token.teamCheckedFor }, teamId)) {
+          token.isTeamMember = await isTeamMember(token.login)
+          token.teamCheckedAt = Date.now()
+          token.teamCheckedFor = teamId
+        }
       }
 
       return token

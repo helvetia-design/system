@@ -1,4 +1,5 @@
 import {
+  AttrDeserialize,
   AttachInternals,
   Component,
   Element,
@@ -16,6 +17,7 @@ import isEmpty from 'lodash/isEmpty'
 import isNaN from 'lodash/isNaN'
 import isNil from 'lodash/isNil'
 import {
+  deserializeBooleanAttribute,
   inheritAttributes,
   FormControl,
   FormControlInterface,
@@ -224,6 +226,11 @@ export class NumberInput implements DsComponentInterface, FieldInterface, FormCo
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * Text appended to the formatted value after blur (e.g. `"CHF"`).

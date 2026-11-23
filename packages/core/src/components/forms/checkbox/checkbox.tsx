@@ -1,5 +1,18 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, h, Host, Listen, Prop, State } from '@stencil/core'
 import {
+  AttrDeserialize,
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Host,
+  Listen,
+  Prop,
+  State,
+} from '@stencil/core'
+import {
+  deserializeBooleanAttribute,
   Logger,
   type LogInstance,
   inheritAttributes,
@@ -121,6 +134,11 @@ export class Checkbox implements DsComponentInterface {
   @Prop()
   @Type('boolean')
   readonly required: boolean = false
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * If `true`, in Angular reactive forms the control will not be set invalid

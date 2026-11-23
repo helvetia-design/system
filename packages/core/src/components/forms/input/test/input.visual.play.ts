@@ -1,22 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'input'
-const VARIANTS = [
-  'basic',
-  'disabled',
-  'invalid',
-  'invalid-slot',
-  'valid',
-  'warning',
-  'loading',
-  'long-content',
-  'suffix',
-  'number-type',
-  'slots',
-  'form-reset',
-  'button-reset',
-  'formatter',
-]
+import { TAG, VARIANTS } from './input.variants'
 
 const image = screenshot(TAG)
 
