@@ -128,9 +128,9 @@ tokens: # names checked in the Foundation file (19.11.2026)
   - { cssVar: --ds-pagination-dots-radius, figmaVariable: 🧩 Component/Pagination/Dots/Radius, resolved: true } # 4
   - { cssVar: --ds-pagination-dots-color-background, figmaVariable: 🧩 Component/Pagination/Dots/Color/Background, resolved: true }
   - { cssVar: --ds-pagination-dots-color-text, figmaVariable: 🧩 Component/Pagination/Dots/Color/Text, resolved: true }
-  - { cssVar: --ds-pagination-dots-gap, figmaVariable: 🧩 Component/Pagination/Dots/Gap, resolved: true } # 2
+  - { cssVar: --ds-pagination-dots-gap, figmaVariable: 🧩 Component/Pagination/Dots/Gap, resolved: true } # 4 (Space/Gap/2XS since #333, 20.11.2026)
   - { cssVar: --ds-pagination-dots-min-height, figmaVariable: 🧩 Component/Pagination/Dots/MinHeight, resolved: true } # 32
-  - { cssVar: --ds-pagination-dots-min-width, figmaVariable: 🧩 Component/Pagination/Dots/MinWidth, resolved: true } # 63
+  - { cssVar: --ds-pagination-dots-min-width, figmaVariable: 🧩 Component/Pagination/Dots/MinWidth, resolved: true } # 64 (Global/Size/64 since #333)
   - { cssVar: --ds-pagination-dots-max-width, figmaVariable: 🧩 Component/Pagination/Dots/MaxWidth, resolved: true } # 88
   - { cssVar: --ds-pagination-dots-margin-inline, figmaVariable: 🧩 Component/Pagination/Dots/MarginInline, resolved: true } # 20 → nav item spacing in the dots sets
   - { cssVar: --ds-pagination-dots-counter-typo-*, figmaVariable: 🧩 Component/Pagination/Dots/Counter/Typo/*, resolved: true } # 16 / Regular / 150%
@@ -167,19 +167,19 @@ measurements: # confirmed by the user 19.11.2026 (dots sets added on user reques
     - { set: Pagination, property: Ellipsis width, kind: size, group: context-dependent, show: drawn, instance: main, source: 'pagination.host.scss:110 (+ @include tablet :114)', values: { base: { px: { mobile: 32, tablet: 48, desktop: 48 }, token: 🧩 Component/Pagination/Size/Base/Ellipsis/Width }, sm: { px: 32, token: 🧩 Component/Pagination/Size/SM/Ellipsis/Width } } }
     - { set: Pagination, property: Gap, kind: spacing, group: inner spacing, show: drawn, instance: main, source: 'pagination.host.scss:93', values: { base: { px: 8, token: 🧩 Component/Pagination/Size/Base/Gap }, sm: { px: 4, token: 🧩 Component/Pagination/Size/SM/Gap } } }
     - { set: Pagination, property: Text (ellipsis), kind: type, group: typography, show: drawn, instance: main, source: 'pagination.host.scss:112', values: { base: { px: 16, weight: 700, lineHeight: 1.5, family: BaloiseCreateText, token: 🧩 Component/Pagination/Ellipsis/Typo } } }
-    - { set: PaginationDotsRow, property: Marker size, kind: size, group: fixed, show: drawn, instance: dot-row, source: 'pagination.host.scss:192', values: { base: { px: 10, token: 🧩 Component/Pagination/Dots/Marker/Size } } }
-    - { set: PaginationDotsRow, property: Min width, kind: size, group: limit, show: drawn, instance: dot-row, source: 'pagination.host.scss:164', note: 'binds — 3 dots + 2 gaps = 34 < 63', values: { base: { px: 63, token: 🧩 Component/Pagination/Dots/MinWidth } } }
+    - { set: PaginationDotsRow, property: Marker size, kind: size, group: fixed, show: drawn, instance: hit-area, source: 'pagination.host.scss:192', values: { base: { px: 10, token: 🧩 Component/Pagination/Dots/Marker/Size } } }
+    - { set: PaginationDotsRow, property: Min width, kind: size, group: limit, show: drawn, instance: dot-row, source: 'pagination.host.scss:164', note: 'binds — 3 dots + 2 gaps = 38 < 64', values: { base: { px: 64, token: 🧩 Component/Pagination/Dots/MinWidth } } }
     - { set: PaginationDotsRow, property: Min height, kind: size, group: limit, show: drawn, instance: dot-row, source: 'pagination.host.scss:165', values: { base: { px: 32, token: 🧩 Component/Pagination/Dots/MinHeight } } }
-    - { set: PaginationDotsRow, property: Gap, kind: spacing, group: inner spacing, show: drawn, instance: dot-row, source: 'pagination.host.scss:178', values: { base: { px: 2, token: 🧩 Component/Pagination/Dots/Gap } } }
+    - { set: PaginationDotsRow, property: Gap, kind: spacing, group: inner spacing, show: drawn, instance: dot-row, source: 'pagination.host.scss:178', values: { base: { px: 4, token: 🧩 Component/Pagination/Dots/Gap } } }
     - { set: PaginationDotsRow, property: Margin X, kind: spacing, group: inner spacing, show: drawn, instance: dot-row, source: 'pagination.host.scss:167', note: 'margin-inline on the pill — spacing to previous / next inside the component, not an outer margin', values: { base: { px: 20, token: 🧩 Component/Pagination/Dots/MarginInline } } }
     - { set: PaginationDotsRow, property: Radius, kind: shape, group: fixed, show: drawn, instance: dot-row, source: 'pagination.host.scss:169', values: { base: { px: 4, token: 🧩 Component/Pagination/Dots/Radius } } }
     - { set: PaginationDotsRow, property: Hit area (marker), kind: size, group: hit area, show: drawn, instance: hit-area, source: 'pagination.host.scss:192', note: '10 × 10 < 24 × 24 (WCAG 2.5.8) — finding. Own extra instance "Hit area" (the dot row'''s bottom is full of the 8 / 9 callouts): Spec/Outline on the middle dot (label hidden) + Spec/Leader kind=size with the number (user decision 19.11.2026)', values: { base: { px: 10 } } }
-    - { set: PaginationDots, property: Min width, kind: size, group: limit, show: drawn, instance: counter, source: 'pagination.host.scss:164', note: 'binds — "10 / 20" content is ~45px', values: { base: { px: 63, token: 🧩 Component/Pagination/Dots/MinWidth } } }
+    - { set: PaginationDots, property: Min width, kind: size, group: limit, show: drawn, instance: counter, source: 'pagination.host.scss:164', note: 'binds — "10 / 20" content is ~49px', values: { base: { px: 64, token: 🧩 Component/Pagination/Dots/MinWidth } } }
     - { set: PaginationDots, property: Text (counter value), kind: type, group: typography, show: drawn, instance: counter, source: 'pagination.host.scss:187', values: { base: { px: 16, weight: 700, lineHeight: 1.5, family: BaloiseCreateText, token: 🧩 Component/Pagination/Dots/CounterValue/Typo } } }
     - { set: PaginationDots, property: Text (counter), kind: type, group: typography, show: drawn, instance: counter, source: 'pagination.host.scss:171', values: { base: { px: 16, weight: 400, lineHeight: 1.5, family: BaloiseCreateText, token: 🧩 Component/Pagination/Dots/Counter/Typo } } }
     - { set: PaginationDots, property: Max width, kind: size, group: limit, show: skip, reason: 'never binds with realistic page counts — "999 / 999" stays below 88px; finding', values: { base: { px: 88, token: 🧩 Component/Pagination/Dots/MaxWidth } } }
     - { set: PaginationDots, property: 'Min height, gap, margin X, radius', kind: size, group: fixed, show: skip, reason: 'same tokens and values as the dot row — shown once there', values: { base: { px: '32 / 2 / 20 / 4' } } }
-    - { set: PaginationDotsRow, property: Max width, kind: size, group: limit, show: skip, reason: 'never binds — 5 dots + 4 gaps = 58 < 88', values: { base: { px: 88, token: 🧩 Component/Pagination/Dots/MaxWidth } } }
+    - { set: PaginationDotsRow, property: Max width, kind: size, group: limit, show: skip, reason: 'never binds — 5 dots + 4 gaps = 66 < 88', values: { base: { px: 88, token: 🧩 Component/Pagination/Dots/MaxWidth } } }
     - { set: PaginationDotsRow, property: Marker radius, kind: shape, group: fixed, show: skip, reason: 'circle (9999)', values: { base: { px: 9999, token: 🧩 Component/Pagination/Dots/Marker/Radius } } }
     - { set: Pagination, property: Height, kind: size, group: derived, show: skip, reason: 'Button size covers it', values: { base: { px: 48 }, sm: { px: 32 } } }
     - { set: Pagination, property: 'Icon size, Button radius / border / label typo', kind: size, group: fixed, show: skip, reason: 'nested Button — documented in the Button Measurements', values: { base: { px: '24 / 4 / 2 / 16' }, sm: { px: '14 / 4 / 2 / 14' } } }
@@ -228,8 +228,10 @@ totalPages=20`; PaginationDotsRow `value=2, totalPages=3` (`rebuild-decisions.md
   at `Icon/Size/MD` (24) in code; the Button instance's nested `icon` frame size can't be overridden
   through the Plugin API, so `Pagination size=base` previous / next keep `Icon/Size/Base` (16) with
   `Icon/Padding/MD`. Known deviation, follow-up in `TODO.md` (Button run).
-- **Dot gap (user decision 19.11.2026):** 2px (`Dots/Gap`) as in code; the committed dot-row snapshot
-  still shows the old ~8px gap and needs `/update-screenshots`.
+- **Dot gap / badge min width (token update #333, 20.11.2026):** `Dots/Gap` 2 → 4 (`Space/Gap/2XS`),
+  `Dots/MinWidth` 63 → 64 (`Global/Size/64`). Bound in Figma, so the sets updated with the Foundation
+  library update (published + accepted 23.11.2026); Measurements text (rows 6, 8, 12) and marker positions
+  re-done; marker 5 moved to the "Dot marker" instance (its callout crossed the `6` pill).
 
 - **Ellipsis width (user decision 19.11.2026):** static per size — `base` → `Size/Base/Ellipsis/Width`
   (48), `sm` → `Size/SM/Ellipsis/Width` (32). Code switches to the SM token on mobile
