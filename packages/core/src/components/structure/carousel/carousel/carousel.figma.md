@@ -18,16 +18,19 @@ sets: # default set first
 figmaPage: Core / Structure
 figmaDocFrameNodeId: '6388:1203'
 
-anatomy: # merged family list, confirmed by the user 19.11.2026; letters follow the drawing in Phase 7
+anatomy: # letters follow the drawing (Phase 7, user decision 23.11.2026: two instances, arrows + pagination are marked)
   - letter: A
     part: track
-    description: 'The scrollable item track.'
+    description: 'The scrollable area. The items go into its single items slot.'
   - letter: B
-    subComponent: ds-carousel-item
-    part: Carousel item (ds-carousel-item)
-    description: 'Carousel Item is a single slide or product tile inside a ds-carousel.'
-    marker: '(items slot)' # no CarouselItem set — the marker points at the empty items slot (Phase 7 confirms)
-# @part track matches part="track" in render(). ds-carousel-item has no @part → one entry, no sub-letters.
+    part: scroll button
+    description: 'Previous / next arrow, shown on the track (large) or below it (large-below).'
+    marker: 'CarouselArrow on Carousel (large)' # no @part in code
+  - letter: C
+    part: pagination
+    description: 'Dots (up to 5 items) or a counter (more than 5) between the previous / next buttons.'
+    marker: 'pagination on Carousel (dots)' # no @part in code
+# Only `track` is a @part in render(); B and C are marked at the user's request. ds-carousel-item has no @part and no Figma set (slot content).
 
 props:
   - name: variant
@@ -141,11 +144,11 @@ tokens: # names checked in the Foundation file (19.11.2026); 34 Carousel variabl
 # No breakpoint mixins → no device: section.
 
 measurements: # confirmed by the user 19.11.2026; measured on the dev server (1280px)
-  drawnOption: slide
+  drawnOption: dots # drawing: Carousel (dots, large, large-below) + CarouselTile (large), 224px wide; numbering 1–9 follows size → spacing → shape (Phase 8, 23.11.2026)
   options: []
   behavior:
     width: fill # carousel; tile items hug (itemsPerView → equal share)
-    overflow: scroll # items beyond the track scroll horizontally
+    overflow: scroll # items beyond the track scroll horizontally (card shows CarouselTile, Fill ↔ · Scrolls)
   rows:
     - {
         set: Carousel,
@@ -166,6 +169,16 @@ measurements: # confirmed by the user 19.11.2026; measured on the dev server (12
         instance: large,
         source: 'carousel.tsx:499 (size="sm")',
         values: { base: { px: 14, token: 🧩 Component/Icon/Size/SM } },
+      }
+    - {
+        set: CarouselTile,
+        property: Fade width,
+        kind: size,
+        group: fixed,
+        show: drawn,
+        instance: tile,
+        source: carousel.host.scss:165,
+        values: { base: { px: 48, token: 🧩 Component/Carousel/ScrollFade/Width } },
       }
     - {
         set: Carousel,
@@ -189,16 +202,6 @@ measurements: # confirmed by the user 19.11.2026; measured on the dev server (12
       }
     - {
         set: Carousel,
-        property: Radius,
-        kind: shape,
-        group: fixed,
-        show: drawn,
-        instance: main,
-        source: carousel.host.scss:49,
-        values: { base: { px: 4, token: 🧩 Component/Carousel/Radius } },
-      }
-    - {
-        set: Carousel,
         property: Below gap,
         kind: spacing,
         group: inner spacing,
@@ -219,16 +222,6 @@ measurements: # confirmed by the user 19.11.2026; measured on the dev server (12
       }
     - {
         set: CarouselTile,
-        property: Gap,
-        kind: spacing,
-        group: inner spacing,
-        show: drawn,
-        instance: tile,
-        source: carousel.host.scss:154,
-        values: { base: { px: 16, token: 🧩 Component/Carousel/Gap } },
-      }
-    - {
-        set: CarouselTile,
         property: Arrow gap,
         kind: spacing,
         group: inner spacing,
@@ -238,14 +231,24 @@ measurements: # confirmed by the user 19.11.2026; measured on the dev server (12
         values: { base: { px: 4, token: 🧩 Component/Carousel/ScrollBtn/Gap } },
       }
     - {
-        set: CarouselTile,
-        property: Fade width,
-        kind: size,
+        set: Carousel,
+        property: Radius,
+        kind: shape,
         group: fixed,
         show: drawn,
-        instance: tile,
-        source: carousel.host.scss:165,
-        values: { base: { px: 48, token: 🧩 Component/Carousel/ScrollFade/Width } },
+        instance: main,
+        source: carousel.host.scss:49,
+        values: { base: { px: 4, token: 🧩 Component/Carousel/Radius } },
+      }
+    - {
+        set: CarouselTile,
+        property: Gap,
+        kind: spacing,
+        group: inner spacing,
+        show: skip,
+        reason: 'gap between items — the items are one slot, not representable in Figma',
+        source: carousel.host.scss:154,
+        values: { base: { px: 16, token: 🧩 Component/Carousel/Gap } },
       }
     - {
         set: Carousel,
