@@ -33,7 +33,6 @@ const CHILD_SLUGS = new Map([
   ['card-title', 'card'],
   ['button-group', 'button'],
   ['carousel-item', 'carousel'],
-  ['check', 'checkbox'],
   ['checkbox-group', 'checkbox'],
   ['data-item', 'data'],
   ['data-label', 'data'],
@@ -77,7 +76,6 @@ const CHILD_SLUGS = new Map([
   ['option-list', 'dropdown'],
   ['popover-content', 'popover'],
   ['radio-group', 'radio'],
-  ['radio-icon', 'radio'],
   ['segment-item', 'segment'],
   ['select-option', 'select'],
   ['stage-back-link', 'stage'],
@@ -87,11 +85,13 @@ const CHILD_SLUGS = new Map([
   ['stage-image', 'stage'],
   ['step-item', 'steps'],
   ['step-option', 'steps'],
-  ['switch', 'checkbox'],
   ['tag-group', 'tag'],
   ['tab-item', 'tabs'],
   ['tab-option', 'tabs'],
 ])
+
+// Legacy tags with no ds equivalent: no migration rewrites them, so they never belong in suggested.
+const BY_HAND = new Set(['check', 'switch', 'radio-icon'])
 
 export function componentNameToSlug(name) {
   return name
@@ -149,21 +149,26 @@ export function scanMigratable(rootDir, paths = [], { extensions } = {}) {
   const available = availableMigrations()
   const totals = new Map()
   const typeTotals = new Map()
+  const byHandTotals = new Map()
   const perFile = new Map()
 
   const unmatched = scanSourceFiles(
     rootDir,
     ({ file, masked }) => {
       const fileTotals = new Map()
+      const fileByHand = new Map()
       for (const match of masked.matchAll(USAGE_RE)) {
         const { component, type } = classify(match.groups, available)
         if (type) increment(typeTotals, type)
-        if (component) {
+        if (component && BY_HAND.has(component)) {
+          increment(byHandTotals, component)
+          increment(fileByHand, component)
+        } else if (component) {
           increment(totals, component)
           increment(fileTotals, component)
         }
       }
-      if (fileTotals.size > 0) perFile.set(file, fileTotals)
+      if (fileTotals.size > 0 || fileByHand.size > 0) perFile.set(file, { fileTotals, fileByHand })
     },
     extensions ? { paths, extensions } : { paths },
   )
@@ -173,13 +178,22 @@ export function scanMigratable(rootDir, paths = [], { extensions } = {}) {
     suggested: used.filter(component => available.has(component.name)),
     notYet: used.filter(component => !available.has(component.name)),
     types: toComponents(typeTotals),
+    ...withByHand(byHandTotals),
   }
   if (paths.length === 0) return result
 
   const files = [...perFile.entries()]
     .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([file, fileTotals]) => ({ file, components: toComponents(fileTotals) }))
+    .map(([file, { fileTotals, fileByHand }]) => ({
+      file,
+      components: toComponents(fileTotals),
+      ...withByHand(fileByHand),
+    }))
   return unmatched.length > 0 ? { ...result, files, unmatched } : { ...result, files }
+}
+
+function withByHand(totals) {
+  return totals.size > 0 ? { byHand: toComponents(totals) } : {}
 }
 
 function toComponents(totals) {

@@ -16,7 +16,7 @@ import { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, Butt
 import { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 import { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
 import { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
-import { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
+import { CarouselChangeDetail, CarouselControls, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
 import { CheckboxBlurDetail, CheckboxChangeDetail, CheckboxFocusDetail, CheckboxGroupBlurDetail, CheckboxGroupChangeDetail, CheckboxGroupColumns, CheckboxGroupFocusDetail, CheckboxLabelPosition, CheckboxTileColor } from "./components/forms/checkbox/checkbox.interfaces";
 import { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
 import { CloseButtonSize, CloseSize } from "./components/actions/close/close.interfaces";
@@ -64,7 +64,7 @@ export { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, Butt
 export { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 export { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
 export { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
-export { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
+export { CarouselChangeDetail, CarouselControls, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
 export { CheckboxBlurDetail, CheckboxChangeDetail, CheckboxFocusDetail, CheckboxGroupBlurDetail, CheckboxGroupChangeDetail, CheckboxGroupColumns, CheckboxGroupFocusDetail, CheckboxLabelPosition, CheckboxTileColor } from "./components/forms/checkbox/checkbox.interfaces";
 export { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
 export { CloseButtonSize, CloseSize } from "./components/actions/close/close.interfaces";
@@ -671,10 +671,6 @@ export namespace Components {
           * @default 'slide'
          */
         "carouselVariant": CarouselVariant;
-        /**
-          * Background color for product tiles.
-         */
-        "color"?: CarouselItemColor;
         /**
           * Set by ds-carousel. 1-based position index.
           * @default 0
@@ -5820,10 +5816,6 @@ declare namespace LocalJSX {
          */
         "carouselVariant"?: CarouselVariant;
         /**
-          * Background color for product tiles.
-         */
-        "color"?: CarouselItemColor;
-        /**
           * Set by ds-carousel. 1-based position index.
           * @default 0
          */
@@ -9346,7 +9338,6 @@ declare namespace LocalJSX {
         "value": string | null;
     }
     interface DsCarouselItemAttributes {
-        "color": CarouselItemColor;
         "carouselVariant": CarouselVariant;
         "navigation": boolean;
         "index": number;

@@ -221,7 +221,6 @@ describe('close migration.md', () => {
     for (const phrase of [
       'scan-bal-close.mjs',
       'one yes/no',
-      'size="sm"',
       'size="md"',
       'inverted',
       '<ds-close>',

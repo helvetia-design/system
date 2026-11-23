@@ -798,6 +798,16 @@ in a flat `data-*` attribute. See
 [docs/adr/0002-ds-config-meta-tag.md](../../docs/adr/0002-ds-config-meta-tag.md)
 for the full rationale.
 
+`setupDsConfig` never replaces an existing `Config`-like instance (anything
+with a `reset` method) on `window.DesignSystem.config`. It applies the merged
+sources to that instance instead, so components attached to it keep receiving
+changes. This matters when several bundles each ship a copy of
+`@helvetia-design/core` (e.g. the extension repos): the first bundle's
+instance stays the shared one, and a later bundle's exported `config` module
+singleton is then not the registered instance. Read the live instance with
+`useDsConfig()`. A plain object on `window.DesignSystem.config` is still
+replaced by the module singleton.
+
 ### Dynamic-Import-Free Entry Point (`@helvetia-design/core/initialize`)
 
 The bare `@helvetia-design/core` specifier resolves (via `module`/`es2015`) to the
