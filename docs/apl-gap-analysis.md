@@ -59,10 +59,12 @@ input's field shell rather than props on `ds-input`.
 (`4.6.2`, wrapped in `select.picker.ts`), and the APL uses Angular Material. The fair concern is that
 a dropdown is a lot of work, so we should stay on a library. Three things argue against that here.
 
-**The hard part is already solved, and not by slim-select.** The genuinely difficult piece of any
+**The hard part is partly solved, but not where we need it.** The genuinely difficult piece of any
 dropdown is placement: opening upwards when there is no room below, staying attached while the page
-scrolls, avoiding the screen edges. `ds-popup` already does this with `@floating-ui/dom`. We would not
-be dropping a library and writing it ourselves, but using a more focused one we already ship.
+scrolls, avoiding the screen edges. `ds-popup` already does this with `@floating-ui/dom`. The catch,
+found while building the POC: no form field in the Design System uses `ds-popup` for its dropdown.
+`ds-select` uses slim-select, `ds-datepicker` uses air-datepicker, and `ds-phone-input` positions a
+plain element with CSS. See [What the POC showed](#what-the-poc-showed).
 
 **We have already built most of an autocomplete, twice.** `ds-phone-input` is a text field with a
 filterable dropdown: a search field, a list, keyboard navigation, an active-option marker for screen
@@ -73,15 +75,15 @@ avoiding the component.
 
 **What is actually new is small:**
 
-| Need                                           | Status                             |
-| ---------------------------------------------- | ---------------------------------- |
-| Field, label, hint, error, required marker     | `ds-input` — have it               |
-| Panel placement and screen-edge handling       | `ds-popup` / floating-ui — have it |
-| Panel styling, "no results" text, clear button | `ds-select` — have it              |
-| Debounce                                       | `ds-input` — have it               |
-| Keyboard navigation in the list                | written twice, needs extracting    |
-| Combobox screen-reader semantics               | **new**                            |
-| Filtering, bold matching text, async loading   | **new**                            |
+| Need                                           | Status                                            |
+| ---------------------------------------------- | ------------------------------------------------- |
+| Field, label, hint, error, required marker     | `ds-input` — have it                              |
+| Panel placement and screen-edge handling       | floating-ui is shipped, but unused by form fields |
+| Panel styling, "no results" text, clear button | `ds-select` — have it                             |
+| Debounce                                       | `ds-input` — have it                              |
+| Keyboard navigation in the list                | written twice, needs extracting                   |
+| Combobox screen-reader semantics               | **new**                                           |
+| Filtering, bold matching text, async loading   | **new**                                           |
 
 **The select route has a cost too.** `ds-select` is used in nearly every app. Allowing free text
 changes what its value can be for every existing consumer — a breaking change with a wide blast
@@ -94,38 +96,82 @@ tested. Half a day would settle it with evidence.
 Worth noting: the APL used Material and still ended up with no component — three hand-written examples
 and six empty styling files. The library did not save that work.
 
+### What the POC showed
+
+To replace guesswork with evidence we built a working `ds-autocomplete` MVP: a text field with a
+filtered suggestion panel, bold matching text, keyboard navigation, screen-reader combobox semantics,
+a clear button, a "no results" state, and free text. It is on branch
+[`poc/ds-autocomplete`](https://github.com/helvetia-design/system/tree/poc/ds-autocomplete), not on
+`main`. It needed **no new design tokens** — the panel reuses the existing `--ds-select-*` ones.
+
+**It confirmed the recommendation.** Three things define the component, and each one is the opposite of
+how a select works: the cursor never leaves the text field, the submitted value is whatever was typed,
+and filtering runs on the field text rather than on a second search box inside the panel. Making
+slim-select do all three means replacing how it handles focus and values, not configuring it.
+
+**It also revealed a problem we did not see from reading the code.** The suggestion panel had to be
+written by hand, because nothing shared exists to build it from:
+
+| Component             | How its dropdown is built           |
+| --------------------- | ----------------------------------- |
+| `ds-select`           | slim-select (third-party)           |
+| `ds-datepicker`       | air-datepicker (third-party)        |
+| `ds-phone-input`      | by hand                             |
+| `ds-autocomplete` POC | by hand                             |
+| `ds-popup`            | floating-ui — used by no form field |
+
+So the POC is the **third** hand-written dropdown list in the Design System, and roughly 110 of its 600
+lines are near-identical to `ds-phone-input`: moving the highlighted option with the arrow keys, the
+mouse handlers, the "no results" row, hiding the panel from assistive tech. The styling repeats too —
+`ds-autocomplete` and `ds-phone-input` each declare their own panel background, shadow, border, radius
+and option states, and both already borrow `--ds-select-*` tokens to do it.
+
+**Recommendation: extract a shared internal listbox primitive** (panel plus option list plus keyboard
+navigation) and move `ds-phone-input` and `ds-autocomplete` onto it. Either as a reusable piece on its
+own, or by making `ds-popup` usable from inside another component. Today a bug in keyboard navigation
+has to be fixed in three places. This is an argument for building the component and tidying up
+underneath it — not for skipping the component.
+
+**One gap is bigger than the others: async options.** The POC takes a fixed list of suggestions, and
+that shape cannot express remote search. Remote search is not "the same list, fetched later" — it
+brings a request per keystroke, cancelling requests that are no longer relevant, a loading state in the
+panel, a failure state, a minimum number of characters before searching, and the question of who owns
+the filtering (the server does, so the component must stop filtering locally). Applications rely on
+this today for person and address lookup. **It is a second phase, with its own design input** — see
+open question 4. The MVP should not pretend to cover it.
+
 APL page: [/theme-demo/autocomplete](https://www.helvetia.com/corp/app-patternlibrary/theme-demo/autocomplete) ·
 Used by: All · Confluence currently says _"Normal Text Input component > not needed"_, which does not
 hold.
 
 ### Gaps
 
-| #   | What's missing                   | Severity     | Note                                                                                      |
-| --- | -------------------------------- | ------------ | ----------------------------------------------------------------------------------------- |
-| 1   | Free text plus suggestion panel  | `Blocker`    | `ds-select` can only hold one of its options.                                             |
-| 2   | Typing happens in the field      | `Blocker`    | `ds-select` puts the search box inside the panel, so you click, then type somewhere else. |
-| 3   | Combobox screen-reader semantics | `Blocker`    | `ds-popup` can be a listbox but moves focus into the panel. Focus must stay in the field. |
-| 4   | Async / remote options           | `Blocker`    | Apps only. Used by person search and address lookup. DS options are a fixed list.         |
-| 5   | Keyboard navigation in the list  | `Gap`        | Would be the third hand-rolled one in the DS. Worth extracting as shared code.            |
-| 6   | Bold the matching text           | `Gap`        | All three demos do this.                                                                  |
-| 7   | Two-line options                 | `Gap`        | Demo page shows a title plus a smaller second line. DS options are a single text label.   |
-| 8   | Extra row at the bottom of panel | `Gap`        | APL: _"Fahrzeug nicht gefunden? Manuell erfassen"_.                                       |
-| 9   | Panel width and max height       | `Gap`        | No DS setting for either. One demo lists 68 options.                                      |
-| 10  | Icons in options                 | `Gap`        | Apps only. Person search shows a person-type icon. Not on the demo page.                  |
-| 11  | Minimum characters before open   | `Gap`        | Apps only. 2 characters in apps, 1 in a demo, none elsewhere.                             |
-| 12  | "No results" message             | `Gap`        | Apps only. DS has the text, but only inside `ds-select`'s own panel.                      |
-| 13  | Show label, submit a code        | `Gap`        | Apps only. `ds-input` submits exactly what is shown.                                      |
-| 14  | Loading indicator in the panel   | `Partial`    | `ds-input loading` shows a spinner in the field. APL shows nothing at all.                |
-| 15  | Clear button                     | `Have it`    | `ds-select clearable`, or the shared `ClearButton`.                                       |
-| 16  | Invalid state and error message  | `Have it`    | `invalid` / `invalidText`, filled in automatically from Angular form errors.              |
-| 17  | Label, hint, optional marker     | `Have it`    | `label`, `description`, `required`.                                                       |
-| 18  | Debounce                         | `Have it`    | `ds-input debounce`. APL uses 300ms in apps.                                              |
-| 19  | Multi-select with chips          | `Gap`        | On the APL Chips page, not the autocomplete page. Scope question, see below.              |
-| 20  | Grouped options                  | `Gap`        | Also only on the Chips page. `ds-select` already supports groups.                         |
-| 21  | Announce how many results        | `Don't copy` | The APL never announces this. Needed for WCAG 2.2 AA, so it is added scope.               |
-| 22  | Clear button label               | `Don't copy` | APL label is unevaluated code, so screen readers read the translation key out loud.       |
-| 23  | Errors linked to the field       | `Don't copy` | APL app wrapper styles errors red but assistive tech never sees them.                     |
-| 24  | Safe text highlighting           | `Don't copy` | APL injects unescaped HTML into options. Use `<mark>` instead.                            |
+| #   | What's missing                   | Severity     | Note                                                                                         |
+| --- | -------------------------------- | ------------ | -------------------------------------------------------------------------------------------- |
+| 1   | Free text plus suggestion panel  | `Blocker`    | `ds-select` can only hold one of its options.                                                |
+| 2   | Typing happens in the field      | `Blocker`    | `ds-select` puts the search box inside the panel, so you click, then type somewhere else.    |
+| 3   | Combobox screen-reader semantics | `Blocker`    | `ds-popup` can be a listbox but moves focus into the panel. Focus must stay in the field.    |
+| 4   | Async / remote options           | `Blocker`    | Apps only. Person search and address lookup. A second phase of its own, see the POC section. |
+| 5   | Keyboard navigation in the list  | `Gap`        | Confirmed by the POC as the third hand-rolled one. Extract a shared listbox primitive.       |
+| 6   | Bold the matching text           | `Gap`        | All three demos do this.                                                                     |
+| 7   | Two-line options                 | `Gap`        | Demo page shows a title plus a smaller second line. DS options are a single text label.      |
+| 8   | Extra row at the bottom of panel | `Gap`        | APL: _"Fahrzeug nicht gefunden? Manuell erfassen"_.                                          |
+| 9   | Panel width and max height       | `Gap`        | No DS setting for either. One demo lists 68 options.                                         |
+| 10  | Icons in options                 | `Gap`        | Apps only. Person search shows a person-type icon. Not on the demo page.                     |
+| 11  | Minimum characters before open   | `Gap`        | Apps only. 2 characters in apps, 1 in a demo, none elsewhere.                                |
+| 12  | "No results" message             | `Gap`        | Apps only. DS has the text, but only inside `ds-select`'s own panel.                         |
+| 13  | Show label, submit a code        | `Gap`        | Apps only. `ds-input` submits exactly what is shown.                                         |
+| 14  | Loading indicator in the panel   | `Partial`    | `ds-input loading` shows a spinner in the field. APL shows nothing at all.                   |
+| 15  | Clear button                     | `Have it`    | `ds-select clearable`, or the shared `ClearButton`.                                          |
+| 16  | Invalid state and error message  | `Have it`    | `invalid` / `invalidText`, filled in automatically from Angular form errors.                 |
+| 17  | Label, hint, optional marker     | `Have it`    | `label`, `description`, `required`.                                                          |
+| 18  | Debounce                         | `Have it`    | `ds-input debounce`. APL uses 300ms in apps.                                                 |
+| 19  | Multi-select with chips          | `Gap`        | On the APL Chips page, not the autocomplete page. Scope question, see below.                 |
+| 20  | Grouped options                  | `Gap`        | Also only on the Chips page. `ds-select` already supports groups.                            |
+| 21  | Announce how many results        | `Don't copy` | The APL never announces this. Needed for WCAG 2.2 AA, so it is added scope.                  |
+| 22  | Clear button label               | `Don't copy` | APL label is unevaluated code, so screen readers read the translation key out loud.          |
+| 23  | Errors linked to the field       | `Don't copy` | APL app wrapper styles errors red but assistive tech never sees them.                        |
+| 24  | Safe text highlighting           | `Don't copy` | APL injects unescaped HTML into options. Use `<mark>` instead.                               |
 
 ### Open questions for design
 
