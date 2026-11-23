@@ -83,12 +83,13 @@ first.
 
 ## Phase 6: Deliver
 
-**Write** the plan to `docs/plans/<component>-figma-plan.md`, then return a summary — the path,
+**Write** the plan to `docs/plans/components/<component>-figma-plan.md` (gitignored — a handoff,
+not a document; the durable record is `<name>.figma.md`), then return a summary — the path,
 the blocking handoffs, and the budget verdict. Not the plan body: it survives a human gate and is
 then read by the ux-designer, so routing it through the orchestrator's context pays for the same
 content twice.
 
-Your `Write` access is scoped to `docs/plans/**`. **Do not touch `<name>.figma.md`** — the
+Your `Write` access is scoped to `docs/plans/components/**`. **Do not touch `<name>.figma.md`** — the
 ux-designer owns that file and creates it with `ds-figma-mapping`, which takes this plan as its
 input.
 

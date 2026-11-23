@@ -10,6 +10,10 @@ Define what "accessible" concretely means for one component, before it is built.
 Output is a requirements set the engineer implements and the verifier checks — not an audit of
 existing code (that's `ds-a11y-audit`).
 
+**Read `docs/plans/components/<component>-brief.md` first if it exists** — the orchestrator's
+grilling round settled scope, the real data set and what is explicitly out. Plan the keyboard
+map for what is in scope, not for the complete domain.
+
 ## Phase 1: Classify the component
 
 Accessibility requirements follow from what the component _is_:
@@ -90,14 +94,16 @@ these become manual checks in `ds-a11y-verify`.
 
 ## Phase 4: Deliver
 
-**Write** the plan to `docs/plans/<component>-a11y-plan.md` yourself, then return a **summary,
+**Write** the plan to `docs/plans/components/<component>-a11y-plan.md` yourself (that directory
+is gitignored — a throwaway handoff, not a document), then return a **summary,
 not the plan body** — the path, the findings that need routing to another agent, and the
 criteria that will need manual verification. The orchestrator reads the file when it needs
 detail; passing the body through its context so it can be written back out pays for the same
 content twice.
 
-`ds-plan-component` writes `docs/plans/<component>-plan.md` — a different file, so the two
-planners stay safe to run in parallel.
+`ds-plan-component` writes `docs/plans/components/<component>-plan.md` — a different file, so
+the two planners stay safe to run in parallel. A criterion that must outlive the task belongs in
+the component's `CONTEXT.md` or an ADR, not in a preserved plan.
 
 The file must contain:
 

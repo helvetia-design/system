@@ -41,9 +41,15 @@ nothing else.** A plan whose first line is "Q1, blocking: is this the right comp
 plan that should not have been written yet. Three lines costs the orchestrator one question; a
 hedged plan costs a full planning run that may be thrown away.
 
-If the requirements are too unsettled to plan against at all, say so and stop. Ask the
-orchestrator to run `/grill-with-docs` with the user first — that is a user-invoked skill, so
-you cannot run it yourself, and guessing the decisions produces a plan nobody agreed to.
+**If `docs/plans/components/<component>-brief.md` exists, read it first** — it is the settled
+output of the orchestrator's grilling round, and both checks above are already answered in it.
+Treat its decisions as given, including what it puts out of scope. A plan that re-opens a
+settled decision wastes the round that settled it.
+
+If there is no brief and the requirements are too unsettled to plan against, say so and stop.
+Ask the orchestrator to run the `grilling` skill with the user first — it interviews the user in
+rounds, so you cannot run it from here, and guessing the decisions produces a plan nobody agreed
+to.
 
 ## Phase 1: Understand
 
@@ -196,10 +202,16 @@ Resolve inconsistencies before returning the plan, or report them as blocking.
 
 ## Phase 6: Deliver
 
-**Write** the plan to `docs/plans/<component>-plan.md` yourself, then return a **summary, not
-the plan body**. Your `Write` access is scoped to `docs/plans/**` — everything else stays
-read-only, which is what keeps you safe to run in parallel with the a11y planner (it writes
-`docs/plans/<component>-a11y-plan.md`, a different file).
+**Write** the plan to `docs/plans/components/<component>-plan.md` yourself, then return a
+**summary, not the plan body**. That directory is gitignored — the plan is a handoff, not a
+document, so it never needs cleaning up and never becomes something later code cites. Your
+`Write` access is scoped to `docs/plans/components/**` — everything else stays read-only
+(including `docs/plans/` itself, which holds tracked project plans), which is what keeps you
+safe to run in parallel with the a11y planner (it writes
+`docs/plans/components/<component>-a11y-plan.md`, a different file).
+
+Anything from the plan that must outlive the task goes in the component's `CONTEXT.md` or an
+ADR under `docs/adr/` — name those in the plan's file list, as usual.
 
 Return to the orchestrator, in under 30 lines:
 

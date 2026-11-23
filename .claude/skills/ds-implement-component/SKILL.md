@@ -160,7 +160,8 @@ derive from them.
 
 ## Phase 7: Validate
 
-**First, check your render output against the a11y plan.** If `docs/plans/<name>-a11y-plan.md`
+**First, check your render output against the a11y plan.** If
+`docs/plans/components/<name>-a11y-plan.md`
 exists, walk its semantics, ARIA and state-announcement sections and confirm every structural
 requirement actually appears in what you built. This is a grep-level check and it is cheap. The
 plan is a specification you were handed, not a suggestion.

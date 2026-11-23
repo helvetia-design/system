@@ -1,6 +1,6 @@
 ---
 name: ds-a11y-test
-description: Write or extend a component's accessibility tests — the axe scan in `.a11y.play.ts` across every variant and state, plus keyboard, focus and ARIA-state coverage in `.component.play.ts`. Use when a component has no a11y tests, after adding a variant or interaction, or when an audit finding needs regression coverage.
+description: Write or extend a component's accessibility tests in `.a11y.play.ts` — the axe scan across every variant and state, plus keyboard, focus and ARIA-state coverage. Use when a component has no a11y tests, after adding a variant or interaction, or when an audit finding needs regression coverage.
 ---
 
 # ds-a11y-test
@@ -9,19 +9,16 @@ Write the automated accessibility coverage for a component.
 
 ## Where tests live
 
-| File                            | Contains                                         |
-| ------------------------------- | ------------------------------------------------ |
-| `test/<name>.a11y.play.ts`      | axe scans, one per variant/state combination     |
-| `test/<name>.component.play.ts` | keyboard, focus order, and ARIA-state assertions |
+**Everything a11y lives in `test/<name>.a11y.play.ts`** — the axe scans _and_ the keyboard,
+focus-order and ARIA-state tests. It is your file alone; you never write
+`.component.play.ts` (test-engineer's behavior suite) or `.po.ts`.
 
-Keyboard and focus behavior belongs in the **component** test, not the a11y test — the axe
-fixture only scans a static tree, so it cannot press a key. Both run from `packages/core`.
+It is one ordinary Playwright suite: the `a11y` fixture is an extra scan helper on a live
+page, so the same test can press keys, open overlays and assert focus.
 
-`.component.play.ts` is test-engineer's file, and you may add keyboard, focus-order and
-ARIA-state tests to it anyway — that is an explicit carve-out in `docs/agents/ds-team.md`,
-because the APG keyboard contract is your judgment to encode. Add to the existing file in its
-existing style; don't restructure it, and leave its non-a11y tests alone. A whole new suite or
-file still goes to test-engineer.
+Pre-existing keyboard tests in a shipped component's `.component.play.ts` stay there — read
+them so you don't duplicate, and report, don't move them. Everything you add goes in
+`.a11y.play.ts`.
 
 ## The axe fixture
 
@@ -65,7 +62,8 @@ From the component's `@Prop()`s and the plan's keyboard map, derive the matrix:
 
 ## Phase 3: Write the keyboard and focus tests
 
-In `.component.play.ts`, one test per row of the plan's keyboard map:
+In the same `.a11y.play.ts`, under a `test.describe('keyboard')`, one test per row of the
+plan's keyboard map:
 
 - Every key: press it, assert the action _and_ where focus landed.
 - Tab order through the component, and that Tab does not enter a closed overlay.
@@ -76,14 +74,14 @@ In `.component.play.ts`, one test per row of the plan's keyboard map:
 - Mouse-only paths: if a pointer action has no keyboard equivalent, that's a defect — report
   it rather than writing a mouse-only test.
 
-Use the component's Page Object from `@helvetia-design/playwright`; add locators to the `.po.ts`
-rather than reaching into the shadow root from the test.
+Use the component's Page Object from `@helvetia-design/playwright` where it has what you need.
+`.po.ts` is test-engineer's file: if a locator is missing, use a local locator in your test and
+report the gap instead of editing the PO.
 
 ## Phase 4: Run and report
 
 ```bash
-pnpm play:a11y                          # the ♿️ A11Y project
-pnpm play:components                    # keyboard/focus tests
+pnpm play:a11y                          # the ♿️ A11Y project — your whole suite
 pnpm play:file -- --grep="<test name>"  # one test
 ```
 

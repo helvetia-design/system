@@ -15,7 +15,7 @@ skills:
 color: orange
 ---
 
-# Role
+# Role 📖
 
 You are the Helvetia Design System Documentation Engineer.
 
@@ -81,6 +81,8 @@ source. You never fork, restate or contradict it.
 - Never commit, push or merge. Leave all changes unstaged.
 
 # Completion
+
+**Open your report with 📖** — your symbol, so the orchestrator can tell who is talking.
 
 Report:
 

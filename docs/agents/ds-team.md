@@ -10,12 +10,12 @@ The orchestrator routes. It does not investigate.
 - **Never `Read` a component source file end-to-end.** `Grep`/`Glob` for the one fact a routing
   or clarifying decision actually needs. A planner is about to read that file properly; reading
   it first pays for it twice and changes nothing about where the work goes.
-- **Resolve requirement contradictions before dispatching a planner**, not after. Read the user's
-  own examples literally and check they describe one thing — see `ds-plan-component` Phase 0. A
-  planner that has to ask "is this the right component?" has already spent a full planning run.
-- **Challenge scale nobody asked for.** "A country select" is not "every ISO country". Ask which
-  subset is real before a planner designs for the complete domain.
-- **Don't restate a plan in a dispatch prompt.** Point at `docs/plans/<name>-plan.md` and name
+- **Grill the human before dispatching a planner** — the `grilling` skill, to an empty frontier,
+  written out as a brief (Workflow A step 0). This is where requirement contradictions and
+  assumed scale get caught: "a country select" is not "every ISO country", and a planner that has
+  to ask "is this the right component?" has already spent a full planning run. Only the
+  orchestrator can do this; `grilling` waits on user answers and subagents have no user channel.
+- **Don't restate a plan in a dispatch prompt.** Point at `docs/plans/components/<name>-plan.md` and name
   only the deltas and the scope fence. The agent reads the file. (Keep the scope fence — telling
   an agent which files are _not_ its job is what stops it writing another agent's tests.)
 - **Agents hand over files; the orchestrator passes paths.** Planners write their own plan files
@@ -40,36 +40,44 @@ environment facts was ~80k more, and is now recorded in the package `CONTEXT.md`
 
 ## The agents
 
-| Agent                    | Model  | Writes                                                                                         | Read-only |
-| ------------------------ | ------ | ---------------------------------------------------------------------------------------------- | :-------: |
-| `architect`              | opus   | `docs/plans/**` — plans only, never production code                                            |           |
-| `component-engineer`     | sonnet | `packages/core/src/components/**`, `index.ts`, `test/*.visual.html`, `test/*.style.html`       |           |
-| `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts` |           |
-| `a11y-expert`            | opus   | `.a11y.play.ts`, keyboard/focus tests in `.component.play.ts`, a11y reports                    |           |
-| `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                            |           |
-| `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                        |           |
-| `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                |           |
+| Agent                       | Model  | Writes                                                                                         | Read-only |
+| --------------------------- | ------ | ---------------------------------------------------------------------------------------------- | :-------: |
+| 🏛️ `architect`              | opus   | `docs/plans/components/**` — plans only, never production code                                 |           |
+| 🧩 `component-engineer`     | sonnet | `packages/core/src/components/**`, `index.ts`, `test/*.visual.html`, `test/*.style.html`       |           |
+| 🧪 `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts` |           |
+| ♿️ `a11y-expert`            | opus   | `.a11y.play.ts` (axe + keyboard/focus/ARIA state), a11y reports                                |           |
+| 🧬 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                            |           |
+| 📖 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                        |           |
+| 🎨 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                |           |
+
+Plus 🐙 the **orchestrator** — the main session, which dispatches but owns no files.
+
+Each agent's symbol is its label everywhere in a run: the orchestrator prefixes a dispatch and
+a status line with it, and an agent prefixes its own completion report. One glance says who is
+talking in a transcript where seven of them are. The symbol is cosmetic — the agent's identity
+is its `name`, which never changes.
 
 File ownership is **disjoint by design** — that is what makes the parallel steps below safe.
 An agent that finds a defect outside its own files reports it; it never reaches across.
 
-**One carve-out — the judgment and the test that encodes it stay together.** An agent may add
-tests to the component's _existing_ `.component.play.ts` or `.spec.ts` when the test only
-exists because of that agent's own expertise:
+**One carve-out — the judgment and the test that encodes it stay together.** The
+component-engineer may add the failing reproduction test for a bug it fixes to the _existing_
+`.component.play.ts` or `.spec.ts`: a fix and its pinning test are one unit of work.
+test-engineer still owns the files and everything larger — a new suite, a new file, a broad
+variant matrix, `.variants.ts`.
 
-| Agent              | May add                                          | Because                                                                 |
-| ------------------ | ------------------------------------------------ | ----------------------------------------------------------------------- |
-| component-engineer | the failing reproduction test for a bug it fixes | a fix and its pinning test are one unit of work                         |
-| a11y-expert        | keyboard, focus-order and ARIA-state tests       | the APG keyboard contract is the a11y judgment, not a generic assertion |
+**The test/a11y split is by file, with no overlap.** Everything needed for WCAG 2.2 AA —
+axe scans, keyboard map, focus order and management, ARIA state transitions — goes in
+`.a11y.play.ts`, the a11y-expert's file. `.component.play.ts` covers behavior, events and
+props, and is test-engineer's. The two never write into each other, so they can run in
+parallel; the `♿️ A11Y` Playwright project is an ordinary suite with an extra `a11y()` scan
+helper, so keyboard tests work there unchanged.
 
-Both write into test-engineer's files, deliberately. Writing the test is cheap; knowing _what
-to assert_ is the expensive part, and handing a keyboard map to another agent to transcribe
-loses the reason each key matters. test-engineer still owns the files and everything larger —
-a new suite, a new file, a broad variant matrix, `.variants.ts`.
+a11y-expert consumes test-engineer's Page Object read-only. A missing PO locator is reported,
+not edited — use a local locator meanwhile.
 
-Keyboard tests go in `.component.play.ts`, not `.a11y.play.ts`: the axe fixture scans a static
-tree, so it cannot press a key. That is the repo's existing split — 15 components keep keyboard
-tests in `.component.play.ts`, one in `.a11y.play.ts`.
+Shipped components still keep their keyboard tests in `.component.play.ts` (15 of them). They
+stay where they are; only new a11y coverage follows the rule above.
 
 ## Skill × agent matrix
 
@@ -122,23 +130,34 @@ checks can be shared with any agent whose tools can execute it.
 Agents hand over **files, never prose**. This keeps the orchestrator's context small and makes
 a run resumable.
 
-| Artifact                               | Written by         | Read by                                 |
-| -------------------------------------- | ------------------ | --------------------------------------- |
-| `docs/plans/<component>-plan.md`       | architect¹         | component-engineer, test-engineer, docs |
-| `docs/plans/<component>-a11y-plan.md`  | a11y-expert¹       | component-engineer, test-engineer       |
-| `docs/plans/<component>-figma-plan.md` | architect¹         | ux-designer                             |
-| `test/<name>.visual.html`              | component-engineer | **human review**, test-engineer         |
-| `<family>.token-check.md`              | token-engineer     | token-engineer, architect               |
-| a11y audit findings                    | a11y-expert        | component-engineer                      |
-| `<name>.figma.md`                      | ux-designer        | ux-designer, next family that nests it  |
-| `<name>.figma-validation.md`           | ux-designer        | ux-designer, component-engineer         |
-| anatomy + do's/don'ts copy             | ux-designer        | documentation-engineer                  |
+| Artifact                                          | Written by         | Read by                                 |
+| ------------------------------------------------- | ------------------ | --------------------------------------- |
+| `docs/plans/components/<component>-brief.md`      | orchestrator       | architect, a11y-expert                  |
+| `docs/plans/components/<component>-plan.md`       | architect¹         | component-engineer, test-engineer, docs |
+| `docs/plans/components/<component>-a11y-plan.md`  | a11y-expert¹       | component-engineer, test-engineer       |
+| `docs/plans/components/<component>-figma-plan.md` | architect¹         | ux-designer                             |
+| `test/<name>.visual.html`                         | component-engineer | **human review**, test-engineer         |
+| `<family>.token-check.md`                         | token-engineer     | token-engineer, architect               |
+| a11y audit findings                               | a11y-expert        | component-engineer                      |
+| `<name>.figma.md`                                 | ux-designer        | ux-designer, next family that nests it  |
+| `<name>.figma-validation.md`                      | ux-designer        | ux-designer, component-engineer         |
+| anatomy + do's/don'ts copy                        | ux-designer        | documentation-engineer                  |
 
 ¹ Each planner **writes its own plan file** — the architect's `Write` is scoped to
-`docs/plans/**` and nothing else — and returns only a summary: the path, the blocking decisions
-needing human approval, and any token gaps. They write different files, so they stay safe to run
-in parallel. Returning the plan body so the orchestrator can write it back out pays for the same
-content twice, once as input and once as output.
+`docs/plans/components/**` and nothing else — and returns only a summary: the path, the blocking
+decisions needing human approval, and any token gaps. They write different files, so they stay
+safe to run in parallel. Returning the plan body so the orchestrator can write it back out pays
+for the same content twice, once as input and once as output.
+
+**`docs/plans/components/` is gitignored, and that is the whole lifecycle.** A component plan is
+a handoff, not a document: it never lands in the PR, never needs a cleanup step, and the next run
+overwrites it. No agent ever deletes a plan — it is exactly what you want when a run resumes or
+review finds a gap. Anything in a plan that must outlive the task belongs in the component's
+`CONTEXT.md` or an ADR under `docs/adr/`; the plan's own file list names those.
+
+`docs/plans/` itself stays tracked, for cross-component project plans (the migrations). Keeping
+the two apart matters: source comments across this repo cite `docs/plans/*-plan.md` files that
+were deleted after execution, and a throwaway component plan must never become a citation target.
 
 ---
 
@@ -147,6 +166,7 @@ content twice, once as input and once as output.
 Full pipeline. Use for a new component or a breaking change.
 
 ```text
+0 grill the human           →  docs/plans/components/<name>-brief.md
 1 plan ∥ a11y-plan          →  ⛔ GATE: plan approved by a human
 2 implement                 →  3 tokens  (only if step 2 reported gaps)
                                ⛔ GATE: human opens test/<name>.visual.html
@@ -157,12 +177,33 @@ Full pipeline. Use for a new component or a breaking change.
 step 7 failures loop back to step 6
 ```
 
-**1 · Plan** — `ds-plan-component` ∥ `ds-a11y-plan`. Each writes its own file under
-`docs/plans/`, nothing else — no shared writes. The keyboard map does not depend on the prop
+**0 · Grill** — the orchestrator runs the `mattpocock-skills:grilling` skill with the human
+**before dispatching any planner**, and writes the settled decisions to `docs/plans/components/<name>-brief.md`.
+
+This step is the orchestrator's and can never be an agent's: `grilling` interviews the user in
+rounds and waits for answers, and a subagent has no channel to the user. An agent that hits an
+unsettled requirement must come back and ask for this step — it cannot run it.
+
+Work the design tree to an empty frontier: scope and scale, the real data set, which props are
+actually variants, what is explicitly out. Facts are the orchestrator's job — dispatch `Explore`
+for anything in the repo rather than asking the human. Decisions are the human's.
+
+**Write the brief; do not carry the answers in context.** Same rule as every other handoff: the
+planners read the file, and the orchestrator passes the path. Restating a grilling round inside
+two dispatch prompts pays for it twice and loses the "out of scope" half, which is the half that
+stops a planner designing for the complete domain.
+
+Skip it only for a change whose shape is already settled — a prop added to a shipped component,
+a plan being re-run after a rejected gate. A new component is never that.
+
+**1 · Plan** — `ds-plan-component` ∥ `ds-a11y-plan`, both pointed at the brief. Each writes its own file under
+`docs/plans/components/`, nothing else — no shared writes. The keyboard map does not depend on the prop
 list, so these genuinely run at the same time.
 
-Both clear a **cheap gate first** (`ds-plan-component` Phase 0): a request that contradicts
-itself, or that assumes a scale nobody asked for, comes back as a question instead of a plan. And
+Both still clear a **cheap gate** (`ds-plan-component` Phase 0): a request that contradicts
+itself, or that assumes a scale nobody asked for, comes back as a question instead of a plan.
+With a brief in hand that gate is a formality — which is the point; it is the net the grilling
+step was supposed to catch everything in. And
 when the component mirrors a pattern that already ships, the a11y-expert audits the model and
 plans the **delta** rather than re-deriving the whole pattern.
 
@@ -188,20 +229,17 @@ the engineer's SCSS reference can follow.
 > a screenshot baseline taken over an unreviewed component bakes the bug into the baseline, and
 > every later visual run then defends it.
 
-**4 · Build out — two in parallel, then a11y.** Deliberately _not_ three in parallel. The
-a11y-expert's keyboard tests belong in `.component.play.ts` (the carve-out above), and
-test-engineer is **creating** that file — so running them side by side forces the a11y-expert into
-two dispatches: one fenced to `.a11y.play.ts`, a second for the keyboard map once the file exists,
-with the second paying to re-read the plan, the component and the test file from cold.
+**4 · Build out — three in parallel.** The three file sets are disjoint, so one dispatch each,
+no second round:
 
-| Round | Agent                  | Skill                   | Writes                                                                    |
-| ----- | ---------------------- | ----------------------- | ------------------------------------------------------------------------- |
-| 1 ∥   | test-engineer          | `ds-test-component`     | unit, interaction, visual, SSR, PO                                        |
-| 1 ∥   | documentation-engineer | `ds-document-component` | `apps/storybook/src/**`                                                   |
-| 2     | a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` + keyboard/focus/ARIA-state tests in `.component.play.ts` |
+| Agent                  | Skill                   | Writes                                            |
+| ---------------------- | ----------------------- | ------------------------------------------------- |
+| test-engineer          | `ds-test-component`     | unit, interaction, visual, SSR, PO                |
+| documentation-engineer | `ds-document-component` | `apps/storybook/src/**`                           |
+| a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` — axe + keyboard/focus/ARIA state |
 
-Round 2 is sequential, which costs wall-clock, not tokens. The split cost ~50k on
-`ds-country-select` and bought nothing. Documentation is genuinely disjoint and stays parallel.
+The a11y-expert may start before the Page Object exists: it uses local locators and reports
+the PO gap rather than waiting or editing `.po.ts`.
 
 `ds-test-component` **reads** the approved fixture and writes the variant list from it:
 
@@ -292,7 +330,7 @@ instead:
    each finding before acting. `ds-repair-component`, not `ds-modify-component`: the work
    starts from findings and reports a per-finding `RESOLVED` / `INVALID` / `BLOCKED` status.
 3. **a11y-expert · `ds-a11y-test`** — one keyboard test per row of the corrected map, in
-   `.component.play.ts` (see the carve-out above).
+   `.a11y.play.ts`.
 4. **a11y-expert · `ds-a11y-verify`** — per-criterion sign-off. Keyboard operability of a
    custom widget is one of the things axe cannot check, so this step is the only evidence.
 
@@ -307,7 +345,7 @@ Between A and B. Additive change to a component that already ships.
 
 ```text
 feature request
-  →  public API changes?   yes  →  architect · ds-plan-component  →  ⛔ GATE
+  →  public API changes?   yes  →  grill the human  →  architect · ds-plan-component  →  ⛔ GATE
                            no   →  straight to the engineer
   →  component-engineer · ds-modify-component
   →  needs a new token?    yes  →  token-engineer · ds-manage-tokens
@@ -320,6 +358,10 @@ feature request
                + ds-a11y-verify if a colour changed  →  repair by owner
   →  ds-changeset (minor)  →  human reviews and commits
 ```
+
+**A planner dispatch is always preceded by grilling** (Workflow A step 0), here too — a new
+public prop is a permanent API decision. The branch that skips the planner skips the grilling
+with it: a change whose shape is already settled does not need a design tree.
 
 `ds-modify-component`, not `ds-implement-component` — backward compatibility and impact
 assessment are the point. A new prop reaches stories (`ds-manage-stories`) and tests; a new

@@ -13,12 +13,12 @@ strength of a green axe run.**
 ## Phase 1: Run what can be run
 
 ```bash
-pnpm play:a11y                          # ♿️ A11Y project — axe scans
-pnpm play:components                    # keyboard, focus, ARIA state
+pnpm play:a11y                          # ♿️ A11Y project — axe scans, keyboard, focus, ARIA state
 pnpm play:file -- --grep="<name>"       # a single test
 ```
 
-Capture the actual output. "Tests pass" without it is not evidence.
+Capture the actual output. "Tests pass" without it is not evidence. Older components still keep
+their keyboard tests in `.component.play.ts` — add `pnpm play:components` when that is the case.
 
 ## Phase 2: Know the automation gap
 

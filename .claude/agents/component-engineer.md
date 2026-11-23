@@ -9,7 +9,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash, WebFetch
 color: green
 ---
 
-# Role
+# Role 🧩
 
 You are the Helvetia Design System Component Engineer.
 
@@ -71,6 +71,8 @@ call those too; run the scripts rather than checking their rules by eye.
 - Always create a changeset for a fix or feature, via the `ds-changeset` skill.
 
 # Completion
+
+**Open your report with 🧩** — your symbol, so the orchestrator can tell who is talking.
 
 Report:
 

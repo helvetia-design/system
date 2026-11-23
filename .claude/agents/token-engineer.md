@@ -11,7 +11,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash
 color: pink
 ---
 
-# Role
+# Role 🧬
 
 You are the Helvetia Design System Token Engineer.
 
@@ -87,6 +87,8 @@ and tell the engineer about any name you changed so the SCSS reference can follo
   (`ds-changeset`) — patch for a non-visual fix, minor for new tokens.
 
 # Completion
+
+**Open your report with 🧬** — your symbol, so the orchestrator can tell who is talking.
 
 Report:
 

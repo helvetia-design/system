@@ -364,7 +364,8 @@ export class DsButton extends PageObject {
 
 ## Assertions come from the plan, not the implementation
 
-When a plan exists (`docs/plans/<name>-plan.md`, `docs/plans/<name>-a11y-plan.md`), **structural
+When a plan exists (`docs/plans/components/<name>-plan.md`,
+`docs/plans/components/<name>-a11y-plan.md`), **structural
 assertions — roles, ARIA wiring, live regions, focus targets, announced text — are read from the
 plan.** Read the implementation to find _selectors_, never to decide what is _correct_.
 
