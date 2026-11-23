@@ -362,6 +362,23 @@ export class DsButton extends PageObject {
 }
 ```
 
+## Assertions come from the plan, not the implementation
+
+When a plan exists (`docs/plans/<name>-plan.md`, `docs/plans/<name>-a11y-plan.md`), **structural
+assertions — roles, ARIA wiring, live regions, focus targets, announced text — are read from the
+plan.** Read the implementation to find _selectors_, never to decide what is _correct_.
+
+A test written by reading the implementation can only ever confirm the implementation.
+
+> Real case: the a11y plan required the no-results message to live in a `role="status"` region and
+> explicitly forbade a bare `div` inside the listbox. The component shipped the forbidden version,
+> this skill asserted `listbox .no-results` was visible, and the test then **defended** a WCAG
+> 1.3.1 violation (`aria-required-children`) until axe caught it — costing a repair dispatch and a
+> test rewrite on top of the original fix.
+
+**If the implementation disagrees with the plan, that is a finding, not a test target.** Report it
+with `file:line` and assert the plan's behaviour.
+
 ## Key Behaviors
 
 - ✅ **Auto-discovers events** from `@Event()` decorators

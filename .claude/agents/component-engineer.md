@@ -5,7 +5,7 @@ description: >
   and validating Stencil web components. Use after architecture approval, for
   component bug fixes, or to resolve review findings.
 model: sonnet
-tools: Read, Glob, Grep, Edit, Write, Bash
+tools: Read, Glob, Grep, Edit, Write, Bash, WebFetch
 color: green
 ---
 

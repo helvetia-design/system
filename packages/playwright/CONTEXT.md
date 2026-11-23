@@ -141,6 +141,13 @@ Snapshots are stored in `e2e/snapshots/` and tracked in git:
 - **Compare** — New screenshots are compared to baseline
 - **Update** — Run `/update-screenshots` bot command to re-baseline after intentional changes
 
+**A new component has no baseline, and that is not a failure to investigate.** Its first visual
+run reports `snapshot doesn't exist` for every variant and writes the PNGs to disk. That is
+expected — do not re-run the suite hoping for green, and **do not let those auto-written PNGs
+become the baseline**: delete them and leave baselining to the human via `/update-screenshots`.
+A baseline captured from an unreviewed component bakes the bug in, and every later run then
+defends it.
+
 ### SSR Screenshot Tests
 
 An SSR test renders the page of the visual test with `renderToString`, serves it, and holds back the client bundle. It takes one screenshot of the server markup and one after hydration. Both compare against the desktop baseline of the visual test. Desktop only.
@@ -174,6 +181,14 @@ Helpers:
 - `hydrate()` releases the bundle, waits for the components, and runs `assertHydrated()`.
 - `assertHydrated(page)` fails on console errors since `trackConsoleErrors(page)` and on leftover `c-id` attributes. `mountSsr()` uses it too.
 - `visualBaseline(tag, visualTestFile?)(name)` names the baseline of `screenshot(tag)(name)` in `<tag>.visual.play.ts`. The `🧬 SSR` project resolves it through its `snapshotPathTemplate`, so no baseline is renamed.
+
+**Known environment failure — do not re-prove it.** The `🧬 SSR` project currently fails on every
+variant of every component with `assertHydrated: N leftover c-id attribute(s)`. This reproduces
+identically on long-shipped components (`ds-phone-input` among them), so it is a tooling/environment
+problem, not a defect in whichever component you are working on. Write the `.ssr.play.ts` file to
+the pattern above, report the suite as blocked by this known issue, and move on — running it a
+second time against another component to confirm is a full Playwright run that tells you nothing
+new.
 
 The `variants.ts` file exists because Playwright does not allow a test file to import another test file.
 

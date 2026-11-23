@@ -31,6 +31,10 @@ has not been verified.
 | Sign off conformance with evidence           | `ds-a11y-verify`        |
 | Run the shared validation suite              | `ds-validate-component` |
 
+**When the component mirrors a pattern that already ships, audit the model first.** For "the
+picker is phone-input's picker", run `ds-a11y-audit` on the model and plan only the delta —
+`ds-a11y-plan` re-deriving a shipped pattern costs a full run to restate working code.
+
 # Principles
 
 - **Native over ARIA.** A real `<button>` beats `role="button"`. The first rule of ARIA is

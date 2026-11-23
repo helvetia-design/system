@@ -3,11 +3,46 @@
 How the design system agents work together. The **orchestrator is the main session**, not an
 agent — it dispatches the agents below and holds no component context of its own.
 
+## Orchestrator budget
+
+The orchestrator routes. It does not investigate.
+
+- **Never `Read` a component source file end-to-end.** `Grep`/`Glob` for the one fact a routing
+  or clarifying decision actually needs. A planner is about to read that file properly; reading
+  it first pays for it twice and changes nothing about where the work goes.
+- **Resolve requirement contradictions before dispatching a planner**, not after. Read the user's
+  own examples literally and check they describe one thing — see `ds-plan-component` Phase 0. A
+  planner that has to ask "is this the right component?" has already spent a full planning run.
+- **Challenge scale nobody asked for.** "A country select" is not "every ISO country". Ask which
+  subset is real before a planner designs for the complete domain.
+- **Don't restate a plan in a dispatch prompt.** Point at `docs/plans/<name>-plan.md` and name
+  only the deltas and the scope fence. The agent reads the file. (Keep the scope fence — telling
+  an agent which files are _not_ its job is what stops it writing another agent's tests.)
+- **Agents hand over files; the orchestrator passes paths.** Planners write their own plan files
+  for this reason.
+- **One agent, one suite.** Each agent runs the narrowest suite covering its own files and nothing
+  more — no whole-package builds, no re-running another agent's suite "to be safe".
+  `ds-validate-component` does the cross-cutting pass once, in step 7. On `ds-country-select` four
+  separate agents each ran the component suite.
+- **Dispatch the plan's whole file list, not just the obvious part.** Per-component `CONTEXT.md`,
+  the framework barrels, the ADR and the changeset are named in the plan from the start; leaving
+  them unassigned turns them into an extra agent run after the tests are already green.
+- **A known-broken environment is a documented fact, not a discovery.** Before an agent
+  investigates a failing suite, check the package's `CONTEXT.md` — the SSR hydration failure,
+  missing visual baselines for a new component, and `newSpecPage` being unusable are all recorded
+  there. Re-proving one costs a full Playwright run and changes nothing.
+
+Measured cost of ignoring this, for one component (`ds-country-select`, Workflow A): **~1.05M
+tokens across ~500 agent tool calls** — roughly 535k to plan and implement, 510k to test, document
+and repair. The orchestrator's duplicate read of `phone-input.tsx` and its re-emission of the
+returned plan were ~35k of that and produced no new information; rediscovering known-broken
+environment facts was ~80k more, and is now recorded in the package `CONTEXT.md` files instead.
+
 ## The agents
 
 | Agent                    | Model  | Writes                                                                                         | Read-only |
 | ------------------------ | ------ | ---------------------------------------------------------------------------------------------- | :-------: |
-| `architect`              | opus   | nothing — plans only                                                                           |     ✓     |
+| `architect`              | opus   | `docs/plans/**` — plans only, never production code                                            |           |
 | `component-engineer`     | sonnet | `packages/core/src/components/**`, `index.ts`, `test/*.visual.html`, `test/*.style.html`       |           |
 | `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts` |           |
 | `a11y-expert`            | opus   | `.a11y.play.ts`, keyboard/focus tests in `.component.play.ts`, a11y reports                    |           |
@@ -87,21 +122,23 @@ checks can be shared with any agent whose tools can execute it.
 Agents hand over **files, never prose**. This keeps the orchestrator's context small and makes
 a run resumable.
 
-| Artifact                              | Written by         | Read by                                 |
-| ------------------------------------- | ------------------ | --------------------------------------- |
-| `docs/plans/<component>-plan.md`      | orchestrator¹      | component-engineer, test-engineer, docs |
-| `docs/plans/<component>-a11y-plan.md` | orchestrator¹      | component-engineer, test-engineer       |
-| `test/<name>.visual.html`             | component-engineer | **human review**, test-engineer         |
-| `<family>.token-check.md`             | token-engineer     | token-engineer, architect               |
-| a11y audit findings                   | a11y-expert        | component-engineer                      |
-| `<name>.figma.md`                     | ux-designer        | ux-designer, next family that nests it  |
-| `<name>.figma-validation.md`          | ux-designer        | ux-designer, component-engineer         |
-| anatomy + do's/don'ts copy            | ux-designer        | documentation-engineer                  |
+| Artifact                               | Written by         | Read by                                 |
+| -------------------------------------- | ------------------ | --------------------------------------- |
+| `docs/plans/<component>-plan.md`       | architect¹         | component-engineer, test-engineer, docs |
+| `docs/plans/<component>-a11y-plan.md`  | a11y-expert¹       | component-engineer, test-engineer       |
+| `docs/plans/<component>-figma-plan.md` | architect¹         | ux-designer                             |
+| `test/<name>.visual.html`              | component-engineer | **human review**, test-engineer         |
+| `<family>.token-check.md`              | token-engineer     | token-engineer, architect               |
+| a11y audit findings                    | a11y-expert        | component-engineer                      |
+| `<name>.figma.md`                      | ux-designer        | ux-designer, next family that nests it  |
+| `<name>.figma-validation.md`           | ux-designer        | ux-designer, component-engineer         |
+| anatomy + do's/don'ts copy             | ux-designer        | documentation-engineer                  |
 
-¹ The architect is read-only and has no `Write` tool, so it **returns** its plan rather than
-saving it. The orchestrator writes the returned plan to `docs/plans/` before the approval gate
-and dispatches the next step with that path. Same for the a11y plan — step 1 is read-only on
-both sides, which is what makes the two planners safe to run in parallel.
+¹ Each planner **writes its own plan file** — the architect's `Write` is scoped to
+`docs/plans/**` and nothing else — and returns only a summary: the path, the blocking decisions
+needing human approval, and any token gaps. They write different files, so they stay safe to run
+in parallel. Returning the plan body so the orchestrator can write it back out pays for the same
+content twice, once as input and once as output.
 
 ---
 
@@ -109,67 +146,28 @@ both sides, which is what makes the two planners safe to run in parallel.
 
 Full pipeline. Use for a new component or a breaking change.
 
-```mermaid
-flowchart TD
-    START([GitHub issue or spec])
+```text
+1 plan ∥ a11y-plan          →  ⛔ GATE: plan approved by a human
+2 implement                 →  3 tokens  (only if step 2 reported gaps)
+                               ⛔ GATE: human opens test/<name>.visual.html
+4 test ∥ a11y-test ∥ docs      (parallel, disjoint files)
+5 token-audit ∥ a11y-audit  →  6 repair, routed by owner
+7 a11y-verify ∥ validate    →  8 changeset (minor)  →  human reviews and commits
 
-    subgraph S1["1 · Plan — parallel, read-only"]
-        direction LR
-        ARCH["architect<br/>ds-plan-component"]
-        A11YP["a11y-expert<br/>ds-a11y-plan"]
-    end
-
-    GATE{{"HUMAN GATE<br/>plan approved?"}}
-
-    IMPL["component-engineer<br/>ds-implement-component<br/><i>reads tokens, never creates them</i>"]
-    TOKQ{"missing tokens<br/>reported?"}
-    TOKFIX["token-engineer<br/>ds-manage-tokens<br/>ds-validate-tokens"]
-
-    subgraph S4["4 · Build out — parallel, disjoint files"]
-        direction LR
-        TEST["test-engineer<br/>ds-test-component"]
-        A11YT["a11y-expert<br/>ds-a11y-test"]
-        DOCS["documentation-engineer<br/>ds-document-component"]
-    end
-
-    subgraph S5["5 · Review — parallel, read-only → findings files"]
-        direction LR
-        TAUD["token-engineer<br/>ds-audit-tokens"]
-        AAUD["a11y-expert<br/>ds-a11y-audit"]
-        REV["code-reviewer<br/>ds-review-component<br/><i>not built yet</i>"]
-    end
-
-    subgraph S6["6 · Repair — routed by owner"]
-        direction LR
-        REPSRC["component-engineer<br/>ds-repair-component"]
-        REPTOK["token-engineer<br/>ds-manage-tokens"]
-    end
-
-    subgraph S7["7 · Verify"]
-        direction LR
-        VER["a11y-expert<br/>ds-a11y-verify"]
-        VAL["test-engineer<br/>ds-validate-component"]
-    end
-
-    SHIP["component-engineer<br/>ds-changeset — minor"]
-    DONE([Human reviews and commits])
-
-    START --> S1 --> GATE
-    GATE -->|changes needed| S1
-    GATE -->|approved| IMPL --> TOKQ
-    TOKQ -->|yes| TOKFIX --> S4
-    TOKQ -->|no| S4
-    S4 --> S5 --> S6 --> S7 --> SHIP --> DONE
-    S7 -.->|failures| S6
-
-    classDef gate fill:#7c3aed,stroke:#7c3aed,color:#fff
-    classDef human fill:#111,stroke:#888,color:#fff
-    class GATE gate
-    class START,DONE human
+step 7 failures loop back to step 6
 ```
 
-**1 · Plan** — `ds-plan-component` ∥ `ds-a11y-plan`. Both read-only, no shared writes. The
-keyboard map does not depend on the prop list, so these genuinely run at the same time.
+**1 · Plan** — `ds-plan-component` ∥ `ds-a11y-plan`. Each writes its own file under
+`docs/plans/`, nothing else — no shared writes. The keyboard map does not depend on the prop
+list, so these genuinely run at the same time.
+
+Both clear a **cheap gate first** (`ds-plan-component` Phase 0): a request that contradicts
+itself, or that assumes a scale nobody asked for, comes back as a question instead of a plan. And
+when the component mirrors a pattern that already ships, the a11y-expert audits the model and
+plans the **delta** rather than re-deriving the whole pattern.
+
+The architect also checks [shadcn/ui](https://ui.shadcn.com/docs/components) for the matching
+component as prior art on API shape — see "External prior art" below.
 
 > **Gate.** A human approves the plan before any code is written. The engineer must not
 > design the component itself.
@@ -190,13 +188,20 @@ the engineer's SCSS reference can follow.
 > a screenshot baseline taken over an unreviewed component bakes the bug into the baseline, and
 > every later visual run then defends it.
 
-**4 · Build out — parallel.** Three agents, three disjoint file sets:
+**4 · Build out — two in parallel, then a11y.** Deliberately _not_ three in parallel. The
+a11y-expert's keyboard tests belong in `.component.play.ts` (the carve-out above), and
+test-engineer is **creating** that file — so running them side by side forces the a11y-expert into
+two dispatches: one fenced to `.a11y.play.ts`, a second for the keyboard map once the file exists,
+with the second paying to re-read the plan, the component and the test file from cold.
 
-| Agent                  | Skill                   | Writes                             |
-| ---------------------- | ----------------------- | ---------------------------------- |
-| test-engineer          | `ds-test-component`     | unit, interaction, visual, SSR, PO |
-| a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` only               |
-| documentation-engineer | `ds-document-component` | `apps/storybook/src/**`            |
+| Round | Agent                  | Skill                   | Writes                                                                    |
+| ----- | ---------------------- | ----------------------- | ------------------------------------------------------------------------- |
+| 1 ∥   | test-engineer          | `ds-test-component`     | unit, interaction, visual, SSR, PO                                        |
+| 1 ∥   | documentation-engineer | `ds-document-component` | `apps/storybook/src/**`                                                   |
+| 2     | a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` + keyboard/focus/ARIA-state tests in `.component.play.ts` |
+
+Round 2 is sequential, which costs wall-clock, not tokens. The split cost ~50k on
+`ds-country-select` and bought nothing. Documentation is genuinely disjoint and stays parallel.
 
 `ds-test-component` **reads** the approved fixture and writes the variant list from it:
 
@@ -238,32 +243,17 @@ the suites. Report axe-clean and WCAG 2.2 AA conformance as separate claims.
 **The escape hatch. One agent, no pipeline.** Routing a one-line fix through eight phases is
 how a team like this gets abandoned.
 
-```mermaid
-flowchart TD
-    BUG([Bug report])
-    FIX["component-engineer · ds-modify-component<br/>1 · reproduce as a failing test<br/>2 · grep every caller<br/>3 · fix the root cause once"]
-    CROSS{"does the fix cross<br/>an ownership line?"}
-
-    subgraph ESC["Escalate — only the row that applies"]
-        direction LR
-        E1["architect<br/><i>breaking API</i>"]
-        E2["token-engineer<br/><i>token missing</i>"]
-        E3["a11y-expert<br/><i>a11y defect</i>"]
-        E4["test-engineer<br/><i>large regression suite</i>"]
-        E5["documentation-engineer<br/><i>API visibly changed</i>"]
-    end
-
-    VAL["component-engineer · ds-validate-component<br/><i>repro test passes, suite stays green</i>"]
-    CS["ds-changeset — patch"]
-    DONE([Human reviews and commits])
-
-    BUG --> FIX --> CROSS
-    CROSS -->|no — the common case| VAL
-    CROSS -->|yes| ESC --> VAL
-    VAL --> CS --> DONE
-
-    classDef human fill:#111,stroke:#888,color:#fff
-    class BUG,DONE human
+```text
+bug report
+  →  component-engineer · ds-modify-component
+       1 reproduce as a failing test
+       2 grep every caller
+       3 fix the root cause once
+  →  does the fix cross an ownership line?
+       no (the common case)  →  validate
+       yes                   →  escalate only the row that applies  →  validate
+  →  ds-validate-component     (repro test passes, suite stays green)
+  →  ds-changeset (patch)      →  human reviews and commits
 ```
 
 `ds-modify-component` reproduces the defect as a failing test first, greps every caller before
@@ -315,40 +305,20 @@ then disputes it — two rounds of work and a plausible-but-wrong interaction mo
 
 Between A and B. Additive change to a component that already ships.
 
-```mermaid
-flowchart TD
-    REQ([Feature request])
-    APIQ{"public API<br/>changes?"}
-    PLAN["architect · ds-plan-component<br/>→ HUMAN GATE"]
-    IMPL["component-engineer<br/>ds-modify-component"]
-    TOKQ{"needs a<br/>new token?"}
-    TOK["token-engineer<br/>ds-manage-tokens"]
-
-    subgraph S3["Build out — only what the change touches"]
-        direction LR
-        ST["test-engineer<br/><i>new prop or state</i>"]
-        SA["a11y-expert<br/><i>new interaction, colour or state</i>"]
-        SD["documentation-engineer<br/>ds-manage-stories"]
-    end
-
-    REVQ{"visual or token<br/>surface changed?"}
-    REVIEW["ds-audit-tokens and/or ds-a11y-audit<br/>+ ds-a11y-verify if a colour changed<br/>→ repair by owner"]
-    SHIP["ds-changeset — minor"]
-    DONE([Human reviews and commits])
-
-    REQ --> APIQ
-    APIQ -->|yes| PLAN --> IMPL
-    APIQ -->|no| IMPL
-    IMPL --> TOKQ
-    TOKQ -->|yes| TOK --> S3
-    TOKQ -->|no| S3
-    S3 --> REVQ
-    REVQ -->|yes| REVIEW --> SHIP
-    REVQ -->|no| SHIP
-    SHIP --> DONE
-
-    classDef human fill:#111,stroke:#888,color:#fff
-    class REQ,DONE human
+```text
+feature request
+  →  public API changes?   yes  →  architect · ds-plan-component  →  ⛔ GATE
+                           no   →  straight to the engineer
+  →  component-engineer · ds-modify-component
+  →  needs a new token?    yes  →  token-engineer · ds-manage-tokens
+  →  build out only what the change touches:
+       test-engineer (new prop or state)
+       ∥ a11y-expert (new interaction, colour or state)
+       ∥ documentation-engineer · ds-manage-stories
+  →  visual or token surface changed?
+       yes  →  ds-audit-tokens and/or ds-a11y-audit
+               + ds-a11y-verify if a colour changed  →  repair by owner
+  →  ds-changeset (minor)  →  human reviews and commits
 ```
 
 `ds-modify-component`, not `ds-implement-component` — backward compatibility and impact
@@ -388,38 +358,18 @@ after the tokens land.
 Mirror a shipped component into the Figma library. Runs **after** the component exists in code;
 it never leads.
 
-```mermaid
-flowchart TD
-    REQ([Component exists in code])
-    PLAN["architect · ds-plan-figma-component<br/><i>variant axes, anatomy, token table</i>"]
-    TOKQ{"every value<br/>resolves to a token?"}
-    TOK["token-engineer<br/>ds-manage-tokens"]
-    GATE{{"HUMAN GATE<br/>variant grouping + budget approved?"}}
-    MAP["ux-designer · ds-figma-mapping<br/><i>variable ids + measure + triage</i>"]
-    SET["ux-designer · ds-figma-component-set<br/>default variant → confirm → fan out"]
-    REV["ux-designer · ds-figma-review<br/><i>Figma vs code, max 3 repairs</i>"]
-
-    CM["ux-designer · ds-figma-copy-me<br/><i>always; never skipped</i>"]
-
-    subgraph DOC["Document — in Figma, then in Storybook"]
-        direction LR
-        ANA["ux-designer<br/>ds-figma-anatomy"]
-        MEA["ux-designer<br/>ds-figma-measurements"]
-        GUI["ux-designer<br/>ds-design-guidelines"]
-    end
-
-    SB["documentation-engineer<br/>ds-manage-stories — places the copy"]
-    DONE([Human reviews and commits])
-
-    REQ --> PLAN --> TOKQ
-    TOKQ -->|no| TOK --> GATE
-    TOKQ -->|yes| GATE
-    GATE -->|approved| MAP --> SET --> REV
-    REV -->|pass| CM --> DOC --> SB --> DONE
-    REV -->|fail after 3| STOP(["Hard stop: report"]):::human
-
-    classDef human fill:#111,stroke:#888,color:#fff
-    class REQ,DONE,STOP human
+```text
+component exists in code
+  →  architect · ds-plan-figma-component      (variant axes, anatomy, token table)
+  →  every value resolves to a token?
+       no  →  token-engineer · ds-manage-tokens   (hard stop until it does)
+  →  ⛔ GATE: variant grouping + variant count approved
+  →  ux-designer · ds-figma-mapping  →  ds-figma-component-set  →  ds-figma-review
+       still failing after 3 repairs  →  hard stop, report
+  →  ux-designer · ds-figma-copy-me           (always; never skipped)
+  →  ds-figma-anatomy ∥ ds-figma-measurements ∥ ds-design-guidelines
+  →  documentation-engineer · ds-manage-stories   (places the copy)
+  →  human reviews and commits
 ```
 
 **1 · Plan** — `ds-plan-figma-component`. Read-only, code-side only. Note what this does _not_
@@ -462,6 +412,38 @@ token silently makes the Figma component a lie, and Figma has no test suite to c
 library that drifts is worse than no library, because designers trust it.
 
 ---
+
+## External references
+
+Three references, two questions. **shadcn answers what to build. Swiss Post and Ionic answer
+how. Never swap them — only shadcn is a design reference.**
+
+| Reference                                                   | Answers                                    | Used by                                         | Take                                                                                                                                                                                                 | Never take                                                                                                                 |
+| ----------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [shadcn/ui](https://ui.shadcn.com/docs/components)          | **What to build** — UX, anatomy, API shape | architect<br/>`ds-plan-component`               | Anatomy and sub-component split, which variants and states are worth having, composed vs. configured, edge cases its docs surface                                                                    | React, Radix, Tailwind, `cn()`, `class-variance-authority`, `asChild`, utility-class styling, hook APIs, any copied source |
+| [Swiss Post DS](https://github.com/swisspost/design-system) | **How** — design-system architecture       | component-engineer<br/>`ds-implement-component` | Component-family decomposition, `@Prop()`/slot conventions for a DS, the token pipeline, Angular/React wrapper generation, versioning and changeset flow, Storybook structure, composite-widget a11y | **Any design or UX.** Swiss Post's brand, visual language and interaction choices                                          |
+| [Ionic](https://github.com/ionic-team/ionic-framework)      | **How** — deep Stencil runtime             | component-engineer<br/>`ds-implement-component` | Slot forwarding, delegated focus, `formAssociated` and value accessors, overlay/portal and scroll-lock, output-target behavior, SSR and hydration, async `@Method()`                                 | **Any design or UX.** Mobile-first sizing, touch targets, density, gestures, theming system, `ios`/`md` modes, API naming  |
+
+**Swiss Post vs. Ionic.** Swiss Post is the nearest peer — a Swiss enterprise design system
+on Stencil, desktop web, multi-framework: the same problem shape as ours. Ionic is an app
+framework, mobile-first, but the largest production Stencil codebase in the open. Go to
+Swiss Post for how a _design system_ on Stencil is put together; go to Ionic for a hard
+runtime problem at scale. When both have an answer, Swiss Post is usually the closer fit.
+
+This system is desktop-oriented across 320px–2560px, so neither Stencil reference is ever
+consulted for design — only for mechanisms this repo has no precedent for.
+
+**Precedence, highest first:** this repo's existing components → `STYLE_GUIDE.md` and ADRs →
+the ARIA Authoring Practices pattern → shadcn (design) / Swiss Post and Ionic (mechanics).
+Where an external reference disagrees with anything above it, the higher one wins. A
+precedent inside this repo always beats all three — if `ds-modal` already solves focus
+return, copy `ds-modal`.
+
+Cite them as references, never as justifications on their own. "shadcn does X", "Swiss Post
+does Y" and "Ionic does Z" are not reasons.
+
+Applies to Workflow A and C. Not to bug fixes (Workflow B) — a fix matches the component it's
+fixing.
 
 ## Rules that hold in every workflow
 

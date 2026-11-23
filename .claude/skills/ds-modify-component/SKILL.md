@@ -34,6 +34,18 @@ Change an existing component without breaking its consumers.
   Run it and watch it fail before you change any source. A test that passes before the fix
   is testing the wrong thing.
 
+- **For a feature addition** (not a bug fix), check the matching component at
+  [shadcn/ui](https://ui.shadcn.com/docs/components) for prior art on the API shape — whether
+  the capability is usually a prop or a slot, what it's named, which states come with it.
+  Take the shape only: no React, Radix or Tailwind patterns, no copied source. The
+  component's own existing API always wins — a new prop must look like it was there from the
+  start.
+- **If the feature needs a Stencil mechanism with no precedent here**, check
+  [Swiss Post DS](https://github.com/swisspost/design-system) (nearest peer — a design system
+  on Stencil) and [Ionic](https://github.com/ionic-team/ionic-framework) (deep runtime
+  mechanics). The mechanism only, never their design or UX. See `ds-implement-component`
+  Phase 2 for the full scope.
+
 ## Phase 2: Assess
 
 Evaluate the impact on:

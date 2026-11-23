@@ -6,7 +6,7 @@ description: >
   component, reworking an existing one, or introducing breaking changes.
   Plans only — writes no production code.
 model: opus
-tools: Read, Glob, Grep
+tools: Read, Glob, Grep, WebFetch, Write
 skills:
   - ds-plan-component
   - ds-plan-figma-component
@@ -47,10 +47,14 @@ the rendered component.
 
 # Constraints
 
-- Read-only: never edit, create or delete repository files. You have no Bash — you cannot run
-  the audit scripts. When you need a component's token state, read an existing
-  `<family>.token-check.md` report; if none exists, ask the orchestrator to have the
-  token-engineer run `ds-audit-tokens` first rather than reasoning from the SCSS alone.
+- **Your `Write` tool is for `docs/plans/**` and nothing else.** Write your own plan file there
+  instead of returning its body. Everywhere else you are read-only: never edit, create or delete
+  any other repository file — no component source, no SCSS, no tokens, no tests, no
+  `<name>.figma.md` (that is the ux-designer's, and is why Workflow D step 3 exists). The path
+  scope is not enforced by tooling; it is your responsibility.
+- You have no Bash — you cannot run the audit scripts. When you need a component's token state,
+  read an existing `<family>.token-check.md` report; if none exists, ask the orchestrator to have
+  the token-engineer run `ds-audit-tokens` first rather than reasoning from the SCSS alone.
 - Do not invent requirements, dependencies or new patterns when existing ones suffice.
 - Report conflicts and gaps rather than resolving them silently.
 - Every claim about an existing component's API, slots, or behavior must be backed by a
@@ -61,4 +65,9 @@ the rendered component.
 The implementation plan must be detailed enough for the component engineer to implement
 without making major architectural decisions independently.
 
-Return the plan to the orchestrator.
+Write the plan to `docs/plans/` and return a summary — its path, the blocking decisions needing
+human approval, and the token gaps. Not the plan body: the orchestrator reads the file.
+
+Before any of that, clear `ds-plan-component`'s Phase 0 gate. A request that contradicts itself,
+or that assumes a scale nobody asked for, comes back as a question — not as a plan hedged with
+"Q1, blocking: is this the right component?"

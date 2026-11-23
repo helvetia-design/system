@@ -34,6 +34,27 @@ Read:
 
 Identify the reusable utilities, nested components and existing tokens the plan depends on.
 
+**When this repo has no precedent for a Stencil mechanism**, check these two before inventing
+one:
+
+- **[Swiss Post DS](https://github.com/swisspost/design-system)** — the nearest peer: a Swiss
+  enterprise design system on Stencil, desktop web, multi-framework. Go here first for
+  design-system-shaped problems — component-family decomposition, `@Prop()`/slot API
+  conventions, the token pipeline, Angular/React wrapper generation, composite-widget a11y.
+- **[Ionic](https://github.com/ionic-team/ionic-framework)** — the largest production Stencil
+  codebase in the open. Go here for hard runtime mechanics: slot forwarding and delegated
+  focus in Shadow DOM, form-control participation (`formAssociated`, value accessors),
+  overlay/portal and scroll-lock handling, React/Angular output-target behavior, SSR and
+  hydration edge cases, `@Method()` design across an async boundary.
+
+Take the **mechanism only, never the design**. Ionic is mobile-first (its sizing, touch
+targets, density, gestures, theming system and `ios`/`md` modes are wrong for us); Swiss Post
+carries its own brand and UX. This system is desktop-oriented and styles through the token
+cascade.
+
+A precedent inside this repo always beats both — if `ds-modal` already solves focus return,
+copy `ds-modal`.
+
 ## Phase 3: Implement
 
 Component files live in `packages/core/src/components/<category>/<name>/` — the category
@@ -139,7 +160,20 @@ derive from them.
 
 ## Phase 7: Validate
 
-Follow the `ds-validate-component` skill for the new component and anything it touches.
+**First, check your render output against the a11y plan.** If `docs/plans/<name>-a11y-plan.md`
+exists, walk its semantics, ARIA and state-announcement sections and confirm every structural
+requirement actually appears in what you built. This is a grep-level check and it is cheap. The
+plan is a specification you were handed, not a suggestion.
+
+> Real case: an a11y plan required the no-results message in a `role="status"` live region and
+> explicitly forbade a bare `div` inside the listbox. The component shipped the forbidden version
+> anyway. It reached an axe run, a repair dispatch and a test rewrite before being fixed — one
+> grep for `no-results` against the plan would have caught it here, at zero rework cost.
+
+Then follow the `ds-validate-component` skill for the new component and anything it touches.
+
+Run the narrowest suite that covers your own files. Do not run other agents' suites or whole-package
+builds to "be safe" — step 7 of the workflow does the cross-cutting pass once.
 
 Fix defects within the approved scope. If a fix needs an architectural change, stop and
 escalate — do not redesign.

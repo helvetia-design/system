@@ -28,6 +28,21 @@ Accessibility requirements follow from what the component _is_:
 Name the [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/) pattern it
 matches. Follow that pattern rather than inventing keyboard behavior.
 
+### Mirroring a component that already ships? Plan the delta.
+
+When the component copies a pattern already in the repo ("the picker is phone-input's picker"),
+do **not** re-derive the whole pattern from the model's source. Instead:
+
+1. Audit the model for what it gets **wrong** — those defects are the valuable output, and the
+   new component must not inherit them.
+2. State only what **changes** for the new component.
+3. Reference the model for everything unchanged.
+
+Re-deriving a shipped pattern costs a full planning run and produces a document that mostly
+restates working code. The three real `ds-phone-input` defects found this way (misplaced
+`aria-activedescendant`, a dead `tabindex`, a missing live region) were worth more than the
+pages of correct-pattern description around them.
+
 ## Phase 2: Define the requirements
 
 Specify, concretely enough to test:
@@ -45,6 +60,16 @@ Specify, concretely enough to test:
 - **State announcement** — how a screen reader learns about disabled, invalid, expanded,
   selected, loading, and live-region updates.
 - **Reduced motion** — what `prefers-reduced-motion` changes.
+
+### Stay in your lane
+
+State the a11y **requirement**, not the implementation that satisfies it. "The endonym needs a
+`lang` attribute" is yours. "Call `getCountryName(code, language)` to get it" is not — naming a
+specific function, data source or dependency is the architect's call, and when the two plans
+disagree the engineer only finds out mid-implementation and has to adjudicate between them.
+
+Name a function or util only when it **is** the requirement — a shared focus-trap utility, an
+existing `a11yTitle` prop, the `Field` wrapper's ARIA wiring.
 
 ## Phase 3: Select the WCAG 2.2 AA criteria
 
@@ -65,11 +90,16 @@ these become manual checks in `ds-a11y-verify`.
 
 ## Phase 4: Deliver
 
-**Return** the plan — do not write it to a file. The orchestrator saves it to
-`docs/plans/<component>-a11y-plan.md`. Planning stays read-only on both sides, which is what
-makes this safe to run in parallel with `ds-plan-component`.
+**Write** the plan to `docs/plans/<component>-a11y-plan.md` yourself, then return a **summary,
+not the plan body** — the path, the findings that need routing to another agent, and the
+criteria that will need manual verification. The orchestrator reads the file when it needs
+detail; passing the body through its context so it can be written back out pays for the same
+content twice.
 
-Return:
+`ds-plan-component` writes `docs/plans/<component>-plan.md` — a different file, so the two
+planners stay safe to run in parallel.
+
+The file must contain:
 
 1. Component classification and the ARIA pattern it follows
 2. Semantics and accessible name

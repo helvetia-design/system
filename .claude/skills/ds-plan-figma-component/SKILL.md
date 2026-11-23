@@ -83,9 +83,16 @@ first.
 
 ## Phase 6: Deliver
 
-**Return** the plan; do not write it to a file and do not touch `<name>.figma.md` — the
+**Write** the plan to `docs/plans/<component>-figma-plan.md`, then return a summary — the path,
+the blocking handoffs, and the budget verdict. Not the plan body: it survives a human gate and is
+then read by the ux-designer, so routing it through the orchestrator's context pays for the same
+content twice.
+
+Your `Write` access is scoped to `docs/plans/**`. **Do not touch `<name>.figma.md`** — the
 ux-designer owns that file and creates it with `ds-figma-mapping`, which takes this plan as its
-input. Return:
+input.
+
+The file must contain:
 
 1. Family: owner and sub-components
 2. Props and states → proposed variant axes, with each axis's values
