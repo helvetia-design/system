@@ -1,5 +1,5 @@
 import { isValueEmpty } from '../is-value-empty'
-import { getElement } from '@stencil/core'
+import { Build, getElement } from '@stencil/core'
 
 /**
  * Describes a property validator used by decorators created with
@@ -220,8 +220,9 @@ export function createValidatorDecorator(validator: Validator): (target: object,
  *
  * The returned context includes:
  * - `value`: current property value.
- * - `showError(constraint)`: helper that logs a consistent error format and includes
- *   the host element for easier debugging in browser consoles.
+ * - `showError(constraint)`: helper that logs a consistent format. In the browser it uses
+ *   `console.error` and includes the host element. On the server it uses a single-string
+ *   `console.warn`, because the Stencil hydrate runner turns every `console.error` into an error diagnostic.
  *
  * Message format: `[componentName] Property "property" <constraint>. Received: <value>.`
  *
@@ -240,10 +241,12 @@ export function getValidationContext(
   return {
     value,
     showError(constraint: string) {
-      console.error(
-        `[${componentName}] Property "${String(property)}" ${constraint}. Received: ${JSON.stringify(value)}.`,
-        host,
-      )
+      const message = `[${componentName}] Property "${String(property)}" ${constraint}. Received: ${JSON.stringify(value)}.`
+      if (Build.isServer) {
+        console.warn(message)
+      } else {
+        console.error(message, host)
+      }
     },
   }
 }
