@@ -219,7 +219,11 @@ values**; clone a prototype and change only text and positions.
    order. **Lay out the grid after the component properties are added and bound** (`show <name>`
    booleans, swaps, text properties): binding a layer's `visible` or a text default changes the
    variant's width, so variants placed before stay off-centre. Changing a text property's default
-   later (e.g. `Button` → `Label`) needs the variants re-centred (seen on `ds-button`: up to 6px).
+   later (e.g. `Button` → `Label`) needs the variants re-centred (seen on `ds-button`: up to 6px),
+   **and** the Anatomy (Phase 7) and Measurements (Phase 8) drawings redrawn: their instances show
+   the default text, so they change size while every marker stays where it was placed (seen on
+   `ds-button` and `ds-spinner`, 20. and 23.11.2026). The same goes for any later change that
+   resizes the default variant.
    **Taller than the `Documentation` column:** the cloned `Component Sets` column is `FILL`
    height and clips anything below it. Set it to `layoutSizingVertical = 'HUG'` (seen on
    `ds-input`, 120 variants: the lower 9 row dividers reported no render bounds). Only then:

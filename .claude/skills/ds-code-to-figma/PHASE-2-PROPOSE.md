@@ -191,6 +191,9 @@ present it to the user for review. **Pre-flight before presenting:** verify ever
 `figmaOptions:` and the ASCII sketch follow both ordering hard rules (code default first —
 top-left cell = default variant; then smallest at the left or top, e.g. `base · sm · lg`),
 `state` is the column axis and every name follows [Naming](#naming) — checked, not assumed.
+Then run `node .claude/skills/ds-code-to-figma/scripts/check-mapping-coverage.mjs <name>` and fix
+every `fail` before presenting (a missing prop, part or family member's mapping file, YAML that
+doesn't parse, a text default that breaks the naming rule). Show its table with the draft.
 
 Add a **Variations** block from Phase 1's `variations:`: per covered set, each variation with its
 caption (`show label · bottom`, `all on`) and the snapshot cases still `missing`.

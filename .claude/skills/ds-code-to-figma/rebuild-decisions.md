@@ -82,7 +82,9 @@ Built 18.11.2026 — full record in `packages/core/src/components/indicators/spi
   - `flat`: padding-x → `Global/Dimension/Space/0`; min height → 28px (hardcoded, accepted — no
     token; `Global/Font/Size/28` rejected as semantically wrong).
   - `shadow`: apply `Alias/Shadow/Box/Base` (`ghost` and `link`: `Alias/Shadow/Text`).
-  - `iconTurn`: rotate the nested icon instance 180°.
+  - `iconTurn`: **excluded** (user decision 20.11.2026) — it only turns `plus` (225°) and
+    `caret-up` / `caret-down` (180°), and Figma can't rotate a glyph nested in an instance
+    (relative-transform can't be overridden).
 - **Excluded** (no static visual difference, approved 04.11.2026): `elementType`, `href`,
   `target`, `rel`, `download`, `name`, `value`, `noWrap`, `a11yControls`, `a11yLabel`,
   `a11yHaspopup`.

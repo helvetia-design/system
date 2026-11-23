@@ -63,6 +63,10 @@ props:
   shownWhen: filled=false # the variant(s) where this node is visible (e.g. color=invalid)
 - name: pageNumber
   figmaPropertyType: excluded # generated — no property
+- name: '[excluded]' # several excluded props in one entry
+  figmaPropertyType: excluded
+  props: [href, target, rel] # every code prop name, as a list — names only in `note` don't count (scripts/check-mapping-coverage.mjs)
+  note: 'link attributes, no visual effect'
   states:
   figmaProperty: state
   options: [default, hover, active] # interaction states only; focus is ignored
@@ -224,6 +228,19 @@ slots:
     defaultFill: empty
     figmaPropertyKey: null # filled in by Phase 3 (start#123:4)
     showPropertyKey: null # the `show start` boolean, filled in by Phase 3
+```
+
+## figmaCheck field
+
+Optional input for `scripts/figma-check-set.mjs` (Phase 4, step 0): layers that exist only in some
+variants, and variant combinations the user approved beyond the default rules.
+
+```yaml
+figmaCheck:
+  conditionalLayers:
+    - name: tooltip-anchor # layer name inside the variant
+      when: { state: [hover], disabled: ['false'], loading: ['false'] } # present exactly here, absent elsewhere
+  allowedCombos: [] # e.g. 'disabled=true, invalid=true, size=base, state=default' (approved in Phase 2)
 ```
 
 ## Family fields
