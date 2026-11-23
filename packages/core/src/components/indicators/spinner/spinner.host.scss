@@ -70,6 +70,14 @@
   width: var(--_spinner-logo-size);
 }
 
+// Reserves the line box the inline Lottie svg produces (logo size plus descender gap), so the box does not change when it attaches
+:host(:not(.is-circle)) #inner::before {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: var(--_spinner-logo-size);
+}
+
 :host(.is-circle) #inner {
   // ds-token-check: intentional — 50% is a structural circle radius, not a themeable value
   border-radius: 50%;
