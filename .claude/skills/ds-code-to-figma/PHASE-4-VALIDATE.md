@@ -41,7 +41,9 @@ worst of all reports (`fail` > `blocked` > `pass`) and decides [Next Phase](#nex
      paint bindings to library variables, numeric bindings, conditional layers (`figmaCheck:` in
      the mapping file — a layer that exists only in some variants, e.g. `tooltip-anchor`, needs an
      entry there, or it isn't checked). `review` rows (unbound numbers) are a `fail` unless the
-     mapping file's `tokens:` lists that value as `bind: false`.
+     mapping file's `tokens:` lists that value as `bind: false`. Sets of one mapping file with
+     different variant props (rule 1 split) declare `axes:` per set — see
+     `examples/mapping-file-format.md` → "`axes` on a set entry".
    - **Not covered by the scripts** (do them by hand): glyph colors inside nested instances (4c,
      via temporary instances), the header (2), layout against the template (5) and snapshots (6).
 1. Load `figma-use` (mandatory before any `use_figma` call; all calls in this phase are read-only,

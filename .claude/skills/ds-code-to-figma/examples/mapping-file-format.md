@@ -230,6 +230,22 @@ slots:
     showPropertyKey: null # the `show start` boolean, filled in by Phase 3
 ```
 
+## `axes` on a set entry
+
+Optional, in `sets:`. Only when the sets of one mapping file have different variant props (a rule 1
+split, e.g. `Item` has `variant`, `ItemAccordion` has `open`). Lists the `figmaProperty` names of the
+variant props this set has; `scripts/figma-check-set.mjs` then checks axes, options and combinations
+against that list instead of all variant props. Omitted → every variant prop (the usual case, an
+`…Inverted` mirror needs nothing). A name that isn't a variant prop stops the script.
+
+```yaml
+sets:
+  - name: Item
+    axes: [variant, size, label size]
+  - name: ItemAccordion
+    axes: [open, size, label size]
+```
+
 ## figmaCheck field
 
 Optional input for `scripts/figma-check-set.mjs` (Phase 4, step 0): layers that exist only in some
@@ -241,6 +257,7 @@ figmaCheck:
     - name: tooltip-anchor # layer name inside the variant
       when: { state: [hover], disabled: ['false'], loading: ['false'] } # present exactly here, absent elsewhere
   allowedCombos: [] # e.g. 'disabled=true, invalid=true, size=base, state=default' (approved in Phase 2)
+  stateless: { variant: [default] } # options with no hover / active: only `state=default` is expected for them
 ```
 
 ## Family fields

@@ -421,6 +421,23 @@ measurements: # confirmed by the user 18.11.2026, measured on the dev server (fr
 - **Follow-up — ButtonGroup:** `ds-button-group` (`button-group/button-group.tsx`) is a wrapping
   sub-component of this family (`conventions/families.md` §1) and has no Figma set yet. Build it
   as its own `ButtonGroup` set (native slot of Button instances) in a separate run.
+  Deferred by the user (23.11.2026) after Phase 1, which found:
+  - **Anatomy:** `@part group` = `part="group"` ✓. Wrapping → no entry in Button's anatomy.
+  - **Token:** gap `--ds-button-group-gap` → `🧩 Component/Button/Group/Gap` (4px, row and column
+    gap), present in Foundation. No breakpoint changes a token → no `device:` section.
+  - **Measured** (1024 and 375px): group fills its container, height hugs. Tablet+: `auto` = `row`;
+    column with `align` unset centres the buttons (`buttons-align-items: center`), row unset = left.
+    Mobile: buttons grow to fill the row and wrap, `align` is ignored, column buttons are full width.
+  - **Measurements triage (draft):** ButtonGroup · Gap 4px → table; Width fill / height hug →
+    behavior.
+  - **Phase 2 draft:** model the tablet+ look; `direction: row · column` (`auto` folded into `row`),
+    `align: base · left · center · right`, `wide` boolean; `reverse` excluded; one `buttons` slot,
+    default 3 × Button.
+  - **Code drift:** `reverse` has no effect (`is-reverse` has no CSS; `as-*-reverse` is never set);
+    the `direction` JSDoc says `auto` is vertical and full width on mobile, but code wraps in a row;
+    `wide` JSDoc says "on mobile", but it applies from tablet up and stacks every button at 100%
+    width; the `button-group-*` snapshots (23.09.2026) predate the gap fix (11.11.2026), and
+    `column-group` shows every alignment centred while live `left` / `right` work.
 - **Code follow-up — link underline:** code renders the link label without underline: the
   `--mod-` value is set on `#button`, but the `--_` variable is resolved on `:host`. Figma keeps
   the underline (the token's intent).

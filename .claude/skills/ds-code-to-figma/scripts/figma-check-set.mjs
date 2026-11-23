@@ -49,9 +49,23 @@ for (const member of findMembers(familyDir)) {
     process.exit(1)
   }
   figmaPage = figmaPage || map.figmaPage
+  const variantNames = map.props.filter(p => p.figmaPropertyType === 'variant').map(p => p.figmaProperty)
+  for (const s of map.sets)
+    for (const a of s.axes || [])
+      if (!variantNames.includes(String(a))) {
+        console.error(`${file}: set ${s.name}: axes "${a}" is not a variant prop (${variantNames.join(', ')})`)
+        process.exit(1)
+      }
   members.push({
     tag: member.tag,
-    sets: map.sets.map((s, i) => ({ id: s.figmaMasterNodeId, name: s.name, isDefault: i === 0 })),
+    // Optional per set: `axes: [<figmaProperty>, …]` — the variant props this set has, when sets of one
+    // mapping file differ (rule 1 split, e.g. Item has `variant`, ItemAccordion has `open`). Default: all.
+    sets: map.sets.map((s, i) => ({
+      id: s.figmaMasterNodeId,
+      name: s.name,
+      isDefault: i === 0,
+      axes: s.axes ? s.axes.map(String) : null,
+    })),
     variantAxes: map.props
       .filter(p => p.figmaPropertyType === 'variant')
       .map(p => ({ name: p.figmaProperty, options: (p.figmaOptions || p.options).map(String) })),
@@ -71,6 +85,10 @@ for (const member of findMembers(familyDir)) {
       when: Object.fromEntries(Object.entries(l.when || {}).map(([a, v]) => [a, [].concat(v).map(String)])),
     })),
     allowedCombos: (map.figmaCheck?.allowedCombos || []).map(String),
+    // Optional: figmaCheck.stateless: { axis: [values] } — those options exist with state=default only.
+    stateless: Object.fromEntries(
+      Object.entries(map.figmaCheck?.stateless || {}).map(([a, v]) => [a, [].concat(v).map(String)]),
+    ),
   })
 }
 if (!members.length) {
