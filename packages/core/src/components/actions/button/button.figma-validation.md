@@ -9,6 +9,63 @@
 > frame `6252:6`), mapping `button.figma.md`. Read-only except step 4c's temporary instances
 > (270 created, 270 removed, same scripts).
 
+## Run 5 — `ButtonBrandIcon` (23.11.2026, added set `6645:2413`)
+
+Read-only. Mapping file: `sets:` now declares `axes:` per set (`Button` / `ButtonInverted`: `color`, `size`;
+`ButtonBrandIcon`: `size`, `brand size`, `color`); without it the first run of `figma-check-set.mjs` reported
+`brand size` missing on the two older sets (mapping error, fixed before the run below). `Button` (195) and
+`ButtonInverted` (75): every script row `pass`, unchanged.
+
+### `node .claude/skills/ds-code-to-figma/scripts/figma-check-set.mjs button` — `ButtonBrandIcon` rows
+
+| check                                             | verdict  | found                                                                                                              | expected                                                                 |
+| ------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| variant axes                                      | **fail** | size, brand size, color, state, disabled                                                                           | … + `loading` (missing: loading)                                         |
+| options `size` / `brand size` / `color` / `state` | pass     | base · sm · lg / base · sm · lg / brand-purple · brand-red · brand-yellow · brand-green / default · hover · active | same (subsets)                                                           |
+| variant combinations                              | **fail** | 144                                                                                                                | 180 (the 36 `loading=true` combos, plus every key lacks `loading=false`) |
+| text properties / default / binding               | pass     | `label`, `Label`, 144 / 144                                                                                        | same                                                                     |
+| reactions                                         | pass     | 108                                                                                                                | 108                                                                      |
+| paint bindings / numeric bindings                 | pass     | 0 unbound, 0 local / 0                                                                                             | same                                                                     |
+| layer `tooltip-anchor`                            | pass     | 0                                                                                                                  | 0                                                                        |
+
+**Both fails are the approved exclusion of `loading`** (Phase 2, 23.11.2026: code renders spinner and brand icon together, no snapshot, no real use) — the checker applies every component state to every set and has no per-set exclusion. Needs the user's acceptance (below).
+
+### Manual checks, `ButtonBrandIcon` (read-only)
+
+| #     | Check                    | Result                | Evidence                                                                                                                                                                                                                                                                                                       |
+| ----- | ------------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2     | Header                   | pass                  | frame `6252:6`: `review-status` `status=review`, `VERSION v0.1.0`, `LAST UPDATED 23.11.2026` (this frame was written on 23.11.2026), links re-set (Storybook `…components-actions-button-button--button`, Toky `?filter=button`, GitHub `…/actions/button`)                                                    |
+| 3a    | Props / naming           | pass                  | defs: `brand icon#6645:0` INSTANCE_SWAP default `6627:694` (`BrandIconCar`), 4 preferred; `label#6645:145` TEXT `Label`; `size`, `brand size`, `color`, `state`, `disabled` VARIANT; all lowercase; set name `ButtonBrandIcon` PascalCase; `sub-label` = `ButtonBrandIcon`                                     |
+| 3b/3c | Top-level split          | pass                  | rule 1 (column layout, brand icon instead of side icons); 3 sets = mapping `sets:`                                                                                                                                                                                                                             |
+| 4a    | Brand-set bindings       | pass                  | all 144: padding ×4 → `Button/BrandIcon/Padding/Mobile` (remote), `brand-icon` width / height → `BrandIcon/Size/<brand size>` (remote, 80 / 40 / 176), icon level 1–3 fills → `BrandIcon/Color/<Purple                                                                                                         | Red | Yellow | Green>/Level1–3` (remote, stored colour + opacity = resolved), counts 144 / 144 / 144 |
+| 4b    | Nested DS instances      | pass                  | none besides the glyph                                                                                                                                                                                                                                                                                         |
+| 4c    | Icon slot (`brand icon`) | pass                  | `brand-icon` = instance of `BrandIconCar` (parent `BrandIcon glyphs`), `mainComponent` bound to `brand icon#6645:0` on 144 / 144, `isExposedInstance = false`, no `visible` boolean (set is the mode), layers `brand-icon, label` only, `layoutMode` VERTICAL                                                  |
+| 4c    | Swap keeps colour        | **not verified**      | no temporary swapped instance created (read-only); same open point as Brand Icon                                                                                                                                                                                                                               |
+| 4d    | Slots                    | pass                  | none expected                                                                                                                                                                                                                                                                                                  |
+| 4e    | Interactions             | pass                  | script row `reactions` 108 / 108 (36 rows × 3)                                                                                                                                                                                                                                                                 |
+| 5a    | Outer stroke             | pass                  | set fills / strokes identical to `Button` (`6277:1671`); weight 2 / 2; dash `[10,5]` / `[10,5]`; radius 5 / 5                                                                                                                                                                                                  |
+| 5a    | Dividers                 | pass                  | `divider-col: 3 / 3`, `divider-row: 35 / 35` (this `Grid`'s children); cols x 236 / 472 / 708 (h 9612 = set), rows y 267·n (w 944 = set); `Grid` `0,56,944,9612` = set; rows `absoluteRenderBounds` width 944; styling (type, strokes, weights, dash) identical to Button's prototypes; all visible, opacity 1 |
+| 5a    | Layer order              | pass                  | `Column + Box`: `Column Labels` 0, set 1, `Grid` 2                                                                                                                                                                                                                                                             |
+| 5b    | Column labels            | pass                  | width 944 = set; centres default 118, hover 354, active 590, disabled 826 (= column centres 118 / 354 / 590 / 826); `state` 354 = centre of the 3 interaction columns                                                                                                                                          |
+| 5b    | Row labels               | pass                  | 3 lanes (`size` 3 values + 3 brackets, `brand size` 9 + 9, `color` 36), value centres on their rows ±0.00, bracket y / height = group − 16 ±0.00, axis names at the lane's left edge on the column-value line (y 32.5)                                                                                         |
+| 5b′   | Variant centring         | pass                  | variants placed by computed x / y in 236 × 267 cells (largest variant 204 × 235 + 32)                                                                                                                                                                                                                          |
+| 5c    | Ordering                 | pass                  | first layer / top-left `size=base, brand size=base, color=brand-purple, state=default, disabled=false`; option order per code default first, then canonical; rows `size › brand size › color` (3 · 3 · 4, fewest first, ties by prop order)                                                                    |
+| 5d    | Leftovers                | pass                  | no `review` frame; `Sets` holds `Primary`, `Inverted`, `BrandIcon`, all visible, 0 hidden nodes in the new stack; no inverted brand set (brand colours have no inverted tokens)                                                                                                                                |
+| 5e    | Variations               | pass                  | no `show` boolean in the set → no new entry; section unchanged                                                                                                                                                                                                                                                 |
+| 6b    | Set screenshot           | pass (thumbnail only) | stack `6646:1621`; at 12 % scale the 4 columns, 36 rows and dividers are visible. The stack is 9 696 px tall; no readable full-size screenshot.                                                                                                                                                                |
+| 6c    | Snapshot comparison      | **not verified**      | `button.visual.html` has a `brand-icons` section but `button.visual.play.ts` has no `brand-icons` case, so no `button-brand-icons-…png` exists. A live dev-server comparison was attempted; the browser denied navigation to `localhost:4000`.                                                                 |
+| 6f    | Measurements drawing     | **not built yet**     | the extra `brand-icon` drawing (rows _Brand icon size_, _Padding (brand)_) is planned after this phase                                                                                                                                                                                                         |
+
+### Verdict (Run 5)
+
+**fail** — carried by the two `loading` script rows (approved exclusion, awaiting acceptance) and the standing
+`ds-button-group` mapping row. `4c swap keeps colour`, `6c brand snapshot` and the Measurements brand drawing
+are `not verified` / not built; they don't change the verdict while failures exist.
+
+## Accepted deviations — Run 5 (user decision, 23.11.2026)
+
+- **`ButtonBrandIcon` `variant axes` / `variant combinations` (script rows):** accepted. `loading` is excluded from this set on purpose (Phase 2); `check-mapping-coverage.mjs` / `figma-check-set.mjs` can't exclude a component state per set. Needs a per-set exclusion in the checker if it should stop flagging.
+
 ## Verdict: `fail`
 
 | #   | Check                                  | Result                                                                          |

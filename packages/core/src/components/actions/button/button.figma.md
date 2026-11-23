@@ -10,9 +10,15 @@ sets: # default set first
   - name: Button
     figmaComponentKey: f728631ba607a4e4d0519f950152963a105f2f98
     figmaMasterNodeId: '6277:1671'
+    axes: [color, size] # sets of one file with different variant props declare axes (examples/mapping-file-format.md)
   - name: ButtonInverted # only the 5 colors whose inverted tokens differ
     figmaComponentKey: 2bcb3a4a546b3ba7cfe8a346a2c6c781491d9694
     figmaMasterNodeId: '6277:1672'
+    axes: [color, size]
+  - name: ButtonBrandIcon # rule 1 split (column layout, brand icon instead of the side icons); added 23.11.2026
+    figmaComponentKey: 8193ba2946cb1231efa102d0ce659a0c35b5c0e7
+    figmaMasterNodeId: '6645:2413'
+    axes: [size, brand size, color]
 figmaPage: Core / Actions
 figmaDocFrameNodeId: '6252:6'
 
@@ -111,6 +117,17 @@ props:
     figmaProperty: placement # on the exposed TooltipAnchor instance, not a Button variant axis (an axis would push Button to 936 variants)
     figmaPropertyType: nested variant (exposed TooltipAnchor) # user decision 19.11.2026
     figmaOptions: [bottom, top, right, left] # code default first
+  - name: brandIcon # replaces icon / iconRight; column layout (button.tsx:494, :518)
+    type: string
+    figmaProperty: brand icon
+    figmaPropertyType: instance swap # on ButtonBrandIcon only; default BrandIconCar, preferred = the 4 brand glyphs; glyph nested directly
+  - name: brandSize
+    type: enum
+    options: [sm, lg]
+    default: '(unset → BrandIcon/Size/Base)'
+    figmaProperty: brand size
+    figmaPropertyType: variant # ButtonBrandIcon only
+    figmaOptions: [base, sm, lg] # 80 / 40 / 176
   - name: disabled
     figmaPropertyType: component state (blocked) # disabled=true only with state=default
   - name: loading
@@ -147,8 +164,6 @@ props:
     figmaPropertyType: excluded
     props:
       [
-        brandIcon,
-        brandSize,
         elementType,
         href,
         target,
@@ -162,7 +177,7 @@ props:
         a11yLabel,
         a11yHaspopup,
       ]
-    note: 'brandIcon, brandSize (no brand-icon build), elementType, href, target, rel, download, name, value, noWrap, a11yControls, a11yCurrent, a11yLabel, a11yHaspopup; @attachment ds-badge (attachments plan).'
+    note: 'elementType, href, target, rel, download, name, value, noWrap, a11yControls, a11yCurrent, a11yLabel, a11yHaspopup; @attachment ds-badge (attachments plan).'
 
 states:
   figmaProperty: state
@@ -191,7 +206,7 @@ componentStates:
       source: ':host(.is-loading) #button → button-disabled() (button.style.scss:580)',
     }
 
-figmaCheck: # scripts/figma-check-set.mjs (Phase 4 step 0)
+figmaCheck: # scripts/figma-check-set.mjs (Phase 4 step 0) — ButtonBrandIcon has no loading and only hover/active/disabled rows for 4 colors (see Brand icon section)
   conditionalLayers:
     - name: tooltip-anchor # build-mechanics.md → Tooltip anchor
       when: { state: [hover], disabled: ['false'], loading: ['false'] }
@@ -255,7 +270,7 @@ tokens: # names checked in the Foundation file (18.11.2026); 320 Button variable
   - { figmaVariable: '🧩 Component/Button/Link/Label/TextDecoration', resolved: true, bind: false } # underline, literal
   - { figmaVariable: '🧩 Component/Button/Link/UnderlineOffset', resolved: true, bind: false } # Figma has no bindable underline offset (setBoundVariable → "Unknown field", tested 20.11.2026) — literal textDecorationOffset on every color=link label; was AUTO (missing) until 20.11.2026
   - { figmaVariable: '🧩 Component/Button/Disabled/Label/TextDecoration', resolved: true, bind: false }
-# No breakpoint mixins in button.style.scss → no device: section (brand-icon padding left out).
+# No breakpoint mixins in button.style.scss → no device: section. Brand-icon padding is bound statically to Button/BrandIcon/Padding/Mobile (user decision 23.11.2026): no `/Device` routing variable exists in Foundation yet — see TODO.md → "Device routing variables for component tokens".
 
 measurements: # confirmed by the user 18.11.2026, measured on the dev server (fresh build)
   drawnOption: base
@@ -304,6 +319,21 @@ measurements: # confirmed by the user 18.11.2026, measured on the dev server (fr
         values: { base: { px: 24, token: 🧩 Component/Button/Spinner/Size } },
       }
     - {
+        property: Brand icon,
+        kind: size,
+        group: fixed,
+        show: drawn,
+        instance: brand-icon,
+        source: 'button.tsx:499 (brandSize → ds-brand-icon size)',
+        note: 'columns are brand size (base / sm / lg), not button size; ButtonBrandIcon base, brand size base drawn',
+        values:
+          {
+            base: { px: 80, token: 🧩 Component/BrandIcon/Size/Base },
+            sm: { px: 40, token: 🧩 Component/BrandIcon/Size/SM },
+            lg: { px: 176, token: 🧩 Component/BrandIcon/Size/LG },
+          },
+      }
+    - {
         property: Padding X,
         kind: spacing,
         group: inner spacing,
@@ -325,6 +355,16 @@ measurements: # confirmed by the user 18.11.2026, measured on the dev server (fr
         instance: main,
         source: button.style.scss:91,
         values: { base: { px: 8, token: 🧩 Component/Button/Size/Base/Gap } },
+      }
+    - {
+        property: Brand padding,
+        kind: spacing,
+        group: inner spacing,
+        show: drawn,
+        instance: brand-icon,
+        source: button.style.scss:179,
+        note: 'all four sides; Mobile value only (Tablet = Padding/MD). Static binding until a Device routing variable exists (TODO.md). The gap between icon and label is the same Size/Base/Gap marker (row Gap).',
+        values: { base: { px: 12, token: 🧩 Component/Button/BrandIcon/Padding/Mobile } },
       }
     - {
         property: Border width,
@@ -441,6 +481,45 @@ measurements: # confirmed by the user 18.11.2026, measured on the dev server (fr
 - **Code follow-up — link underline:** code renders the link label without underline: the
   `--mod-` value is set on `#button`, but the `--_` variable is resolved on `:host`. Figma keeps
   the underline (the token's intent).
+- **Code follow-up (23.11.2026, user decision: match the code in Figma):** a disabled brand-icon button keeps the colored icon. `button.tsx:495` passes only `size` and `color` to `ds-brand-icon` (never `disabled`), and `button-disabled()` (button.style.scss:560) styles `ds-icon` and `ds-spinner` but not `ds-brand-icon`. Fix: pass `disabled={this.disabled}` to the nested brand icon (the `BrandIcon/Color/Disabled/Level1–3` tokens exist). `ButtonBrandIcon` `disabled=true` variants keep the brand color until then; rebind their three icon fills to `Color/Disabled/Level1–3` after the fix. Changes what consumers see → needs a changeset.
 - **Code follow-ups (review 20.11.2026):** the `loading` JSDoc says the label hides, but it stays;
   `inverted` on the nested icon has no effect; dead `is-circle` spinner overrides; padding / gap
   `0` are literals, not tokens.
+
+## Brand icon — Phase 2 proposal (23.11.2026, approved) · Phase 3 built 23.11.2026
+
+Adds `brandIcon` / `brandSize` (left out until the Brand Icon run, now built: `BrandIcon` set
+`8bcd39edd2f3b7d17f96b98e62793b7827660bd0`, glyph library `6627:685`). Code: `has-brand-icon` →
+column layout, `ds-brand-icon` above the label, `icon` / `iconRight` ignored (button.tsx:494, :518),
+padding `--ds-button-brand-icon-padding` (button.style.scss:167). The brand icon's color follows the
+button color only for `brand-purple | red | yellow | green`, else the Brand Icon default (purple);
+it does **not** follow `disabled`.
+
+**Top-level split, rule 1** — different layers (column layout, brand icon instead of the side icons):
+a third set `ButtonBrandIcon`, next to `Button` / `ButtonInverted`.
+
+| Prop                  | Mapping on `ButtonBrandIcon`                                                                                                                                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `brandIcon`           | `INSTANCE_SWAP` `brand icon`, default `BrandIconCar`, preferred = the 4 brand glyphs; glyph nested directly (no `BrandIcon` wrapper), size bound to `BrandIcon/Size/<brand size>`, 3 level fills bound to `BrandIcon/Color/<Color>/Level1–3` per `color` |
+| `brandSize`           | variant `brand size`: `base · sm · lg` (80 / 40 / 176)                                                                                                                                                                                                   |
+| `color`               | variant `color`: `brand-purple · brand-red · brand-yellow · brand-green` (4 of 13; the rest fall back to purple in code and aren't in the visual tests)                                                                                                  |
+| `size`                | variant `size`: `base · sm · lg` (label typography, gap)                                                                                                                                                                                                 |
+| `label`               | text property `label` (`Label`), no `show label`                                                                                                                                                                                                         |
+| `state`               | `default · hover · active`; `disabled` blocked (`true` only with `state=default`)                                                                                                                                                                        |
+| `loading`             | **excluded** — code renders spinner and brand icon together, no snapshot, no real use                                                                                                                                                                    |
+| `a11yTitle` / tooltip | **excluded** from this set (not in the brand-icon tests)                                                                                                                                                                                                 |
+| padding               | all four sides bound **statically** to `Button/BrandIcon/Padding/Mobile` (`Space/Padding/SM`); Tablet value (`Padding/MD`) not modeled until the `/Device` variable exists (TODO.md)                                                                     |
+
+Rest as `Button`: border / background / text per `Button/Color/Brand*/<Base|Hover|Active>`, radius, gap `Button/Size/*/Gap`, label typography; `disabled` uses `Button/Color/Disabled/Base` (the brand icon keeps its brand color, as in code).
+
+**Grid** (`state` is the column axis; rows nested fewest options first, ties by prop order):
+`size` (3) › `brand size` (3) › `color` (4) = 36 rows × 4 columns (`default · hover · active · disabled`) = **144 variants** (≤ 500).
+Defaults top-left: `size=base`, `brand size=base`, `color=brand-purple`, `state=default`. Hover / press reactions as `Button`.
+(All 13 colors instead would be 3 × 3 × 13 × 4 = 468, still ≤ 500 but 4× the work; not recommended.)
+
+**Variations:** none (no `show` boolean in the set). **Copy me / Anatomy:** unchanged.
+**Measurements:** add an extra drawn instance `brand-icon` (`ButtonBrandIcon`, base) with two rows: _Brand icon size_ (`size`, 40 / 80 / 176 → `BrandIcon/Size/*`) and _Padding (brand)_ (`spacing`, `Padding/Mobile`, Mobile value only).
+
+**Measurements (23.11.2026):** extra drawn instance `ButtonBrandIcon` (base) beside `Button (loading)`; table rows _Brand icon_ (4) and _Brand padding_ (7) added, other rows renumbered (Padding X 5, Gap 6 also drawn on the brand instance, Border width 8, Radius 9, Text 10); footnote line explains brand-size columns and the Mobile-only padding.
+
+**Phase 3 build (23.11.2026):** set `ButtonBrandIcon` `6645:2413` (key above), 144 variants, stack `BrandIcon` in `Sets` (`6646:1621`), 4 × 36 grid (cell 236 × 267). Variants cloned from the matching `Button` variants (same bindings), side icons / spinner / tooltip anchor removed, padding ×4 → `Button/BrandIcon/Padding/Mobile`, brand-icon glyph (`BrandIconCar`) size → `BrandIcon/Size/*`, three level fills → `BrandIcon/Color/<Color>/Level1–3`. Properties: `brand icon` (swap, 4 preferred), `label` (text, `Label`), `size`, `brand size`, `color`, `state`, `disabled`. Reactions: 108 (36 rows × 3). Row lanes: `size` › `brand size` › `color` with 3 + 9 brackets.
