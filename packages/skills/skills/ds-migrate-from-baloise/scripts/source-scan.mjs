@@ -298,7 +298,7 @@ function commentEnd(text, start, stop) {
 
 function scanString(ctx, start, stop) {
   const { text } = ctx
-  const end = Math.min(endOfString(text, start), stop)
+  const end = Math.min(endOfString(text, start, true), stop)
   if (!isTemplatePropertyString(text, start)) return skipString(ctx, start, end)
   const closed = end - 1 > start && text[end - 1] === text[start]
   scanMarkup(ctx, start + 1, closed ? end - 1 : end)

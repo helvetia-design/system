@@ -38,7 +38,8 @@ When a finding is in an Angular `x.component.html`, also open the `x.component.t
 
 | old (`bal-tag`) | new (`ds-tag`) | handling |
 | --- | --- | --- |
-| `closable`, `disabled`, `invalid` | same | Copy as-is, including the boolean attribute form and `[closable]="..."` / `closable={...}` bindings. |
+| `closable`, `disabled` | same | Copy as-is, including the boolean attribute form and `[closable]="..."` / `closable={...}` bindings. |
+| `invalid` | _(no equivalent)_ | Delete it in every form (`invalid`, `invalid="true"`, `[invalid]="x"`, `invalid={x}`). `ds-tag` has no `invalid` prop and no invalid look. Report each one, so the consumer can signal the error another way, for example with `color="danger"`. |
 | `position` `left` / `center` | same | Copy as-is, including the `'...'`, `{"..."}` and `{'...'}` forms. `ds-tag` also accepts `right`. Nothing to migrate. |
 | `size` omitted or `size=""` | omit `size` | Leave `size` unset. Both render the base size. |
 | `size="small"` | `size="sm"` | Rewrite to the short value. Also rewrite `size='small'`, `size={"small"}` and `size={'small'}`. |
@@ -87,7 +88,7 @@ Coverage only, written to the file:
 6. Every `light` merged into a `-light` color.
 7. Every `size` rewritten to `sm` / `md` / `lg`.
 8. Every deleted `color="grey"` and `color="blue"`.
-9. Every deleted `light` and `transparent`.
+9. Every deleted `light`, `transparent` and `invalid`.
 10. Every `balCloseClick` listener renamed.
 11. Every import that changed.
 
