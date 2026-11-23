@@ -119,7 +119,9 @@ sub-components.
 ## 7. Documentation frame
 
 - One documentation frame per owner, never per sub-component (`page-structure.md`).
-- Every set of the family is a stack in the owner's `Sets`, in build order (§2). With more than one
+- Every set of the family is a stack in the owner's `Sets`, **owner's sets first** (default set, then
+  its `…Inverted`), then each sub-component's sets in build order (§2) — display order, not build
+  order (decided 23.11.2026, `ds-list`). With more than one
   stack, **every** stack keeps its `sub-label`, the owner's default set included.
 - Every sub-component set is **published** (no `.`/`_` prefix) and named per Phase 2 "Naming"
   (`Tab`, `TabPanel`, `ButtonGroup`, `CardTitle`).

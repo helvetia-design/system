@@ -34,14 +34,12 @@ for (const M of SPEC.members)
     const S = set.name
     const variants = set.children.filter(c => c.type === 'COMPONENT')
     const props = set.variantGroupProperties
+    // This set's own variant axes (`axes:` on its `sets:` entry), else every axis of the mapping file.
+    const setAxes = setSpec.axes ? M.variantAxes.filter(a => setSpec.axes.includes(a.name)) : M.variantAxes
 
     // 1. Axes: names, and no focus option (user decision 19.11.2026).
     const axes = Object.keys(props)
-    const wantAxes = [
-      ...M.variantAxes.map(a => a.name),
-      ...(M.state ? ['state'] : []),
-      ...M.componentStates.map(c => c.name),
-    ]
+    const wantAxes = [...setAxes.map(a => a.name), ...(M.state ? ['state'] : []), ...M.componentStates.map(c => c.name)]
     const extraAxes = axes.filter(a => !wantAxes.includes(a))
     const missingAxes = wantAxes.filter(a => !axes.includes(a))
     row(
@@ -55,17 +53,19 @@ for (const M of SPEC.members)
         .join('; '),
     )
 
-    // 2. Options per axis: the default set has every mapping option; other sets a subset (e.g. ButtonInverted).
-    for (const axis of M.variantAxes) {
+    // 2. Options per axis: the first set that has the axis (the default set, unless `axes:` says otherwise)
+    //    has every mapping option; later sets a subset (e.g. ButtonInverted).
+    for (const axis of setAxes) {
       const found = props[axis.name]?.values || []
       const extra = found.filter(v => !axis.options.includes(v))
-      const missing = setSpec.isDefault ? axis.options.filter(v => !found.includes(v)) : []
+      const full = M.sets.find(s => !s.axes || s.axes.includes(axis.name)) === setSpec
+      const missing = full ? axis.options.filter(v => !found.includes(v)) : []
       row(
         S,
         `options \`${axis.name}\``,
         extra.length || missing.length ? 'fail' : 'pass',
         found.join(' · '),
-        setSpec.isDefault ? axis.options.join(' · ') : `subset of ${axis.options.join(' · ')}`,
+        full ? axis.options.join(' · ') : `subset of ${axis.options.join(' · ')}`,
         [missing.length && `missing: ${missing.join(', ')}`, extra.length && `extra: ${extra.join(', ')}`]
           .filter(Boolean)
           .join('; '),
@@ -87,16 +87,18 @@ for (const M of SPEC.members)
     // 3. Variant combinations: every expected variant exists, nothing extra.
     //    Blocked component state: `true` only with state=default. Interactive: `true` on every state.
     //    At most one component state `true` at a time (unless M.allowedCombos lists it).
-    const ownOptions = M.variantAxes.map(a => [a.name, props[a.name]?.values || []])
+    const ownOptions = setAxes.map(a => [a.name, props[a.name]?.values || []])
     let combos = [{}]
     for (const [name, values] of ownOptions) combos = combos.flatMap(c => values.map(v => ({ ...c, [name]: v })))
     const expected = []
     for (const base of combos) {
       const falseAll = Object.fromEntries(M.componentStates.map(c => [c.name, 'false']))
-      for (const st of M.state ? M.state.options : [null])
-        expected.push({ ...base, ...(st ? { state: st } : {}), ...falseAll })
+      // figmaCheck.stateless: options of an axis that have no hover / active (e.g. a non-interactive variant).
+      const noInteraction = Object.entries(M.stateless || {}).some(([a, vals]) => vals.includes(base[a]))
+      const stateOptions = M.state ? (noInteraction ? ['default'] : M.state.options) : null
+      for (const st of stateOptions || [null]) expected.push({ ...base, ...(st ? { state: st } : {}), ...falseAll })
       for (const cs of M.componentStates) {
-        const states = !M.state ? [null] : cs.interactive ? M.state.options : ['default']
+        const states = !M.state ? [null] : cs.interactive ? stateOptions : ['default']
         for (const st of states)
           expected.push({ ...base, ...(st ? { state: st } : {}), ...falseAll, [cs.name]: 'true' })
       }

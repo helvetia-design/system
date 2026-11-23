@@ -30,6 +30,21 @@
           <ds-item label="Item 4" description="This is a description for item">
             <ds-icon slot="icon" name="file"></ds-icon>
           </ds-item>
+
+          <!-- Variations: label sizes, description only, icon only, all on -->
+          <ds-item label="Label size h1" label-size="h1"></ds-item>
+          <ds-item label="Label size h2" label-size="h2"></ds-item>
+          <ds-item label="Label size h3" label-size="h3"></ds-item>
+          <ds-item label="Label size h4" label-size="h4"></ds-item>
+          <ds-item label="Label size h5" label-size="h5"></ds-item>
+          <ds-item description="Description only"></ds-item>
+          <ds-item>
+            <ds-icon slot="icon" name="file"></ds-icon>
+          </ds-item>
+          <ds-item label="All on" description="This is a description for item">
+            <ds-icon slot="icon" name="file"></ds-icon>
+            <div slot="content"><span>Content slot</span></div>
+          </ds-item>
         </ds-list>
       </section>
 
@@ -170,6 +185,36 @@
               nutzen Sie unser Formular «Ermittlung der Versicherungssumme für den Hausrat», um den genauen Betrag zu
               berechnen.
             </p>
+          </ds-item>
+
+          <!-- Variations: label sizes, description only, icon only, content only, all on -->
+          <ds-item variant="accordion" label="Label size h1" label-size="h1">
+            <p slot="accordion-content">Accordion content</p>
+          </ds-item>
+          <ds-item variant="accordion" label="Label size h2" label-size="h2">
+            <p slot="accordion-content">Accordion content</p>
+          </ds-item>
+          <ds-item variant="accordion" label="Label size h3" label-size="h3">
+            <p slot="accordion-content">Accordion content</p>
+          </ds-item>
+          <ds-item variant="accordion" label="Label size h5" label-size="h5">
+            <p slot="accordion-content">Accordion content</p>
+          </ds-item>
+          <ds-item variant="accordion" description="Description only">
+            <p slot="accordion-content">Accordion content</p>
+          </ds-item>
+          <ds-item variant="accordion">
+            <ds-icon slot="icon" name="file"></ds-icon>
+            <p slot="accordion-content">Accordion content</p>
+          </ds-item>
+          <ds-item variant="accordion">
+            <div slot="content"><span>Content slot</span></div>
+            <p slot="accordion-content">Accordion content</p>
+          </ds-item>
+          <ds-item variant="accordion" label="All on" description="This is a description for item">
+            <ds-icon slot="icon" name="file"></ds-icon>
+            <div slot="content"><span>Content slot</span></div>
+            <p slot="accordion-content">Accordion content</p>
           </ds-item>
         </ds-list>
       </section>
