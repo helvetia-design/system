@@ -207,6 +207,20 @@ describe('masked source', () => {
     expect(result).toHaveLength(text.length)
   })
 
+  it('keeps code after a template literal whose substitution nests a template with an apostrophe', () => {
+    const text = [
+      'const note = `',
+      "  ${ready ? `it's here` : ''}",
+      '`',
+      'export const A = () => <BalInput label="x" />',
+      'const ref = useRef<HTMLBalInputElement>(null)',
+      '',
+    ].join('\n')
+    const result = masked('a.tsx', text)
+    expect(result).toContain('<BalInput label=')
+    expect(result).toContain('useRef<HTMLBalInputElement>(null)')
+  })
+
   it('reads a quote as an attribute value delimiter only after `=`', () => {
     const text =
       "<bal-input placeholder=l'adresse></bal-input>\n<bal-button>x</bal-button>\n<p title=\"it's\">C'est</p>"
