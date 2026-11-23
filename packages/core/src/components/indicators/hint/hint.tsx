@@ -40,6 +40,7 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
   private popupEl: HTMLDsPopupElement | undefined
   private drawerEl: HTMLDsDrawerElement | undefined
   private triggerButtonEl: HTMLButtonElement | undefined
+  private tooltipEl: HTMLDsTooltipElement | undefined
 
   log!: LogInstance
 
@@ -186,6 +187,7 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
 
   private handleWillPresent = (): void => {
     this.isOpen = true
+    this.tooltipEl?.dismiss()
   }
 
   private handleWillDismiss = (): void => {
@@ -244,7 +246,13 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
         >
           <ds-icon name="info-circle" aria-hidden="true" />
         </button>
-        <ds-tooltip reference="trigger">{triggerLabel}</ds-tooltip>
+        <ds-tooltip
+          ref={el => (this.tooltipEl = el as HTMLDsTooltipElement)}
+          reference="trigger"
+          disabled={this.isOpen}
+        >
+          {triggerLabel}
+        </ds-tooltip>
         {this.isTouch ? (
           <ds-drawer
             ref={el => (this.drawerEl = el as HTMLDsDrawerElement)}

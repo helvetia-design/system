@@ -12883,21 +12883,21 @@
               ]
             }
           },
-          "Level2": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🎨 Surface.RedDark}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:13:1639",
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ]
-            }
-          },
           "Level3": {
             "$type": "color",
             "$value": "{🔗 Alias.🎨 Surface.Red}",
             "$extensions": {
               "com.figma.variableId": "VariableID:13:1640",
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
+          "Level2": {
+            "$type": "color",
+            "$value": "{🌐 Global.🌈 Color.Red.5}",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:13:1639",
               "com.figma.scopes": [
                 "ALL_SCOPES"
               ]
@@ -12925,21 +12925,21 @@
               ]
             }
           },
-          "Level2": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🎨 Surface.YellowDark}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:13:1643",
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ]
-            }
-          },
           "Level3": {
             "$type": "color",
             "$value": "{🔗 Alias.🎨 Surface.Yellow}",
             "$extensions": {
               "com.figma.variableId": "VariableID:13:1644",
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
+          "Level2": {
+            "$type": "color",
+            "$value": "{🌐 Global.🌈 Color.Yellow.5}",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:13:1643",
               "com.figma.scopes": [
                 "ALL_SCOPES"
               ]
@@ -25171,216 +25171,6 @@
             "com.figma.scopes": [
               "ALL_SCOPES"
             ]
-          }
-        },
-        "Default": {
-          "Color": {
-            "Background": {
-              "Base": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.GreyLight}",
-                "$description": "Background of a default tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3195",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Hover": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.GreyDark}",
-                "$description": "Hover background of a default tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3196",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Active": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.GreyDarker}",
-                "$description": "Pressed background of a default tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3197",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "Selected": {
-          "Color": {
-            "Background": {
-              "$type": "color",
-              "$value": "{🔗 Alias.🎨 Surface.Selected}",
-              "$description": "Background of the selected tile.",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:3198",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            }
-          }
-        },
-        "Purple": {
-          "Color": {
-            "Background": {
-              "Base": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.PurpleLighter}",
-                "$description": "Background of a purple tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3199",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Hover": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.PurpleLight}",
-                "$description": "Hover background of a purple tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3200",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Active": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.Purple}",
-                "$description": "Pressed background of a purple tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3201",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "Green": {
-          "Color": {
-            "Background": {
-              "Base": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.GreenLighter}",
-                "$description": "Background of a green tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3202",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Hover": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.GreenLight}",
-                "$description": "Hover background of a green tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3203",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Active": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.Green}",
-                "$description": "Pressed background of a green tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3204",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "Red": {
-          "Color": {
-            "Background": {
-              "Base": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.RedLighter}",
-                "$description": "Background of a red tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3205",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Hover": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.RedLight}",
-                "$description": "Hover background of a red tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3206",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Active": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.Red}",
-                "$description": "Pressed background of a red tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3207",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "Yellow": {
-          "Color": {
-            "Background": {
-              "Base": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.YellowLighter}",
-                "$description": "Background of a yellow tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3208",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Hover": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.YellowLight}",
-                "$description": "Hover background of a yellow tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3209",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              },
-              "Active": {
-                "$type": "color",
-                "$value": "{🔗 Alias.🎨 Surface.Yellow}",
-                "$description": "Pressed background of a yellow tile.",
-                "$extensions": {
-                  "com.figma.variableId": "VariableID:13:3210",
-                  "com.figma.scopes": [
-                    "ALL_SCOPES"
-                  ]
-                }
-              }
-            }
           }
         }
       }

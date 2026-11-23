@@ -2,7 +2,7 @@ import { Component, Element, Event, EventEmitter, h, Host, Prop } from '@stencil
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { DsComponentInterface } from '@global'
 import { Logger, type LogInstance, OneOf, Required, Type } from '@utils'
-import { CAROUSEL_ITEM_COLORS, CarouselItemColor, CAROUSEL_VARIANTS, CarouselVariant } from '../carousel.interfaces'
+import { CAROUSEL_VARIANTS, CarouselVariant } from '../carousel.interfaces'
 
 /**
  * Carousel Item is a single slide or product tile inside a ds-carousel.
@@ -28,13 +28,6 @@ export class CarouselItem implements DsComponentInterface {
    * PUBLIC PROPERTY API
    * ─────────────────────────────────────────────────────
    */
-
-  /**
-   * Background color for product tiles.
-   */
-  @Prop()
-  @OneOf(CAROUSEL_ITEM_COLORS)
-  readonly color?: CarouselItemColor
 
   /**
    * Set by ds-carousel. The carousel variant this item is part of.
@@ -111,7 +104,6 @@ export class CarouselItem implements DsComponentInterface {
       'is-tile': isTile,
       'is-selected': this.selected,
       'is-navigation': isTile && this.navigation,
-      [`is-${this.color}`]: !!this.color,
     }
 
     if (isTile) {

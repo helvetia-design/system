@@ -62,6 +62,21 @@ export {
   DsOrientationSubject,
 } from './utils/orientation'
 export { ScrollHandler } from './utils/scroll'
+export { Logger } from './utils/log'
+export type { Loggable, LogInstance } from './utils/log'
+export {
+  ArrayOf,
+  DateValue,
+  GreaterThan,
+  IsoDate,
+  LessThan,
+  OneOf,
+  Pattern,
+  Required,
+  Type,
+  Url,
+} from './utils/property-decorators'
+export type { DsComponentInterface } from './global/component.type'
 
 /**
  * Controllers

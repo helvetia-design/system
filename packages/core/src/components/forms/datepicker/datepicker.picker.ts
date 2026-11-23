@@ -149,6 +149,9 @@ export class DatepickerController {
   private init() {
     const { popupHostEl, language, region } = this.config
 
+    // SSR serializes the server-side air-datepicker DOM; mock-doc has no replaceChildren().
+    while (popupHostEl.firstChild) popupHostEl.removeChild(popupHostEl.firstChild)
+
     this.airDatepicker = new AirDatepicker<HTMLDivElement>(popupHostEl, {
       navTitles: {
         days: `<button id="switch"><strong>MMMM yyyy</strong><span class="sr-only">${i18nDsDatepicker[language].switchToYearView}</span><ds-icon name="caret-down"></ds-icon></button>`,
