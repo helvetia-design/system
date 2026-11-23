@@ -1,0 +1,240 @@
+@use '@helvetia-design/styles/dist/scss/mixins' as *;
+@use '../../../vars' as vars;
+@use '../form/form.mixin' as form;
+@use '../input/input.mixin' as input;
+@use '../../../typography' as typo;
+@use '../../actions/close/close.mixin' as close-mx;
+
+/**
+ * Variables
+ * --------------------------------
+ * Define here the css variables for the component to be able to use it in host or non-host mode
+ * These variables can be used in the component styles below and later on be overridden in themes.
+ *
+ * The suggestion panel deliberately reuses the `--ds-select-*` tokens so the dropdown is
+ * visually identical to `ds-select` and no new tokens are required for the POC.
+ *
+ * @prop --autocomplete-color: Text color inside the field.
+ * @prop --autocomplete-placeholder: Placeholder text color.
+ * @prop --autocomplete-font-family: Font family of the field text.
+ * @prop --autocomplete-font-weight: Font weight of the field text.
+ * @prop --autocomplete-font-size: Font size of the field text.
+ * @prop --autocomplete-line-height: Line height of the field text.
+ * @prop --autocomplete-letter-spacing: Letter spacing of the field text.
+ * @prop --autocomplete-text-decoration: Text decoration of the field text.
+ * @prop --autocomplete-text-transform: Text transform of the field text.
+ * @prop --autocomplete-panel-background: Background color of the suggestion panel.
+ * @prop --autocomplete-panel-shadow: Box shadow of the suggestion panel.
+ * @prop --autocomplete-panel-border: Border of the suggestion panel.
+ * @prop --autocomplete-panel-radius: Border radius of the suggestion panel.
+ * @prop --autocomplete-panel-padding: Padding of the suggestion panel.
+ * @prop --autocomplete-panel-z-index: Stack order of the suggestion panel.
+ * @prop --autocomplete-panel-max-height: Maximum height of the suggestion panel before it scrolls.
+ * @prop --autocomplete-option-color: Text color of an option.
+ * @prop --autocomplete-option-background: Background color of an option.
+ * @prop --autocomplete-option-hover-background: Background color of a hovered or keyboard-active option.
+ * @prop --autocomplete-option-disabled-color: Text color of a disabled option.
+ * @prop --autocomplete-option-radius: Border radius of an option.
+ * @prop --autocomplete-option-padding: Padding of an option.
+ * @prop --autocomplete-option-match-weight: Font weight of the matching part of an option label.
+ * @prop --form-container-background: Background color of the input container.
+ * @prop --form-container-border-color: Border color of the input container.
+ * @prop --form-container-border-width: Border width of the input container.
+ * @prop --form-container-radius: Border radius of the input container.
+ * @prop --form-container-hover-background: Container background color on hover.
+ * @prop --form-container-active-background: Container background color when active.
+ * @prop --form-container-focus-background: Container background color when focused.
+ * @prop --form-container-hover-border: Container border color on hover.
+ * @prop --form-container-active-border: Container border color when active.
+ * @prop --form-container-focus-border: Container border color when focused.
+ * @prop --form-label-color: Text color of the label.
+ * @prop --form-label-font-family: Font family of the label.
+ * @prop --form-label-font-weight: Font weight of the label.
+ * @prop --form-label-font-size: Font size of the label.
+ * @prop --form-label-line-height: Line height of the label.
+ * @prop --form-label-letter-spacing: Letter spacing of the label.
+ * @prop --form-label-text-decoration: Text decoration of the label.
+ * @prop --form-label-text-transform: Text transform of the label.
+ * @prop --form-description-color: Text color of the description.
+ * @prop --form-description-font-family: Font family of the description.
+ * @prop --form-description-font-weight: Font weight of the description.
+ * @prop --form-description-font-size: Font size of the description.
+ * @prop --form-description-line-height: Line height of the description.
+ * @prop --form-description-letter-spacing: Letter spacing of the description.
+ * @prop --form-description-text-decoration: Text decoration of the description.
+ * @prop --form-description-text-transform: Text transform of the description.
+ */
+
+:host {
+  @include form.vars-field();
+  @include form.vars-container();
+  @include form.vars-label();
+  @include form.vars-description();
+
+  @include input.vars('autocomplete');
+
+  @include vars.local(autocomplete-panel-background, var(--ds-select-content-color-background));
+  @include vars.local(autocomplete-panel-shadow, var(--ds-select-content-shadow));
+  @include vars.local(autocomplete-panel-border, var(--ds-select-content-border));
+  @include vars.local(autocomplete-panel-radius, var(--ds-select-content-radius));
+  @include vars.local(autocomplete-panel-padding, var(--ds-select-content-padding));
+  @include vars.local(autocomplete-panel-z-index, var(--ds-select-content-z-index));
+  // shortcut: no Alias/Global scale step for dropdown max height; revisit once tokens owner picks one
+  @include vars.local(autocomplete-panel-max-height, 18.75rem);
+
+  @include vars.local(autocomplete-option-color, var(--ds-select-option-color-text-base));
+  @include vars.local(autocomplete-option-background, var(--ds-select-option-color-background-base));
+  @include vars.local(autocomplete-option-hover-background, var(--ds-select-option-color-background-hover));
+  @include vars.local(autocomplete-option-disabled-color, var(--ds-select-option-color-text-disabled));
+  @include vars.local(autocomplete-option-radius, var(--ds-select-content-radius));
+  // shortcut: option padding has no Select token yet; mirrors the slim-select panel spacing
+  @include vars.local(autocomplete-option-padding, 0.5rem);
+  @include vars.local(autocomplete-option-match-weight, var(--ds-select-option-weight-selected));
+}
+
+/**
+ * Basic Component Styles
+ * --------------------------------
+ */
+
+:host {
+  @include form.field();
+  @include form.container();
+  @include form.label();
+  @include form.description();
+
+  @include input.style('autocomplete');
+
+  min-width: 0;
+
+  #inner {
+    @include form.field();
+
+    min-width: 0;
+  }
+
+  // The panel is absolutely positioned against the control, so it tracks the field width.
+  #container {
+    position: relative;
+    min-width: 0;
+  }
+
+  @include close-mx.style('#clear', $background: false);
+}
+
+:host(.is-open) {
+  z-index: var(--_autocomplete-panel-z-index);
+}
+
+/**
+ * Suggestion panel
+ * --------------------------------
+ */
+
+:host {
+  #panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: var(--_autocomplete-panel-z-index);
+    box-sizing: border-box;
+    width: 100%;
+    max-height: var(--_autocomplete-panel-max-height);
+    overflow: auto;
+    margin-block-start: var(--_autocomplete-panel-padding);
+    padding-block: var(--_autocomplete-panel-padding);
+    border: var(--_autocomplete-panel-border);
+    border-radius: var(--_autocomplete-panel-radius);
+    background: var(--_autocomplete-panel-background);
+    box-shadow: var(--_autocomplete-panel-shadow);
+
+    &[aria-hidden='true'] {
+      display: none;
+    }
+  }
+
+  .option {
+    display: block;
+    margin-inline: var(--_autocomplete-panel-padding);
+    padding: var(--_autocomplete-option-padding);
+    border-radius: var(--_autocomplete-option-radius);
+    background: var(--_autocomplete-option-background);
+    color: var(--_autocomplete-option-color);
+    cursor: pointer;
+    @include typo.apply(autocomplete);
+  }
+
+  .option.is-active {
+    background: var(--_autocomplete-option-hover-background);
+  }
+
+  .option.is-disabled {
+    color: var(--_autocomplete-option-disabled-color);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  // The matching part of the label is marked up with <mark> rather than injected HTML.
+  // Reset the browser default highlight and only carry the weight, as the APL does.
+  mark {
+    // ds-token-check: intentional — transparent reset, not a themeable surface
+    background: transparent;
+    color: inherit;
+    font-weight: var(--_autocomplete-option-match-weight);
+  }
+
+  .no-results {
+    padding: var(--_autocomplete-option-padding);
+    margin-inline: var(--_autocomplete-panel-padding);
+    color: var(--_autocomplete-placeholder);
+    @include typo.apply(autocomplete);
+  }
+}
+
+/**
+ * Variants and States
+ * --------------------------------
+ */
+
+:host(.is-danger) {
+  --mod-form-container-border: var(--ds-form-danger-container-border);
+  --mod-form-description-color: var(--ds-form-danger-color-description);
+  --mod-form-container-hover-border: var(--ds-form-danger-container-border);
+  --mod-form-container-active-border: var(--ds-form-danger-container-border);
+}
+
+:host(.is-success) {
+  --mod-form-container-border: var(--ds-form-success-container-border);
+  --mod-form-description-color: var(--ds-form-success-color-description);
+  --mod-form-container-hover-border: var(--ds-form-success-container-border);
+  --mod-form-container-active-border: var(--ds-form-success-container-border);
+}
+
+:host(.is-warning) {
+  --mod-form-container-border: var(--ds-form-warning-container-border);
+  --mod-form-description-color: var(--ds-form-warning-color-description);
+  --mod-form-container-hover-border: var(--ds-form-warning-container-border);
+  --mod-form-container-active-border: var(--ds-form-warning-container-border);
+}
+
+:host(.is-disabled) {
+  &,
+  #label,
+  #description,
+  #input,
+  #clear {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  --mod-form-container-background: var(--ds-form-disabled-container-background);
+  --mod-form-container-border: var(--ds-form-disabled-container-border);
+  --mod-form-label-color: var(--ds-form-disabled-color-label);
+  --mod-form-description-color: var(--ds-form-disabled-color-description);
+  @include typo.mod(form-label, 'form-disabled-label-typo');
+  @include typo.mod(form-description, 'form-disabled-description-typo');
+
+  --mod-autocomplete-color: var(--ds-form-disabled-control-color-value);
+  --mod-autocomplete-placeholder: var(--ds-form-disabled-control-color-placeholder);
+  @include typo.mod(autocomplete, 'form-disabled-control-typo');
+}

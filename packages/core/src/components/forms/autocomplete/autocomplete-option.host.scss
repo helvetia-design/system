@@ -1,0 +1,5 @@
+@use '@helvetia-design/styles/dist/scss/mixins' as *;
+
+:host {
+  @include visually-hidden();
+}

@@ -10,6 +10,8 @@ import { DsBrand, DsConfigState, DsIcons, DsLanguage, DsLegalLinks, DsLegalText,
 import { Alert, AlertComponent, AlertContainerSize, AlertType } from "./components/overlays/alert/alert-container.interfaces";
 import { AppFooterContainer, AppFooterLanguageChangeDetail } from "./components/structure/app-footer/app-footer.interfaces";
 import { AppNavbarContainer } from "./components/navigation/app-navbar/app-navbar.interfaces";
+import { AutocompleteChangeDetail, AutocompleteInputDetail, AutocompleteOption } from "./components/forms/autocomplete/autocomplete.interfaces";
+import { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
 import { BadgeColor, BadgePosition, BadgeSize } from "./components/indicators/badge/badge.interfaces";
 import { IconColor, IconSize } from "./components/media/brand-icon/brand-icon.interfaces";
 import { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, ButtonDidRenderDetail, ButtonElementType, ButtonFocusDetail, ButtonGroupAlignment, ButtonGroupDirection, ButtonNavigateDetail, ButtonSize, ButtonTarget } from "./components/actions/button/button.interfaces";
@@ -18,7 +20,6 @@ import { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, Ca
 import { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
 import { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
 import { CheckboxBlurDetail, CheckboxChangeDetail, CheckboxFocusDetail, CheckboxGroupBlurDetail, CheckboxGroupChangeDetail, CheckboxGroupColumns, CheckboxGroupFocusDetail, CheckboxLabelPosition, CheckboxTileColor } from "./components/forms/checkbox/checkbox.interfaces";
-import { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
 import { CloseButtonSize, CloseSize } from "./components/actions/close/close.interfaces";
 import { StackAlignment, StackDirection, StackLayout, StackPadding, StackSpace } from "./components/structure/stack/stack.interfaces";
 import { ContentAlignment, ContentSpace, ContentTextAlignment } from "./components/structure/content/content.interfaces";
@@ -58,6 +59,8 @@ export { DsBrand, DsConfigState, DsIcons, DsLanguage, DsLegalLinks, DsLegalText,
 export { Alert, AlertComponent, AlertContainerSize, AlertType } from "./components/overlays/alert/alert-container.interfaces";
 export { AppFooterContainer, AppFooterLanguageChangeDetail } from "./components/structure/app-footer/app-footer.interfaces";
 export { AppNavbarContainer } from "./components/navigation/app-navbar/app-navbar.interfaces";
+export { AutocompleteChangeDetail, AutocompleteInputDetail, AutocompleteOption } from "./components/forms/autocomplete/autocomplete.interfaces";
+export { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
 export { BadgeColor, BadgePosition, BadgeSize } from "./components/indicators/badge/badge.interfaces";
 export { IconColor, IconSize } from "./components/media/brand-icon/brand-icon.interfaces";
 export { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, ButtonDidRenderDetail, ButtonElementType, ButtonFocusDetail, ButtonGroupAlignment, ButtonGroupDirection, ButtonNavigateDetail, ButtonSize, ButtonTarget } from "./components/actions/button/button.interfaces";
@@ -66,7 +69,6 @@ export { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, Ca
 export { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
 export { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
 export { CheckboxBlurDetail, CheckboxChangeDetail, CheckboxFocusDetail, CheckboxGroupBlurDetail, CheckboxGroupChangeDetail, CheckboxGroupColumns, CheckboxGroupFocusDetail, CheckboxLabelPosition, CheckboxTileColor } from "./components/forms/checkbox/checkbox.interfaces";
-export { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
 export { CloseButtonSize, CloseSize } from "./components/actions/close/close.interfaces";
 export { StackAlignment, StackDirection, StackLayout, StackPadding, StackSpace } from "./components/structure/stack/stack.interfaces";
 export { ContentAlignment, ContentSpace, ContentTextAlignment } from "./components/structure/content/content.interfaces";
@@ -275,6 +277,109 @@ export namespace Components {
           * Toggles the sidebar menu open/closed state
          */
         "toggleSidebar": () => Promise<void>;
+    }
+    /**
+     * Autocomplete renders a text field with a panel of filtered suggestions. Unlike `ds-select`
+     * the user may submit text that is not in the list — the suggestions only speed up typing.
+     */
+    interface DsAutocomplete {
+        /**
+          * If `true`, a button to empty the field is shown while it has a value.
+          * @default false
+         */
+        "clearable": boolean;
+        /**
+          * Defines the color of the field. The default value is `primary`.
+          * @default 'primary'
+         */
+        "color": InputColor;
+        "configChanged": (state: DsConfigState) => Promise<void>;
+        /**
+          * Milliseconds to wait before `dsChange` is emitted while typing.
+          * @default 0
+         */
+        "debounce": number;
+        /**
+          * The description of the field, which is displayed below the input.
+          * @default ''
+         */
+        "description": string;
+        /**
+          * If `true`, the element is not mutable, focusable, or even submitted with the form.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Returns the native `<input>` element used under the hood.
+         */
+        "getInputElement": () => Promise<HTMLInputElement | undefined>;
+        /**
+          * If `true` the component gets a invalid style.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * The text to display when the field is in an invalid state.
+          * @default ''
+         */
+        "invalidText": string;
+        /**
+          * The label of the field, which is displayed above the input.
+          * @default ''
+         */
+        "label": string;
+        /**
+          * The name of the control, which is submitted with the form data.
+          * @default this.inputId
+         */
+        "name": string;
+        /**
+          * The list of suggestions. Use the default slot with `ds-autocomplete-option` children instead when writing HTML only. If both are set, `options` wins.
+          * @default []
+         */
+        "options": AutocompleteOption[];
+        /**
+          * Instructional text that shows before the field has a value.
+          * @default ''
+         */
+        "placeholder": string;
+        /**
+          * If `true` the element can not be mutated, meaning the user can not edit the control.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * If `true`, the user must fill in a value before submitting a form.
+          * @default true
+         */
+        "required": boolean;
+        /**
+          * Removes focus from the field.
+         */
+        "setBlur": () => Promise<void>;
+        /**
+          * Sets focus on the field.
+         */
+        "setFocus": () => Promise<void>;
+        /**
+          * The value of the field. This is whatever the user typed, which is not necessarily one of the options.
+          * @default null
+         */
+        "value": string | null;
+    }
+    /**
+     * Autocomplete option declares a single suggestion as HTML markup, as an alternative to the
+     * `options` prop on `ds-autocomplete` — useful for backend-only apps and easier migration,
+     * where the consumer would rather render option markup than write JavaScript.
+     * The element itself renders nothing visible; `ds-autocomplete` reads its `disabled` state and
+     * text content and renders the actual panel option itself.
+     */
+    interface DsAutocompleteOption {
+        /**
+          * If `true`, the option cannot be picked.
+          * @default false
+         */
+        "disabled": boolean;
     }
     /**
      * Badge displays a small indicator or counter on a child component to highlight notifications, counts, or status information.
@@ -3782,6 +3887,10 @@ export interface DsAppNavbarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLDsAppNavbarElement;
 }
+export interface DsAutocompleteCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLDsAutocompleteElement;
+}
 export interface DsButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLDsButtonElement;
@@ -3995,6 +4104,43 @@ declare global {
     var HTMLDsAppNavbarElement: {
         prototype: HTMLDsAppNavbarElement;
         new (): HTMLDsAppNavbarElement;
+    };
+    interface HTMLDsAutocompleteElementEventMap {
+        "dsInput": AutocompleteInputDetail;
+        "dsChange": AutocompleteChangeDetail;
+        "dsFocus": FocusEvent;
+        "dsBlur": FocusEvent;
+    }
+    /**
+     * Autocomplete renders a text field with a panel of filtered suggestions. Unlike `ds-select`
+     * the user may submit text that is not in the list — the suggestions only speed up typing.
+     */
+    interface HTMLDsAutocompleteElement extends Components.DsAutocomplete, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLDsAutocompleteElementEventMap>(type: K, listener: (this: HTMLDsAutocompleteElement, ev: DsAutocompleteCustomEvent<HTMLDsAutocompleteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLDsAutocompleteElementEventMap>(type: K, listener: (this: HTMLDsAutocompleteElement, ev: DsAutocompleteCustomEvent<HTMLDsAutocompleteElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLDsAutocompleteElement: {
+        prototype: HTMLDsAutocompleteElement;
+        new (): HTMLDsAutocompleteElement;
+    };
+    /**
+     * Autocomplete option declares a single suggestion as HTML markup, as an alternative to the
+     * `options` prop on `ds-autocomplete` — useful for backend-only apps and easier migration,
+     * where the consumer would rather render option markup than write JavaScript.
+     * The element itself renders nothing visible; `ds-autocomplete` reads its `disabled` state and
+     * text content and renders the actual panel option itself.
+     */
+    interface HTMLDsAutocompleteOptionElement extends Components.DsAutocompleteOption, HTMLStencilElement {
+    }
+    var HTMLDsAutocompleteOptionElement: {
+        prototype: HTMLDsAutocompleteOptionElement;
+        new (): HTMLDsAutocompleteOptionElement;
     };
     /**
      * Badge displays a small indicator or counter on a child component to highlight notifications, counts, or status information.
@@ -5138,6 +5284,8 @@ declare global {
         "ds-alert-container": HTMLDsAlertContainerElement;
         "ds-app-footer": HTMLDsAppFooterElement;
         "ds-app-navbar": HTMLDsAppNavbarElement;
+        "ds-autocomplete": HTMLDsAutocompleteElement;
+        "ds-autocomplete-option": HTMLDsAutocompleteOptionElement;
         "ds-badge": HTMLDsBadgeElement;
         "ds-brand-icon": HTMLDsBrandIconElement;
         "ds-button": HTMLDsButtonElement;
@@ -5391,6 +5539,116 @@ declare namespace LocalJSX {
           * @default false
          */
         "open"?: boolean;
+    }
+    /**
+     * Autocomplete renders a text field with a panel of filtered suggestions. Unlike `ds-select`
+     * the user may submit text that is not in the list — the suggestions only speed up typing.
+     */
+    interface DsAutocomplete {
+        /**
+          * If `true`, a button to empty the field is shown while it has a value.
+          * @default false
+         */
+        "clearable"?: boolean;
+        /**
+          * Defines the color of the field. The default value is `primary`.
+          * @default 'primary'
+         */
+        "color"?: InputColor;
+        /**
+          * Milliseconds to wait before `dsChange` is emitted while typing.
+          * @default 0
+         */
+        "debounce"?: number;
+        /**
+          * The description of the field, which is displayed below the input.
+          * @default ''
+         */
+        "description"?: string;
+        /**
+          * If `true`, the element is not mutable, focusable, or even submitted with the form.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * If `true` the component gets a invalid style.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * The text to display when the field is in an invalid state.
+          * @default ''
+         */
+        "invalidText"?: string;
+        /**
+          * The label of the field, which is displayed above the input.
+          * @default ''
+         */
+        "label"?: string;
+        /**
+          * The name of the control, which is submitted with the form data.
+          * @default this.inputId
+         */
+        "name"?: string;
+        /**
+          * Emitted when the field loses focus.
+         */
+        "onDsBlur"?: (event: DsAutocompleteCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted when the value changes, either by picking an option or by leaving the field.
+         */
+        "onDsChange"?: (event: DsAutocompleteCustomEvent<AutocompleteChangeDetail>) => void;
+        /**
+          * Emitted when the field receives focus.
+         */
+        "onDsFocus"?: (event: DsAutocompleteCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted on every keystroke or paste in the field.
+         */
+        "onDsInput"?: (event: DsAutocompleteCustomEvent<AutocompleteInputDetail>) => void;
+        /**
+          * The list of suggestions. Use the default slot with `ds-autocomplete-option` children instead when writing HTML only. If both are set, `options` wins.
+          * @default []
+         */
+        "options"?: AutocompleteOption[];
+        /**
+          * Instructional text that shows before the field has a value.
+          * @default ''
+         */
+        "placeholder"?: string;
+        /**
+          * If `true` the element can not be mutated, meaning the user can not edit the control.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * If `true`, the user must fill in a value before submitting a form.
+          * @default true
+         */
+        "required"?: boolean;
+        /**
+          * The value of the field. This is whatever the user typed, which is not necessarily one of the options.
+          * @default null
+         */
+        "value"?: string | null;
+    }
+    /**
+     * Autocomplete option declares a single suggestion as HTML markup, as an alternative to the
+     * `options` prop on `ds-autocomplete` — useful for backend-only apps and easier migration,
+     * where the consumer would rather render option markup than write JavaScript.
+     * The element itself renders nothing visible; `ds-autocomplete` reads its `disabled` state and
+     * text content and renders the actual panel option itself.
+     */
+    interface DsAutocompleteOption {
+        /**
+          * If `true`, the option cannot be picked.
+          * @default false
+         */
+        "disabled"?: boolean;
     }
     /**
      * Badge displays a small indicator or counter on a child component to highlight notifications, counts, or status information.
@@ -9247,6 +9505,24 @@ declare namespace LocalJSX {
         "light": boolean;
         "container": AppNavbarContainer;
     }
+    interface DsAutocompleteAttributes {
+        "value": string | null;
+        "name": string;
+        "label": string;
+        "description": string;
+        "color": InputColor;
+        "invalid": boolean;
+        "invalidText": string;
+        "required": boolean;
+        "disabled": boolean;
+        "readonly": boolean;
+        "clearable": boolean;
+        "placeholder": string;
+        "debounce": number;
+    }
+    interface DsAutocompleteOptionAttributes {
+        "disabled": boolean;
+    }
     interface DsBadgeAttributes {
         "icon": string;
         "size": BadgeSize;
@@ -9969,6 +10245,8 @@ declare namespace LocalJSX {
         "ds-alert-container": Omit<DsAlertContainer, keyof DsAlertContainerAttributes> & { [K in keyof DsAlertContainer & keyof DsAlertContainerAttributes]?: DsAlertContainer[K] } & { [K in keyof DsAlertContainer & keyof DsAlertContainerAttributes as `attr:${K}`]?: DsAlertContainerAttributes[K] } & { [K in keyof DsAlertContainer & keyof DsAlertContainerAttributes as `prop:${K}`]?: DsAlertContainer[K] };
         "ds-app-footer": Omit<DsAppFooter, keyof DsAppFooterAttributes> & { [K in keyof DsAppFooter & keyof DsAppFooterAttributes]?: DsAppFooter[K] } & { [K in keyof DsAppFooter & keyof DsAppFooterAttributes as `attr:${K}`]?: DsAppFooterAttributes[K] } & { [K in keyof DsAppFooter & keyof DsAppFooterAttributes as `prop:${K}`]?: DsAppFooter[K] };
         "ds-app-navbar": Omit<DsAppNavbar, keyof DsAppNavbarAttributes> & { [K in keyof DsAppNavbar & keyof DsAppNavbarAttributes]?: DsAppNavbar[K] } & { [K in keyof DsAppNavbar & keyof DsAppNavbarAttributes as `attr:${K}`]?: DsAppNavbarAttributes[K] } & { [K in keyof DsAppNavbar & keyof DsAppNavbarAttributes as `prop:${K}`]?: DsAppNavbar[K] };
+        "ds-autocomplete": Omit<DsAutocomplete, keyof DsAutocompleteAttributes> & { [K in keyof DsAutocomplete & keyof DsAutocompleteAttributes]?: DsAutocomplete[K] } & { [K in keyof DsAutocomplete & keyof DsAutocompleteAttributes as `attr:${K}`]?: DsAutocompleteAttributes[K] } & { [K in keyof DsAutocomplete & keyof DsAutocompleteAttributes as `prop:${K}`]?: DsAutocomplete[K] };
+        "ds-autocomplete-option": Omit<DsAutocompleteOption, keyof DsAutocompleteOptionAttributes> & { [K in keyof DsAutocompleteOption & keyof DsAutocompleteOptionAttributes]?: DsAutocompleteOption[K] } & { [K in keyof DsAutocompleteOption & keyof DsAutocompleteOptionAttributes as `attr:${K}`]?: DsAutocompleteOptionAttributes[K] } & { [K in keyof DsAutocompleteOption & keyof DsAutocompleteOptionAttributes as `prop:${K}`]?: DsAutocompleteOption[K] };
         "ds-badge": Omit<DsBadge, keyof DsBadgeAttributes> & { [K in keyof DsBadge & keyof DsBadgeAttributes]?: DsBadge[K] } & { [K in keyof DsBadge & keyof DsBadgeAttributes as `attr:${K}`]?: DsBadgeAttributes[K] } & { [K in keyof DsBadge & keyof DsBadgeAttributes as `prop:${K}`]?: DsBadge[K] };
         "ds-brand-icon": Omit<DsBrandIcon, keyof DsBrandIconAttributes> & { [K in keyof DsBrandIcon & keyof DsBrandIconAttributes]?: DsBrandIcon[K] } & { [K in keyof DsBrandIcon & keyof DsBrandIconAttributes as `attr:${K}`]?: DsBrandIconAttributes[K] } & { [K in keyof DsBrandIcon & keyof DsBrandIconAttributes as `prop:${K}`]?: DsBrandIcon[K] };
         "ds-button": Omit<DsButton, keyof DsButtonAttributes> & { [K in keyof DsButton & keyof DsButtonAttributes]?: DsButton[K] } & { [K in keyof DsButton & keyof DsButtonAttributes as `attr:${K}`]?: DsButtonAttributes[K] } & { [K in keyof DsButton & keyof DsButtonAttributes as `prop:${K}`]?: DsButton[K] };
@@ -10065,6 +10343,19 @@ declare module "@stencil/core" {
              * AppNavbar provides semantic navigation with responsive sidebar menu and keyboard support.
              */
             "ds-app-navbar": LocalJSX.IntrinsicElements["ds-app-navbar"] & JSXBase.HTMLAttributes<HTMLDsAppNavbarElement>;
+            /**
+             * Autocomplete renders a text field with a panel of filtered suggestions. Unlike `ds-select`
+             * the user may submit text that is not in the list — the suggestions only speed up typing.
+             */
+            "ds-autocomplete": LocalJSX.IntrinsicElements["ds-autocomplete"] & JSXBase.HTMLAttributes<HTMLDsAutocompleteElement>;
+            /**
+             * Autocomplete option declares a single suggestion as HTML markup, as an alternative to the
+             * `options` prop on `ds-autocomplete` — useful for backend-only apps and easier migration,
+             * where the consumer would rather render option markup than write JavaScript.
+             * The element itself renders nothing visible; `ds-autocomplete` reads its `disabled` state and
+             * text content and renders the actual panel option itself.
+             */
+            "ds-autocomplete-option": LocalJSX.IntrinsicElements["ds-autocomplete-option"] & JSXBase.HTMLAttributes<HTMLDsAutocompleteOptionElement>;
             /**
              * Badge displays a small indicator or counter on a child component to highlight notifications, counts, or status information.
              */
