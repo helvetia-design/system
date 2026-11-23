@@ -1,6 +1,9 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
 
+// How far the track's clip box is pushed past its layout box to fit the 5px tile focus ring.
+$focus-overhang: 7px;
+
 /**
  * @prop --carousel-gap: Gap between slides / product items.
  * @prop --carousel-control-color: Color of the scroll arrow buttons.
@@ -161,6 +164,11 @@
   min-width: 0;
   gap: var(--_carousel-gap);
   scroll-behavior: smooth;
+  // A scroll container clips to its padding box on both axes, cutting the 5px tile
+  // focus-shadow at every edge. Pad for the ring and cancel it with a negative margin,
+  // so only the clip boundary grows — tile positions stay put.
+  padding: $focus-overhang;
+  margin: -$focus-overhang;
 }
 
 // Edge-fade — overlays the track edges when overflow exists; fades in on the scrollable side
@@ -177,23 +185,24 @@
   transition: opacity 120ms ease;
 }
 
+// Offsets follow the track's clip edge, which the focus overhang pushes outward.
 :host(.is-tile.has-overflow) .carousel-outer::before {
-  left: calc(var(--_carousel-scroll-btn-size) + var(--_carousel-scroll-btn-gap));
+  left: -$focus-overhang;
   background: linear-gradient(to right, var(--_carousel-scroll-fade-background), transparent);
 }
 
 :host(.is-tile.has-overflow) .carousel-outer::after {
-  right: calc(var(--_carousel-scroll-btn-size) + var(--_carousel-scroll-btn-gap));
+  right: -$focus-overhang;
   background: linear-gradient(to left, var(--_carousel-scroll-fade-background), transparent);
 }
 
 // Reserve space for the arrow buttons only when they are rendered (2.5rem button + 0.25rem margin)
 :host(.is-tile.has-large-arrows) .carousel-outer::before {
-  left: calc(2.5rem + 0.25rem);
+  left: calc(2.5rem + 0.25rem - #{$focus-overhang});
 }
 
 :host(.is-tile.has-large-arrows) .carousel-outer::after {
-  right: calc(2.5rem + 0.25rem);
+  right: calc(2.5rem + 0.25rem - #{$focus-overhang});
 }
 
 // Specificity must match the base rule (two host classes) so opacity:1 wins
@@ -207,8 +216,18 @@
   opacity: 1;
 }
 
+// The fade paints over the tiles, so a focused edge tile would show a crisp focus ring
+// around washed-out content. Drop the fade while anything in the track has focus.
+:host(.is-tile) .carousel-outer:has(:focus-visible)::before,
+:host(.is-tile) .carousel-outer:has(:focus-visible)::after {
+  // ds-token-check: intentional — visibility toggle
+  opacity: 0;
+}
+
 // Product scroll arrows — 40 × 40 px, hidden until overflow is detected
 :host(.is-tile) .scroll-btn {
+  // Above the fade, which reaches into the arrow gap to meet the track's clip edge.
+  z-index: 2;
   flex-shrink: 0;
   width: 0;
   height: var(--_carousel-scroll-btn-size);
