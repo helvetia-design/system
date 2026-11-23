@@ -3,11 +3,15 @@
 ```yaml
 sets: # filled in by Phase 3
   - name: Divider
-    figmaComponentKey: null
-    figmaMasterNodeId: null
+    figmaComponentKey: 2243a799216341c136a0d0c2516ffab0b4ae05fb
+    figmaMasterNodeId: '6602:413'
+  - name: DividerInverted
+    figmaComponentKey: 6cb6b7117730fc6dab3e6629137ea42771e1eddf
+    figmaMasterNodeId: '6602:775'
 figmaPage: Core / Structure
-figmaDocFrameNodeId: null
+figmaDocFrameNodeId: '6231:427'
 
+anatomySectionNodeId: '6618:566' # diagram: default variant (320 wide); section re-cloned from the template 23.11.2026 (old one had group markers)
 anatomy:
   - letter: A
     part: divider
@@ -27,21 +31,25 @@ props:
     options: [none, 2xs, xs, sm, base, md, lg, xl, 2xl, 3xl]
     default: none
     figmaProperty: space
-    figmaPropertyType: variant # proposed in Phase 2 (margin → padding on the component frame)
+    figmaPropertyType: variant # margin → padding on the component frame; kept although invisible in the grid (user decision 23.11.2026)
     figmaOptions: [none, 2xs, xs, sm, base, md, lg, xl, 2xl, 3xl]
   - name: color
     type: enum
-    options: [primary, secondary, default, inverted]
+    options: [primary, secondary, default]
     default: default
     figmaProperty: color
-    figmaPropertyType: variant # proposed in Phase 2 (inverted: top-level split question)
-    figmaOptions: [default, primary, secondary, inverted]
+    figmaPropertyType: variant
+    figmaOptions: [default, primary, secondary]
   - name: dashed
     type: boolean
     default: false
     figmaProperty: dashed
     figmaPropertyType: variant
     figmaOptions: [false, true]
+  - name: inverted
+    type: boolean
+    default: false
+    figmaPropertyType: split # rule 2: Divider / DividerInverted (code fix #309, f84c6ec41)
 
 # No text props: render() returns an empty <Host>, no slot, no generated text.
 # No `states:` section — divider.style.scss has no :hover/:focus/:active/:disabled selectors.
@@ -71,9 +79,17 @@ tokens:
     figmaVariable: 🧩 Component/Divider/Color/Secondary
     foundation: ✓ # checked 18.11.2026
     resolved: true
-  - cssVar: --ds-divider-color-inverted
-    figmaVariable: 🧩 Component/Divider/Color/Inverted
-    foundation: ✓ # checked 18.11.2026
+  - cssVar: --ds-divider-color-inverted-default
+    figmaVariable: 🧩 Component/Divider/Color/InvertedDefault
+    foundation: ✓ # checked 23.11.2026
+    resolved: true
+  - cssVar: --ds-divider-color-inverted-primary
+    figmaVariable: 🧩 Component/Divider/Color/InvertedPrimary
+    foundation: ✓ # checked 23.11.2026
+    resolved: true
+  - cssVar: --ds-divider-color-inverted-secondary
+    figmaVariable: 🧩 Component/Divider/Color/InvertedSecondary
+    foundation: ✓ # checked 23.11.2026
     resolved: true
   # Space: each Component/Divider/Space/<X> aliases 📱 Device/↔️ Space/<X>/Device in every brand mode
   # (checked in Foundation 18.11.2026) → responsive without a device: section.
@@ -122,10 +138,16 @@ tokens:
     resolved: false
     resolution: 'Hardcoded dash pattern [8, 8] accepted by the user (18.11.2026) — code literal marked intentional, Figma dash patterns are not bindable. Listed in TODO.md → "Hardcoded values in Figma".'
 
+  - cssVar: null # no code value: the line length comes from the parent (width 100% / align-self: stretch)
+    figmaVariable: null
+    resolved: true
+    bind: false
+    resolution: 'Master placeholder length, layout only (user decision 18.11.2026): variant root width 320 (horizontal), height 64 (vertical). Instances stretch (Fill). Hidden layers (`line` when dashed=true, `dash` when dashed=false) read FIXED at the same length because Figma reports hidden auto-layout children as FIXED; never shown (no boolean).'
+
 completeness: # every node the build needs, every attribute → token
   line: # the divider shape (horizontal: full-width × Size; vertical: Size × full-height)
-    fill: Divider/Color/<color> # solid, dashed=false
-    dashedStroke: Divider/Color/<color> + dash pattern [8, 8] (hardcoded) # dashed=true
+    fill: Divider/Color/<color> # solid, dashed=false; DividerInverted → Divider/Color/Inverted<Color>
+    dashedStroke: same color token + dash pattern [8, 8] (hardcoded) # dashed=true
     thickness: Divider/Size
     radius: Divider/Radius
     length: fill (behavior) — no token
@@ -133,6 +155,7 @@ completeness: # every node the build needs, every attribute → token
     padding (block axis when horizontal, inline axis when vertical): Divider/Space/<space>
   gaps: none
 
+measurementsSectionNodeId: '6619:423' # Phase 8, numbers 1–12 (size → spacing); re-cloned from the template 23.11.2026; stage in Desktop mode
 measurements:
   drawnOption: none # default space
   options: [] # no table axis for the main rows; the Space row lists its own options
@@ -160,9 +183,10 @@ measurements:
       kind: spacing
       group: context-dependent # outer margin by declaration, but it is the purpose of the public `space` prop
       show: drawn
-      instance: space-base # extra space=base instance (user's call); table lists every option M / T / D
+      instance: lorem-display # one Divider instance per space option between two Lorem ipsum texts (Desktop mode); table: one row per option (`Space · <x>`, numbers 3–12), cells M / T / D — confirmed 23.11.2026
       source: divider.style.scss (horizontalLayout()/verticalLayout() margins → var(--_divider-margin))
       reason: 'outer margin default is skip; kept because `space` exists to set it — user chose table + drawn instance'
+      display: 'one Divider instance per option (none … 3xl) side by side, a Lorem ipsum text above and below each, px + token under it — the grid cells look identical because the padding is transparent (user decision 23.11.2026, to be reviewed in Figma)'
       values:
         none: { px: 0, token: 🧩 Component/Divider/Space/None }
         2xs: { px: { mobile: 4, tablet: 4, desktop: 4 }, token: 🧩 Component/Divider/Space/2XS }
@@ -183,28 +207,30 @@ measurements:
         base: { px: 9999, token: 🧩 Component/Divider/Radius }
 ```
 
-## Proposal (Phase 2) — signed off 18.11.2026 (Foundation name check still pending)
+## Proposal (Phase 2) — revised 23.11.2026 (inverted boolean #309), signed off 23.11.2026
 
-| Prop     | Figma            | Options (default first)                                | Why                                                                                                                                                                                                                                                        |
-| -------- | ---------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `layout` | variant `layout` | horizontal · vertical                                  | same layer, only width/height swap                                                                                                                                                                                                                         |
-| `space`  | variant `space`  | none · 2xs · xs · sm · base · md · lg · xl · 2xl · 3xl | margin → padding on the component frame (top/bottom horizontal, left/right vertical), bound to `Divider/Space/<X>`                                                                                                                                         |
-| `color`  | variant `color`  | default · primary · secondary · inverted               | fill token only; `inverted` is a color option, not a prop → no rule-2 split (precedent: Icon, Logo in `rebuild-decisions.md`)                                                                                                                              |
-| `dashed` | variant `dashed` | false · true                                           | two layers, visibility fixed per variant (no boolean): `line` rectangle (fill `Divider/Color/<color>`, radius `Divider/Radius`) when `false`; `dash` line (stroke `Divider/Color/<color>`, weight `Divider/Size`, dash `[8, 8]`) when `true` (user's call) |
+| Prop       | Figma                                         | Options (default first)                                | Why                                                                                                                                                                                                                                                                                                 |
+| ---------- | --------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `inverted` | top-level split `Divider` / `DividerInverted` | —                                                      | rule 2; same geometry, only the color tokens change (`Divider/Color/Inverted<Color>`)                                                                                                                                                                                                               |
+| `layout`   | variant `layout`                              | horizontal · vertical                                  | same layer, only width/height swap                                                                                                                                                                                                                                                                  |
+| `space`    | variant `space`                               | none · 2xs · xs · sm · base · md · lg · xl · 2xl · 3xl | margin → padding on the component frame (top/bottom horizontal, left/right vertical), bound to `Divider/Space/<X>`. Invisible in the grid (transparent padding); dropped and restored on 23.11.2026 (user decision): the prop stays 1:1 with code. Measurements shows it with a Lorem ipsum display |
+| `color`    | variant `color`                               | default · primary · secondary                          | fill token only                                                                                                                                                                                                                                                                                     |
+| `dashed`   | variant `dashed`                              | false · true                                           | two layers, visibility fixed per variant (no boolean): `line` rectangle (fill `Divider/Color/<color>`, radius `Divider/Radius`) when `false`; `dash` line (stroke `Divider/Color/<color>`, weight `Divider/Size`, dash `[8, 8]`) when `true` (user's call)                                          |
 
 - No text properties, no generated text, no states, no slots, no variations.
 - Line length: instances stretch (`Fill`); master placeholder length 320px (horizontal width) / 64px
   (vertical height) — no token, layout only (user's call).
+- `DividerInverted` is shown on the dark `Alias/Surface/Primary` display background; Measurements
+  uses `Divider` only.
 
-Grid (no `state`/`size` axis → `space` on columns; rows nested by option count: `layout` (2) ›
-`dashed` (2) › `color` (4)):
+Grid per set (no `state`/`size` axis → `space` on columns; rows nested by option count: `layout` (2) ›
+`dashed` (2) › `color` (3)):
 
 ```
                                none  2xs  xs  sm  base  md  lg  xl  2xl  3xl
 horizontal  false  default     [ ]   [ ]  …
                    primary     [ ]
                    secondary   [ ]
-                   inverted    [ ]
             true   default     [ ]
                    …
 vertical    false  default     [ ]
@@ -212,7 +238,7 @@ vertical    false  default     [ ]
             true   …
 ```
 
-Count: 2 × 2 × 4 × 10 = **160** ≤ 500.
+Count: 2 sets × (2 × 2 × 3 × 10) = 2 × 120 = **240** ≤ 500.
 
 ## Notes
 
@@ -230,5 +256,9 @@ Count: 2 × 2 × 4 × 10 = **160** ≤ 500.
 
 - Dash pattern `[8, 8]` hardcoded.
 - `@part divider` has no matching `part=` attribute (accepted).
+- Phases 6–8 confirmed 23.11.2026: done.
+- Phase 3 approved 23.11.2026 (240 variants, 2 sets); `space` dropped and restored the same day (user decision).
 - **Paused 18.11.2026 in Phase 3**: only the default variant exists (6231:1063, page `Core / Structure`,
-  frame 6231:427). `color=inverted` should become an `inverted` boolean in code first, see TODO.md.
+  frame 6231:427). Resumed 23.11.2026: code fixed in #309 (`inverted` boolean).
+- Visual test covers `inverted` only with `color=default` (`divider.visual.html`); the 3 inverted
+  color tokens all resolve to White today.
