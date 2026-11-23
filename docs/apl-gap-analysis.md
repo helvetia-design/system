@@ -13,8 +13,8 @@ database. This document lists, per component, what is missing and what we recomm
 Notes say **"apps only"** where a feature is used in real applications but is not shown on the APL
 demo page. Those are scope decisions, not oversights.
 
-**Every component below starts with a TL;DR.** Read those four lines first; the rest is the evidence
-behind them.
+**Every component below starts with a TL;DR.** Read those first; the rest is the evidence behind
+them.
 
 ## Progress
 
@@ -28,7 +28,7 @@ behind them.
 | 6   | Popover                  | pending                  |
 | 7   | Progress Spinner/Spinner | pending                  |
 | 8   | Section                  | [below](#8-section)      |
-| 9   | Select Box               | pending                  |
+| 9   | Select Box               | [below](#9-select-box)   |
 | 10  | Slider                   | [below](#10-slider)      |
 | 11  | Snackbar                 | pending                  |
 | 12  | Teaser Button            | pending                  |
@@ -387,6 +387,110 @@ Used by: unknown · Confluence estimate: 0.25
 `sectionTitle`, `fullwidth`) · `ux-ng-section.component.html` · `ux-ng-section.component.scss`
 (30px padding, 20px below the title, the `-50vw` trick) ·
 `ux-ng-material-theme/overwrites/section/**` · `demo-ux-ng-material-library/section/**`
+
+---
+
+## 9. Select Box
+
+**TL;DR — no new component needed.** Pick a product or option by clicking a box instead of a radio
+button: `ds-radio-group tile` already does the single-choice version and `ds-checkbox-group tile` the
+multiple-choice one, which is exactly what the Confluence row points at as its reference. What is
+genuinely missing is small and all about content inside the box: a dark variant, photos, and a third
+line of text.
+
+**Recommendation: use `ds-radio-group tile` for "pick one" and `ds-checkbox-group tile` for "pick
+several".** The Design System already has the boxes, the responsive column grid, four tile colors, the
+option to hide the radio dot, and the option to deselect again — it is ahead of the APL on all of
+those. Treat the three content gaps as small additions and document the pattern, rather than building
+a `ds-select-box`.
+
+APL page: [/library-demo/select-box](https://www.helvetia.com/corp/app-patternlibrary/library-demo/select-box) ·
+Used by: myHelvetia, DiBe · Confluence estimate: 1 · Confluence already references a radio tile grid
+as the counterpart, which matches this recommendation.
+
+### Gaps
+
+| #   | What's missing                            | Severity     | Note                                                                                                                                                                                                                |
+| --- | ----------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Pick one option from boxes                | `Have it`    | `ds-radio-group tile`, with `cols`, `cols-tablet` and `cols-mobile`. Five worked examples in Storybook.                                                                                                             |
+| 2   | Pick several options from boxes           | `Have it`    | `ds-checkbox-group tile`. The APL uses one `multiple` flag on one component; DS splits it in two, which is the correct choice for screen readers.                                                                   |
+| 3   | Click the chosen box again to clear it    | `Have it`    | APL calls it `toggleable`; DS calls it `allow-empty-selection`.                                                                                                                                                     |
+| 4   | Icon, title and description in a box      | `Have it`    | `ds-icon` or `ds-brand-icon` slotted in, and `ds-brand-icon` has its own tile size that follows the screen size.                                                                                                    |
+| 5   | The wide row layout (APL "list" type)     | `Have it`    | `label-position="left"` with a horizontal `ds-stack`. Same component as the tile — only the layout differs.                                                                                                         |
+| 6   | A check mark instead of a radio dot       | `Have it`    | `hide-trigger`, plus the box changing color when chosen.                                                                                                                                                            |
+| 7   | Colored boxes                             | `Have it`    | DS is **ahead**: four brand colors. The APL has none.                                                                                                                                                               |
+| 8   | A dark box                                | `Gap`        | APL `color="dark"` — demonstrated on the APL page. DS tiles have no dark variant.                                                                                                                                   |
+| 9   | A photo inside a box                      | `Partial`    | A `ds-picture` can be slotted, but there is no agreed example and no answer for where the check mark sits on top of a photo. The APL has both.                                                                      |
+| 10  | A third line of text ("remarks")          | `Partial`    | Anything can be slotted, so it works today, but there is no agreed style for a muted note after the description.                                                                                                    |
+| 11  | Fixed pixel sizes and a group maximum     | `Partial`    | The APL sets width, height and a 345px group maximum by hand. DS uses a responsive column grid, which is usually the better answer.                                                                                 |
+| 12  | Large illustrations in a box (180–460px)  | `Gap`        | Scope question. DS has ~400 brand icons in four colors, sized for tiles; it has nothing in the 460px illustration class. The APL has 113 illustrations.                                                             |
+| 13  | Group label, hint, error, required marker | `Have it`    | DS only. No APL equivalent — the APL group has no label at all.                                                                                                                                                     |
+| 14  | Form submission and Angular forms         | `Have it`    | DS only. The APL takes a form control as an input and writes into it, and its hidden input is never submitted.                                                                                                      |
+| 15  | Every group announces "Transportart"      | `Don't copy` | The APL group has a hard-coded German `aria-label="Transportart"` ("mode of transport"), left over from an example. Every select box in every app announces that to a screen reader, whatever it actually contains. |
+| 16  | Selection handled by a click listener     | `Don't copy` | The APL bypasses the toggle group's own value and tracks selection itself, so the highlighted box and the control's state can disagree.                                                                             |
+| 17  | A 250ms timer to refresh the selection    | `Don't copy` | The APL exposes `updateSubscription()` and its demo page has a "Force Update (not needed)" button. DS tiles need no refreshing.                                                                                     |
+| 18  | Cleanup crashes when a group has no items | `Don't copy` | `ngOnDestroy` unsubscribes a subscription that only exists once an item has emitted.                                                                                                                                |
+
+### Open questions for design
+
+1. Is the dark box still wanted? It is the only real visual gap, and it is used by myHelvetia or DiBe —
+   worth confirming with them before building it.
+2. Should a box be able to hold a photo, and if so where does the check mark go on top of it?
+3. Is "remarks" a real third text level, or can it be folded into the description?
+4. Are large illustrations inside boxes in scope, or are brand icons the answer? This is the one item
+   that would need new assets rather than new code.
+5. Fixed pixel sizes per box, or stay with the responsive column grid?
+
+### Worth knowing
+
+- **This is the first of the twelve with a real APL component and a real DS counterpart on both
+  sides.** The comparison is therefore unusually concrete, and it comes out in the DS's favor.
+- **The APL component is a wrapper around Material's button toggle group** that re-implements
+  selection on top of it. That is where gaps 16 to 18 come from — they are consequences of the
+  wrapping, not of the design.
+- **Confluence's own reference is a radio tile grid**, so the recommendation here agrees with what was
+  already written in the row; it just needs the status and the estimate brought in line.
+- **"List" and "tile" are not two things in the Design System.** Both are the same tile with a
+  different label position, which removes a whole input from the API.
+- **The estimate of 1 looks high.** Nothing has to be built for the main use cases; the work is the
+  dark variant plus documenting the photo and remarks patterns.
+
+### Proposed Confluence row
+
+| Column            | Value                                                                                              |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| **Status**        | Available (was: Partially available) — pending the dark box in question 1                          |
+| **APL Component** | `ux-ng-select-box` + `ux-ng-select-box-item`                                                       |
+| **DS Component**  | `ds-radio-group tile` (pick one) · `ds-checkbox-group tile` (pick several)                         |
+| **Category**      | Form                                                                                               |
+| **Description**   | Choose an option by clicking a box. Covered by the radio and checkbox tile layouts.                |
+| **Effort Figma**  | 0.25 — the dark box, and examples for photos and remarks                                           |
+| **Effort Code**   | 0.25 for the dark box. 0 for everything else. Separate estimate if large illustrations are wanted. |
+
+### Sources
+
+**Design System** — `forms/radio/radio-group/radio-group.tsx` (`tile:204`, `tileColor:218`,
+`hideTrigger:211`, `cols:108`, `colsTablet:122`, `colsMobile:115`, `allowEmptySelection:85`,
+`label:157`, `description:129`, `invalidText:150`, `vertical:234`) ·
+`forms/radio/radio.interfaces.ts` (4 tile colors, 3 label positions, 1–4 columns) ·
+`forms/radio/radio.host.scss` (`.is-tile:69`, `hide-trigger:103`, hint in the top right corner `:122`,
+brand icon color inherited into the tile `:146-150`) ·
+`forms/checkbox/checkbox.tsx` (`tile:169`, `tileColor:162`, `hideTrigger:176`, `cols:183`) ·
+`forms/checkbox/checkbox-group/` · `media/brand-icon/brand-icon.host.scss` (tile size, responsive
+`:102-113`) · `apps/storybook/.../radio-group.stories.ts` (`🧩 Tile Basic`, `Tile Columns`,
+`Tile Stack`, centered stack, multicolor with hidden trigger) · `packages/assets/src/brand-icons/svg`
+(1631 files, ~400 icons in 4 colors)
+
+**APL** (`osui-ux-ng-material`) —
+`ux-ng-material-library/.../ux-ng-select-box/ux-ng-select-box.component.ts` (`type`, `multiple`,
+`toggleable`, `maxWidth`, `formElementName`, `updateSubscription` 250ms, `ngOnDestroy`) ·
+`ux-ng-select-box.component.html` (hard-coded `aria-label="Transportart"`, hidden input) ·
+`ux-ng-select-box-item/ux-ng-select-box-item.component.ts` (`illustration`, `image`, `icon`,
+`imageSize`, `title`, `text`, `remarks`, `color`, `height`, `width`) ·
+`ux-ng-select-box-item.component.html` (list and tile branches, check mark overlay) ·
+`ux-ng-illustration/ux-ng-illustration.component.ts` (96/128/256/360px, 113 illustrations) ·
+`demo-ux-ng-material-library/select-box/**` (dark tile, disabled list, dialog examples, the
+"Force Update (not needed)" button)
 
 ---
 
