@@ -18,13 +18,13 @@ demo page. Those are scope decisions, not oversights.
 | #   | Component                | Analysed                 |
 | --- | ------------------------ | ------------------------ |
 | 1   | Autocomplete             | [below](#1-autocomplete) |
-| 2   | Border                   | pending                  |
+| 2   | Border                   | [below](#2-border)       |
 | 3   | Card Swiper              | pending                  |
 | 4   | Header Twenty            | pending                  |
 | 5   | List                     | pending                  |
 | 6   | Popover                  | pending                  |
 | 7   | Progress Spinner/Spinner | pending                  |
-| 8   | Section                  | pending                  |
+| 8   | Section                  | [below](#8-section)      |
 | 9   | Select Box               | pending                  |
 | 10  | Slider                   | [below](#10-slider)      |
 | 11  | Snackbar                 | pending                  |
@@ -232,6 +232,144 @@ hold.
 
 ---
 
+## 2. Border
+
+**Recommendation: close this one — it is already covered.** The Confluence row says it itself: not a
+component, use design tokens. The APL border page documents five rounded-corner helper classes, and
+the Design System has an equal or better class for every one of them. Nothing to build, in code or in
+Figma.
+
+APL page: [/theme-demo/border](https://www.helvetia.com/corp/app-patternlibrary/theme-demo/border) ·
+Used by: All · Confluence estimate: none
+
+### Gaps
+
+| #   | What's missing                      | Severity     | Note                                                                                                                                                                         |
+| --- | ----------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Square corners                      | `Have it`    | APL `uxngm-border-radius--none` → DS `radius-none`. Same result.                                                                                                             |
+| 2   | Slightly rounded corners (4px)      | `Have it`    | APL `--normal` → DS `radius`. Both 4px.                                                                                                                                      |
+| 3   | Strongly rounded corners (12px)     | `Have it`    | APL `--large` → DS `radius-lg`. Both 12px.                                                                                                                                   |
+| 4   | Pill shape                          | `Have it`    | APL `--rounded` → DS `radius-rounded`. Both 9999px.                                                                                                                          |
+| 5   | Circle                              | `Have it`    | APL `--circle` uses 50%. DS has no 50% class, but `radius-rounded` draws the same circle on a square element. Only differs on a non-square element, where 50% gives an oval. |
+| 6   | Rounding single corners or one side | `Have it`    | DS only. Seven classes per size, e.g. `radius-top-lg`, `radius-bottom-left`.                                                                                                 |
+| 7   | Border lines (width, style, color)  | `Have it`    | DS only. `border`, `border-top-primary`, `border-danger`, `border-none`, per side, from tokens.                                                                              |
+| 8   | Two extra corner sizes              | `Have it`    | DS only. `radius-xs` (2px) and `radius-md` (6px). The APL jumps 4px → 12px.                                                                                                  |
+| 9   | Responsive and state variants       | `Have it`    | DS only. The utility classes take breakpoint and `hover:`/`focus:` prefixes.                                                                                                 |
+| 10  | Colors named after paintbox colors  | `Don't copy` | The APL has ~40 `uxngm-border-color--*` classes per brand, named `mischka`, `pampas` (already deprecated). DS names colors by role: `border-grey`, `border-danger`.          |
+
+### Open questions for design
+
+1. Do we want an exact 50% corner class for non-square elements (an oval), or is the pill class
+   enough? Nothing in the APL needs the oval today.
+2. The status can move from "Partially available" to "Available" — needs a sign-off, not a decision.
+
+### Worth knowing
+
+- **The five APL helper classes are used nowhere in the APL library itself** — only on the demo page.
+- **The APL border page is about corners only.** Border lines are not documented there at all; the
+  border color classes come out of each brand's color palette file. DS covers both in one place.
+- **DS generates these classes from the tokens**, so a token change updates every class. The APL
+  values are hard-coded pixels in a stylesheet.
+
+### Proposed Confluence row
+
+| Column            | Value                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| **Status**        | Available (was: Partially available)                                                  |
+| **APL Component** | None — five helper classes for rounded corners                                        |
+| **DS Component**  | None needed — `radius-*` and `border-*` CSS utility classes                           |
+| **Category**      | Design Tokens                                                                         |
+| **Description**   | Corner rounding and border lines. Covered by DS utility classes. No component needed. |
+| **Effort Figma**  | 0 — tokens exist                                                                      |
+| **Effort Code**   | 0                                                                                     |
+
+### Sources
+
+**Design System** — `packages/styles/src/preset/rules/radius.ts` (7 classes per radius token) ·
+`packages/styles/src/preset/rules/border-color.ts` (shorthand per side, width helpers) ·
+`packages/tokens/tokens/Base.tokens.json` (`🔗 Alias › 🔵 Radius`: None, XS, Base, MD, LG, Rounded ·
+`🔗 Alias › ▭ Border`: Color, Width, Style, Composite) ·
+`packages/styles/src/preset/variants/responsive.ts`
+
+**APL** (`osui-ux-ng-material`) — `ux-ng-material-theme/overwrites/border/border.scss` (all five
+classes) · `ux-ng-material-theme/overwrites/border/theme/*.scss` (5 brands) ·
+`demo-ux-ng-material-theme/border/border-demo.component.html` (the documented list) ·
+`ux-ng-material-theme/theme/*/colors.scss` (`uxngm-border-color--*`)
+
+---
+
+## 8. Section
+
+**Recommendation: no new component — use `.ds-container` with a background class.** An APL section is
+a width-constrained box with an optional grey background and an optional title, and the Design System
+already has each of those parts. The one thing not to copy is how the APL stretches a section to the
+full window width.
+
+APL page: [/library-demo/section](https://www.helvetia.com/corp/app-patternlibrary/library-demo/section) ·
+Used by: unknown · Confluence estimate: 0.25
+
+### Gaps
+
+| #   | What's missing                          | Severity     | Note                                                                                                                                                                                                      |
+| --- | --------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Centered, width-limited content         | `Have it`    | DS is **ahead**: `.ds-container` centers and caps the width, with `is-fluid` and `is-compact`. The APL section does neither — it relies on whatever wraps it.                                             |
+| 2   | Side padding that follows the screen    | `Have it`    | `.ds-container` reads a device token. The APL hard-codes 30px.                                                                                                                                            |
+| 3   | A grey background on the section        | `Partial`    | Background classes exist (`bg-grey-light`, `bg-grey`) but `.ds-container` has no background setting. Today: put the class on the element yourself.                                                        |
+| 4   | Padding that comes with the background  | `Partial`    | The APL adds 30px only when a background is set. `.ds-container` has no vertical padding, so you add `py-md` by hand. Works, but easy to forget.                                                          |
+| 5   | A section title                         | `Partial`    | `ds-heading` renders it, but nothing ties title and section together, so the space below the title is up to the page. The APL fixes it at 20px.                                                           |
+| 6   | Full-window-width background band       | `Don't copy` | The APL uses `margin: 0 -50vw` with `padding: 0 50vw`, which causes sideways scrolling when a scrollbar is present. Correct pattern: a full-width wrapper with the background, `.ds-container` inside it. |
+| 7   | A real `<section>` element              | `Partial`    | `.ds-container` is a class, so put it on `<section>` directly. Note a `<section>` without a name is not a landmark for screen readers — the APL never gives one.                                          |
+| 8   | Backgrounds named after paintbox colors | `Don't copy` | `mischka`, `iron`, `pampas` — and `pampas` is already deprecated and silently maps to `mischka`. DS names backgrounds by role.                                                                            |
+
+### Open questions for design
+
+1. Is "section" a component we want at all, or a documented page pattern (wrapper + background class +
+   `.ds-container`)? Our recommendation is the pattern.
+2. If it should be a component: does it own the title, the background and the vertical padding, or only
+   the background band?
+3. How many background options does a section get? The APL offers two greys. DS has far more, and
+   unrestricted choice is how pages drift apart.
+4. Should the vertical padding be fixed to the background, as in the APL, or chosen per page?
+
+### Worth knowing
+
+- **The APL section is 40 lines of markup and CSS**, three inputs and no behaviour. There is no state,
+  no keyboard handling and no accessibility work in it.
+- **`.ds-container` already does the hard part** — centering, max width, and side padding that follows
+  the screen size, which the APL does not do.
+- **The 0.25 estimate looks right** if the answer to question 1 is "a documented pattern". It is low if
+  a real component with a title slot and padding rules is wanted.
+- **Nothing in the APL library uses the section component**, same as Border — it appears only on its
+  demo page.
+
+### Proposed Confluence row
+
+| Column            | Value                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| **Status**        | Available (was: Partially available) — pending the answer to question 1              |
+| **APL Component** | `ux-ng-section` + `ux-ng-section-title`                                              |
+| **DS Component**  | None needed — `.ds-container` + a `bg-*` class + `ds-heading`                        |
+| **Category**      | Layout                                                                               |
+| **Description**   | Groups elements in a width-limited box. Use `.ds-container` with a background class. |
+| **Effort Figma**  | 0.25 — document the pattern, not a new component                                     |
+| **Effort Code**   | 0 as a pattern. Re-estimate if a `ds-section` component is wanted instead.           |
+
+### Sources
+
+**Design System** — `structure/container/container.style.scss` (`.ds-container`, `is-fluid:37`,
+`is-compact:41`, side padding from `--ds-device-container-space:19`) ·
+`packages/styles/src/preset/rules/background.ts` (`bg-*`, `text-on-*`) ·
+`packages/styles/src/preset/rules/spacing.ts` (`py-*`) · `structure/heading` ·
+`packages/tokens/tokens/Base.tokens.json` (`🔗 Alias › 🗃️ Container › Width`: Modal, Compact, Default)
+
+**APL** (`osui-ux-ng-material`) —
+`ux-ng-material-library/src/lib/ux-ng-section/ux-ng-section.component.ts` (`backgroundColor`,
+`sectionTitle`, `fullwidth`) · `ux-ng-section.component.html` · `ux-ng-section.component.scss`
+(30px padding, 20px below the title, the `-50vw` trick) ·
+`ux-ng-material-theme/overwrites/section/**` · `demo-ux-ng-material-library/section/**`
+
+---
+
 ## 10. Slider
 
 **Recommendation: keep `ds-slider` and add four settings.** Unlike Autocomplete, both sides exist and do
@@ -277,7 +415,8 @@ hint, but those two elements are only rendered when a `label` or `description` i
 Putting `aria-label` on the element does not help either: it lands on the wrapper, not on the handle.
 
 This matters beyond the APL comparison, because naming the handle with `aria-label` is exactly what the
-one real APL slider does. It is a small fix and independent of any design decision below.
+one real APL slider does. It is a small fix and independent of any design decision below. Tracked as
+[#350](https://github.com/helvetia-design/system/issues/350).
 
 ### Open questions for design
 
