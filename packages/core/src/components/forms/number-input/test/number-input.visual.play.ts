@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'number-input'
-const VARIANTS = ['basic', 'disabled', 'invalid', 'invalid-slot', 'valid', 'warning', 'decimal', 'suffix']
+import { TAG, VARIANTS } from './number-input.variants'
 
 const image = screenshot(TAG)
 

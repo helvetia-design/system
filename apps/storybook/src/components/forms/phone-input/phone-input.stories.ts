@@ -15,7 +15,7 @@ const meta: Meta<Args> = {
   argTypes: {
     ...withComponentControls({ tag }),
   },
-  ...withRender(({ ...args }) => `<ds-phone-input ${props(args)}></ds-phone-input>`),
+  ...withRender(({ ...args }) => `<ds-phone-input ${props(args, tag)}></ds-phone-input>`),
 }
 
 export default meta
@@ -58,7 +58,7 @@ export const InvalidTextSlot = Story({
   },
   ...withRender(
     ({ ...args }) => `
-<ds-phone-input ${props(args)}>
+<ds-phone-input ${props(args, tag)}>
   <span slot="invalid-text">Please include the country and national number</span>
 </ds-phone-input>
 `,

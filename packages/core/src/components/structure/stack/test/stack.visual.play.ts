@@ -1,22 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'stack'
-const VARIANTS = [
-  'basic',
-  'nested',
-  'item',
-  'alignment',
-  'direction',
-  'spaces',
-  'row-alignment-top',
-  'row-alignment-center',
-  'row-alignment-bottom',
-  'column-alignment-top',
-  'column-alignment-center',
-  'column-alignment-bottom',
-  'margins',
-  'padding',
-] as const
+import { TAG, VARIANTS } from './stack.variants'
 
 const image = screenshot(TAG)
 

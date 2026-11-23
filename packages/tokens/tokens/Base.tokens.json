@@ -12198,7 +12198,27 @@
             ]
           }
         },
-        "Inverted": {
+        "InvertedPrimary": {
+          "$type": "color",
+          "$value": "{🔗 Alias.▭ Border.Color.White}",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ],
+            "com.figma.variableId": "VariableID:201:425"
+          }
+        },
+        "InvertedSecondary": {
+          "$type": "color",
+          "$value": "{🔗 Alias.▭ Border.Color.White}",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ],
+            "com.figma.variableId": "VariableID:201:426"
+          }
+        },
+        "InvertedDefault": {
           "$type": "color",
           "$value": "{🔗 Alias.▭ Border.Color.White}",
           "$extensions": {
@@ -12863,21 +12883,21 @@
               ]
             }
           },
-          "Level2": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🎨 Surface.RedDark}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:13:1639",
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ]
-            }
-          },
           "Level3": {
             "$type": "color",
             "$value": "{🔗 Alias.🎨 Surface.Red}",
             "$extensions": {
               "com.figma.variableId": "VariableID:13:1640",
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
+          "Level2": {
+            "$type": "color",
+            "$value": "{🌐 Global.🌈 Color.Red.5}",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:13:1639",
               "com.figma.scopes": [
                 "ALL_SCOPES"
               ]
@@ -12905,21 +12925,49 @@
               ]
             }
           },
+          "Level3": {
+            "$type": "color",
+            "$value": "{🔗 Alias.🎨 Surface.Yellow}",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:13:1644",
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
           "Level2": {
             "$type": "color",
-            "$value": "{🔗 Alias.🎨 Surface.YellowDark}",
+            "$value": "{🌐 Global.🌈 Color.Yellow.5}",
             "$extensions": {
               "com.figma.variableId": "VariableID:13:1643",
               "com.figma.scopes": [
                 "ALL_SCOPES"
               ]
             }
-          },
-          "Level3": {
-            "$type": "color",
-            "$value": "{🔗 Alias.🎨 Surface.Yellow}",
+          }
+        }
+      }
+    },
+    "Picture": {
+      "Size": {
+        "Base": {
+          "Radius": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.🔵 Radius.LG}",
             "$extensions": {
-              "com.figma.variableId": "VariableID:13:1644",
+              "com.figma.variableId": "VariableID:201:427",
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "SM": {
+          "Radius": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.🔵 Radius.Base}",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:201:428",
               "com.figma.scopes": [
                 "ALL_SCOPES"
               ]
@@ -22514,31 +22562,11 @@
             }
           }
         },
-        "Gap": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.↔️ Space.Gap.3XS}",
-          "$extensions": {
-            "com.figma.variableId": "VariableID:13:2846",
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ]
-          }
-        },
         "MinHeight": {
           "$type": "dimension",
           "$value": "{🔗 Alias.📏 Size.Control.SM}",
           "$extensions": {
             "com.figma.variableId": "VariableID:13:2847",
-            "com.figma.scopes": [
-              "ALL_SCOPES"
-            ]
-          }
-        },
-        "MinWidth": {
-          "$type": "dimension",
-          "$value": "{🔗 Alias.📏 Size.Counter.MinWidth}",
-          "$extensions": {
-            "com.figma.variableId": "VariableID:13:2848",
             "com.figma.scopes": [
               "ALL_SCOPES"
             ]
@@ -22664,6 +22692,26 @@
                 }
               }
             }
+          }
+        },
+        "Gap": {
+          "$type": "dimension",
+          "$value": "{🔗 Alias.↔️ Space.Gap.2XS}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:13:2846",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "MinWidth": {
+          "$type": "dimension",
+          "$value": "{🌐 Global.📏 Dimension.Size.64}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:13:2848",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
           }
         }
       },
@@ -24907,6 +24955,17 @@
                 "ALL_SCOPES"
               ]
             }
+          },
+          "Disabled": {
+            "$type": "color",
+            "$value": "{🔗 Alias.🔤 Text.Color.Disabled}",
+            "$description": "Icon color of a below-track scroll button that cannot scroll further.",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:201:429",
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
           }
         },
         "Background": {
@@ -24935,6 +24994,17 @@
             "$value": "{🔗 Alias.🎨 Surface.PrimaryActive}",
             "$extensions": {
               "com.figma.variableId": "VariableID:13:3187",
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
+          "Disabled": {
+            "$type": "color",
+            "$value": "{🔗 Alias.🎨 Surface.Disabled}",
+            "$description": "Background color of a below-track scroll button that cannot scroll further.",
+            "$extensions": {
+              "com.figma.variableId": "VariableID:201:430",
               "com.figma.scopes": [
                 "ALL_SCOPES"
               ]
@@ -24996,6 +25066,30 @@
                 "ALL_SCOPES"
               ]
             }
+          }
+        }
+      },
+      "ScrollBtnBelow": {
+        "Gap": {
+          "$type": "dimension",
+          "$value": "{🔗 Alias.↔️ Space.Gap.Base}",
+          "$description": "Space between the slide track and the below-track scroll buttons.",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:201:431",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "ButtonGap": {
+          "$type": "dimension",
+          "$value": "{🌐 Global.📏 Dimension.Space.56}",
+          "$description": "Space between the two below-track scroll buttons.",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:201:432",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
           }
         }
       },

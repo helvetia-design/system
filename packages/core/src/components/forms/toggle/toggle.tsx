@@ -1,5 +1,17 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, h, Listen, Prop, State } from '@stencil/core'
 import {
+  AttrDeserialize,
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Listen,
+  Prop,
+  State,
+} from '@stencil/core'
+import {
+  deserializeBooleanAttribute,
   Logger,
   type LogInstance,
   inheritAttributes,
@@ -138,6 +150,11 @@ export class Toggle implements DsComponentInterface {
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = false
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * A DOMString representing the value of the toggle. This is not displayed on the

@@ -291,6 +291,10 @@ _Avoid_: child component, inner component
 An optional nested component that its host positions out of flow on the host's own box, e.g. `ds-badge` on the top-right corner of `ds-button`, `ds-tab` or `ds-card`. Optional means it can be present or absent — slotted by the consumer, or rendered by the host behind a prop. The host owns the placement; the attachment owns only its own look. Declared on the host with an `@attachment` JSDoc tag. A nested component that is always present at a fixed place is not an attachment.
 _Avoid_: anchor, overlay, positioned slot, badge slot
 
+**Inverted**:
+A component shown on a dark surface. It is a state of the surface, not a color: it combines with any color the component offers, and every color has its own inverted look (see [ADR-0038](../../docs/adr/0038-inverted-is-not-a-color.md)).
+_Avoid_: white, dark mode, inverted color
+
 ### Usage-Category Taxonomy
 
 Every component directory lives under a lowercase-plural **category** folder:
@@ -793,6 +797,16 @@ meta-tag-configurable — they're structured/nested data not representable
 in a flat `data-*` attribute. See
 [docs/adr/0002-ds-config-meta-tag.md](../../docs/adr/0002-ds-config-meta-tag.md)
 for the full rationale.
+
+`setupDsConfig` never replaces an existing `Config`-like instance (anything
+with a `reset` method) on `window.DesignSystem.config`. It applies the merged
+sources to that instance instead, so components attached to it keep receiving
+changes. This matters when several bundles each ship a copy of
+`@helvetia-design/core` (e.g. the extension repos): the first bundle's
+instance stays the shared one, and a later bundle's exported `config` module
+singleton is then not the registered instance. Read the live instance with
+`useDsConfig()`. A plain object on `window.DesignSystem.config` is still
+replaced by the module singleton.
 
 ### Dynamic-Import-Free Entry Point (`@helvetia-design/core/initialize`)
 

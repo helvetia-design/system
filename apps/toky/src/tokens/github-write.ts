@@ -1,16 +1,18 @@
+import { getTokyConfig } from './config'
 import {
-  BRANDS_INDEX_PATH,
-  REPO_OWNER,
-  REPO_NAME,
-  TOKEN_FILE_PATH,
-  TOKENS_DIR,
   brandFilePath,
   encodeGithubUrlSegment,
   getGithubRef,
+  githubRefFor,
   requireGithubToken,
+  tokenFilePath,
+  tokenPackageJsonPath,
 } from './github'
 
-const API_ROOT = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`
+async function apiRoot(): Promise<string> {
+  const { repo } = await getTokyConfig()
+  return `https://api.github.com/repos/${repo.owner}/${repo.name}`
+}
 
 function authHeaders(extra?: Record<string, string>): Record<string, string> {
   return {
@@ -50,9 +52,9 @@ export interface FileMeta {
 
 // Generic file read, decoded to raw text — for JSON token files, parse the
 // result yourself (see getBaseTokensFileMeta); for source files like
-// BRANDS_INDEX_PATH, use the text directly.
-export async function getFileMeta(path: string, ref: string = getGithubRef()): Promise<FileMeta> {
-  const url = `${API_ROOT}/contents/${encodeGithubUrlSegment(path)}?ref=${encodeGithubUrlSegment(ref)}`
+// the brands index, use the text directly.
+export async function getFileMeta(path: string, ref?: string): Promise<FileMeta> {
+  const url = `${await apiRoot()}/contents/${encodeGithubUrlSegment(path)}?ref=${encodeGithubUrlSegment(ref ?? (await getGithubRef()))}`
 
   const response = await apiFetch(url, { headers: authHeaders() })
   await assertOk(response, `fetch ${path} metadata`)
@@ -61,34 +63,44 @@ export async function getFileMeta(path: string, ref: string = getGithubRef()): P
   return { sha: json.sha, content: Buffer.from(json.content, 'base64').toString('utf-8') }
 }
 
+/** The npm name of the token package, which every Toky changeset bumps. */
+export async function getTokenPackageName(ref?: string): Promise<string> {
+  const manifestPath = tokenPackageJsonPath(await getTokyConfig())
+  const { name } = JSON.parse((await getFileMeta(manifestPath, ref)).content) as { name?: unknown }
+  if (typeof name !== 'string' || name === '') throw new Error(`${manifestPath} has no package name.`)
+  return name
+}
+
 export interface BaseTokensFileMeta {
   sha: string
   content: Record<string, unknown>
 }
 
-export async function getBaseTokensFileMeta(ref: string = getGithubRef()): Promise<BaseTokensFileMeta> {
-  const meta = await getFileMeta(TOKEN_FILE_PATH, ref)
+export async function getBaseTokensFileMeta(ref?: string): Promise<BaseTokensFileMeta> {
+  const meta = await getFileMeta(tokenFilePath(await getTokyConfig()), ref)
   return { sha: meta.sha, content: JSON.parse(meta.content) as Record<string, unknown> }
 }
 
 // Same shape as getBaseTokensFileMeta, for a brand's own sparse override file.
-export async function getBrandTokensFileMeta(name: string, ref: string = getGithubRef()): Promise<BaseTokensFileMeta> {
-  const meta = await getFileMeta(brandFilePath(name), ref)
+export async function getBrandTokensFileMeta(name: string, ref?: string): Promise<BaseTokensFileMeta> {
+  const meta = await getFileMeta(brandFilePath(await getTokyConfig(), name), ref)
   return { sha: meta.sha, content: JSON.parse(meta.content) as Record<string, unknown> }
 }
 
 // Powers the Brands sidebar and brand-name collision checks — every
 // `*.tokens.json` sibling of Base.tokens.json is a brand override file (see
 // packages/tokens/docs/adr/0002-brand-modes-not-collections.md).
-export async function listTokenBrandFiles(ref: string = getGithubRef()): Promise<string[]> {
-  const url = `${API_ROOT}/contents/${encodeGithubUrlSegment(TOKENS_DIR)}?ref=${encodeGithubUrlSegment(ref)}`
+export async function listTokenBrandFiles(ref?: string): Promise<string[]> {
+  const config = await getTokyConfig()
+  if (config.brandsIndexPath === null) return []
+  const url = `${await apiRoot()}/contents/${encodeGithubUrlSegment(config.tokensDir)}?ref=${encodeGithubUrlSegment(ref ?? githubRefFor(config))}`
 
   const response = await apiFetch(url, { headers: authHeaders() })
-  await assertOk(response, `list ${TOKENS_DIR}`)
+  await assertOk(response, `list ${config.tokensDir}`)
 
   const json = (await response.json()) as { name: string; type: string }[]
   return json
-    .filter(entry => entry.type === 'file' && entry.name.endsWith('.tokens.json') && entry.name !== 'Base.tokens.json')
+    .filter(entry => entry.type === 'file' && entry.name.endsWith('.tokens.json') && entry.name !== config.tokenFile)
     .map(entry => entry.name.slice(0, -'.tokens.json'.length))
     .sort((a, b) => a.localeCompare(b))
 }
@@ -109,7 +121,7 @@ export async function listBranches(): Promise<string[]> {
   let page = 1
 
   while (true) {
-    const url = `${API_ROOT}/branches?per_page=100&page=${page}`
+    const url = `${await apiRoot()}/branches?per_page=100&page=${page}`
     const response = await apiFetch(url, { headers: authHeaders() })
     await assertOk(response, 'list branches')
 
@@ -123,7 +135,7 @@ export async function listBranches(): Promise<string[]> {
 }
 
 async function getRefSha(ref: string): Promise<string> {
-  const url = `${API_ROOT}/git/ref/heads/${encodeGithubUrlSegment(ref)}`
+  const url = `${await apiRoot()}/git/ref/heads/${encodeGithubUrlSegment(ref)}`
   const response = await apiFetch(url, { headers: authHeaders() })
   await assertOk(response, `read ref heads/${ref}`)
 
@@ -132,16 +144,16 @@ async function getRefSha(ref: string): Promise<string> {
 }
 
 export async function branchExists(branch: string): Promise<boolean> {
-  const url = `${API_ROOT}/git/ref/heads/${encodeGithubUrlSegment(branch)}`
+  const url = `${await apiRoot()}/git/ref/heads/${encodeGithubUrlSegment(branch)}`
   const response = await apiFetch(url, { headers: authHeaders() })
   if (response.status === 404) return false
   await assertOk(response, `check whether branch ${branch} exists`)
   return true
 }
 
-export async function createBranch(branchName: string, baseRef: string = getGithubRef()): Promise<void> {
-  const baseSha = await getRefSha(baseRef)
-  const url = `${API_ROOT}/git/refs`
+export async function createBranch(branchName: string, baseRef?: string): Promise<void> {
+  const baseSha = await getRefSha(baseRef ?? (await getGithubRef()))
+  const url = `${await apiRoot()}/git/refs`
 
   const response = await apiFetch(url, {
     method: 'POST',
@@ -153,7 +165,7 @@ export async function createBranch(branchName: string, baseRef: string = getGith
 
 // Generic "replace an existing file's content" — for the token file
 // specifically, see updateFileOnBranch; for anything else (e.g.
-// BRANDS_INDEX_PATH), call this directly.
+// the brands index), call this directly.
 export async function updateFileAtPath(
   branch: string,
   path: string,
@@ -161,7 +173,7 @@ export async function updateFileAtPath(
   sha: string,
   message: string,
 ): Promise<void> {
-  const url = `${API_ROOT}/contents/${encodeGithubUrlSegment(path)}`
+  const url = `${await apiRoot()}/contents/${encodeGithubUrlSegment(path)}`
 
   const response = await apiFetch(url, {
     method: 'PUT',
@@ -176,8 +188,13 @@ export async function updateFileAtPath(
   await assertOk(response, `update ${path} on branch ${branch}`)
 }
 
-export function updateFileOnBranch(branch: string, newContent: string, sha: string, message: string): Promise<void> {
-  return updateFileAtPath(branch, TOKEN_FILE_PATH, newContent, sha, message)
+export async function updateFileOnBranch(
+  branch: string,
+  newContent: string,
+  sha: string,
+  message: string,
+): Promise<void> {
+  return updateFileAtPath(branch, tokenFilePath(await getTokyConfig()), newContent, sha, message)
 }
 
 // For any new file (no existing sha) at an arbitrary path — used for the
@@ -188,7 +205,7 @@ export async function createFileOnBranch(
   content: string,
   message: string,
 ): Promise<void> {
-  const url = `${API_ROOT}/contents/${encodeGithubUrlSegment(path)}`
+  const url = `${await apiRoot()}/contents/${encodeGithubUrlSegment(path)}`
 
   const response = await apiFetch(url, {
     method: 'PUT',
@@ -206,8 +223,13 @@ export async function createFileOnBranch(
 // to Base for every token purely because nothing's in it yet (see
 // packages/tokens/tokens/OrangeVacations.tokens.json for what a real one
 // looks like once it has overrides).
-export function createBrandFile(branch: string, name: string): Promise<void> {
-  return createFileOnBranch(branch, brandFilePath(name), '{}\n', `chore(tokens): add ${name} brand`)
+export async function createBrandFile(branch: string, name: string): Promise<void> {
+  return createFileOnBranch(
+    branch,
+    brandFilePath(await getTokyConfig(), name),
+    '{}\n',
+    `chore(tokens): add ${name} brand`,
+  )
 }
 
 const BRANDS_ARRAY_PATTERN = /const brands = \[([^\]]*)\]/
@@ -229,14 +251,16 @@ export function insertBrandIntoIndexSource(source: string, brandName: string): s
 // `brands` array) in the same PR as the brand file itself, so creating a brand
 // is a single, complete action rather than needing a manual follow-up.
 export async function addBrandToIndex(branch: string, brandName: string): Promise<void> {
-  const meta = await getFileMeta(BRANDS_INDEX_PATH, branch)
+  const { brandsIndexPath } = await getTokyConfig()
+  if (brandsIndexPath === null) throw new Error(`This token source has no brands — cannot add '${brandName}'.`)
+  const meta = await getFileMeta(brandsIndexPath, branch)
   const nextContent = insertBrandIntoIndexSource(meta.content, brandName)
   if (nextContent === null) {
     throw new Error(
-      `Could not find "const brands = [...]" in ${BRANDS_INDEX_PATH} to add '${brandName}' — nothing was submitted.`,
+      `Could not find "const brands = [...]" in ${brandsIndexPath} to add '${brandName}' — nothing was submitted.`,
     )
   }
-  await updateFileAtPath(branch, BRANDS_INDEX_PATH, nextContent, meta.sha, `chore: add ${brandName} to brand builds`)
+  await updateFileAtPath(branch, brandsIndexPath, nextContent, meta.sha, `chore: add ${brandName} to brand builds`)
 }
 
 export interface OpenedPullRequest {
@@ -249,14 +273,14 @@ export async function openPullRequest(
   branch: string,
   title: string,
   body: string,
-  base: string = getGithubRef(),
+  base?: string,
 ): Promise<OpenedPullRequest> {
-  const url = `${API_ROOT}/pulls`
+  const url = `${await apiRoot()}/pulls`
 
   const response = await apiFetch(url, {
     method: 'POST',
     headers: authHeaders({ 'Content-Type': 'application/json' }),
-    body: JSON.stringify({ title, head: branch, base, body }),
+    body: JSON.stringify({ title, head: branch, base: base ?? (await getGithubRef()), body }),
   })
   await assertOk(response, `open pull request from ${branch}`)
 
@@ -269,7 +293,8 @@ export async function openPullRequest(
 // hasn't been merged/closed yet, so a second submit can reuse it instead of
 // opening a duplicate.
 export async function findOpenPullRequest(branch: string): Promise<OpenedPullRequest | null> {
-  const url = `${API_ROOT}/pulls?head=${REPO_OWNER}:${encodeGithubUrlSegment(branch)}&state=open`
+  const { repo } = await getTokyConfig()
+  const url = `${await apiRoot()}/pulls?head=${repo.owner}:${encodeGithubUrlSegment(branch)}&state=open`
   const response = await apiFetch(url, { headers: authHeaders() })
   await assertOk(response, `look up open pull requests for ${branch}`)
 
@@ -282,7 +307,7 @@ export async function findOpenPullRequest(branch: string): Promise<OpenedPullReq
 // submit's changes to the running activity log instead of leaving the PR
 // body frozen at whatever it said when first opened.
 export async function updatePullRequestBody(prNumber: number, body: string): Promise<void> {
-  const url = `${API_ROOT}/pulls/${prNumber}`
+  const url = `${await apiRoot()}/pulls/${prNumber}`
 
   const response = await apiFetch(url, {
     method: 'PATCH',

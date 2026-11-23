@@ -1,7 +1,36 @@
-import { DsRadio, expect, mountSsr, test } from '@helvetia-design/playwright'
+import {
+  DsRadio,
+  expect,
+  expectScreenshot,
+  mountSsr,
+  setupSsrVisualTest,
+  test,
+  visualBaseline,
+} from '@helvetia-design/playwright'
 import { renderToString } from '@helvetia-design/core/hydrate'
+import { HOST_VARIANTS, TAG } from './radio.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = `/components/forms/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {
+  HOST_VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      test.fixme(
+        true,
+        'SSR: global stylesheet not adopted into the shadow root after hydration, native input keeps its UA margin (#326)',
+      )
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
+
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
+  })
+})
+
+test.describe('mountSsr', () => {
   test('renders and hydrates', async ({ page }, testInfo) => {
     await mountSsr(page, `<ds-radio value="option-1">Option 1</ds-radio>`, renderToString, testInfo)
 

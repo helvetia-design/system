@@ -1,7 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'label'
-const VARIANTS = ['basic', 'no-wrap', 'sizes', 'required', 'states', 'colors'] as const
+import { TAG, VARIANTS } from './label.variants'
 
 const image = screenshot(TAG)
 

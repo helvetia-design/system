@@ -14,7 +14,7 @@ export function generatePaginationControl(value: number, totalPages: number, pag
   }
 
   if (totalPages <= 0) {
-    totalPages = 10
+    return paginationArray
   }
 
   if (pageRange < 0) {
@@ -46,7 +46,7 @@ export function generatePaginationControl(value: number, totalPages: number, pag
         label: totalPages.toString(),
         active: false,
       })
-    } else if (value >= totalPages - 3) {
+    } else if (value >= totalPages - 2 - pageRange) {
       paginationArray.push({
         type: 'page',
         label: '1',

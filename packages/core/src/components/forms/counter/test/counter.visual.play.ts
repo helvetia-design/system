@@ -1,21 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-
-const TAG = 'counter'
-const VARIANTS = [
-  'basic',
-  'at-min',
-  'at-max',
-  'disabled',
-  'readonly',
-  'invalid',
-  'valid',
-  'warning',
-  'min-max',
-  'decimal-step',
-  'large-range',
-  'optional',
-  'form-reset',
-]
+import { TAG, VARIANTS } from './counter.variants'
 
 const image = screenshot(TAG)
 

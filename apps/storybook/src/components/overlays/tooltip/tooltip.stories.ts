@@ -19,7 +19,7 @@ const meta: Meta<Args> = {
     ({ slot, ...args }) => `
 <div class="flex justify-content-center align-items-center p-lg">
   <button class="ds-button" id="tooltip-basic" type="button">Hover over me</button>
-  <ds-tooltip ${props(args)}>${slot}</ds-tooltip>
+  <ds-tooltip ${props(args, 'ds-tooltip')}>${slot}</ds-tooltip>
 </div>`,
   ),
 }
@@ -42,7 +42,7 @@ export const PlacementTop = Story({
     ({ slot, ...args }) => `
 <div class="flex justify-content-center align-items-center p-lg">
   <button class="ds-button" id="tooltip-placement-top" type="button">Trigger</button>
-  <ds-tooltip ${props(args)}>${slot}</ds-tooltip>
+  <ds-tooltip ${props(args, 'ds-tooltip')}>${slot}</ds-tooltip>
 </div>`,
   ),
 })
@@ -54,7 +54,7 @@ export const PlacementRight = Story({
     ({ slot, ...args }) => `
 <div class="flex justify-content-center align-items-center p-lg">
   <button class="ds-button" id="tooltip-placement-right" type="button">Trigger</button>
-  <ds-tooltip ${props(args)}>${slot}</ds-tooltip>
+  <ds-tooltip ${props(args, 'ds-tooltip')}>${slot}</ds-tooltip>
 </div>`,
   ),
 })
@@ -66,7 +66,7 @@ export const PlacementBottom = Story({
     ({ slot, ...args }) => `
 <div class="flex justify-content-center align-items-center p-lg">
   <button class="ds-button" id="tooltip-placement-bottom" type="button">Trigger</button>
-  <ds-tooltip ${props(args)}>${slot}</ds-tooltip>
+  <ds-tooltip ${props(args, 'ds-tooltip')}>${slot}</ds-tooltip>
 </div>`,
   ),
 })
@@ -78,7 +78,7 @@ export const PlacementLeft = Story({
     ({ slot, ...args }) => `
 <div class="flex justify-content-center align-items-center p-lg">
   <button class="ds-button" id="tooltip-placement-left" type="button">Trigger</button>
-  <ds-tooltip ${props(args)}>${slot}</ds-tooltip>
+  <ds-tooltip ${props(args, 'ds-tooltip')}>${slot}</ds-tooltip>
 </div>`,
   ),
 })
@@ -94,7 +94,7 @@ export const ContentWidth = Story({
     ({ slot, ...args }) => `
 <div class="flex justify-content-center align-items-center p-xl">
   <button class="ds-button" id="tooltip-content-width" type="button">Trigger</button>
-  <ds-tooltip ${props(args)}>${slot}</ds-tooltip>
+  <ds-tooltip ${props(args, 'ds-tooltip')}>${slot}</ds-tooltip>
 </div>`,
   ),
 })

@@ -20,12 +20,24 @@
     "./css/base": "./dist/css/base.tokens.css",
     "./css/base-override": "./dist/css/base.override.css",
     "./css/orange-vacations": "./dist/css/orange-vacations.tokens.css",
-    "./css/orange-vacations-override": "./dist/css/orange-vacations.override.css"
+    "./css/orange-vacations-override": "./dist/css/orange-vacations.override.css",
+    "./build": {
+      "types": "./dist/out-tsc/build.d.ts",
+      "default": "./dist/out-tsc/build.js"
+    },
+    "./toky-config": {
+      "types": "./dist/out-tsc/toky-config.d.ts",
+      "default": "./dist/out-tsc/toky-config.js"
+    },
+    "./tokens/base": "./tokens/Base.tokens.json"
   },
   "scripts": {
     "build": "pnpm exec tsc && node dist/out-tsc",
     "build:clean": "rimraf dist",
     "lint": "eslint ."
+  },
+  "dependencies": {
+    "change-case": "5.4.4"
   },
   "devDependencies": {
     "eslint": "catalog:",
@@ -35,6 +47,15 @@
   "security": "https://github.com/helvetia-design/system/security/advisories/new",
   "license": "Apache-2.0",
   "files": [
-    "dist/"
-  ]
+    "dist/",
+    "tokens/"
+  ],
+  "peerDependencies": {
+    "style-dictionary": "^5.8.0"
+  },
+  "peerDependenciesMeta": {
+    "style-dictionary": {
+      "optional": true
+    }
+  }
 }

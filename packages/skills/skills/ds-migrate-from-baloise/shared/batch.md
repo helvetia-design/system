@@ -39,7 +39,7 @@ Show, in this order:
 2. The migration list in rewrite order (see Order below), each with its `total`.
 3. `notYet` with each `total`. These stay `bal-*`.
 4. The shared files, each with its importers.
-5. The legacy config calls to delete, when the batch will leave no `bal-*` component. Run the Scan section of `shared/legacy-config.md`. Its `scan-migratable.mjs` call runs without path arguments. A component in the migration list does not count as left when its `total` there equals its `total` in the batch scan, because then every usage lies in the file set. Every other component counts as left.
+5. The legacy config calls to delete, when the batch will leave no `bal-*` component. Run the Scan section of `shared/legacy-config.md`. Its `scan-migratable.mjs` call runs without path arguments. A component in the migration list does not count as left when its `total` there equals its `total` in the batch scan, because then every usage lies in the file set. A report-only migration such as `nav` or `stage`, and a component with a usage that its migration file leaves in place or reports as not migrated, always counts as left. Every other component counts as left.
 
 When the migration list has more than eight entries, the batch is too large. Do not ask whether to continue. Split the file set into parts by folder, so that the files of each part use at most eight migrations. Split a folder that still uses more than eight by file. A part that is a single file, together with the sibling files that step 1.1 adds, cannot be split further. It is exempt from the limit. Show the parts, each with its folders or files and its migrations. Then run the first part as its own batch, from step 1 with its paths and with its own confirmation. The user starts each next part with **Scope**.
 
@@ -53,7 +53,7 @@ Editing starts only after the yes. Done when the user has answered.
 
 Run the migrations in this order. Structural parents first, because their `migration.md` rules restructure the children. Leaves last.
 
-1. `card`, `modal`, `list`, `accordion`, `tabs`, `steps`, `navbar`, `sheet`, `popup`
+1. `card`, `modal`, `list`, `accordion`, `tabs`, `steps`, `navbar`, `sheet`, `popup`, `popover`
 2. every other migration in the list, alphabetical
 3. `field`, `button`, `close`, `icon`, `text`, `heading`, `badge`, `tag`, `divider`
 

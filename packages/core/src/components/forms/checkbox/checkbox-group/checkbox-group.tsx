@@ -1,4 +1,5 @@
 import {
+  AttrDeserialize,
   AttachInternals,
   Component,
   Element,
@@ -15,6 +16,7 @@ import { DsComponentInterface } from '@global'
 import { Field, FieldInterface } from '../../input/field.util'
 import { defaultConfig, DsConfigState, DsLanguage, DsRegion, ListenToConfig } from '@global'
 import {
+  deserializeBooleanAttribute,
   Logger,
   LogInstance,
   hasTagName,
@@ -191,6 +193,11 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
   @Prop({ reflect: true })
   @Type('boolean')
   readonly required: boolean = true
+
+  @AttrDeserialize('required')
+  private deserializeRequired(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * Defines the layout of the input

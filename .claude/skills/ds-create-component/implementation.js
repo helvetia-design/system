@@ -8,6 +8,7 @@
 const path = require('path')
 const fs = require('fs')
 const { CATEGORIES } = require('../_shared/component-categories')
+const { primaryComponentRoot, isCategorized } = require('../_shared/ds-context')
 
 /**
  * Main questionnaire flow
@@ -36,7 +37,9 @@ async function createComponent(userResponses) {
     throw new Error(`Invalid category "${category}". Must be one of: ${CATEGORIES.join(', ')}`)
   }
 
-  const componentPath = path.join(process.cwd(), 'packages/core/src/components', category, componentName)
+  const componentPath = isCategorized(process.cwd())
+    ? path.join(primaryComponentRoot(process.cwd()), category, componentName)
+    : path.join(primaryComponentRoot(process.cwd()), componentName)
 
   // Check if component already exists
   if (fs.existsSync(componentPath)) {

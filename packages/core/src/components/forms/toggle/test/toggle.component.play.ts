@@ -110,3 +110,21 @@ test.describe('form reset', () => {
     await toggle.assertToBeUnchecked()
   })
 })
+
+test.describe('required attribute', () => {
+  test('should treat a bare required attribute as true', async ({ page }) => {
+    await page.mount(`<ds-toggle required>Toggle</ds-toggle>`)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    await expect(toggle.el).toHaveJSProperty('required', true)
+    await expect(toggle.nativeInput).toHaveJSProperty('required', true)
+  })
+
+  test('should treat required="false" as false', async ({ page }) => {
+    await page.mount(`<ds-toggle required="false">Toggle</ds-toggle>`)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    await expect(toggle.el).toHaveJSProperty('required', false)
+    await expect(toggle.nativeInput).toHaveJSProperty('required', false)
+  })
+})

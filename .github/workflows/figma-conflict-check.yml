@@ -11,7 +11,7 @@ permissions:
 jobs:
   check:
     name: 🔍 Figma Conflict Check
-    if: github.head_ref == 'toky/update-next'
+    if: github.head_ref == 'toky/update-main'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -24,6 +24,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # The sync scripts import packages/tokens/dist/out-tsc/toky-config.js (scripts/figma-sync/lib/config.mjs).
+      - name: Compile token package
+        run: pnpm --filter @helvetia-design/tokens exec tsc
 
       # Comment-only, never blocks merge (docs/adr/0018-non-blocking-conflict-check.md)
       # — a script error here still fails the job (a real operational
