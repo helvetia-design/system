@@ -36,21 +36,21 @@ props:
     figmaPropertyType: top-level-split (rule 2) # → CloseInverted
   - name: disabled
     figmaPropertyType: component state (blocked)
-  - name: '(ds-tooltip)' # always rendered by the native path (close.tsx:144), shown on hover / focus
+  - name: '(ds-tooltip)' # always rendered by the native path (close.tsx:144), shown on hover / focus; built on hover only (focus is ignored)
     figmaProperty: show tooltip
     figmaPropertyType: boolean # default false
-    shownWhen: 'state=hover | focus, disabled=false'
+    shownWhen: 'state=hover, disabled=false'
   - name: '[excluded]'
     figmaPropertyType: excluded
+    props: [button, buttonColor, buttonSize]
     note: 'button, buttonColor, buttonSize — only the native <button> path is modeled (rebuild-decisions.md).'
   # Generated: the i18n label ("Close") is aria-label + tooltip text — fixed `Close` override on the Tooltip, no property.
 
 states:
   figmaProperty: state
-  options: [default, hover, focus, active]
+  options: [default, hover, active] # focus ignored (user decision 19.11.2026)
   sources:
     hover: ':hover (close.mixin.scss:89)'
-    focus: ':focus-visible / .is-focused → focus-shadow (close.mixin.scss:98)'
     active: ':active (close.mixin.scss:93)'
 componentStates:
   disabled:
@@ -61,14 +61,17 @@ componentStates:
       source: 'every pseudo state is inside &:not(:disabled) (close.mixin.scss:85)',
     }
 
+figmaCheck: # scripts/figma-check-set.mjs (Phase 4 step 0)
+  conditionalLayers:
+    - name: tooltip-anchor # build-mechanics.md → Tooltip anchor
+      when: { state: [hover], disabled: ['false'] }
+  allowedCombos: []
+
 nested:
-  - childTag: '(focus ring)'
-    figmaComponentKey: 2454d0fabf5c8fcb51b8b44de7a4fec90e9120c8 # Focus ring set, Core / Utilities
-    note: 'focus-shadow mixin → focus-ring instance on every state=focus variant (inverted=true in CloseInverted); round host → ring radii full'
   - childTag: '(tooltip anchor)' # Figma-only helper, Core / Utilities (build-mechanics.md → Tooltip anchor); added 19.11.2026
     figmaComponentKey: 7acb7deab1ff4f7c89bc15ce980c38a098f2eae1 # TooltipAnchor set
     exposed: false # placement fixed at bottom — ds-close has no placement prop
-    note: 'In every state=hover | focus variant with disabled=false (4 + 4): `tooltip-anchor` instance, absolute, x/y 0, sized to the variant, constraints STRETCH both, placement=bottom. Visibility bound to `show tooltip`.'
+    note: 'In every state=hover variant with disabled=false (2 + 2): `tooltip-anchor` instance, absolute, x/y 0, sized to the variant, constraints STRETCH both, placement=bottom. Visibility bound to `show tooltip`.'
   - childTag: ds-tooltip # inside the anchor
     childMappingFile: ../../overlays/tooltip/tooltip.figma.md
     figmaComponentKey: 153b91930d626839058d24ce00415275c0f74f04
@@ -149,16 +152,6 @@ tokens: # all checked in the Foundation file (19.11.2026)
       figmaVariable: 🧩 Component/Close/Inverted/Color/Icon/Disabled,
       resolved: true,
     }
-  - {
-      cssVar: --ds-alias-interaction-focus-color-base,
-      figmaVariable: 🔗 Alias/✨ Interaction/Focus/Color/Base,
-      resolved: true,
-    } # via Focus ring
-  - {
-      cssVar: --ds-alias-interaction-focus-color-inverted,
-      figmaVariable: 🔗 Alias/✨ Interaction/Focus/Color/Inverted,
-      resolved: true,
-    } # via Focus ring
   - { cssVar: --ds-tooltip-offset, figmaVariable: 🧩 Component/Tooltip/Offset, resolved: true } # 8 — bound inside TooltipAnchor
 # No breakpoint mixins → no device: section.
 
@@ -170,8 +163,6 @@ completeness:
   - node: x (vector, centered)
     width / height: literal 14 | 18 (= size − Close/Padding/*; user decision 19.11.2026)
     fill: Close/<Primary|Inverted>/Color/Icon/<Base|Disabled>
-  - node: focus-ring (state=focus)
-    instance: Focus ring, inverted per set
 # No other gaps.
 
 measurements: # confirmed by the user 19.11.2026, measured on the dev server
@@ -213,15 +204,6 @@ measurements: # confirmed by the user 19.11.2026, measured on the dev server
         values: { base: { px: full, token: 🧩 Component/Close/Radius } },
       }
     - {
-        property: Focus ring,
-        kind: shape,
-        group: fixed,
-        show: drawn,
-        instance: focus,
-        source: general.mixin.scss:37,
-        values: { base: { px: '2 + 5', token: 🔗 Alias/✨ Interaction/Focus/Size/Inner + Outer } },
-      }
-    - {
         property: Browser padding,
         kind: spacing,
         group: derived,
@@ -241,26 +223,29 @@ measurements: # confirmed by the user 19.11.2026, measured on the dev server
   `placement=bottom` and not exposed — `ds-close` has no placement prop. The
   `close-tooltip` snapshot shows it shifted left: floating-ui's `shift` against the viewport
   edge, not a different placement.
+- **Focus (user decision 19.11.2026):** ignored — no `focus` variant, no focus ring, no focus
+  measurement. The 4 focus variants, their column and the measurements' focus instance were
+  removed from Figma on 19.11.2026.
 - **Button dependency:** none — the `button` path (a `ds-button`) is excluded, so `TODO.md`'s
   "Close → Button" dependency doesn't apply to this build.
 
 ## Proposed grouping (Phase 2)
 
-| Code                                    | Figma                                                  | Type                      |
-| --------------------------------------- | ------------------------------------------------------ | ------------------------- |
-| `size`                                  | `size` · `base · md`                                   | variant (rows)            |
-| `:hover` / `:focus-visible` / `:active` | `state` · `default · hover · focus · active`           | variant (columns)         |
-| `disabled`                              | `disabled` · `false · true`, only with `state=default` | component state (blocked) |
-| `inverted`                              | `CloseInverted`                                        | top-level split (rule 2)  |
+| Code                 | Figma                                                  | Type                      |
+| -------------------- | ------------------------------------------------------ | ------------------------- |
+| `size`               | `size` · `base · md`                                   | variant (rows)            |
+| `:hover` / `:active` | `state` · `default · hover · active`                   | variant (columns)         |
+| `disabled`           | `disabled` · `false · true`, only with `state=default` | component state (blocked) |
+| `inverted`           | `CloseInverted`                                        | top-level split (rule 2)  |
 
 Case: **top-level split**, a 2-axis grid per set. No text properties (the i18n "Close" is
 generated, `aria-label` + tooltip only). No variations (no `show` booleans).
 
 ```
-Close                                          state                   disabled
-                default   hover    focus    active    true
-size   base     [cell]    [cell]   [cell]   [cell]    [cell]
-       md       [cell]    [cell]   [cell]   [cell]    [cell]
+Close                                 state          disabled
+                default   hover    active    true
+size   base     [cell]    [cell]   [cell]    [cell]
+       md       [cell]    [cell]   [cell]    [cell]
 
 CloseInverted   (same grid)
 ```
