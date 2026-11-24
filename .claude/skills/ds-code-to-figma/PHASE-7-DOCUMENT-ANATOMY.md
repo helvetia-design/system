@@ -50,7 +50,7 @@ or the `Anatomy/Marker` or `Anatomy/Legend item` component is missing.
    cloned `y`. Name each instance after what it shows (`Button`, `Button (loading)`) and say which
    instance carries which markers when you ask for confirmation.
 2. **Markers — one `Anatomy/Marker` instance per `anatomy:` entry.** The component lives on
-   `🧰 Annotations` (find it by name; `6299:425` is a hint only): a dot with the letter and a
+   `🧰 Utilities` (find it by name; `6299:425` is a hint only): a dot with the letter and a
    leader that stretches with the instance height. Clone `marker-A` for each part and delete the
    unused ones. Never detach or restyle an instance, and never draw a marker by hand. **Letters follow the drawing, not the code** (user decision 19.11.2026): once every dot
    is placed, letter the markers A, B, C, … from left to right by dot position, so the diagram
@@ -73,7 +73,7 @@ or the `Anatomy/Marker` or `Anatomy/Legend item` component is missing.
      `FILL`). The slot's own gap separates it from the legend, and the template's `legend` frame
      carries the bottom padding, so the section reads about 30 / 24 / 30 (top / gap / bottom).
 3. **Legend — one `Anatomy/Legend item` instance per part.** The component lives on
-   `🧰 Annotations` (find it by name; `3008:1677` is a hint only) and renders
+   `🧰 Utilities` (find it by name; `3008:1677` is a hint only) and renders
    `"<letter> · <part> — <description>"`, letter and part Bold, the rest Regular. For a
    sub-component entry, `Part` is its set name and tag (`Tab (ds-tab)`). Clone the first instance in `legend` for each part and
    delete the unused ones. Set only its three text properties with `setProperties` — `Letter`,

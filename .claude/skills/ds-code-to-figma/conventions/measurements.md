@@ -102,7 +102,7 @@ kind, even when a card has several rows of it):
 outline in the kind color, a solid number bubble first (white number; it matches the Sizes table,
 where every row starts with its bubble), then the **value** in the same kind color (`48px`,
 `min 48px`, `4px`). One color per kind for lines, outline, bubble and value text (17.11.2026, from
-the mockup on `🧰 Annotations`, `4582:4163`). The bubble's number is the row's number in the Sizes
+the mockup on `🧰 Utilities`, `4582:4163`). The bubble's number is the row's number in the Sizes
 table — never put the number into the value text. Leader and corner-radius pills stay attached to
 the end of their line — there the line is the connection.
 

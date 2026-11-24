@@ -121,7 +121,7 @@ batch and grouping sign-off happen once for the whole family; Phases 6–8 run f
 ## Phase 8 — Document: Measurements
 
 - 🛑 **Annotation component missing** (step 0): a `Spec/*` component or variant from the table in
-  `PHASE-8-DOCUMENT-MEASUREMENTS.md` isn't on `🧰 Annotations` — list what's missing and ask the user to
+  `PHASE-8-DOCUMENT-MEASUREMENTS.md` isn't on `🧰 Utilities` — list what's missing and ask the user to
   add it; never draw a one-off marker by hand.
 - 🛑 **Template layer missing** (step 1): the `kind=measurements` placeholder or a layer from its
   layer-name table (`drawn-spec`, `sizes-table`, `behavior` and their children) is missing — list

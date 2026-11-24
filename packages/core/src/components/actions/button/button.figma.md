@@ -229,7 +229,7 @@ nested:
     childMappingFile: ../../indicators/spinner/spinner.figma.md
     figmaComponentKey: 8c6b86b1d794f09808f16b3759bf486e6a1b83b8
     note: 'Instance of Spinner (logo); inner width / height overridden to Button/Spinner/Size (24); logo fill → Button/Color/Disabled/Base/Text (loading uses the disabled colors). Shown only on loading=true.'
-  - childTag: '(tooltip anchor)' # Figma-only helper, Core / Utilities (build-mechanics.md → Tooltip anchor); added 19.11.2026
+  - childTag: '(tooltip anchor)' # Figma-only helper, 🧰 Utilities → Helper components section (build-mechanics.md → Tooltip anchor); added 19.11.2026
     figmaComponentKey: 7acb7deab1ff4f7c89bc15ce980c38a098f2eae1 # TooltipAnchor set, `placement` bottom · top · right · left
     exposed: true # `placement` (= tooltipPlacement) shows on the Button instance
     note: 'In every state=hover variant with disabled=false, loading=false (39 + 15): `tooltip-anchor` instance, absolute, x/y 0, sized to the variant, constraints STRETCH both, placement=bottom. Visibility bound to `show tooltip`.'

@@ -8,7 +8,7 @@ See `../CONVENTIONS.md` for the index.
 
 ## The shared components
 
-All three live on the `🧰 Annotations` page. Find them by name; the node ids are hints only.
+All three live on the `🧰 Utilities` page. Find them by name; the node ids are hints only.
 
 - **`Title`** (`COMPONENT_SET`, `2199:13`) — one `kind` variant per section: `copy-me`, `anatomy`,
   `measurements`, `variations` (`2199:9`, "🔀 Variations"), `component-set`, `names` (`6085:1356`,
@@ -22,7 +22,7 @@ All three live on the `🧰 Annotations` page. Find them by name; the node ids a
   `Default`/`Flat` property as `Preview`. The building block for every left-column section.
 
 **Never fork a one-off copy, and never `detachInstance()`** any of the three — that severs the link
-to future master edits. If the chrome must change, edit the master once on the Annotations page.
+to future master edits. If the chrome must change, edit the master once on the Utilities page.
 
 ## Inserting content into a slot
 

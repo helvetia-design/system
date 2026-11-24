@@ -185,13 +185,13 @@ proven on a real run: confirm each point on the first build and update this sect
 ## Focus states
 
 - **Focus is never built** (user decision 19.11.2026): no `focus` variant, no focus ring, no
-  focus measurement. The `Focus ring` set on `Core / Utilities` (`6284:21`) is no longer used by
+  focus measurement. The `Focus ring` set on `🧰 Utilities` → `Helper components` section (`6284:21`) is no longer used by
   this skill.
 
 ## Tooltip anchor
 
 - **A component that renders `ds-tooltip` internally nests the shared `TooltipAnchor` set** — a
-  Figma-only helper on `Core / Utilities` (`6411:7`, key `7acb7deab1ff4f7c89bc15ce980c38a098f2eae1`),
+  Figma-only helper on `🧰 Utilities` → `Helper components` section (`6411:7`, key `7acb7deab1ff4f7c89bc15ce980c38a098f2eae1`),
   (user decision 19.11.2026). `placement` (`bottom · top · right · left`): each
   variant is an empty 48 × 48 trigger area holding one transparent auto-layout `wrapper` outside
   it, with the exposed `Tooltip` inside. The wrapper's padding toward the trigger is bound to

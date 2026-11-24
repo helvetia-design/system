@@ -25,13 +25,13 @@ is the last phase of the skill.
 - `PHASE-3-BUILD.md`'s cloned frame — its `kind=measurements` placeholder holds the worked
   example this phase edits (`drawn-spec`, `sizes-table`, `behavior`).
 - `conventions/build-mechanics.md` — especially "Color and paint".
-- `🧰 Annotations` page, node `2046:5` — the `Spec/*` annotation components.
+- `🧰 Utilities` page, node `2046:5` — the `Spec/*` annotation components.
 
 ## Instructions
 
 ### 0. Check the annotation components
 
-Find these on the `🧰 Annotations` page by name (node ids are hints only). **Any one missing is a
+Find these on the `🧰 Utilities` page by name (node ids are hints only). **Any one missing is a
 🛑 hard stop**: list what's missing and ask the user to add it to the page — never draw a one-off
 marker by hand instead.
 
@@ -54,7 +54,7 @@ outline, solid number bubble first, value text in the kind color — colors in `
 (above a `top` line, left of a `left` line, …), so it never covers the ticks. Dashed and solid lines are the same
 1px rectangle (dashed = one-side dashed stroke), so both sit centered between the end ticks. The old
 `Spec/Dimension` `kind=icon`, `Spec/Radius`, `Spec/Legend item` and `Spec/Callout` were deleted
-from the Annotations page (18.11.2026, unused).
+from the Utilities page (18.11.2026, unused).
 
 After changing an annotation component, instances already placed can keep a stale layout or
 even a stale render (seen on `ds-button`: the radius pill showed a leftover rectangle of its old

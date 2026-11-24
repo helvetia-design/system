@@ -68,7 +68,7 @@ figmaCheck: # scripts/figma-check-set.mjs (Phase 4 step 0)
   allowedCombos: []
 
 nested:
-  - childTag: '(tooltip anchor)' # Figma-only helper, Core / Utilities (build-mechanics.md → Tooltip anchor); added 19.11.2026
+  - childTag: '(tooltip anchor)' # Figma-only helper, 🧰 Utilities → Helper components section (build-mechanics.md → Tooltip anchor); added 19.11.2026
     figmaComponentKey: 7acb7deab1ff4f7c89bc15ce980c38a098f2eae1 # TooltipAnchor set
     exposed: false # placement fixed at bottom — ds-close has no placement prop
     note: 'In every state=hover variant with disabled=false (2 + 2): `tooltip-anchor` instance, absolute, x/y 0, sized to the variant, constraints STRETCH both, placement=bottom. Visibility bound to `show tooltip`.'

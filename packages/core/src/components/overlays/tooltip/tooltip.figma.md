@@ -179,7 +179,7 @@ measurements: # confirmed by the user 19.11.2026, measured on the dev server at 
 - **Offset is not part of the component** (user decision 19.11.2026): it's applied by
   floating-ui, depends on placement, and lives in the composition. Table-only row ⑤.
 - **Nested in Button and Close (19.11.2026)** through the Figma-only `TooltipAnchor` set
-  (`Core / Utilities`, key `7acb7dea…`, `placement` bottom · top · right · left, gap bound to
+  (`🧰 Utilities` → `Helper components` section, key `7acb7dea…`, `placement` bottom · top · right · left, gap bound to
   `Tooltip/Offset`): a `show tooltip` boolean on their hover variants (see
   `button.figma.md` / `close.figma.md` → `nested:`, `build-mechanics.md` → Tooltip anchor).
   **Follow-up:** `ds-hint` also renders `ds-tooltip` but has no Figma build yet.
