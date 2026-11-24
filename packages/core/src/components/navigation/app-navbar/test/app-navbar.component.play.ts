@@ -95,3 +95,58 @@ test('should close sidebar when backdrop is clicked', async ({ page }) => {
 
   await navbar.assertSidebarIsClosed()
 })
+
+test('should release scroll lock and focus trap when breakpoint changes to desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 600, height: 600 })
+
+  await page.mount(`
+      <ds-app-navbar>
+        <a href="/" slot="brand">Logo</a>
+        <a href="/about" slot="menu-start">About</a>
+      </ds-app-navbar>
+      <button id="outside">Outside</button>
+    `)
+
+  const navbar = new DsAppNavbar(page.locator('ds-app-navbar'))
+  await navbar.toggleSidebar()
+  await navbar.assertSidebarIsOpen()
+  await expect(page.locator('body')).toHaveClass(/noscroll/)
+
+  await page.setViewportSize({ width: 1440, height: 600 })
+
+  await expect(navbar.el).not.toHaveClass(/is-open/)
+  await expect(page.locator('body')).not.toHaveClass(/noscroll/)
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden')
+
+  const outside = page.locator('#outside')
+  await outside.focus()
+  await expect(outside).toBeFocused()
+})
+
+test('should release scroll lock when overflow ends on desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 600 })
+
+  const links = Array.from(
+    { length: 12 },
+    (_, i) => `<a href="/page-${i}" slot="menu-start">Navigation item ${i}</a>`,
+  ).join('')
+
+  await page.mount(`
+      <ds-app-navbar>
+        <a href="/" slot="brand">Logo</a>
+        ${links}
+      </ds-app-navbar>
+    `)
+
+  const navbar = new DsAppNavbar(page.locator('ds-app-navbar'))
+  await expect(navbar.el).toHaveClass(/is-sidebar-mode/)
+  await navbar.toggleSidebar()
+  await navbar.assertSidebarIsOpen()
+  await expect(page.locator('body')).toHaveClass(/noscroll/)
+
+  await page.setViewportSize({ width: 2560, height: 600 })
+
+  await expect(navbar.el).not.toHaveClass(/is-sidebar-mode/)
+  await expect(navbar.el).not.toHaveClass(/is-open/)
+  await expect(page.locator('body')).not.toHaveClass(/noscroll/)
+})
