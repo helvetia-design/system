@@ -85,7 +85,7 @@ export const wait = (ms = 0): Promise<void> => {
 export const debounceEvent = (ev: EventEmitter, wait: number): EventEmitter => {
   const original = (ev as any)._original || ev
   return {
-    _original: ev,
+    _original: original,
     emit: debounce(original.emit.bind(original), wait),
   } as EventEmitter
 }
