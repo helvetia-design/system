@@ -28,6 +28,52 @@ const PRODUCT_ITEMS = `
   <ds-carousel-item name="p5">Item 5</ds-carousel-item>
   <ds-carousel-item name="p6">Last item with a long content</ds-carousel-item>`
 
+const CARD_ITEMS = `
+  <ds-carousel-item name="c1">
+    <ds-card clickable space="sm" style="width: 16rem">
+      <picture>
+        <img src="/assets/images/placeholder.png" alt="" />
+      </picture>
+      <ds-card-header>
+        <ds-card-title>Household contents</ds-card-title>
+      </ds-card-header>
+      <ds-card-content>Protects your belongings against fire, water and theft.</ds-card-content>
+    </ds-card>
+  </ds-carousel-item>
+  <ds-carousel-item name="c2">
+    <ds-card clickable space="sm" style="width: 16rem">
+      <picture>
+        <img src="/assets/images/placeholder.png" alt="" />
+      </picture>
+      <ds-card-header>
+        <ds-card-title>Legal protection</ds-card-title>
+      </ds-card-header>
+      <ds-card-content>Covers legal costs for disputes at work, at home or on the road.</ds-card-content>
+    </ds-card>
+  </ds-carousel-item>
+  <ds-carousel-item name="c3">
+    <ds-card clickable space="sm" style="width: 16rem">
+      <picture>
+        <img src="/assets/images/placeholder.png" alt="" />
+      </picture>
+      <ds-card-header>
+        <ds-card-title>Travel insurance</ds-card-title>
+      </ds-card-header>
+      <ds-card-content>Cancellation costs and assistance abroad, for you and your family.</ds-card-content>
+    </ds-card>
+  </ds-carousel-item>
+  <ds-carousel-item name="c4">
+    <ds-card clickable space="sm" style="width: 16rem">
+      <picture>
+        <img src="/assets/images/placeholder.png" alt="" />
+      </picture>
+      <ds-card-header>
+        <ds-card-title>Car insurance</ds-card-title>
+      </ds-card-header>
+      <ds-card-content>Liability, collision and theft cover for your vehicle.</ds-card-content>
+    </ds-card>
+  </ds-carousel-item>`
+
 const BRAND_ICON_ITEMS = `
   <ds-carousel-item name="auto" color="green" navigation>
     <a href="/auto" class="ds-stack align-top gap-xs ds-button is-brand-green" style="width: 10rem">
@@ -235,3 +281,29 @@ export const ProductBrandIconsHtml = Story({
   ),
 })
 ProductBrandIconsHtml.storyName = '🌍 Product Carousel (brand icons, navigation)'
+
+export const ProductCards = Story({
+  args: {
+    variant: 'tile',
+    controls: 'large',
+    label: 'Insurance products',
+  },
+  ...withRender(
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')} style="--carousel-item-width: auto">${CARD_ITEMS}
+</ds-carousel>`,
+  ),
+})
+ProductCards.storyName = '🧩 Product Carousel (cards)'
+
+export const ProductCardsHtml = Story({
+  args: {
+    variant: 'tile',
+    controls: 'large',
+    label: 'Insurance products',
+  },
+  ...withRender(
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')} style="--carousel-item-width: auto">${CARD_ITEMS}
+</ds-carousel>`,
+  ),
+})
+ProductCardsHtml.storyName = '🌍 Product Carousel (cards)'
