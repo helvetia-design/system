@@ -96,6 +96,35 @@ a status line with it, and an agent prefixes its own completion report. One glan
 talking in a transcript where seven of them are. The symbol is cosmetic — the agent's identity
 is its `name`, which never changes.
 
+### Status board
+
+The orchestrator prints a status board **every time it dispatches an agent, an agent returns,
+or a gate opens** — one row per agent in the current workflow, nothing else in the message
+before it. Agents not in the workflow are left out.
+
+| Status | Meaning                                           |
+| :----: | ------------------------------------------------- |
+|   🔄   | working — dispatched, not yet returned            |
+|   ⏳   | waiting — on another agent (name it) or on a gate |
+|   🙋   | needs the human — a gate or a blocking question   |
+|   ✅   | done — returned, its output accepted              |
+|   ⛔   | blocked — failed or reported `BLOCKED`; say why   |
+|   ⬜   | not started                                       |
+
+```text
+DS team · ds-country-select · Workflow A step 4
+🏛️ architect               ✅ plan → docs/plans/components/ds-country-select-plan.md
+🧬 token-engineer          ✅ 3 Component tokens added
+🧩 component-engineer      🔄 implementing ds-country-select.tsx
+🧪 test-engineer           ⏳ waits on 🧩
+♿️ a11y-expert             ⏳ waits on 🧩
+📖 documentation-engineer  ⬜
+🐙 orchestrator            🙋 —
+```
+
+The "what" column is one line: the file or step the agent is on, the artifact it handed over,
+or the agent it waits on. Parallel agents show 🔄 together — that is the point of the board.
+
 File ownership is **disjoint by design** — that is what makes the parallel steps below safe.
 An agent that finds a defect outside its own files reports it; it never reaches across.
 
