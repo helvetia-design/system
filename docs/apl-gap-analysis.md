@@ -31,7 +31,7 @@ them.
 | 9   | Select Box               | [below](#9-select-box)                |
 | 10  | Slider                   | [below](#10-slider)                   |
 | 11  | Snackbar                 | [below](#11-snackbar)                 |
-| 12  | Teaser Button            | pending                               |
+| 12  | Teaser Button            | [below](#12-teaser-button)            |
 
 ---
 
@@ -763,3 +763,52 @@ should be discouraged in the documentation.
   unless the urgent-announcement question turns into work.
 - **DS is the more complete component here.** Close button, heading, queue with a duplicate filter,
   action as a link, mobile form, and a React hook. None of that exists on the APL side.
+
+---
+
+## 12. Teaser Button
+
+**TL;DR — map onto `ds-card tile`, but fix its icon+title layout first.** The Teaser Button is Angular
+Material's answer to "a single colored, clickable action tile" — a plain `<div>` with a color, an
+icon and a label, no built-in link or button behaviour. `ds-card tile` is the closest existing shape,
+but today it only renders correctly with a subtitle under the title; strip that away, as a Teaser
+Button needs, and the title floats above-left of the icon instead of sitting level with it.
+
+**Recommendation: use `ds-card tile` plus `clickable` and `color`, once the icon+title layout is
+fixed.** Building a dedicated Teaser Button component would duplicate a shape the Design System
+already owns. The one piece of real work is making `ds-card tile` look right with just an icon and a
+title — everything else (color, clickable styling) already exists.
+
+APL page:
+[/library-demo/teaser-button](https://www.helvetia.com/corp/app-patternlibrary/library-demo/teaser-button)
+· Used by: All · Confluence estimate: 0.5
+
+### Gaps
+
+| #   | What's missing                                 | Severity     | Note                                                                                                                                                                                                                                                                           |
+| --- | ---------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | A tile that looks right with icon + title only | `Gap`        | `ds-card tile`'s header grid only centers the icon when a subtitle fills the second row. Confirmed in a clean Storybook render, not a one-off styling mistake.                                                                                                                 |
+| 2   | A single colored, clickable action tile        | `Partial`    | `ds-card tile` plus `color` and `clickable` gets most of the way there once gap 1 is fixed.                                                                                                                                                                                    |
+| 3   | A disabled state                               | `Gap`        | The APL grays the tile out and blocks clicks. `ds-card` has no `disabled` prop.                                                                                                                                                                                                |
+| 4   | Compact (smaller) size                         | `Gap`        | One APL class shrinks the tile to a single line. `ds-card` has no equivalent size step.                                                                                                                                                                                        |
+| 5   | Acting as a real link or button                | `Don't copy` | Neither side gets this right today. The APL renders a `<div tabindex="0">` with no role; `ds-card clickable` renders an `<article>` with no keyboard handling at all — tracked as [#358](https://github.com/helvetia-design/system/issues/358), independent of this migration. |
+| 6   | 8 preset colors                                | `Have it`    | `ds-card`'s `color` prop covers 11, a superset.                                                                                                                                                                                                                                |
+
+### Open questions for design
+
+1. Is `ds-card tile` an acceptable home for this, or does a single-action tile deserve to look
+   different from a content card?
+2. Does the tile need a disabled state and a compact size, or were those APL options rarely used
+   in practice?
+3. Should `ds-card clickable` become a real link/button (tracked in #358) before this migration
+   starts, so Teaser Button doesn't inherit the same keyboard gap?
+
+### Worth knowing
+
+- **Confluence's own mapping already points Teaser Button at the Card documentation** — the same
+  target it gives the separate "Teaser Card" row. The two may be answering the same need with
+  different markup; that question is not addressed here and Teaser Card is not part of this analysis.
+- **Neither APL component is used anywhere in its own repo outside its demo page.** Real usage
+  (a dashboard's "Settings"/"Contracts" actions) lives in a consuming app, not here.
+- **The estimate of 0.5 is believable** once the `ds-card tile` layout fix lands — most of what
+  Teaser Button needs already exists as props.
