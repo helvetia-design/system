@@ -223,3 +223,24 @@ export const FocusTrap = Story({
   ),
 })
 FocusTrap.storyName = '🧩 Focus Trap'
+
+export const WithTitleAndNotification = Story({
+  args: {
+    closable: true,
+    backdropDismiss: true,
+  },
+  ...withRender(
+    ({ ...args }) => `
+<ds-button data-popup="popup-title-notification">Open Warning</ds-button>
+<ds-popup id="popup-title-notification" ${props(args, tag)}>
+  <div style="padding: 0.5rem; display: flex; flex-direction: column; gap: 0.75rem; min-width: 18rem">
+    <h4 style="margin: 0">Cancel subscription</h4>
+    <ds-notification color="warning" heading="This cannot be undone" alert no-icon>
+      All saved data for this subscription will be permanently deleted.
+    </ds-notification>
+  </div>
+</ds-popup>
+    `,
+  ),
+})
+WithTitleAndNotification.storyName = '🧩 With Title and Notification'
