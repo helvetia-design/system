@@ -1,0 +1,20 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": [
+        "$TURBO_EXTENDS$",
+        "$TURBO_ROOT$/CONTEXT.md",
+        "$TURBO_ROOT$/CONTEXT-MAP.md",
+        "$TURBO_ROOT$/docs/ARCHITECTURE.md",
+        "$TURBO_ROOT$/docs/STYLE_GUIDE.md",
+        "$TURBO_ROOT$/docs/adr/**",
+        "$TURBO_ROOT$/docs/agents/**",
+        "$TURBO_ROOT$/.claude/skills/**",
+        "$TURBO_ROOT$/packages/*/CONTEXT.md",
+        "$TURBO_ROOT$/apps/*/CONTEXT.md",
+        "$TURBO_ROOT$/libs/*/CONTEXT.md"
+      ]
+    }
+  }
+}
