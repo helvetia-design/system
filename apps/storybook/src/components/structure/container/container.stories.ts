@@ -50,3 +50,21 @@ export const Compact = Story({
   ),
 })
 Compact.storyName = '🌍 Compact'
+
+export const SectionPattern = Story({
+  ...withRender(
+    () => `
+<section aria-labelledby="section-pattern-title" class="bg-grey-light">
+  <div class="ds-container py-md">
+    <ds-heading id="section-pattern-title" level="h2">Our products</ds-heading>
+    <p>
+      A full-width background band, built as a wrapper with the background color and a
+      <code>.ds-container</code> inside it — not a negative-margin trick, which causes sideways
+      scrolling. The <code>&lt;section&gt;</code> is a named landmark via <code>aria-labelledby</code>.
+    </p>
+  </div>
+</section>
+    `,
+  ),
+})
+SectionPattern.storyName = '🌍 Section (page pattern)'
