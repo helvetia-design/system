@@ -109,7 +109,10 @@ beforeEach(() => {
   getBaseTokensFileMeta.mockResolvedValue({ sha: 'file-sha', content: fixtureDoc })
   getBrandTokensFileMeta.mockResolvedValue({ sha: 'zurich-sha', content: zurichFixtureDoc })
   listTokenBrandFiles.mockResolvedValue(['Zurich'])
-  resolveReadRef.mockResolvedValue({ ref: 'main', status: { state: 'synced', prUrl: null, prNumber: null } })
+  resolveReadRef.mockResolvedValue({
+    ref: 'main',
+    status: { state: 'synced', baseRef: 'main', prUrl: null, prNumber: null },
+  })
   createBranch.mockResolvedValue(undefined)
   updateFileOnBranch.mockResolvedValue(undefined)
   updateFileAtPath.mockResolvedValue(undefined)
@@ -228,7 +231,12 @@ describe('POST /api/propose-change', () => {
   it('credits the signed-in user when appending to an already-open PR', async () => {
     resolveReadRef.mockResolvedValue({
       ref: 'toky/update-next',
-      status: { state: 'pending', prUrl: 'https://github.com/helvetia-design/system/pull/7', prNumber: 7 },
+      status: {
+        state: 'pending',
+        baseRef: 'main',
+        prUrl: 'https://github.com/helvetia-design/system/pull/7',
+        prNumber: 7,
+      },
     })
     findOpenPullRequest.mockResolvedValue({
       url: 'https://github.com/helvetia-design/system/pull/7',
@@ -350,6 +358,7 @@ describe('POST /api/propose-change', () => {
       ref: 'toky/update-next',
       status: {
         state: 'pending',
+        baseRef: 'next',
         prUrl: 'https://github.com/helvetia-design/system/pull/7',
         prNumber: 7,
       },
@@ -388,7 +397,7 @@ describe('POST /api/propose-change', () => {
   it('falls back to opening a new PR if the branch exists but has no open PR', async () => {
     resolveReadRef.mockResolvedValue({
       ref: 'toky/update-next',
-      status: { state: 'pending', prUrl: null, prNumber: null },
+      status: { state: 'pending', baseRef: 'main', prUrl: null, prNumber: null },
     })
     getBaseTokensFileMeta.mockResolvedValue({ sha: 'branch-file-sha', content: fixtureDoc })
     findOpenPullRequest.mockResolvedValue(null)
@@ -411,7 +420,7 @@ describe('POST /api/propose-change', () => {
   it('opens the PR against a caller-supplied target branch', async () => {
     resolveReadRef.mockResolvedValue({
       ref: 'release/2026-08',
-      status: { state: 'synced', prUrl: null, prNumber: null },
+      status: { state: 'synced', baseRef: 'main', prUrl: null, prNumber: null },
     })
 
     const response = await POST(makeRequest({ diff: cleanDiff, description: '', targetBranch: 'release/2026-08' }))

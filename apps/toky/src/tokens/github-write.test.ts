@@ -479,7 +479,7 @@ describe('resolveReadRef', () => {
 
     const result = await resolveReadRef('next')
 
-    expect(result).toEqual({ ref: 'next', status: { state: 'synced', prUrl: null, prNumber: null } })
+    expect(result).toEqual({ ref: 'next', status: { state: 'synced', baseRef: 'next', prUrl: null, prNumber: null } })
   })
 
   it('reads from the working branch and reports pending when it has an open PR', async () => {
@@ -495,7 +495,12 @@ describe('resolveReadRef', () => {
 
     expect(result).toEqual({
       ref: 'toky/update-next',
-      status: { state: 'pending', prUrl: 'https://github.com/helvetia-design/system/pull/7', prNumber: 7 },
+      status: {
+        state: 'pending',
+        baseRef: 'next',
+        prUrl: 'https://github.com/helvetia-design/system/pull/7',
+        prNumber: 7,
+      },
     })
   })
 
@@ -510,7 +515,7 @@ describe('resolveReadRef', () => {
 
     expect(result).toEqual({
       ref: 'toky/update-next',
-      status: { state: 'pending', prUrl: null, prNumber: null },
+      status: { state: 'pending', baseRef: 'next', prUrl: null, prNumber: null },
     })
   })
 })
