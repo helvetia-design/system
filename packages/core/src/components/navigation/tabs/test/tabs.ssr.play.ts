@@ -1,5 +1,6 @@
 import {
   DsTabs,
+  expect,
   expectScreenshot,
   mountSsr,
   setupSsrVisualTest,
@@ -17,22 +18,18 @@ const PANELS = `
 `
 
 const baseline = visualBaseline(TAG)
-const SHIFT = 'SSR: tab list renders stacked before hydration, box height changes (#327)'
-const SHIFT_AND_POST = 'SSR: tab list stacked before hydration and taller than client render after hydration (#327)'
+const TALLER = 'SSR: tab list is taller than the client render before and after hydration (#326)'
 
 const FIXME: Record<string, string> = {
-  'basic': SHIFT_AND_POST,
-  'inverted': SHIFT_AND_POST,
-  'colors': SHIFT_AND_POST,
-  'no-border': SHIFT_AND_POST,
-  'fullwidth-icons': SHIFT_AND_POST,
-  'badge': SHIFT_AND_POST,
-  'brand-icons': SHIFT,
-  'vertical': SHIFT_AND_POST,
-  'vertical-cols': SHIFT_AND_POST,
-  'navigation': SHIFT,
-  'navigation-vertical': SHIFT,
-  'carousel': SHIFT_AND_POST,
+  'basic': TALLER,
+  'inverted': TALLER,
+  'colors': TALLER,
+  'no-border': TALLER,
+  'fullwidth-icons': TALLER,
+  'badge': TALLER,
+  'vertical': TALLER,
+  'vertical-cols': TALLER,
+  'carousel': TALLER,
 }
 const PAGE_URL = `/components/navigation/${TAG}/test/${TAG}.visual.html`
 
@@ -57,5 +54,13 @@ test.describe('mountSsr', () => {
     const tabs = new DsTabs(page.locator('ds-tabs'))
     await tabs.assertTabSelected('a')
     await tabs.assertPanelVisible('a')
+  })
+})
+
+test.describe('slot attributes', () => {
+  test('server markup assigns the tab slot', async () => {
+    const { html } = await renderToString(`<ds-tabs>${PANELS}</ds-tabs>`)
+
+    expect(html).toMatch(/<ds-tab\b[^>]*\sslot="tab"/)
   })
 })

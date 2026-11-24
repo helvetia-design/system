@@ -7,7 +7,8 @@ const ssrBaseline = visualBaseline(TAG, `${TAG}.ssr.play.ts`)
 // The selected item's indicator background is drawn in the browser.
 const SSR_STATIC: readonly string[] = ['invalid', 'invalid-slot']
 const FIXME: Record<string, string> = {
-  'long-content': 'SSR: overflowing items switch to vertical layout only after hydration, box grows 57px (#327)',
+  'long-content':
+    'SSR: the switch to vertical layout needs browser layout (ResizeObserver), so the box changes size on hydration; shift accepted (#327)',
 }
 const PAGE_URL = `/components/forms/${TAG}/test/${TAG}.visual.html`
 

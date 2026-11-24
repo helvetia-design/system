@@ -6,7 +6,7 @@ const baseline = visualBaseline(TAG)
 const PAGE_URL = `/components/indicators/${TAG}/test/${TAG}.visual.html`
 
 const FIXME: Record<string, string> = {
-  'tabs-position': 'SSR: ds-tabs server markup stacks the tabs vertically and shifts on hydration (#327)',
+  'tabs-position': 'SSR: ds-tabs is taller than the client render before and after hydration (#326)',
 }
 
 test.describe('ssr', () => {
