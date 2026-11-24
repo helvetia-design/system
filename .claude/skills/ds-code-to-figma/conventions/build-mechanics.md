@@ -19,11 +19,16 @@ phase or section. See `../CONVENTIONS.md` for the index.
   can't be found in an instance — bind a boolean to its `visible` and turn it on first.
   Cloning a slot off an existing slotted component (e.g. `Preview`) loses slot settings like
   `layoutMode` — don't build slots that way.
-- **A node added to slot content and then hidden is deleted** (seen 18.11.2026 on the template's
-  `stage`): `visible = false` on a node appended into a slot's content (also deeper, e.g.
-  `drawn-spec` › `stage`) removes it — `getNodeByIdAsync` returns `null` and it's gone from the
-  parent. Never keep a hidden prototype inside slot content; keep it visible and delete it when
-  unused (the Measurements `caption` prototype works this way).
+- **A hidden node in slot content is invisible to the plugin API** (seen 18.11.2026 on the
+  template's `stage`; corrected 24.11.2026): `visible = false` on a node inside a slot's content
+  (also deeper, e.g. `drawn-spec` › `stage`) drops it from `children`, `findOne`/`findAll` and
+  `getNodeByIdAsync` (`null`) — but it is **not deleted**: it stays in the file, hidden, and
+  `get_metadata` and the layers panel still list it. A script can't unhide or delete it after
+  that; only a user unhiding it in Figma makes it reachable again. (The template's two hidden
+  `caption` prototypes survived every build this way.) Never hide anything inside slot content:
+  delete it instead, or keep a prototype visible and delete it when unused (the Measurements
+  `caption` prototype works this way). Hidden nodes outside slots (e.g. `tooltip-anchor`)
+  aren't affected.
 - **Inserting into slot content invalidates node handles you already hold** (19.11.2026,
   migrating the Anatomy markers): after `insertChild` into a slot's content, earlier handles to
   its siblings' descendants throw "node does not exist". Read everything first, then mutate, and
@@ -89,6 +94,13 @@ true`, with visibility driven by a real `BOOLEAN` component property** —
   the real required height (sum of every child's height + every gap + top/bottom padding) before
   setting a fixed height on a `clipsContent: true` frame holding manually-positioned children.
 
+- **`variant.clone()` inside a set drops its component property references** (seen 24.11.2026,
+  `ds-badge`): the default variant was combined alone, then cloned 17 times inside the set — every
+  clone's `icon` / `label` came back with `componentPropertyReferences = {}`, and an icon whose
+  `show icon` defaults to `false` stayed hidden for good (`visible = false` copied as a literal).
+  After cloning, re-set the references on every clone with the set's keys, then set each bound
+  layer's `visible` to the boolean's default (it is the master's display value). Check with one
+  instance per size that toggling the booleans works before laying out the grid.
 - **Recreating a set to fix option order keeps its instances** (`ds-spinner`, 11.11.2026: `size`
   `sm, base` → `base, sm`, 360 instances): before deleting, record each instance's variant name and
   component-property values; clone the variants in reading order into a temporary frame,

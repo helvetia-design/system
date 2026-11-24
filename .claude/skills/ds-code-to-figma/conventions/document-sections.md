@@ -13,8 +13,8 @@ All three live on the `🧰 Utilities` page. Find them by name; the node ids are
 - **`Title`** (`COMPONENT_SET`, `2199:13`) — one `kind` variant per section: `copy-me`, `anatomy`,
   `measurements`, `variations` (`2199:9`, "🔀 Variations"), `component-set`, `names` (`6085:1356`,
   "🖼️ Names", asset components only).
-- **`Preview`** (`COMPONENT_SET`, `2192:7497`) — the bordered content box. Contains a real `SLOT`
-  node with a hidden `Placeholder` inside. Get a variant via
+- **`Preview`** (`COMPONENT_SET`, `2192:7497`) — the bordered content box. Contains a real, empty `SLOT`
+  node. Get a variant via
   `previewSet.children.find(v => v.name === 'Variant=Default')`; `2182:2` is only its `Flat`
   child. `Default` insets the slot; `Flat` doesn't (an outer container for further nested
   `Preview`s).
@@ -31,11 +31,15 @@ to future master edits. If the chrome must change, edit the master once on the U
 ```js
 const previewInstance = sectionInstance.findOne(n => n.name === 'Preview')
 const slot = previewInstance.findOne(n => n.type === 'SLOT')
-const placeholder = slot.findOne(n => n.name === 'Placeholder')
-// Already hidden in the master; delete it so no invisible layers stay in the instance.
-if (placeholder) placeholder.remove()
 slot.appendChild(realContentNode)
 ```
+
+The master's slot used to hold a hidden `Placeholder`; it was removed on 24.11.2026 (tested: an
+empty slot keeps its size and takes content the same way). Frames built before that, and the
+template, still carry a hidden `Placeholder` in every slot. The plugin API can't see hidden slot
+content (`children`, `findOne` and `getNodeByIdAsync` all miss it; only `get_metadata` lists it),
+so it can't be deleted from a script. It renders nothing; leave it unless the user unhides it for
+deletion.
 
 ## Sizing
 

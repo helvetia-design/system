@@ -113,8 +113,10 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
    swap or set it, same `drawnColor`, side by side with 120px between them, centered under the
    main instance. Each gets a caption under it (`Min content`): clone the
    `caption` prototype, set its text and name it `caption-<instance>`. The prototype is visible on
-   purpose: Figma deletes a node that is added to slot content and then hidden (seen 18.11.2026 —
-   the earlier hidden prototype vanished this way), so never hide it.
+   purpose: a hidden node in slot content drops out of the plugin API but stays in the file
+   (`conventions/build-mechanics.md` → "Platform limits"), so a hidden prototype can't be deleted by a
+   script — the template's two hidden `caption` prototypes survived every build this way. Never
+   hide it.
    Delete the prototype afterwards — also when there are no extra instances.
 4. **`stage` height.** Leave enough room around each instance for its markers and resize the
    stage's height to fit everything (only the height — its width stays `FILL`), so nothing is
