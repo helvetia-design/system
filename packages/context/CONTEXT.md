@@ -34,9 +34,9 @@ sit inside the package. Everything it writes is generated and gitignored; `dist/
 what arrived. It runs on `pnpm build` and again on `prepack`, so a publish can never ship a stale
 payload.
 
-Adding agent-facing material to this repo means adding it to the `COPY` list in that script and
-to the build `inputs` in this package's `turbo.json`. Without the `inputs` entry, turbo serves a
-stale cached `dist/`.
+Adding agent-facing material to this repo means adding it to the `COPY` list (or a workspace
+directory to `CONTEXT_GLOB_DIRS`) in that script, and to the build `inputs` in this package's
+`turbo.json`. Without the `inputs` entry, turbo serves a stale cached `dist/`.
 Nothing is picked up implicitly except workspace `CONTEXT.md` files.
 
 ## The skills it ships, and `ds-context.json`
