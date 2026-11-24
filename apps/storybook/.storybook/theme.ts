@@ -8,7 +8,7 @@ export default create({
   brandUrl: 'https://github.com/helvetia-design/system',
   brandImage: Logo,
 
-  fontBase: 'BaloiseCreateText, "Open Sans", Arial, sans-serif',
+  fontBase: '"Baloise Create Text", "Open Sans", Arial, sans-serif',
   fontCode: 'monospace',
 
   colorPrimary: '#000d6e',
