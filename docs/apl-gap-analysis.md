@@ -23,7 +23,7 @@ them.
 | 1   | Autocomplete             | [below](#1-autocomplete)              |
 | 2   | Border                   | [below](#2-border)                    |
 | 3   | Card Swiper              | [below](#3-card-swiper)               |
-| 4   | Header Twenty            | pending                               |
+| 4   | Header Twenty            | [below](#4-header-twenty)             |
 | 5   | List                     | [below](#5-list)                      |
 | 6   | Popover                  | [below](#6-popover)                   |
 | 7   | Progress Spinner/Spinner | [below](#7-progress-spinner--spinner) |
@@ -304,6 +304,60 @@ APL page: [/library-demo/card-swiper](https://www.helvetia.com/corp/app-patternl
   the first one, which is easy to miss on a first look at the demo page.
 - **Neither card content style ("teaser": image + title + body, or "kupo": icon + label/value pairs)
   is used anywhere outside the APL's own demo page** in this repository.
+
+---
+
+## 4. Header Twenty
+
+**TL;DR — map onto `ds-app-navbar`, already under a different name.** Header Twenty is Angular
+Material's page header — logo, a title, and a slot for whatever navigation the page wants. DS has the
+same shell: `ds-app-navbar`. A search for "header" finds nothing because the Design System names it
+by usage context, not by what it looks like. Two real gaps: a multi-level drill-down mobile nav, and a
+notifications dropdown with no DS equivalent.
+
+**Recommendation: use `ds-app-navbar`.** Both sides are a thin logo-plus-slot shell; the APL's own
+header component owns none of the navigation either — every demo builds its nav, search and menus by
+hand inside it, same as a page would do with `ds-app-navbar`'s `menu-start`/`menu-end`/`actions`
+slots. The mobile drawer `ds-app-navbar` already has is more solid than the APL's own: a real
+`role="dialog"`, a focus trap, and Escape-key handling, none of which the APL version has. What is
+missing is a way to go more than one level deep in that drawer, and a component for notifications.
+
+APL page: [/library-demo/header-twenty](https://www.helvetia.com/corp/app-patternlibrary/library-demo/header-twenty)
+· Used by: All · Confluence estimate: 1
+
+### Gaps
+
+| #   | What's missing                           | Severity  | Note                                                                                                                                                                       |
+| --- | ---------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | A nav that goes more than one level deep | `Gap`     | One APL demo slides through three levels of sub-menu. `ds-app-navbar`'s mobile drawer only takes flat links.                                                               |
+| 2   | A notifications dropdown                 | `Gap`     | The only other real component in these demos besides the header itself — grouped by day, an unread count, mark all as read. Nothing like it exists in the Design System.   |
+| 3   | A logo and a page title                  | `Have it` | `brand` and `title` slots. `ds-logo` already covers the brand part.                                                                                                        |
+| 4   | A working mobile menu                    | `Have it` | DS is **ahead** here: a real dialog role, a focus trap, and closing on Escape. The APL's version is a boolean flag with none of those three.                               |
+| 5   | A bar that says "back to the website"    | `Partial` | One demo variant drops the logo and nav entirely for a close/back link. That is not navigation, it is leaving the app — a different job than `ds-app-navbar` is built for. |
+
+### Open questions for design
+
+1. Is a multi-level drill-down nav something apps still need, or has flat navigation replaced it in
+   newer designs?
+2. Does a notifications dropdown belong inside the navbar work, or is it its own future component
+   that merely happens to live in the header on this demo page?
+3. Is the "back to website" bar worth its own small component, or is it simple enough to leave to
+   each page?
+
+### Worth knowing
+
+- **"Header" does not exist as a name in the Design System on purpose.** Components are named by who
+  uses them, not by what they look like (the `ds-app-*` prefix means "built for application use"), so
+  the header's equivalent is called `ds-app-navbar`. A search for "header" finding nothing is a
+  naming gap, not a missing component.
+- **Header Twenty owns almost nothing itself.** Logo and an optional title is the entire component —
+  exactly as thin as `ds-app-navbar`. Every nav, search and menu in the demos is assembled by the
+  page, on both sides.
+- **The language switcher, the profile menu and the "switch app" dropdown are not real components on
+  the APL side either** — each is a plain Material menu built by hand in the demo markup. There is
+  nothing to compare `ds-app-navbar` against for any of the three, so none of them are listed as gaps.
+- **The estimate of 1 looks about right.** Most of the shell already exists; the drill-down nav and
+  the notifications dropdown are the only real pieces of new work.
 
 ---
 
