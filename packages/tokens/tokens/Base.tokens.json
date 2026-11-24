@@ -12564,99 +12564,60 @@
         },
         "Size": {
           "Base": {
-            "Tablet": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.64}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1609",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            },
-            "Desktop": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.64}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1610",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            },
-            "Mobile": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.56}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1611",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            }
-          },
-          "LG": {
-            "Mobile": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.64}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1612",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            },
-            "Tablet": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.96}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1613",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            },
-            "Desktop": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.96}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1614",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
+            "$type": "dimension",
+            "$value": "{🌐 Global.📏 Dimension.Size.56}",
+            "$extensions": {
+              "com.helvetia.responsive": {
+                "mobile": "{🌐 Global.📏 Dimension.Size.56}",
+                "tablet": "{🌐 Global.📏 Dimension.Size.64}",
+                "desktop": "{🌐 Global.📏 Dimension.Size.64}"
+              },
+              "com.figma.variableId": {
+                "mobile": "VariableID:13:1611",
+                "tablet": "VariableID:13:1609",
+                "desktop": "VariableID:13:1610"
+              },
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
             }
           },
           "SM": {
-            "Mobile": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.48}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1615",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            },
-            "Tablet": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.56}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1616",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
-            },
-            "Desktop": {
-              "$type": "dimension",
-              "$value": "{🌐 Global.📏 Dimension.Size.56}",
-              "$extensions": {
-                "com.figma.variableId": "VariableID:13:1617",
-                "com.figma.scopes": [
-                  "ALL_SCOPES"
-                ]
-              }
+            "$type": "dimension",
+            "$value": "{🌐 Global.📏 Dimension.Size.48}",
+            "$extensions": {
+              "com.helvetia.responsive": {
+                "mobile": "{🌐 Global.📏 Dimension.Size.48}",
+                "tablet": "{🌐 Global.📏 Dimension.Size.56}",
+                "desktop": "{🌐 Global.📏 Dimension.Size.56}"
+              },
+              "com.figma.variableId": {
+                "mobile": "VariableID:13:1615",
+                "tablet": "VariableID:13:1616",
+                "desktop": "VariableID:13:1617"
+              },
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
+          "LG": {
+            "$type": "dimension",
+            "$value": "{🌐 Global.📏 Dimension.Size.64}",
+            "$extensions": {
+              "com.helvetia.responsive": {
+                "mobile": "{🌐 Global.📏 Dimension.Size.64}",
+                "tablet": "{🌐 Global.📏 Dimension.Size.96}",
+                "desktop": "{🌐 Global.📏 Dimension.Size.96}"
+              },
+              "com.figma.variableId": {
+                "mobile": "VariableID:13:1612",
+                "tablet": "VariableID:13:1613",
+                "desktop": "VariableID:13:1614"
+              },
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
             }
           }
         }
