@@ -18,20 +18,20 @@ them.
 
 ## Progress
 
-| #   | Component                | Analysed                 |
-| --- | ------------------------ | ------------------------ |
-| 1   | Autocomplete             | [below](#1-autocomplete) |
-| 2   | Border                   | [below](#2-border)       |
-| 3   | Card Swiper              | pending                  |
-| 4   | Header Twenty            | pending                  |
-| 5   | List                     | pending                  |
-| 6   | Popover                  | pending                  |
-| 7   | Progress Spinner/Spinner | pending                  |
-| 8   | Section                  | [below](#8-section)      |
-| 9   | Select Box               | [below](#9-select-box)   |
-| 10  | Slider                   | [below](#10-slider)      |
-| 11  | Snackbar                 | pending                  |
-| 12  | Teaser Button            | pending                  |
+| #   | Component                | Analysed                              |
+| --- | ------------------------ | ------------------------------------- |
+| 1   | Autocomplete             | [below](#1-autocomplete)              |
+| 2   | Border                   | [below](#2-border)                    |
+| 3   | Card Swiper              | pending                               |
+| 4   | Header Twenty            | pending                               |
+| 5   | List                     | pending                               |
+| 6   | Popover                  | [below](#6-popover)                   |
+| 7   | Progress Spinner/Spinner | [below](#7-progress-spinner--spinner) |
+| 8   | Section                  | [below](#8-section)                   |
+| 9   | Select Box               | [below](#9-select-box)                |
+| 10  | Slider                   | [below](#10-slider)                   |
+| 11  | Snackbar                 | pending                               |
+| 12  | Teaser Button            | pending                               |
 
 ---
 
@@ -208,37 +208,6 @@ hold.
 - **The APL has no autocomplete component of its own.** The demo page is three hand-written Angular
   Material examples, and all six APL autocomplete styling files are empty.
 
-### Proposed Confluence row
-
-| Column            | Value                                                                                                                    |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Status**        | Partially available (unchanged)                                                                                          |
-| **APL Component** | None — the page is plain Angular Material, with no APL styling                                                           |
-| **DS Component**  | None — nearest are `ds-input` (field) and `ds-select searchable` (options only)                                          |
-| **Category**      | Form                                                                                                                     |
-| **Description**   | Text input with a panel of filtered suggestions. Not covered by Text Input. Recommend a new `ds-autocomplete` component. |
-| **Effort Figma**  | To be set once question 2 is answered                                                                                    |
-| **Effort Code**   | To be set once questions 1, 3 and 4 are answered                                                                         |
-
-### Sources
-
-**Design System** — `forms/input/input.tsx` (`autocomplete:204`, `:571`, `label:140`,
-`description:147`, `loading:161`, `debounce:225`, `required:293`) ·
-`forms/input/field.util.tsx` · `forms/input/clear-button.util.tsx` ·
-`forms/select/select.tsx` (`searchable:205`, `clearable:212`) · `forms/select/select.interfaces.ts` ·
-`forms/select/select.picker.ts` (`:147-148`) · `forms/select/select.host.scss:32-71` ·
-`overlays/popup/popup.tsx` (`:331`, `:355`, `:397`, `:446`) ·
-`forms/phone-input/phone-input.tsx:833-858` · `packages/angular/src/forms/value-accessor.ts` ·
-[ADR-0023](adr/0023-ds-phone-input-bespoke-country-picker.md)
-
-**APL** (`osui-ux-ng-material`, Angular + Material 22.1.8) —
-`demo-ux-ng-material-theme/autocomplete/**` (demo page and its three examples) ·
-`ux-ng-material-theme/overwrites/autocomplete/**` (all 6 files empty) ·
-`ux-ng-material-common/.../autocomplete/ux-ng-autocomplete.component.{ts,html}` ·
-`ux-ng-material-common/.../ux-ng-person-search/ux-ng-person-search.component.html` (icons, no-results) ·
-`ux-ng-material-library/.../pipe/highlight.pipe.ts` ·
-`demo-ux-ng-material-theme/chips/demo-code/chips-autocomplete-demo-code.component.{ts,html}`
-
 ---
 
 ## 2. Border
@@ -285,30 +254,149 @@ Used by: All · Confluence estimate: none
 - **DS generates these classes from the tokens**, so a token change updates every class. The APL
   values are hard-coded pixels in a stylesheet.
 
-### Proposed Confluence row
+---
 
-| Column            | Value                                                                                 |
-| ----------------- | ------------------------------------------------------------------------------------- |
-| **Status**        | Available (was: Partially available)                                                  |
-| **APL Component** | None — five helper classes for rounded corners                                        |
-| **DS Component**  | None needed — `radius-*` and `border-*` CSS utility classes                           |
-| **Category**      | Design Tokens                                                                         |
-| **Description**   | Corner rounding and border lines. Covered by DS utility classes. No component needed. |
-| **Effort Figma**  | 0 — tokens exist                                                                      |
-| **Effort Code**   | 0                                                                                     |
+## 6. Popover
 
-### Sources
+**TL;DR — no new component, but one decision to make.** `ds-popup` already covers the click popover
+and `ds-tooltip` / `ds-hint` cover the hover hint, which is exactly the pair Confluence points at.
+The only real question is whether a popover should carry a color and an alert style, as the APL one
+does. The APL's hover mode should not be copied: it opens on mouse only and cannot be read with a
+keyboard.
 
-**Design System** — `packages/styles/src/preset/rules/radius.ts` (7 classes per radius token) ·
-`packages/styles/src/preset/rules/border-color.ts` (shorthand per side, width helpers) ·
-`packages/tokens/tokens/Base.tokens.json` (`🔗 Alias › 🔵 Radius`: None, XS, Base, MD, LG, Rounded ·
-`🔗 Alias › ▭ Border`: Color, Width, Style, Composite) ·
-`packages/styles/src/preset/variants/responsive.ts`
+**Recommendation: use `ds-popup` for click popovers and `ds-tooltip` or `ds-hint` for hover hints.**
+Both exist, both are documented, and `ds-popup` is ahead of the APL on placement, focus handling and
+dismissing. What is worth adding is a documented pattern for a popover with a title and a
+`ds-notification` inside it, which is how the APL's title and alert styles are better expressed.
 
-**APL** (`osui-ux-ng-material`) — `ux-ng-material-theme/overwrites/border/border.scss` (all five
-classes) · `ux-ng-material-theme/overwrites/border/theme/*.scss` (5 brands) ·
-`demo-ux-ng-material-theme/border/border-demo.component.html` (the documented list) ·
-`ux-ng-material-theme/theme/*/colors.scss` (`uxngm-border-color--*`)
+APL page: [/library-demo/popover](https://www.helvetia.com/corp/app-patternlibrary/library-demo/popover) ·
+Used by: All · Confluence estimate: 0.5 · Confluence already references both a popup and a tooltip
+hint as the counterparts, which matches this recommendation.
+
+### Gaps
+
+| #   | What's missing                           | Severity     | Note                                                                                                                                               |
+| --- | ---------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | A panel anchored to a trigger on click   | `Have it`    | `ds-popup`, with the same twelve positions the APL has (named `top-start` where the APL says `top-left`).                                          |
+| 2   | A close button and Escape to close       | `Have it`    | `ds-popup closable`. DS is **ahead**: the APL needs Escape switched on by hand (see gap 12).                                                       |
+| 3   | A dimmed background behind the panel     | `Have it`    | `backdrop`, and `backdrop-dismiss` for click-outside closing.                                                                                      |
+| 4   | A hover hint on an element               | `Have it`    | `ds-tooltip` for text, `ds-hint` for the small information icon. Both open on hover **and** focus, unlike the APL.                                 |
+| 5   | Keeping focus inside the open panel      | `Have it`    | DS only. `trap-focus`. The APL moves focus into the panel but never traps it.                                                                      |
+| 6   | Only one popover open at a time          | `Have it`    | DS only. `group` makes same-group popups dismiss each other. No APL equivalent.                                                                    |
+| 7   | A little arrow pointing at the trigger   | `Have it`    | `arrow` on `ds-popup`. The APL draws one too.                                                                                                      |
+| 8   | A title line in the panel                | `Partial`    | The APL has a `title` input. In DS you slot a heading, which is more flexible but means every team styles it themselves.                           |
+| 9   | Info, warning, error and success styling | `Partial`    | The APL has `alertType` with a colored bar. In DS you slot a `ds-notification`, which already has those four colors — but there is no example.     |
+| 10  | A colored panel background               | `Gap`        | The APL offers white, primary, secondary and iron. DS has a `--popup-background` variable but no ready-made variants, and no agreed text colors.   |
+| 11  | A fixed panel width and height           | `Partial`    | The APL defaults to 400x600 pixels. DS has min and max width variables and no height cap, which suits small panels better than large ones.         |
+| 12  | Escape only works if switched on         | `Don't copy` | `enableEscapeClose` is off by default in the APL, so the normal popover cannot be dismissed from the keyboard.                                     |
+| 13  | Hover popovers open on mouse only        | `Don't copy` | The APL adds `mouseenter` but no focus listener, so keyboard users never see the content at all. Fails WCAG 1.4.13 and 2.1.1.                      |
+| 14  | Hover content cannot be reached          | `Don't copy` | The panel closes 150ms after the pointer leaves the trigger and the panel itself does not keep it open, so links or scrolling inside are unusable. |
+| 15  | The close button is a `div`              | `Don't copy` | A `div` with `role="button"` and hand-written Enter and Space handling. DS uses a real button (`ds-close`).                                        |
+| 16  | The panel has no role unless one is set  | `Don't copy` | `panelRole` defaults to empty, so a popover is announced as plain text. `ds-popup` defaults to `dialog`.                                           |
+| 17  | A timer checks whether the trigger moved | `Don't copy` | The APL polls every 500ms while open to notice the trigger scrolling out of view. floating-ui does this without a timer.                           |
+
+### Open questions for design
+
+1. Should a popover be able to carry a color (primary, secondary, iron), or does it always sit on
+   white? This is the only genuine gap, and it brings text and contrast decisions with it.
+2. Is the info/warning/error/success popover its own style, or simply a `ds-notification` placed inside
+   a plain popover? Our recommendation is the second.
+3. Does a popover need a built-in title, or is slotting a heading enough?
+4. Rich content on hover: do we want it at all? Hover content that holds links or needs scrolling is a
+   known accessibility trap. The safe split is text on hover, rich content on click.
+5. Should DS be able to enable Escape without also showing a close button? Today `closable` turns on
+   both together.
+
+### Worth knowing
+
+- **The APL popover and `ds-popup` solve the same problem with the same twelve positions.** The
+  difference is underneath: `ds-popup` uses floating-ui, the APL uses the Angular CDK overlay plus a
+  500ms timer.
+- **The hover mode is where the APL component and the Design System genuinely disagree.** The APL
+  makes one component do both hover and click; DS splits them into `ds-tooltip`/`ds-hint` for hover
+  and `ds-popup` for click. The split is what lets the DS tooltip open on focus and stay dismissible.
+- **The DS tooltip documents its WCAG 1.4.13 behaviour** — it opens on hover and focus and can be
+  dismissed with Escape. The APL hover popover meets none of that.
+- **The 0.5 estimate looks right** if it covers the colored panel plus documenting the title and
+  notification patterns. Nothing needs building from scratch.
+
+---
+
+## 7. Progress Spinner / Spinner
+
+**TL;DR — almost nothing to build, but the row covers two different things.** The APL has an inline
+spinner (five fixed sizes) and a separate full-screen blocking overlay with a delayed message, and
+Confluence merged both into this one row. `ds-spinner` already covers the inline one in every form the
+APL demos; the only real gap is that the APL goes up to 100px and we stop at 64px. The overlay should
+go to the "Wait Dialog" row, which already exists in Confluence and is already marked Missing.
+
+**Recommendation: keep `ds-spinner`, decide on the larger sizes, and move the overlay to the Wait
+Dialog row.** The inline cases are done: spinner on its own, spinner next to text or a link, spinner
+inside a button. The overlay is a different component with different concerns — a backdrop, a focus
+trap, a message that appears only when the wait gets long — and building it into the spinner would mean
+the smallest indicator in the system carries the heaviest machinery. `ds-modal` already has the
+backdrop and the focus trap to build it on, when the Wait Dialog row comes up.
+
+APL pages: [/theme-demo/progress-spinner](https://www.helvetia.com/corp/app-patternlibrary/theme-demo/progress-spinner)
+and [/library-demo/spinner](https://www.helvetia.com/corp/app-patternlibrary/library-demo/spinner) ·
+Used by: All · Confluence estimate: 1
+
+### Gaps
+
+| #   | What's missing                       | Severity     | Note                                                                                                                                                   |
+| --- | ------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Sizes above 64px                     | `Gap`        | APL has five: 100, 80, 60, 40, 20. DS has two per look: logo 64 and 32, circle 24 and 16. Nothing matches 80 or 100.                                   |
+| 2   | Full-screen blocking overlay         | `Gap`        | The APL spinner covers the viewport with a 90% white backdrop. DS has nothing like it. Belongs to the Wait Dialog row.                                 |
+| 3   | A title and a text under the spinner | `Partial`    | DS has one `label` that can sit right or below. The APL has a bold title plus a paragraph under it.                                                    |
+| 4   | Message appears only after a delay   | `Gap`        | APL hides the text and reveals it after `textDelay` (8s by default), so short waits stay quiet. Good idea, belongs with the overlay.                   |
+| 5   | Start and stop from anywhere         | `Gap`        | APL ships a service with `start()` / `stop()` and one instance at the app root. DS leaves this to the application.                                     |
+| 6   | Free-form text size                  | `Partial`    | APL `textSize` picks one of seven typography classes. DS styles the label from tokens, with no setting.                                                |
+| 7   | White variant for dark backgrounds   | `Have it`    | `inverted` on `ds-spinner`, against the APL's `uxngm-spinner--color-white`.                                                                            |
+| 8   | Spinner inside a button              | `Have it`    | DS is **ahead**: `loading` on `ds-button` swaps the label, sets `aria-busy` and disables the button. The APL asks you to hand-build a wrapper div.     |
+| 9   | Spinner next to text or a link       | `Have it`    | `label` plus `label-position`. The APL has two helper classes for this and still needs the markup by hand.                                             |
+| 10  | Accessible name                      | `Have it`    | DS is **ahead**: `role="progressbar"` with a translated name in ten languages. Material supplies none, so every APL spinner is an unnamed progressbar. |
+| 11  | A way to switch the animation off    | `Have it`    | DS only: the `animated` setting and the `deactivated` property. The APL animation always runs.                                                         |
+| 12  | A plain circle look                  | `Have it`    | DS only: `variation="circle"` for places where the brand logo is too much. No APL equivalent.                                                          |
+| 13  | Works when rendered on the server    | `Have it`    | DS only. It falls back to a fixed color instead of breaking.                                                                                           |
+| 14  | Determinate progress                 | `Have it`    | Despite the name, the APL spinner is indeterminate only. For known progress DS has `ds-progress-bar`.                                                  |
+| 15  | Backdrop color as a CSS string       | `Don't copy` | `backdropColor="rgba(192, 192, 192, 0.9)"` is passed straight into an inline style, so it bypasses the tokens entirely.                                |
+| 16  | Size chosen by a debug attribute     | `Don't copy` | The theme also matches on `[ng-reflect-diameter='60']`. That attribute only exists in development builds, so in production that half does nothing.     |
+| 17  | Size needs two inputs in sync        | `Don't copy` | Every spinner needs `[diameter]="60"` **and** `class="spinner-s"`, and the docs say so. One component property should be enough.                       |
+| 18  | Logo drawn as a background image     | `Don't copy` | Material's own graphic is hidden and replaced with a background image, which disappears in high-contrast mode and when printing.                       |
+| 19  | Keyboard users behind the overlay    | `Don't copy` | The overlay has no focus trap and does not disable the page behind it, so you can still tab into content you cannot see. Nothing announces the wait.   |
+| 20  | Delay timer is never cleared         | `Don't copy` | The timer handle is a fresh local variable on every event, so stopping the spinner clears nothing and a stopped spinner's message still fires later.   |
+| 21  | Broken class when no text size set   | `Don't copy` | `textSize` defaults to empty, which builds the class `uxngm-typography--`. The text then falls back to unstyled.                                       |
+| 22  | One instance, one fixed message      | `Don't copy` | Title and text are set in the template of the single root instance, so the service cannot say what the user is actually waiting for.                   |
+
+### Open questions for design
+
+1. Do we need spinner sizes above 64px? That is the only thing the APL inline spinner has and we do
+   not, and nothing inside the APL itself uses the two largest ones.
+2. Does a spinner need a title **and** a text, or is one label enough?
+3. Is the full-screen overlay its own component — the Wait Dialog row — rather than a mode of the
+   spinner? Our recommendation is yes.
+4. If it is, does the delayed message belong to it, and is 8 seconds the right wait?
+5. Should the animation switch itself off when the operating system asks for reduced motion? Today the
+   DS `animated` setting is chosen by the app or the user, and neither side reacts to the OS setting.
+6. Is a service-style "start and stop the spinner from anywhere" API in scope for the Design System at
+   all, or is that an application concern?
+
+### Worth knowing
+
+- **This row merges two components with different jobs.** The theme-level `mat-spinner` is an inline
+  indicator; the library-level `ux-ng-spinner` is a blocking overlay that happens to contain one. The
+  "Partially available" flag is really about the second.
+- **Confluence already has the right home for the overlay.** The "Wait Dialog" row is marked Missing
+  at 0.25, and its own description says it shows extra information about the state of the system and
+  stays visible longer than the processing takes. That is the same component.
+- **Inside the APL repository only the three smallest sizes appear** (20px eleven times, 60px four
+  times, 40px once). The two largest are only on the demo page. Application usage is unknown, since
+  applications live outside the repository.
+- **The estimate of 1 looks high for what is left.** With the overlay moved to the Wait Dialog row,
+  what remains is a decision about larger sizes and possibly a second line of text.
+- **DS is the more complete component here.** It names itself to screen readers in ten languages, can
+  be switched off for users who do not want animation, has a non-logo variant, renders on the server,
+  and is already wired into `ds-button` and `ds-file-upload`. None of that exists on the APL side.
 
 ---
 
@@ -361,32 +449,6 @@ Used by: unknown · Confluence estimate: 0.25
 - **We cannot tell how widely it is used.** Consumers live outside the APL repository, no other APL
   component builds on it, and the Confluence "Used by" column is empty. Someone with that knowledge
   should fill it in before the status changes.
-
-### Proposed Confluence row
-
-| Column            | Value                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| **Status**        | Available (was: Partially available) — pending the answer to question 1              |
-| **APL Component** | `ux-ng-section` + `ux-ng-section-title`                                              |
-| **DS Component**  | None needed — `.ds-container` + a `bg-*` class + `ds-heading`                        |
-| **Category**      | Layout                                                                               |
-| **Description**   | Groups elements in a width-limited box. Use `.ds-container` with a background class. |
-| **Effort Figma**  | 0.25 — document the pattern, not a new component                                     |
-| **Effort Code**   | 0 as a pattern. Re-estimate if a `ds-section` component is wanted instead.           |
-
-### Sources
-
-**Design System** — `structure/container/container.style.scss` (`.ds-container`, `is-fluid:37`,
-`is-compact:41`, side padding from `--ds-device-container-space:19`) ·
-`packages/styles/src/preset/rules/background.ts` (`bg-*`, `text-on-*`) ·
-`packages/styles/src/preset/rules/spacing.ts` (`py-*`) · `structure/heading` ·
-`packages/tokens/tokens/Base.tokens.json` (`🔗 Alias › 🗃️ Container › Width`: Modal, Compact, Default)
-
-**APL** (`osui-ux-ng-material`) —
-`ux-ng-material-library/src/lib/ux-ng-section/ux-ng-section.component.ts` (`backgroundColor`,
-`sectionTitle`, `fullwidth`) · `ux-ng-section.component.html` · `ux-ng-section.component.scss`
-(30px padding, 20px below the title, the `-50vw` trick) ·
-`ux-ng-material-theme/overwrites/section/**` · `demo-ux-ng-material-library/section/**`
 
 ---
 
@@ -454,43 +516,6 @@ as the counterpart, which matches this recommendation.
   different label position, which removes a whole input from the API.
 - **The estimate of 1 looks high.** Nothing has to be built for the main use cases; the work is the
   dark variant plus documenting the photo and remarks patterns.
-
-### Proposed Confluence row
-
-| Column            | Value                                                                                              |
-| ----------------- | -------------------------------------------------------------------------------------------------- |
-| **Status**        | Available (was: Partially available) — pending the dark box in question 1                          |
-| **APL Component** | `ux-ng-select-box` + `ux-ng-select-box-item`                                                       |
-| **DS Component**  | `ds-radio-group tile` (pick one) · `ds-checkbox-group tile` (pick several)                         |
-| **Category**      | Form                                                                                               |
-| **Description**   | Choose an option by clicking a box. Covered by the radio and checkbox tile layouts.                |
-| **Effort Figma**  | 0.25 — the dark box, and examples for photos and remarks                                           |
-| **Effort Code**   | 0.25 for the dark box. 0 for everything else. Separate estimate if large illustrations are wanted. |
-
-### Sources
-
-**Design System** — `forms/radio/radio-group/radio-group.tsx` (`tile:204`, `tileColor:218`,
-`hideTrigger:211`, `cols:108`, `colsTablet:122`, `colsMobile:115`, `allowEmptySelection:85`,
-`label:157`, `description:129`, `invalidText:150`, `vertical:234`) ·
-`forms/radio/radio.interfaces.ts` (4 tile colors, 3 label positions, 1–4 columns) ·
-`forms/radio/radio.host.scss` (`.is-tile:69`, `hide-trigger:103`, hint in the top right corner `:122`,
-brand icon color inherited into the tile `:146-150`) ·
-`forms/checkbox/checkbox.tsx` (`tile:169`, `tileColor:162`, `hideTrigger:176`, `cols:183`) ·
-`forms/checkbox/checkbox-group/` · `media/brand-icon/brand-icon.host.scss` (tile size, responsive
-`:102-113`) · `apps/storybook/.../radio-group.stories.ts` (`🧩 Tile Basic`, `Tile Columns`,
-`Tile Stack`, centered stack, multicolor with hidden trigger) · `packages/assets/src/brand-icons/svg`
-(1631 files, ~400 icons in 4 colors)
-
-**APL** (`osui-ux-ng-material`) —
-`ux-ng-material-library/.../ux-ng-select-box/ux-ng-select-box.component.ts` (`type`, `multiple`,
-`toggleable`, `maxWidth`, `formElementName`, `updateSubscription` 250ms, `ngOnDestroy`) ·
-`ux-ng-select-box.component.html` (hard-coded `aria-label="Transportart"`, hidden input) ·
-`ux-ng-select-box-item/ux-ng-select-box-item.component.ts` (`illustration`, `image`, `icon`,
-`imageSize`, `title`, `text`, `remarks`, `color`, `height`, `width`) ·
-`ux-ng-select-box-item.component.html` (list and tile branches, check mark overlay) ·
-`ux-ng-illustration/ux-ng-illustration.component.ts` (96/128/256/360px, 113 illustrations) ·
-`demo-ux-ng-material-library/select-box/**` (dark tile, disabled list, dialog examples, the
-"Force Update (not needed)" button)
 
 ---
 
@@ -571,34 +596,3 @@ one real APL slider does. It is a small fix and independent of any design decisi
 - **DS is the more complete component here.** It is form-associated, resets with the form, debounces,
   emits focus/blur/click, renders on the server, and derives its invalid state from Angular form
   errors. None of that exists on the APL side.
-
-### Proposed Confluence row
-
-| Column            | Value                                                                                              |
-| ----------------- | -------------------------------------------------------------------------------------------------- |
-| **Status**        | Partially available (unchanged)                                                                    |
-| **APL Component** | None — plain Angular Material with APL styling on top                                              |
-| **DS Component**  | `ds-slider`                                                                                        |
-| **Category**      | Form                                                                                               |
-| **Description**   | Select a value from a range. `ds-slider` covers it; add tick marks, bubble control and end labels. |
-| **Effort Figma**  | 0.5 — tick marks, bubble, end labels                                                               |
-| **Effort Code**   | 0.5 for gaps 1 to 4. Separate estimate needed if questions 4 or 5 are answered yes.                |
-
-### Sources
-
-**Design System** — `forms/slider/slider.tsx` (`min:173`, `max:180`, `step:198`, `brandColor:147`,
-`debounce:210`, `required:247`, `value:95`) · `forms/slider/slider.picker.ts`
-(`connect: 'lower':101`, `tooltips: true:103`, `connectLabelToHandle:127-132`) ·
-`forms/slider/slider.host.scss` (`.noUi-tooltip:165`, shown only on hover/active/focus `:188-191`) ·
-`forms/input/field.util.tsx` (label rendered only when set `:55`, description `:81`) ·
-[ADR-0007](adr/0007-ds-slider-nouislider.md) · [ADR-0010](adr/0010-ds-slider-change-commit.md)
-
-**APL** (`osui-ux-ng-material`) —
-`demo-ux-ng-material-theme/slider/slider-demo.component.html` (demo page, helper class documented) ·
-`demo-ux-ng-material-theme/slider/demo-code/slider-configurable-demo-code.component.{html,ts}`
-(tick marks, bubble, min/max labels, width, broken name) ·
-`demo-ux-ng-material-theme/slider/demo-code/slider-default-demo-code.component.ts` ·
-`ux-ng-material-theme/overwrites/slider/slider.scss` (focus ring removed, 20% disabled, white ticks) ·
-`ux-ng-material-theme/overwrites/slider/theme/*.scss` (5 brand variants) ·
-`ux-ng-material-cms/.../interactive-graphic/ux-ng-interactive-graphic-area-chart.component.html`
-(the only real consumer)
