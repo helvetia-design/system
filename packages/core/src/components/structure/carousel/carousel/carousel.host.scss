@@ -1,6 +1,9 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../../vars' as vars;
 
+// How far the track's clip box is pushed past its layout box to fit the 5px tile focus ring.
+$focus-overhang: 7px;
+
 /**
  * @prop --carousel-gap: Gap between slides / product items.
  * @prop --carousel-control-color: Color of the scroll arrow buttons.
@@ -13,6 +16,10 @@
  * @prop --carousel-scroll-btn-inset: Offset of the slide-variant arrow buttons from the image edge.
  * @prop --carousel-scroll-btn-gap: Space between a product-variant arrow button and the track.
  * @prop --carousel-scroll-btn-opacity-disabled: Opacity of a product-variant arrow button that cannot scroll further.
+ * @prop --carousel-scroll-btn-background-disabled: Background color of a below-track scroll button that cannot scroll further.
+ * @prop --carousel-scroll-btn-color-disabled: Icon color of a below-track scroll button that cannot scroll further.
+ * @prop --carousel-scroll-btn-below-gap: Gap between the slide track and the below-track scroll buttons.
+ * @prop --carousel-scroll-btn-below-button-gap: Gap between the two below-track scroll buttons.
  */
 
 :host {
@@ -31,6 +38,10 @@
   @include vars.local(carousel-scroll-btn-bg-active-hover, var(--ds-carousel-scroll-btn-background-active-hover));
   @include vars.local(carousel-scroll-btn-bg-active-pressed, var(--ds-carousel-scroll-btn-background-active-pressed));
   @include vars.local(carousel-scroll-btn-color-active, var(--ds-carousel-scroll-btn-color-active));
+  @include vars.local(carousel-scroll-btn-bg-disabled, var(--ds-carousel-scroll-btn-background-disabled));
+  @include vars.local(carousel-scroll-btn-color-disabled, var(--ds-carousel-scroll-btn-color-disabled));
+  @include vars.local(carousel-scroll-btn-below-gap, var(--ds-carousel-scroll-btn-below-gap));
+  @include vars.local(carousel-scroll-btn-below-button-gap, var(--ds-carousel-scroll-btn-below-button-gap));
 
   display: block;
 }
@@ -74,7 +85,6 @@
 :host(.is-slide) {
   display: flex;
   flex-direction: column;
-  gap: var(--_carousel-pagination-gap);
 }
 
 :host(.is-slide) .carousel-track {
@@ -91,6 +101,7 @@
 // Pagination (dots variant) — centered below the track
 :host(.is-slide) .pagination {
   align-self: center;
+  margin-top: var(--_carousel-pagination-gap);
 }
 
 // Slide large arrows — absolutely positioned inside the image, inset from the edges
@@ -153,6 +164,11 @@
   min-width: 0;
   gap: var(--_carousel-gap);
   scroll-behavior: smooth;
+  // A scroll container clips to its padding box on both axes, cutting the 5px tile
+  // focus-shadow at every edge. Pad for the ring and cancel it with a negative margin,
+  // so only the clip boundary grows — tile positions stay put.
+  padding: $focus-overhang;
+  margin: -$focus-overhang;
 }
 
 // Edge-fade — overlays the track edges when overflow exists; fades in on the scrollable side
@@ -169,23 +185,24 @@
   transition: opacity 120ms ease;
 }
 
+// Offsets follow the track's clip edge, which the focus overhang pushes outward.
 :host(.is-tile.has-overflow) .carousel-outer::before {
-  left: calc(var(--_carousel-scroll-btn-size) + var(--_carousel-scroll-btn-gap));
+  left: -$focus-overhang;
   background: linear-gradient(to right, var(--_carousel-scroll-fade-background), transparent);
 }
 
 :host(.is-tile.has-overflow) .carousel-outer::after {
-  right: calc(var(--_carousel-scroll-btn-size) + var(--_carousel-scroll-btn-gap));
+  right: -$focus-overhang;
   background: linear-gradient(to left, var(--_carousel-scroll-fade-background), transparent);
 }
 
 // Reserve space for the arrow buttons only when they are rendered (2.5rem button + 0.25rem margin)
 :host(.is-tile.has-large-arrows) .carousel-outer::before {
-  left: calc(2.5rem + 0.25rem);
+  left: calc(2.5rem + 0.25rem - #{$focus-overhang});
 }
 
 :host(.is-tile.has-large-arrows) .carousel-outer::after {
-  right: calc(2.5rem + 0.25rem);
+  right: calc(2.5rem + 0.25rem - #{$focus-overhang});
 }
 
 // Specificity must match the base rule (two host classes) so opacity:1 wins
@@ -199,8 +216,18 @@
   opacity: 1;
 }
 
+// The fade paints over the tiles, so a focused edge tile would show a crisp focus ring
+// around washed-out content. Drop the fade while anything in the track has focus.
+:host(.is-tile) .carousel-outer:has(:focus-visible)::before,
+:host(.is-tile) .carousel-outer:has(:focus-visible)::after {
+  // ds-token-check: intentional — visibility toggle
+  opacity: 0;
+}
+
 // Product scroll arrows — 40 × 40 px, hidden until overflow is detected
 :host(.is-tile) .scroll-btn {
+  // Above the fade, which reaches into the arrow gap to meet the track's clip edge.
+  z-index: 2;
   flex-shrink: 0;
   width: 0;
   height: var(--_carousel-scroll-btn-size);
@@ -264,5 +291,61 @@
 
   &:active {
     background-color: var(--_carousel-scroll-btn-bg-active-pressed);
+  }
+}
+
+// ─── Below-track arrow buttons (large-below controls) ─────────────────────────
+
+:host .scroll-btn-below-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--_carousel-scroll-btn-below-button-gap);
+  margin-top: var(--_carousel-scroll-btn-below-gap);
+}
+
+:host .scroll-btn-below {
+  width: var(--_carousel-scroll-btn-size);
+  height: var(--_carousel-scroll-btn-size);
+  padding: 0;
+  border: none;
+  border-radius: var(--_carousel-scroll-btn-radius);
+  background-color: var(--_carousel-scroll-btn-bg-active);
+  color: var(--_carousel-scroll-btn-color-active);
+  --mod-icon-color: currentColor;
+  --icon-color: var(--_carousel-scroll-btn-color-active);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+
+  @include hover {
+    &:hover {
+      background-color: var(--_carousel-scroll-btn-bg-active-hover);
+    }
+  }
+
+  &:active {
+    background-color: var(--_carousel-scroll-btn-bg-active-pressed);
+  }
+}
+
+:host .scroll-btn-below.is-disabled {
+  background-color: var(--_carousel-scroll-btn-bg-disabled);
+  color: var(--_carousel-scroll-btn-color-disabled);
+  --icon-color: var(--_carousel-scroll-btn-color-disabled);
+  cursor: default;
+
+  @include hover {
+    &:hover {
+      background-color: var(--_carousel-scroll-btn-bg-disabled);
+    }
+  }
+
+  &:active {
+    background-color: var(--_carousel-scroll-btn-bg-disabled);
   }
 }

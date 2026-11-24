@@ -5,6 +5,7 @@ import {
   DsCardHeader,
   DsCardSubtitle,
   DsCardTitle,
+  expect,
   test,
 } from '@helvetia-design/playwright'
 
@@ -84,5 +85,29 @@ test.describe('component', () => {
 
     await dsCardHeader.assertToBeVisible()
     await dsCardHeader.assertToContainText('My Header')
+  })
+
+  test('should apply the wide teaser class for image-teaser wide-left', async ({ page }) => {
+    await page.mount(`<ds-card image-teaser="wide-left">Card content</ds-card>`)
+
+    await expect(page.locator('ds-card')).toHaveClass(/is-image-teaser-wide-left/)
+  })
+
+  test('should apply the color class for a valid color', async ({ page }) => {
+    await page.mount(`<ds-card color="yellow">Card content</ds-card>`)
+
+    await expect(page.locator('ds-card')).toHaveClass(/(^|\s)is-yellow(\s|$)/)
+  })
+
+  test('should apply the primary class when inverted', async ({ page }) => {
+    await page.mount(`<ds-card color="yellow" inverted>Card content</ds-card>`)
+
+    await expect(page.locator('ds-card')).toHaveClass(/(^|\s)is-primary(\s|$)/)
+  })
+
+  test('should not map legacy colors', async ({ page }) => {
+    await page.mount(`<ds-card color="purple-3">Card content</ds-card>`)
+
+    await expect(page.locator('ds-card')).not.toHaveClass(/(^|\s)is-purple(\s|$)/)
   })
 })

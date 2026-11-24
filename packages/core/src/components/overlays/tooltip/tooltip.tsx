@@ -90,6 +90,13 @@ export class Tooltip implements DsComponentInterface {
   @Type('boolean')
   readonly open: boolean = false
 
+  /**
+   * When true, the tooltip never presents, even on hover/focus of the trigger.
+   */
+  @Prop()
+  @Type('boolean')
+  readonly disabled: boolean = false
+
   @Watch('contentWidth')
   contentWidthChanged(newValue: number | undefined) {
     if (newValue === undefined) {
@@ -146,7 +153,7 @@ export class Tooltip implements DsComponentInterface {
   @Method()
   async present(): Promise<boolean> {
     const trigger = this.triggerElement
-    if (!trigger || !this.containerEl) return false
+    if (!trigger || !this.containerEl || this.disabled) return false
 
     this.dsWillAnimate.emit(true)
 

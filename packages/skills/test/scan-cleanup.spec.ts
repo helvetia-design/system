@@ -47,6 +47,30 @@ describe('scanCleanup', () => {
     })
   })
 
+  it('refuses while a legacy tag without a ds-* equivalent is left and lists it under byHand', () => {
+    const root = createScratchDir()
+    writeManifest(root, { dependencies: { '@baloise/ds-angular': '19.0.0' } })
+    write(
+      root,
+      'src/app.component.html',
+      '<ds-checkbox></ds-checkbox>\n<bal-check checked></bal-check>\n<bal-radio-icon></bal-radio-icon>\n',
+    )
+
+    expect(scanCleanup(root)).toEqual({
+      status: 'incomplete',
+      outstanding: {
+        suggested: [],
+        notYet: [],
+        types: [],
+        hidden: [],
+        byHand: [
+          { name: 'check', total: 1 },
+          { name: 'radio-icon', total: 1 },
+        ],
+      },
+    })
+  })
+
   it('refuses while an HTMLBal*Element type is the only legacy reference left', () => {
     const root = createScratchDir()
     writeManifest(root, { dependencies: { '@baloise/ds-angular': '19.0.0' } })
@@ -1197,6 +1221,71 @@ describe('scanCleanup', () => {
       { file: 'src/main.ts', line: 1, snippet: "import '@baloise/ds-styles/css/core'", kind: 'import' },
     ])
     expect(result.keep.lines).toEqual([])
+  })
+
+  it('keeps the core line while a core.css class sits in an interpolation, a substitution or a mixed literal', () => {
+    const root = createScratchDir()
+    writeManifest(root, { dependencies: { '@baloise/ds-styles': '19.0.0' } })
+    write(root, 'src/styles.scss', "@import '@baloise/ds-styles/css/core';\n")
+    const kept = [
+      { file: 'src/styles.scss', line: 1, snippet: "@import '@baloise/ds-styles/css/core';", reason: 'css-utils' },
+    ]
+
+    write(root, 'src/a.component.html', `<table class="{{ striped ? 'table is-striped' : 'table' }}"></table>\n`)
+    expect(scanCleanup(root).keep.lines).toEqual(kept)
+
+    write(root, 'src/a.component.html', '')
+    write(root, 'src/b.tsx', "export const B = () => <table className={`${s ? 'table is-striped' : 'table'}`} />\n")
+    expect(scanCleanup(root).keep.lines).toEqual(kept)
+
+    write(root, 'src/b.tsx', "export const B = () => <div className={cx({ 'table shadow-small': on })} />\n")
+    expect(scanCleanup(root).keep.lines).toEqual(kept)
+
+    write(root, 'src/b.tsx', "const mixed = 'table shadow-small'\n")
+    expect(scanCleanup(root).keep.lines).toEqual(kept)
+  })
+
+  it('keeps the core line while HostBinding, Renderer2 addClass or setAttribute sets a core.css class', () => {
+    const root = createScratchDir()
+    writeManifest(root, { dependencies: { '@baloise/ds-styles': '19.0.0' } })
+    write(root, 'src/styles.scss', "@import '@baloise/ds-styles/css/core';\n")
+    const kept = [
+      { file: 'src/styles.scss', line: 1, snippet: "@import '@baloise/ds-styles/css/core';", reason: 'css-utils' },
+    ]
+
+    for (const code of [
+      "@HostBinding('class') cls = 'table'",
+      "renderer.addClass(el, 'link')",
+      "renderer.setAttribute(el, 'class', 'button')",
+    ]) {
+      write(root, 'src/a.component.ts', `${code}\n`)
+      expect(scanCleanup(root).keep.lines).toEqual(kept)
+    }
+  })
+
+  it('keeps legacy config imports for the legacy config step of Assets', () => {
+    const root = createScratchDir()
+    writeManifest(root, { dependencies: { '@baloise/ds-core': '19.0.0', '@baloise/ds-react': '19.0.0' } })
+    write(
+      root,
+      'src/main.ts',
+      [
+        "import { initializeBaloiseDesignSystem } from '@baloise/ds-core'",
+        'import {',
+        '  updateBalLanguage,',
+        "} from '@baloise/ds-core'",
+        "import { useBaloiseDesignSystem } from '@baloise/ds-react'",
+        "import { something } from '@baloise/ds-core'",
+        '',
+      ].join('\n'),
+    )
+
+    expect(scanCleanup(root).keep.lines.map(({ line, reason }) => [line, reason])).toEqual([
+      [1, 'legacy-config'],
+      [4, 'legacy-config'],
+      [5, 'legacy-config'],
+      [6, 'manual'],
+    ])
   })
 
   it('prints the scan JSON and exits 0', () => {

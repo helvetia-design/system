@@ -16,7 +16,7 @@ import { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, Butt
 import { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 import { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
 import { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
-import { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
+import { CarouselChangeDetail, CarouselControls, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
 import { CheckboxBlurDetail, CheckboxChangeDetail, CheckboxFocusDetail, CheckboxGroupBlurDetail, CheckboxGroupChangeDetail, CheckboxGroupColumns, CheckboxGroupFocusDetail, CheckboxLabelPosition, CheckboxTileColor } from "./components/forms/checkbox/checkbox.interfaces";
 import { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
 import { CloseButtonSize, CloseSize } from "./components/actions/close/close.interfaces";
@@ -64,7 +64,7 @@ export { ButtonBlurDetail, ButtonBrandSize, ButtonClickDetail, ButtonColor, Butt
 export { TooltipDidAnimateDetail, TooltipPlacement, TooltipWillAnimateDetail } from "./components/overlays/tooltip/tooltip.interfaces";
 export { CardActionsAlignment, CardAlignment, CardColor, CardHeaderDirection, CardImageTeaser, CardSpace } from "./components/structure/card/card.interfaces";
 export { HeadingLevel, HeadingSpace, HeadingVisualLevel } from "./components/structure/heading/heading.interfaces";
-export { CarouselChangeDetail, CarouselControls, CarouselItemColor, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
+export { CarouselChangeDetail, CarouselControls, CarouselVariant } from "./components/structure/carousel/carousel.interfaces";
 export { CheckboxBlurDetail, CheckboxChangeDetail, CheckboxFocusDetail, CheckboxGroupBlurDetail, CheckboxGroupChangeDetail, CheckboxGroupColumns, CheckboxGroupFocusDetail, CheckboxLabelPosition, CheckboxTileColor } from "./components/forms/checkbox/checkbox.interfaces";
 export { InputAutocomplete, InputAutocorrect, InputBlurDetail, InputChangeDetail, InputClickDetail, InputColor, InputFocusDetail, InputInputDetail, InputInputMode, InputInputType, InputKeyPressDetail, InputMask } from "./components/forms/input/input.interfaces";
 export { CloseButtonSize, CloseSize } from "./components/actions/close/close.interfaces";
@@ -633,7 +633,7 @@ export namespace Components {
     interface DsCarousel {
         "configChanged": (state: DsConfigState) => Promise<void>;
         /**
-          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `none` hides all controls.
+          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `large-below` shows large round arrow buttons centered below the track. `none` hides all controls.
           * @default 'dots'
          */
         "controls": CarouselControls;
@@ -671,10 +671,6 @@ export namespace Components {
           * @default 'slide'
          */
         "carouselVariant": CarouselVariant;
-        /**
-          * Background color for product tiles.
-         */
-        "color"?: CarouselItemColor;
         /**
           * Set by ds-carousel. 1-based position index.
           * @default 0
@@ -3737,6 +3733,11 @@ export namespace Components {
          */
         "contentWidth": number | undefined;
         /**
+          * When true, the tooltip never presents, even on hover/focus of the trigger.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * Hides the tooltip and cleans up the position updater.
          */
         "dismiss": () => Promise<boolean>;
@@ -5772,7 +5773,7 @@ declare namespace LocalJSX {
      */
     interface DsCarousel {
         /**
-          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `none` hides all controls.
+          * Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `large-below` shows large round arrow buttons centered below the track. `none` hides all controls.
           * @default 'dots'
          */
         "controls"?: CarouselControls;
@@ -5814,10 +5815,6 @@ declare namespace LocalJSX {
           * @default 'slide'
          */
         "carouselVariant"?: CarouselVariant;
-        /**
-          * Background color for product tiles.
-         */
-        "color"?: CarouselItemColor;
         /**
           * Set by ds-carousel. 1-based position index.
           * @default 0
@@ -9184,6 +9181,11 @@ declare namespace LocalJSX {
          */
         "contentWidth"?: number | undefined;
         /**
+          * When true, the tooltip never presents, even on hover/focus of the trigger.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * Offset in pixels from the trigger element to the tooltip. Defaults to the `--ds-tooltip-offset` token when not set.
           * @default undefined
          */
@@ -9336,7 +9338,6 @@ declare namespace LocalJSX {
         "value": string | null;
     }
     interface DsCarouselItemAttributes {
-        "color": CarouselItemColor;
         "carouselVariant": CarouselVariant;
         "navigation": boolean;
         "index": number;
@@ -9962,6 +9963,7 @@ declare namespace LocalJSX {
         "offset": number | undefined;
         "contentWidth": number | undefined;
         "open": boolean;
+        "disabled": boolean;
     }
 
     interface IntrinsicElements {

@@ -322,19 +322,73 @@ describe('scanMigratable', () => {
     })
   })
 
-  it('folds bal-check and bal-switch into checkbox instead of listing them as notYet', () => {
+  it('lists bal-check, bal-switch and bal-radio-icon under byHand instead of suggesting a migration', () => {
     const root = createScratchDir()
-    write(root, 'index.html', ['<bal-check checked></bal-check>', '<bal-switch></bal-switch>', ''].join('\n'))
+    write(
+      root,
+      'index.html',
+      ['<bal-check checked></bal-check>', '<bal-switch></bal-switch>', '<bal-radio-icon></bal-radio-icon>', ''].join(
+        '\n',
+      ),
+    )
     write(
       root,
       'App.tsx',
-      ["import { BalCheck, BalSwitch } from '@baloise/ds-react'", 'export const App = () => <BalSwitch />'].join('\n'),
+      [
+        "import { BalCheck, BalSwitch, BalRadioIcon } from '@baloise/ds-react'",
+        'const ref = useRef<HTMLBalCheckElement>(null)',
+        'export const App = () => <BalSwitch />',
+      ].join('\n'),
     )
 
     expect(scanMigratable(root)).toEqual({
-      suggested: [{ name: 'checkbox', total: 5 }],
+      suggested: [],
       notYet: [],
       types: [],
+      byHand: [
+        { name: 'check', total: 3 },
+        { name: 'radio-icon', total: 2 },
+        { name: 'switch', total: 3 },
+      ],
+    })
+  })
+
+  it('keeps byHand tags out of a migrated parent and out of the per-file components', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'src/a.html',
+      [
+        '<bal-checkbox></bal-checkbox>',
+        '<bal-radio-group><bal-radio></bal-radio></bal-radio-group>',
+        '<bal-radio-icon></bal-radio-icon>',
+        '',
+      ].join('\n'),
+    )
+    write(root, 'src/b.html', '<bal-switch></bal-switch>\n')
+
+    expect(scanMigratable(root, ['src'])).toEqual({
+      suggested: [
+        { name: 'checkbox', total: 1 },
+        { name: 'radio', total: 2 },
+      ],
+      notYet: [],
+      types: [],
+      byHand: [
+        { name: 'radio-icon', total: 1 },
+        { name: 'switch', total: 1 },
+      ],
+      files: [
+        {
+          file: 'src/a.html',
+          components: [
+            { name: 'checkbox', total: 1 },
+            { name: 'radio', total: 2 },
+          ],
+          byHand: [{ name: 'radio-icon', total: 1 }],
+        },
+        { file: 'src/b.html', components: [], byHand: [{ name: 'switch', total: 1 }] },
+      ],
     })
   })
 
