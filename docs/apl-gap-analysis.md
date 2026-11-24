@@ -30,7 +30,7 @@ them.
 | 8   | Section                  | [below](#8-section)                   |
 | 9   | Select Box               | [below](#9-select-box)                |
 | 10  | Slider                   | [below](#10-slider)                   |
-| 11  | Snackbar                 | pending                               |
+| 11  | Snackbar                 | [below](#11-snackbar)                 |
 | 12  | Teaser Button            | pending                               |
 
 ---
@@ -596,3 +596,78 @@ one real APL slider does. It is a small fix and independent of any design decisi
 - **DS is the more complete component here.** It is form-associated, resets with the form, debounces,
   emits focus/blur/click, renders on the server, and derives its invalid state from Angular form
   errors. None of that exists on the APL side.
+
+---
+
+## 11. Snackbar
+
+**TL;DR — keep `ds-snackbar`, two real gaps.** The APL snackbar is plain Material with a Helvetia
+skin, and `ds-snackbar` already matches it on types, action link, message text and timing, while
+adding a close button, a heading line, a queue and a mobile form. Missing: a busy variant with a
+spinner in it, and the option to put the action link below the text. One decision is open, whether an
+error snackbar should interrupt a screen reader rather than wait its turn.
+
+**Recommendation: keep `ds-snackbar` and add the busy variant.** Both sides do the same job and the
+list of differences is short, so this is settings and styling rather than a new component. The busy
+variant is the only one that needs real work, because the message has to carry a running spinner
+instead of a static icon. If the "action link below the text" layout is wanted it is one extra class.
+
+APL page: [/theme-demo/snackbar](https://www.helvetia.com/corp/app-patternlibrary/theme-demo/snackbar) ·
+Used by: All · Confluence estimate: 1
+
+### Gaps
+
+| #   | What's missing                        | Severity     | Note                                                                                                                                                           |
+| --- | ------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | A busy variant with a spinner         | `Gap`        | The APL has a fifth type that shows a spinning logo instead of an icon, used while a document is being prepared. DS has `ds-spinner` but cannot place it.      |
+| 2   | Action link below the text            | `Gap`        | One APL class moves the action under the message instead of beside it, for long texts. DS always puts it beside.                                               |
+| 3   | Announce errors urgently              | `Gap`        | Material lets the app choose to interrupt the screen reader. DS always announces politely, so an error waits until the screen reader is finished.              |
+| 4   | Choose where it appears               | `Partial`    | Material can place it top or bottom, left, center or right. DS pins snackbars to the bottom and toasts to the top, which is the more consistent choice.        |
+| 5   | More than one action button           | `Partial`    | The APL builds a two-button snackbar by hand. DS has an `action` slot that takes several buttons, but the controller API only accepts one.                     |
+| 6   | Free markup in the message            | `Partial`    | The APL passes an HTML string. DS has a slot for markup, but only when the element is written in the page, not through the controller.                         |
+| 7   | Five types with their own icon        | `Have it`    | Info, success, warning and error match one for one. The fifth is the busy variant in gap 1.                                                                    |
+| 8   | Action link                           | `Have it`    | Plus `action-href` and `action-target`, so the action can be a link. The APL action is always a button.                                                        |
+| 9   | How long it stays                     | `Have it`    | Both take seconds, and both treat zero as "stays until dismissed". DS defaults snackbars to staying.                                                           |
+| 10  | A close button                        | `Have it`    | DS is **ahead**: `closable` adds a real close button. The APL has none — you pass an action labelled "Close" and wire it up yourself.                          |
+| 11  | A heading above the message           | `Have it`    | DS only. The APL message is a single run of text unless you hand-build the content.                                                                            |
+| 12  | Queue, limit and duplicate filter     | `Have it`    | DS only: at most five at a time and the same message is not shown twice. The APL stacks whatever the app opens.                                                |
+| 13  | Collapses to an icon button on phones | `Have it`    | DS only. The snackbar shrinks to a single round button the user can tap to read it.                                                                            |
+| 14  | Announced to screen readers           | `Have it`    | Both announce politely out of the box. See gap 3 for the urgent case.                                                                                          |
+| 15  | Icon drawn as a background image      | `Don't copy` | Every type icon is a CSS background image, so it disappears in high-contrast mode and when printing. DS uses a real icon element.                              |
+| 16  | HTML message injected as a string     | `Don't copy` | The APL example passes markup into `[innerHTML]`. If any part of that text ever comes from data, it is a cross-site scripting hole.                            |
+| 17  | "Close" as a dummy link               | `Don't copy` | The same example closes via `<a href="javascript:void(0)">`. That is a button, and it is not reachable in a sensible order.                                    |
+| 18  | Two snackbars timed by hand           | `Don't copy` | The download example opens a busy snackbar for 5 seconds and a success one after 4, so they overlap. Whatever replaces it should be one snackbar that changes. |
+| 19  | Spinner animation never stops         | `Don't copy` | The busy variant spins forever with no way to switch it off. DS has an app-wide setting for exactly this.                                                      |
+| 20  | Fixed minimum width of 344px          | `Don't copy` | Below roughly 380px of screen the snackbar plus its margins no longer fit. DS sizes itself to its content.                                                     |
+
+### One limitation found on our side
+
+`ds-toast` pauses its countdown while the pointer is over it or the keyboard focus is inside it.
+`ds-snackbar` does not, because snackbars stay open by default. But an app **can** give a snackbar a
+duration, and the APL demos all do — 2, 3, 5 and 6 seconds. In that case the message can disappear
+while someone is still reading it or tabbing towards its action, which is the thing WCAG asks us to
+avoid. Either the snackbar should pause the same way the toast does, or giving a snackbar a duration
+should be discouraged in the documentation.
+
+### Open questions for design
+
+1. Should an error snackbar interrupt the screen reader, or wait its turn as it does today?
+2. Is the busy variant a snackbar type, or is it the Wait Dialog from the spinner section in a
+   different place? The APL uses it for exactly that: a document being prepared.
+3. Is the "action link below the text" layout needed, or is a shorter message the better answer?
+4. Should the controller API accept more than one action, or is two buttons in a snackbar too much?
+5. Do we want to keep the mobile collapse behavior? It is ours alone and the APL has no equivalent,
+   so it has never been compared.
+
+### Worth knowing
+
+- **The APL has no snackbar component**, same as Slider — it is Material plus one stylesheet and five
+  brand variants. Every usage calls `MatSnackBar.open()` with a class name chosen by hand.
+- **The visual design is already the same idea**: white panel, colored bar down the left edge, large
+  type icon, action separated by a thin line. DS reaches it with tokens instead of a skin.
+- **The one real pattern in the APL is the document download**, and it is the reason the busy variant
+  exists. That is worth designing properly rather than copying.
+- **The estimate of 1 looks high.** The busy variant plus an optional layout class is the whole list,
+  unless the urgent-announcement question turns into work.
+- **DS is the more complete component here.** Close button, heading, queue with a duplicate filter,
+  action as a link, mobile form, and a React hook. None of that exists on the APL side.
