@@ -22,7 +22,7 @@ them.
 | --- | ------------------------ | ------------------------------------- |
 | 1   | Autocomplete             | [below](#1-autocomplete)              |
 | 2   | Border                   | [below](#2-border)                    |
-| 3   | Card Swiper              | pending                               |
+| 3   | Card Swiper              | [below](#3-card-swiper)               |
 | 4   | Header Twenty            | pending                               |
 | 5   | List                     | [below](#5-list)                      |
 | 6   | Popover                  | [below](#6-popover)                   |
@@ -253,6 +253,57 @@ Used by: All · Confluence estimate: none
   border color classes come out of each brand's color palette file. DS covers both in one place.
 - **DS generates these classes from the tokens**, so a token change updates every class. The APL
   values are hard-coded pixels in a stylesheet.
+
+---
+
+## 3. Card Swiper
+
+**TL;DR — compose `ds-carousel` with `ds-card`, no new component.** Card Swiper is a swipeable row of
+cards built on Splide.js. `ds-carousel` already does the swiping, and nesting a `ds-card` inside a
+`ds-carousel-item` reproduces the look — image, title, body text, clickable — with no new code.
+Confirmed by building it: the carousel's click-vs-drag handling already lets a click through, and the
+result looks right in a swipeable row.
+
+**Recommendation: `ds-carousel` + `ds-card`, documented with a worked example.** Nothing here needs a
+new prop or a new component — the two existing building blocks already fit together. The only missing
+piece was the example showing how, so we added one to Storybook: the "Product Carousel (cards)" story
+in `apps/storybook/src/components/structure/carousel/carousel.stories.ts`.
+
+APL page: [/library-demo/card-swiper](https://www.helvetia.com/corp/app-patternlibrary/library-demo/card-swiper)
+· Used by: myHelvetia · Confluence estimate: 1
+
+### Gaps
+
+| #   | What's missing                            | Severity  | Note                                                                                                                                                                                                                                                                                                  |
+| --- | ----------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | A text box that updates as you swipe      | `Partial` | The APL wires this automatically (a second content pane synced to the active card). `ds-carousel` already announces which card is active on every swipe, but a page has to listen for that itself and update the box — nothing is wired up for it. Left as an open question below, not resolved here. |
+| 2   | A card, image, title and body, clickable  | `Have it` | `ds-carousel-item` plus a slotted `ds-card` — see the new Storybook example above.                                                                                                                                                                                                                    |
+| 3   | Multiple cards visible at once, swipeable | `Have it` | `ds-carousel`'s `itemsPerView="auto"` does this already, shown in the new example.                                                                                                                                                                                                                    |
+| 4   | Dots and arrows                           | `Have it` | `ds-carousel`'s `controls` prop covers both; it also adds keyboard arrow/Home/End support the APL does not have.                                                                                                                                                                                      |
+
+### Open questions for design
+
+1. Does the auto-updating detail pane need to become an automatic feature of `ds-carousel`, or is a
+   page wiring it up itself (using the signal the carousel already sends) good enough? This is a
+   genuine open question — not something this analysis resolves.
+2. Is a card-inside-a-carousel pattern worth a documented example on its own (now added), or does it
+   need to become an actual preset/variant that is easier to reach than copying markup?
+
+### Worth knowing
+
+- **Card Swiper is a real component, not just a skin** — it wraps Splide.js with its own API
+  (`title`, `withBackground`, `hasAlternativeView`, `startIndex`, and more). That is more surface
+  area than most of the "Partially available" rows in this analysis, but most of that surface turned
+  out to be either page-level chrome (see below) or something `ds-carousel` already does (gaps 2-4).
+- **The heading above the row, the colored backdrop, and the "swap view" button are not swiper
+  mechanics.** They are a heading, a colored box, and a button — the kind of thing a page builds
+  around any component, not something `ds-carousel` should provide.
+- **The "swap view" button looked like a bigger feature than it is.** At a glance it reads as "switch
+  the whole thing to a list layout". Reading the component's own code shows it is one button that
+  fires one event — the component does nothing else. It also only appears on specific demo tabs, not
+  the first one, which is easy to miss on a first look at the demo page.
+- **Neither card content style ("teaser": image + title + body, or "kupo": icon + label/value pairs)
+  is used anywhere outside the APL's own demo page** in this repository.
 
 ---
 
