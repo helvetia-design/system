@@ -27,9 +27,7 @@
   @include vars.local(brand-icon-color-level-2, var(--ds-brand-icon-color-purple-level2));
   @include vars.local(brand-icon-color-level-3, var(--ds-brand-icon-color-purple-level3));
 
-  @include vars.local(brand-icon-tile-size, var(--ds-brand-icon-tile-size-base-mobile));
-  @include vars.local(brand-icon-tile-size-tablet, var(--ds-brand-icon-tile-size-base-tablet));
-  @include vars.local(brand-icon-tile-size-desktop, var(--ds-brand-icon-tile-size-base-desktop));
+  @include vars.local(brand-icon-tile-size, var(--ds-brand-icon-tile-size-base));
 
   @include vars.local(brand-icon-tile-radius, var(--ds-brand-icon-tile-radius));
 }
@@ -101,18 +99,6 @@
   height: var(--_brand-icon-tile-size);
   --mod-brand-icon-size: var(--_brand-icon-tile-size);
   --mod-brand-icon-inner-size: var(--_brand-icon-tile-size);
-
-  @include tablet {
-    height: var(--_brand-icon-tile-size-tablet);
-    --mod-brand-icon-size: var(--_brand-icon-tile-size-tablet);
-    --mod-brand-icon-inner-size: var(--_brand-icon-tile-size-tablet);
-  }
-
-  @include desktop {
-    height: var(--_brand-icon-tile-size-desktop);
-    --mod-brand-icon-size: var(--_brand-icon-tile-size-desktop);
-    --mod-brand-icon-inner-size: var(--_brand-icon-tile-size-desktop);
-  }
 }
 
 /**
@@ -132,24 +118,9 @@ $icon-sizes: ('sm', 'lg');
   }
 
   :host(.is-#{$size}.is-tile) {
-    --mod-brand-icon-tile-size: var(--ds-brand-icon-tile-size-#{$size}-mobile);
-    --mod-brand-icon-tile-size-tablet: var(--ds-brand-icon-tile-size-#{$size}-tablet);
-    --mod-brand-icon-tile-size-desktop: var(--ds-brand-icon-tile-size-#{$size}-desktop);
-    // --mod-brand-icon-inner-size: var(--ds-brand-icon-tile-size-#{$size});
+    --mod-brand-icon-tile-size: var(--ds-brand-icon-tile-size-#{$size});
   }
 }
-
-//
-// Tile Sizes
-// :host(.is-tile.is-sm) {
-//   --mod-brand-icon-tile-size: var(--ds-brand-icon-tile-size-sm);
-//   --mod-brand-icon-tile-size-tablet: var(--ds-brand-icon-tile-size-sm);
-// }
-
-// :host(.is-tile.is-lg) {
-//   --mod-brand-icon-tile-size: var(--ds-brand-icon-tile-size-lg);
-//   --mod-brand-icon-tile-size-tablet: var(--ds-brand-icon-tile-size-lg);
-// }
 
 //
 // Colors
