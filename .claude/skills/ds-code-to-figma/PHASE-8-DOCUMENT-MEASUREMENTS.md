@@ -152,9 +152,9 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
      number.
    - **radius** → `Spec/Corner radius` on a free corner, `corner=top-right` preferred. The
      instance _is_ the circle: resize it to `2r × 2r` and place it with its corner on the
-     component's matching corner (top-right: `x = right − 2r`, `y = top`). A full radius (`9999`)
-     renders as half the shorter side, so `2r` = that side: on a round component the circle is
-     the component's own size (`ds-close` base: 24 × 24). The leader starts on the arc, ends on the near end of the pill (vertically centered), and the label follows by
+     component's matching corner (top-right: `x = right − 2r`, `y = top`). A circle or pill
+     (`9999`, `50%`) gets no radius marker or row (`conventions/measurements.md` → "No radius on a
+     circle or pill"). The leader starts on the arc, ends on the near end of the pill (vertically centered), and the label follows by
      constraints. Figma ignores moving or resizing a layer inside an instance, so never try to
      adjust the `Circle` itself.
    - **border width** → `Spec/Leader` (`kind=shape`) with the `Dot` on the border — its center exactly on the middle of the border, so the 3px dot never covers the edge it measures — and the pill outside the

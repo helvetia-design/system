@@ -1,8 +1,7 @@
 # close → Figma mapping
 
 > **Status: done (19.11.2026)** — Phases 1–8 built and confirmed by the user — rebuild of the Close component in the DS Core Components
-> file, tokens from the DS Foundation library. Decisions from earlier runs:
-> `.claude/skills/ds-code-to-figma/rebuild-decisions.md` → "Close". Only the native `<button>` path
+> file, tokens from the DS Foundation library. Only the native `<button>` path
 > is modeled. The tooltip was added 19.11.2026 (`show tooltip`, see Notes).
 
 ```yaml
@@ -43,8 +42,8 @@ props:
   - name: '[excluded]'
     figmaPropertyType: excluded
     props: [button, buttonColor, buttonSize]
-    note: 'button, buttonColor, buttonSize — only the native <button> path is modeled (rebuild-decisions.md).'
-  # Generated: the i18n label ("Close") is aria-label + tooltip text — fixed `Close` override on the Tooltip, no property.
+    note: 'button, buttonColor, buttonSize — only the native <button> path is modeled.'
+  # Generated: the i18n label (`en`: "close", close.i18n.ts) is aria-label + tooltip text — fixed `close` override on the Tooltip, no property.
 
 states:
   figmaProperty: state
@@ -75,14 +74,14 @@ nested:
   - childTag: ds-tooltip # inside the anchor
     childMappingFile: ../../overlays/tooltip/tooltip.figma.md
     figmaComponentKey: 153b91930d626839058d24ce00415275c0f74f04
-    exposed: false # not reachable from Close (anchor not exposed); generated text, fixed `content` = Close
+    exposed: false # not reachable from Close (anchor not exposed); generated text, fixed `content` = close (en, lowercase as in close.i18n.ts)
   # ds-button (button path) excluded — see props.
 
 variations: # section re-added 19.11.2026 for show tooltip (cloned from Button's, same template Section)
   figmaSectionNodeId: '6408:1888'
   sets:
     - set: Close
-      previewNodeId: null
+      previewNodeId: 'I6408:1888;2192:7515;2192:5066;6408:1891'
       entries:
         - {
             caption: 'show tooltip · hover',
@@ -167,7 +166,7 @@ completeness:
 
 measurements: # confirmed by the user 19.11.2026, measured on the dev server
   drawnOption: base
-  drawnState: hover # default background is transparent (rebuild-decisions.md)
+  drawnState: hover # default background is transparent
   options: [base, md]
   # behavior: none (fixed size, no content)
   rows:
@@ -198,8 +197,8 @@ measurements: # confirmed by the user 19.11.2026, measured on the dev server
         property: Radius,
         kind: shape,
         group: fixed,
-        show: drawn,
-        instance: main,
+        show: skip,
+        reason: 'full radius on a round component — the shape says it all (conventions/measurements.md)',
         source: close.mixin.scss:47,
         values: { base: { px: full, token: 🧩 Component/Close/Radius } },
       }
@@ -219,7 +218,7 @@ measurements: # confirmed by the user 19.11.2026, measured on the dev server
   can't calculate that, and the per-side padding (5 / 7) isn't a token either, so the X frame is a
   literal 14 / 18. Code follow-up: a `Close/Icon/Size` token.
 - **Tooltip (user decision 19.11.2026):** `show tooltip` (default off) shows the nested `Tooltip`
-  ("Close") below the button, centered, 8px away, through a `TooltipAnchor` instance fixed at
+  ("close", the `en` string) below the button, centered, 8px away, through a `TooltipAnchor` instance fixed at
   `placement=bottom` and not exposed — `ds-close` has no placement prop. The
   `close-tooltip` snapshot shows it shifted left: floating-ui's `shift` against the viewport
   edge, not a different placement.
@@ -237,17 +236,18 @@ measurements: # confirmed by the user 19.11.2026, measured on the dev server
 | `:hover` / `:active` | `state` · `default · hover · active`                   | variant (columns)         |
 | `disabled`           | `disabled` · `false · true`, only with `state=default` | component state (blocked) |
 | `inverted`           | `CloseInverted`                                        | top-level split (rule 2)  |
+| `(ds-tooltip)`       | `show tooltip` · default `false`                       | boolean (hover variants)  |
 
-Case: **top-level split**, a 2-axis grid per set. No text properties (the i18n "Close" is
-generated, `aria-label` + tooltip only). No variations (no `show` booleans).
+Case: **top-level split**, a 2-axis grid per set. No text properties (the i18n "close" is
+generated, `aria-label` + tooltip only). One variation: `show tooltip · hover` (Close set only).
 
 ```
-Close                                 state          disabled
-                default   hover    active    true
+Close                       state
+                default   hover    active    disabled
 size   base     [cell]    [cell]   [cell]    [cell]
        md       [cell]    [cell]   [cell]    [cell]
 
 CloseInverted   (same grid)
 ```
 
-Count: (4 states + 1 disabled) × 2 sizes = 10 per set, **20** in total (≤ 500).
+Count: (3 states + 1 disabled) × 2 sizes = 8 per set, **16** in total (≤ 500).
