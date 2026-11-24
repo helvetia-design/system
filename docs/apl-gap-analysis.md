@@ -24,7 +24,7 @@ them.
 | 2   | Border                   | [below](#2-border)                    |
 | 3   | Card Swiper              | pending                               |
 | 4   | Header Twenty            | pending                               |
-| 5   | List                     | pending                               |
+| 5   | List                     | [below](#5-list)                      |
 | 6   | Popover                  | [below](#6-popover)                   |
 | 7   | Progress Spinner/Spinner | [below](#7-progress-spinner--spinner) |
 | 8   | Section                  | [below](#8-section)                   |
@@ -253,6 +253,98 @@ Used by: All · Confluence estimate: none
   border color classes come out of each brand's color palette file. DS covers both in one place.
 - **DS generates these classes from the tokens**, so a token change updates every class. The APL
   values are hard-coded pixels in a stylesheet.
+
+---
+
+## 5. List
+
+**TL;DR — keep `ds-list` and `ds-item`, but two things need building.** The APL has four kinds of list
+and we match three of them: plain rows, rows that are links, rows that are buttons. The fourth is a
+list where each row can be selected, used for master-detail views, and we have nothing for it. On top
+of that, nothing can be placed at the end of a row today — no date, no buttons. Our recommendation is
+to add a slot at the end of the row, and to answer the selectable list with the existing radio and
+checkbox groups rather than making list rows selectable.
+
+**Recommendation: keep `ds-list` and `ds-item`, add a slot at the end of the row, and treat the
+selectable list as a form control.** A row the user picks from a set is a choice, not a list entry,
+and the Design System already has that in `ds-radio-group` and `ds-checkbox-group` — the same answer
+as in the Select Box section. The end-of-row slot is a small change to `ds-item` that covers two APL
+demos at once: the date on the document download list and the edit and delete buttons on the line
+actions list. What remains after that is one styling option: aligning the icon to the top on rows with
+three lines.
+
+APL page: [/theme-demo/list](https://www.helvetia.com/corp/app-patternlibrary/theme-demo/list) · Used
+by: All · Confluence estimate: 0.5
+
+### Gaps
+
+| #   | What's missing                          | Severity     | Note                                                                                                                                                                                                                                                                                                               |
+| --- | --------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Rows the user can select                | `Gap`        | The APL's fourth list type, single or multiple choice, used for master-detail views. DS rows are plain, link, button or accordion — none is selectable.                                                                                                                                                            |
+| 2   | Marking the selected row                | `Gap`        | Two APL classes: a colored bar down the left edge, or a white background. Part of gap 1.                                                                                                                                                                                                                           |
+| 3   | Anything at the end of the row          | `Gap`        | `ds-item` has no slot at the end. The icon, the text and the action icon are fixed, and anything a page slots in lands inside the text column, which a global rule forces into a vertical stack. The APL's trailing date and its two icon buttons both need this.                                                  |
+| 4   | Icon and caret aligned to the top       | `Gap`        | One APL class. DS always centers them, which looks wrong on a row with three lines of text.                                                                                                                                                                                                                        |
+| 5   | Buttons inside the row                  | `Gap`        | The APL demo puts edit and delete icon buttons at the end of each row. Possible today only by giving up the `label` and `description` props, rebuilding the whole row inside the content slot, and writing a selector strong enough to beat the global rule — built and confirmed in Storybook. Same fix as gap 3. |
+| 6   | A badge or status pill in the row       | `Partial`    | Same slot. DS has `ds-badge` and `ds-tag`, so this is a documentation question rather than a build.                                                                                                                                                                                                                |
+| 7   | Remove the side padding                 | `Partial`    | The APL has one class for it and a second that only applies on phones. DS exposes the padding as CSS variables.                                                                                                                                                                                                    |
+| 8   | Plain, link and button rows             | `Have it`    | `variant` on `ds-item`. DS adds an accordion row, which the APL keeps on a separate page.                                                                                                                                                                                                                          |
+| 9   | Caret and download at the row end       | `Have it`    | `action-icon`, including an external-link variant the APL does not have.                                                                                                                                                                                                                                           |
+| 10  | A title plus further lines              | `Have it`    | `label` and `description` plus a content slot. DS also lets you set the heading level of the title.                                                                                                                                                                                                                |
+| 11  | Rows that grow with their content       | `Have it`    | DS does this by default. In the APL it needs a helper class, and the demo page warns you to remember it.                                                                                                                                                                                                           |
+| 12  | A line between rows                     | `Have it`    | DS draws it as part of the row. Every APL demo inserts a `<mat-divider>` by hand between each pair.                                                                                                                                                                                                                |
+| 13  | Numbered lists                          | `Have it`    | DS only: `ordered` renders a real `<ol>`. Confluence tracks the APL's numbered list as a separate row.                                                                                                                                                                                                             |
+| 14  | Use on a dark background                | `Have it`    | DS only: `inverted`, which also cascades to the rows inside.                                                                                                                                                                                                                                                       |
+| 15  | Focus shown as a 4% tint                | `Don't copy` | That is the only focus indication on a clickable row, far too faint to see. DS draws a real focus ring.                                                                                                                                                                                                            |
+| 16  | Selection shown by color alone          | `Don't copy` | The theme hides the checkbox in selection lists, so the only cue that a row is chosen is its background color.                                                                                                                                                                                                     |
+| 17  | Clickable rows that are not buttons     | `Don't copy` | The document and drilldown demos put a click handler on a plain row, so it cannot be reached or activated with a keyboard.                                                                                                                                                                                         |
+| 18  | Caret and download as background images | `Don't copy` | Same as the snackbar icons: they disappear in high-contrast mode and when printing.                                                                                                                                                                                                                                |
+| 19  | List scrolls only while hovered         | `Don't copy` | The master-detail demo hides the overflow until the pointer is over the list, so on a touch screen the list cannot be scrolled at all.                                                                                                                                                                             |
+| 20  | Detail text injected as HTML            | `Don't copy` | The same demo renders the selected entry with `[innerHTML]`. If that text comes from a backend it is a cross-site scripting hole.                                                                                                                                                                                  |
+| 21  | Drilldown by hiding panels              | `Don't copy` | Every panel is rendered at once and all but one is hidden. Real navigation or an accordion row is the better answer.                                                                                                                                                                                               |
+
+### One limitation found on our side
+
+Building the line actions demo in Storybook surfaced two problems that only show up once you try it.
+`ds-item` has no slot at the end of the row, so the whole row has to be rebuilt inside the content
+slot, which costs the `label` and `description` props and the type sizes that come with them. And a
+global rule, `ds-item [slot='content']`, forces that slotted content into a vertical stack; a page's
+own CSS class loses to it, so the row silently renders stacked and centered instead of side by side.
+Getting it right needs a stronger selector than any consumer would think to write. Both are fixed by
+gap 3.
+
+### Open questions for design
+
+1. Is a selectable row a list, or a radio or checkbox group drawn as rows? Our recommendation is the
+   second, which keeps it consistent with Select Box.
+2. If it stays a list, is the choice shown by a left bar, a background, or a visible control? Only the
+   third is readable without color.
+3. What may sit at the end of a row — a date, an amount, buttons, a status pill — and how much room
+   does it get before the row wraps on a phone?
+4. Should the icon and caret align to the top once a row has three lines of text?
+5. How many buttons may a row carry? The APL demo uses two.
+
+### Worth knowing
+
+- **The APL has no list component**, same as Slider and Snackbar — it is Material plus one stylesheet
+  and five brand variants. All eight demo variations are assembled by hand from helper classes.
+- **Six helper classes are documented.** DS covers three of them without any class at all (growing
+  rows, trailing caret or download icon, divider lines), two are CSS variables, and one — aligning the
+  icon to the top — is genuinely missing.
+- **The migration warning on the demo page is worth reading.** The APL list markup changed completely
+  between two Material versions, and the page still carries the before-and-after. That churn is the
+  cost of the skin-a-library approach.
+- **Confluence has four more list rows**, and they are not part of this one: Accordion List
+  (Available), Coverage List (Missing), Drag & Drop List (Missing) and Ordered List (Not required).
+- **The estimate of 0.5 is too low.** It covers the six demo variations that are settings or page
+  layout. It does not cover the slot at the end of the row, nor the look of a selected row, which
+  needs its own design and tokens. Both have to be costed on top, whichever route the selectable list
+  takes.
+- **Eight of the APL demos were mapped one by one.** Three match a DS setting outright (plain,
+  navigation with dividers, basic). Two are blocked on the end-of-row slot (document download, line
+  actions). One is a deliberate behavior change (compact drilldown, which the APL fakes by hiding
+  panels — DS would use an accordion row or real navigation). Two are the selectable list.
+- **DS is the more complete component here.** Divider lines without extra markup, real ordered lists,
+  an inverted mode, heading levels on the row title, an accordion row, and a visible focus ring.
 
 ---
 
