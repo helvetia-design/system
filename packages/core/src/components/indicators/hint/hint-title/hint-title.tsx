@@ -23,7 +23,7 @@ export class HintTitle implements DsComponentInterface {
   @Element() el!: HTMLStencilElement
 
   connectedCallback(): void {
-    this.el.slot = 'title'
+    this.el.setAttribute('slot', 'title')
   }
 
   /**
