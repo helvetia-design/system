@@ -29853,7 +29853,7 @@
         "Heading": {
           "$type": "fontFamily",
           "$value": [
-            "BaloiseCreateHeadline",
+            "Baloise Create Headline",
             "Arial",
             "sans-serif"
           ],
@@ -29867,7 +29867,7 @@
         "Text": {
           "$type": "fontFamily",
           "$value": [
-            "BaloiseCreateText",
+            "Baloise Create Text",
             "Arial",
             "sans-serif"
           ],
