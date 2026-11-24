@@ -264,7 +264,3 @@ Count: `marker=none` exists only with `marker position=right` (no visual differe
 - `plus-minus` closed looks like `plus` closed; kept, since open differs.
 - Code-side: `vars.focus-styles` uses literal 2px / 5px although `Focus/Size/Inner` / `Outer` exist.
 - Code-side: JSDoc of `buttonIconOpen` / `buttonIconClose` says "BalIcon".
-
-## Unresolved
-
-- Font family and line height / letter spacing as literals (TODO.md).
