@@ -182,7 +182,7 @@ export class Tabs implements DsComponentInterface, DsConfigObserver {
 
     tabs.forEach(tab => {
       // Place ds-tab into the named tablist slot
-      tab.slot = 'tab'
+      tab.setAttribute('slot', 'tab')
       tab.navigation = isNav
 
       if (!isNav && tab.name) {

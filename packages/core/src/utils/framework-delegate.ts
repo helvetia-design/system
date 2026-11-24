@@ -41,7 +41,7 @@ export const attachComponent = async (
     Object.assign(el, componentProps)
   }
 
-  el.slot = 'body'
+  el.setAttribute('slot', 'body')
   container.appendChild(el)
   await new Promise(resolve => componentOnReady(el, resolve))
 

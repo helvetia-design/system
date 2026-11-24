@@ -20,7 +20,7 @@ export const TokensFont = ({ _overview }): React.ReactElement => {
           </td>
           <td style={{ verticalAlign: 'top' }}>
             <p className="font-weight-bold text-lg mt-none mb-xs">
-              Title <span className="text-md">(BaloiseCreateHeadline)</span>
+              Title <span className="text-md">(Baloise Create Headline)</span>
             </p>
             <p className="m-none text-sm">Should only be used for headings and buttons</p>
           </td>
@@ -36,7 +36,7 @@ export const TokensFont = ({ _overview }): React.ReactElement => {
           </td>
           <td style={{ verticalAlign: 'top' }}>
             <p className="font-weight-bold text-lg mt-none mb-xs">
-              Text <span className="text-md">(BaloiseCreateText)</span>
+              Text <span className="text-md">(Baloise Create Text)</span>
             </p>
             <p className="m-none text-sm">Should only be used for body texts and form controls</p>
           </td>

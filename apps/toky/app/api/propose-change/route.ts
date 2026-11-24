@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
+import { isAuthDisabledLocally } from '@/src/auth/route-access'
 import { BRAND_NAME_ERROR_MESSAGE, validateBrandName } from '@/src/tokens/brand'
 import { buildChangesetContent } from '@/src/tokens/changeset'
 import { applyDiffToDocument } from '@/src/tokens/edit'
@@ -25,6 +26,7 @@ import {
   findOpenPullRequest,
   getBaseTokensFileMeta,
   getBrandTokensFileMeta,
+  getTokenOwnerLogin,
   getTokenPackageName,
   listTokenBrandFiles,
   openPullRequest,
@@ -176,7 +178,7 @@ const REFERENCE_PATTERN = /^\{(.+)\}$/
 function formatEntryValue(value: unknown): string {
   if (typeof value === 'string') {
     const match = REFERENCE_PATTERN.exec(value)
-    if (match) return `→ ${match[1].split('.').join('/')}`
+    if (match) return match[1].split('.').join('/')
   }
   return formatValue(value)
 }
@@ -378,14 +380,25 @@ async function handleLocalSubmit(
   return NextResponse.json({ local: true }, { status: 200 })
 }
 
-export async function POST(request: Request): Promise<Response> {
-  // Identity for PR attribution comes only from the server-side session —
-  // never from the request body — and proxy.ts guarantees every request
-  // reaching this route is already authenticated (see docs/adr/0003). Still
-  // guarded here rather than asserted, since this route can also be hit
-  // directly in tests/local dev without middleware in front of it.
+// Identity for PR attribution comes only from the server side, never from the request body. With
+// local auth disabled there is no session, so the token owner stands in.
+async function resolveSubmitter(): Promise<string | null> {
+  if (isAuthDisabledLocally({ vercel: process.env.VERCEL, disableAuth: process.env.TOKY_DISABLE_AUTH })) {
+    return getTokenOwnerLogin()
+  }
   const session = await auth()
-  const submitter = session?.user.login
+  return session?.user.login ?? null
+}
+
+export async function POST(request: Request): Promise<Response> {
+  // proxy.ts guarantees every request reaching this route is already authenticated (see
+  // docs/adr/0003). Still guarded here, since this route can also be hit directly in tests.
+  let submitter: string | null
+  try {
+    submitter = await resolveSubmitter()
+  } catch (err) {
+    return NextResponse.json({ error: errorMessage(err) }, { status: 500 })
+  }
   if (!submitter) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

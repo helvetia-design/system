@@ -8,10 +8,6 @@ const PAGE_URL = `/components/forms/${TAG}/test/${TAG}.visual.html`
 test.describe('ssr', () => {
   VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
-      test.fixme(
-        variant === 'loading',
-        'SSR: loading dropzone is 8px taller and overflows its width after hydration (#326)',
-      )
       const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
       const el = page.getByTestId(variant)
 

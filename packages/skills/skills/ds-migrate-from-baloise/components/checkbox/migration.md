@@ -4,7 +4,7 @@ Migrate every `bal-checkbox` usage to `ds-checkbox`, and every `bal-checkbox-gro
 
 Both legacy tags are migrated together, not separately. `bal-checkbox-group` drives its children with `this.el.querySelectorAll('bal-checkbox')`; rewriting the children to `ds-checkbox` while leaving a `bal-checkbox-group` parent untouched would silently break that cascade, because the old group would stop finding its own children. `ds-checkbox-group` has the matching `querySelectorAll('ds-checkbox')` wiring, so the parent and its children are always rewritten in the same pass.
 
-`bal-check` and `bal-switch` are two more tags in the legacy folder. They are display-only indicators, not form controls, and `ds-*` has no equivalent. The scan lists them so they are not missed, but they are never rewritten. See "Legacy indicators: `bal-check` and `bal-switch`" below.
+`bal-check` and `bal-switch` are two more tags in the legacy folder. They are display-only indicators, not form controls, and `ds-*` has no equivalent. The scan lists them so they are not missed, but they are never rewritten. `scan-migratable.mjs` counts them under `byHand` as `check` and `switch`, not under `suggested`, so they must be replaced by hand. See "Legacy indicators: `bal-check` and `bal-switch`" below.
 
 Apply `shared/field.md` in the Rewrite step to every migrated `ds-checkbox`, `ds-checkbox-group` or `ds-toggle` (a `bal-checkbox` with `interface="switch"` becomes `ds-toggle`) that sits inside a `bal-field`, in the same pass. It moves the label, description and message of the wrapper onto the control and removes the wrapper tags. A `bal-field` around a control that is still a legacy `bal-*` tag stays unchanged. `components/field/migration.md` migrates `bal-form-grid`, `bal-form-col` and every `bal-field` that is left.
 
@@ -189,7 +189,7 @@ Until `DsCheckbox` has a value accessor, this is the only path that works. A sin
 
 ### Legacy indicators: `bal-check` and `bal-switch`
 
-`bal-check` and `bal-switch` draw a check mark or a switch from `checked`, `disabled`, `invalid` and `inverted`. `hovered` and `pressed` are internal. They are not form controls, and `ds-*` has no equivalent. Leave every `bal-check`, `bal-switch`, `BalCheck` and `BalSwitch` exactly as it is, and keep their symbols on the `@baloise` import. Report each one by file and line as "no `ds-*` equivalent, needs manual rework". Do not add a comment to the consumer's code.
+`bal-check` and `bal-switch` draw a check mark or a switch from `checked`, `disabled`, `invalid` and `inverted`. `hovered` and `pressed` are internal. They are not form controls, and `ds-*` has no equivalent. Leave every `bal-check`, `bal-switch`, `BalCheck` and `BalSwitch` exactly as it is, and keep their symbols on the `@baloise` import. Report each one by file and line as "no `ds-*` equivalent, needs manual rework". Do not add a comment to the consumer's code. `scan-migratable.mjs` keeps listing them under `byHand` until someone replaces them by hand, and while they are left the legacy config call stays (see `shared/legacy-config.md`).
 
 ### Props: `bal-checkbox` → `ds-checkbox`
 

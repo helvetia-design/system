@@ -13,11 +13,8 @@ const baseline = visualBaseline(TAG)
 const PAGE_URL = `/components/indicators/${TAG}/test/${TAG}.visual.html`
 
 const FIXME: Record<string, string> = {
-  'basic': 'SSR: logo spinner has no size until the Lottie animation loads, so it shifts on hydration (#329)',
-  'label': 'SSR: logo spinner has no size until the Lottie animation loads, so it shifts on hydration (#329)',
-  'sizes': 'SSR: logo spinner has no size until the Lottie animation loads, so it shifts on hydration (#329)',
-  'inverted': 'SSR: logo spinner has no size until the Lottie animation loads, so it shifts on hydration (#329)',
-  'circle-variation': 'SSR: circle spinner renders larger than the client-only render, also after hydration (#329)',
+  'circle-variation':
+    'SSR: circle spinner renders larger than the client-only render, because the global stylesheet with box-sizing is missing in SSR shadow roots (#326)',
 }
 
 test.describe('ssr', () => {

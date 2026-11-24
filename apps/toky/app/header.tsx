@@ -20,7 +20,7 @@ function PendingDot() {
 
 export function SyncStatusBadge({ syncStatus }: { syncStatus: SyncStatus }) {
   if (syncStatus.state === 'synced') {
-    return <Badge variant="secondary">In sync with next</Badge>
+    return <Badge variant="secondary">In sync with {syncStatus.baseRef}</Badge>
   }
 
   const label = syncStatus.prNumber ? `Pull request #${syncStatus.prNumber}` : 'Pull request'

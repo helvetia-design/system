@@ -517,14 +517,14 @@ describe('buildBasePullPlan', () => {
     const heading = token({
       path: ['🌐 Global', '🔤 Font', 'Family', 'Heading'],
       type: 'fontFamily',
-      rawValue: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
+      rawValue: ['Baloise Create Headline', 'Arial', 'sans-serif'],
       figmaId: 'VariableID:9',
     })
     const v = variable({
       id: heading.figmaId as string,
       name: 'x',
       resolvedType: 'STRING',
-      valuesByMode: { [BASE_MODE]: 'BaloiseCreateHeadline' },
+      valuesByMode: { [BASE_MODE]: 'Baloise Create Headline' },
     })
     const plan = buildBasePullPlan({
       original: [heading],
@@ -540,7 +540,7 @@ describe('buildBasePullPlan', () => {
     const heading = token({
       path: ['🌐 Global', '🔤 Font', 'Family', 'Heading'],
       type: 'fontFamily',
-      rawValue: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
+      rawValue: ['Baloise Create Headline', 'Arial', 'sans-serif'],
       figmaId: 'VariableID:9',
     })
     const v = variable({
@@ -1323,14 +1323,14 @@ describe('buildBasePullPlan — typography', () => {
   const familyHeading = token({
     path: ['🌐 Global', '🔤 Font', 'Family', 'Heading'],
     type: 'fontFamily',
-    rawValue: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
-    resolvedValue: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
+    rawValue: ['Baloise Create Headline', 'Arial', 'sans-serif'],
+    resolvedValue: ['Baloise Create Headline', 'Arial', 'sans-serif'],
   })
   const familyBody = token({
     path: ['🌐 Global', '🔤 Font', 'Family', 'Body'],
     type: 'fontFamily',
-    rawValue: ['BaloiseCreateText', 'Arial', 'sans-serif'],
-    resolvedValue: ['BaloiseCreateText', 'Arial', 'sans-serif'],
+    rawValue: ['Baloise Create Text', 'Arial', 'sans-serif'],
+    resolvedValue: ['Baloise Create Text', 'Arial', 'sans-serif'],
   })
   const weight700 = token({
     path: ['🌐 Global', '🔤 Font', 'Weight', '700'],
@@ -1359,7 +1359,7 @@ describe('buildBasePullPlan — typography', () => {
       textTransform: '{🌐 Global.🔤 Font.TextTransform.None}',
     },
     resolvedValue: {
-      fontFamily: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
+      fontFamily: ['Baloise Create Headline', 'Arial', 'sans-serif'],
       fontSize: { value: 1, unit: 'rem' },
       fontWeight: 700,
       lineHeight: 1.3,
@@ -1390,7 +1390,7 @@ describe('buildBasePullPlan — typography', () => {
     letterSpacing?: string
     textDecoration?: string
   }): FigmaVariable[] {
-    const fontFamily = overrides?.fontFamily ?? 'BaloiseCreateHeadline'
+    const fontFamily = overrides?.fontFamily ?? 'Baloise Create Headline'
     const fontSize = overrides?.fontSize ?? 16
     const fontWeight = overrides?.fontWeight ?? 'Bold'
     // Figma-side value — a percentage string ("130%"), not this codebase's raw multiplier (1.3).
@@ -1458,7 +1458,7 @@ describe('buildBasePullPlan — typography', () => {
     const plan = buildBasePullPlan({
       original: [...typographyPrimitives, typography],
       working: [working(typography)],
-      figmaMeta: meta(typographyVariables({ fontFamily: 'BaloiseCreateText' })),
+      figmaMeta: meta(typographyVariables({ fontFamily: 'Baloise Create Text' })),
       baseModeId: BASE_MODE,
     })
     expect(plan.updates).toHaveLength(1)
@@ -1618,7 +1618,7 @@ describe('buildBasePullPlan — typography', () => {
         textTransform: '{🌐 Global.🔤 Font.TextTransform.None}',
       },
       resolvedValue: {
-        fontFamily: ['BaloiseCreateText', 'Arial', 'sans-serif'],
+        fontFamily: ['Baloise Create Text', 'Arial', 'sans-serif'],
         fontSize: { value: 1.5, unit: 'rem' },
         fontWeight: 400,
         lineHeight: 1.5,
@@ -1637,7 +1637,7 @@ describe('buildBasePullPlan — typography', () => {
       'textTransform',
     ] as const
     const FIGMA_VALUE_BY_SUB = {
-      fontFamily: 'BaloiseCreateText',
+      fontFamily: 'Baloise Create Text',
       fontSize: 24,
       fontWeight: 'Regular',
       lineHeight: '150%',
@@ -1914,7 +1914,7 @@ describe('buildBrandPullPlan', () => {
     const baseHeading = token({
       path: ['🌐 Global', '🔤 Font', 'Family', 'Heading'],
       type: 'fontFamily',
-      rawValue: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
+      rawValue: ['Baloise Create Headline', 'Arial', 'sans-serif'],
       figmaId: 'VariableID:9',
     })
     const override = token({
@@ -1960,14 +1960,14 @@ describe('buildBrandPullPlan — typography', () => {
   const familyHeading = token({
     path: ['🌐 Global', '🔤 Font', 'Family', 'Heading'],
     type: 'fontFamily',
-    rawValue: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
-    resolvedValue: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
+    rawValue: ['Baloise Create Headline', 'Arial', 'sans-serif'],
+    resolvedValue: ['Baloise Create Headline', 'Arial', 'sans-serif'],
   })
   const familyBody = token({
     path: ['🌐 Global', '🔤 Font', 'Family', 'Body'],
     type: 'fontFamily',
-    rawValue: ['BaloiseCreateText', 'Arial', 'sans-serif'],
-    resolvedValue: ['BaloiseCreateText', 'Arial', 'sans-serif'],
+    rawValue: ['Baloise Create Text', 'Arial', 'sans-serif'],
+    resolvedValue: ['Baloise Create Text', 'Arial', 'sans-serif'],
   })
   const familyMono = token({
     path: ['🌐 Global', '🔤 Font', 'Family', 'Mono'],
@@ -2005,7 +2005,7 @@ describe('buildBrandPullPlan — typography', () => {
       textTransform: '{🌐 Global.🔤 Font.TextTransform.None}',
     },
     resolvedValue: {
-      fontFamily: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'],
+      fontFamily: ['Baloise Create Headline', 'Arial', 'sans-serif'],
       fontSize: { value: 1, unit: 'rem' },
       fontWeight: 700,
       lineHeight: 1.3,
@@ -2016,7 +2016,7 @@ describe('buildBrandPullPlan — typography', () => {
   })
   const baseOriginal = [familyHeading, familyBody, familyMono, weight700, baseTypography]
 
-  function typographyBrandVariables(fontFamily = 'BaloiseCreateHeadline'): FigmaVariable[] {
+  function typographyBrandVariables(fontFamily = 'Baloise Create Headline'): FigmaVariable[] {
     return [
       variable({
         id: typographyFigmaId.fontFamily,
@@ -2069,7 +2069,7 @@ describe('buildBrandPullPlan — typography', () => {
       baseOriginal,
       brandOriginal: [],
       brandWorking: [],
-      figmaMeta: meta(typographyBrandVariables('BaloiseCreateText'), ['Zurich']),
+      figmaMeta: meta(typographyBrandVariables('Baloise Create Text'), ['Zurich']),
       brandModeId: ZURICH_MODE,
     })
     expect(plan.creates).toHaveLength(1)
@@ -2098,7 +2098,7 @@ describe('buildBrandPullPlan — typography', () => {
         textTransform: '{🌐 Global.🔤 Font.TextTransform.None}',
       },
       resolvedValue: {
-        fontFamily: ['BaloiseCreateText', 'Arial', 'sans-serif'],
+        fontFamily: ['Baloise Create Text', 'Arial', 'sans-serif'],
         fontSize: { value: 1, unit: 'rem' },
         fontWeight: 700,
         lineHeight: 1.3,
@@ -2142,7 +2142,7 @@ describe('buildBrandPullPlan — typography', () => {
         textTransform: '{🌐 Global.🔤 Font.TextTransform.None}',
       },
       resolvedValue: {
-        fontFamily: ['BaloiseCreateText', 'Arial', 'sans-serif'],
+        fontFamily: ['Baloise Create Text', 'Arial', 'sans-serif'],
         fontSize: { value: 1, unit: 'rem' },
         fontWeight: 700,
         lineHeight: 1.3,
@@ -2155,7 +2155,7 @@ describe('buildBrandPullPlan — typography', () => {
       baseOriginal,
       brandOriginal: [override],
       brandWorking: [working(override)],
-      figmaMeta: meta(typographyBrandVariables('BaloiseCreateHeadline'), ['Zurich']), // back to Base's own family
+      figmaMeta: meta(typographyBrandVariables('Baloise Create Headline'), ['Zurich']), // back to Base's own family
       brandModeId: ZURICH_MODE,
     })
     expect(plan.deletes).toHaveLength(1)

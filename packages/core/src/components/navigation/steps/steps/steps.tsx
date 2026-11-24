@@ -114,7 +114,7 @@ export class Steps implements DsComponentInterface {
 
     let visibleIndex = 0
     steps.forEach(step => {
-      step.slot = 'step'
+      step.setAttribute('slot', 'step')
       step.navigation = isNav
       step.vertical = this.vertical
 
