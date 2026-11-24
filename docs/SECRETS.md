@@ -15,8 +15,16 @@ Org-owned fine-grained PATs also typically need approval under `helvetia-design`
 Bot PAT used for day-to-day repo automation.
 
 - **Used in:** `figma-sync.yml`, `prepare-release.yml`, `screenshots.yml`, `create-issue-branch.yml`, `figma-conflict-check.yml`
-- **Purpose:** checkout auth, `changesets/action` PR/ref creation, git commits (`EndBug/add-and-commit`), PR comments, issue-branch creation, Figma conflict-check API calls
+- **Purpose:** checkout auth, `changesets/action` PR/ref creation, git commits (`EndBug/add-and-commit`), PR comments, issue-branch creation, Figma conflict-check API calls, extension reference check comments
 - **Required permissions:** fine-grained PAT scoped to `helvetia-design/system` with **Contents: Read and write** and **Pull requests: Read and write**. Contents write is what `changesets/action` needs to create the `changeset-release/main` ref — see the "Resource not accessible by personal access token" failure this doc followed from. Also needs **branch-protection bypass rights on `main`**, per the comment on the write-back step in [`figma-sync.yml`](../.github/workflows/figma-sync.yml) and [`docs/adr/0017-direct-commit-variableid-backfill.md`](adr/0017-direct-commit-variableid-backfill.md) (the ADR describes the same exception for the `next` branch; the figma-sync workflow applies it to `main`), since most of this repo's automation otherwise requires PRs.
+
+## `EXTENSIONS_READ_TOKEN`
+
+Read-only token for the private `helvetia-design/extensions` repo.
+
+- **Used in:** `figma-conflict-check.yml` (job `extension-references`)
+- **Purpose:** loads `Extensions.tokens.json` from extensions `main`, to warn when a core PR removes or renames a token that an extension token references. The PR comment names token paths only. Unset on fork PRs and until configured, in which case the job warns and exits successfully.
+- **Required permissions:** fine-grained PAT with resource owner `helvetia-design` (see the resource owner note above), repository access only `helvetia-design/extensions`, **Contents: Read**.
 
 ## `DS_BOT_RELEASE_TOKEN`
 

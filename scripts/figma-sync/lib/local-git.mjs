@@ -48,6 +48,11 @@ export function commitFilesLocally({ repoRoot, files, message }) {
   return { sha }
 }
 
+/** A file's content at `ref` (e.g. `HEAD^1`, a merge commit's base), read with `git show`. */
+export function readFileAtRef(ref, path, cwd) {
+  return git(['show', `${ref}:${path}`], cwd)
+}
+
 /** Path relative to the git repo root, for a file addressed relative to some other directory (e.g. tokensDir). */
 export function relativeToRepoRoot(repoRoot, fromDir, fileName) {
   return relative(repoRoot, resolve(fromDir, fileName))

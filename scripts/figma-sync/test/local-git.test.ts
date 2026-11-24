@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { commitFilesLocally, isGitRepo } from '../lib/local-git.mjs'
+import { commitFilesLocally, isGitRepo, readFileAtRef } from '../lib/local-git.mjs'
 
 let repoRoot: string
 
@@ -69,5 +69,20 @@ describe('commitFilesLocally', () => {
     expect(readFileSync(join(repoRoot, 'a.json'), 'utf-8')).toBe('{"a":2}\n')
     const log = execFileSync('git', ['log', '--oneline'], { cwd: repoRoot, encoding: 'utf-8' })
     expect(log.trim().split('\n')).toHaveLength(2)
+  })
+})
+
+describe('readFileAtRef', () => {
+  beforeEach(() => {
+    execFileSync('git', ['init', '-q'], { cwd: repoRoot })
+    execFileSync('git', ['config', 'user.email', 'test@local'], { cwd: repoRoot })
+    execFileSync('git', ['config', 'user.name', 'local-test'], { cwd: repoRoot })
+  })
+
+  it("returns the file's content at an earlier commit", () => {
+    commitFilesLocally({ repoRoot, files: [{ path: 'a.json', content: '{"a":1}\n' }], message: 'first' })
+    commitFilesLocally({ repoRoot, files: [{ path: 'a.json', content: '{"a":2}\n' }], message: 'second' })
+
+    expect(readFileAtRef('HEAD^1', 'a.json', repoRoot)).toBe('{"a":1}')
   })
 })
