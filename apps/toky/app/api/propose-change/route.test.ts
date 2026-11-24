@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CORE_TOKY_CONFIG, resolveTokyConfig } from '@helvetia-design/tokens/toky-config'
 import type { TokenDiffEntry } from '@/src/tokens/edit'
 
@@ -17,6 +17,7 @@ const {
   findOpenPullRequest,
   updatePullRequestBody,
   getTokenPackageName,
+  getTokenOwnerLogin,
   getTokyConfig,
   auth,
 } = vi.hoisted(() => ({
@@ -34,6 +35,7 @@ const {
   findOpenPullRequest: vi.fn(),
   updatePullRequestBody: vi.fn(),
   getTokenPackageName: vi.fn(),
+  getTokenOwnerLogin: vi.fn(),
   getTokyConfig: vi.fn(),
   auth: vi.fn(),
 }))
@@ -56,6 +58,7 @@ vi.mock('@/src/tokens/github-write', async importOriginal => {
     findOpenPullRequest,
     updatePullRequestBody,
     getTokenPackageName,
+    getTokenOwnerLogin,
   }
 })
 
@@ -128,6 +131,11 @@ beforeEach(() => {
   updatePullRequestBody.mockResolvedValue(undefined)
   getTokenPackageName.mockResolvedValue('@helvetia-design/tokens')
   getTokyConfig.mockResolvedValue(CORE_TOKY_CONFIG)
+  getTokenOwnerLogin.mockResolvedValue('token-owner')
+})
+
+afterEach(() => {
+  vi.unstubAllEnvs()
 })
 
 describe('POST /api/propose-change', () => {
@@ -216,6 +224,52 @@ describe('POST /api/propose-change', () => {
     const [prBranch, , , base] = openPullRequest.mock.calls[0]
     expect(prBranch).toBe('toky/update-main')
     expect(base).toBe('main')
+  })
+
+  it('credits the token owner when auth is disabled locally', async () => {
+    vi.stubEnv('VERCEL', '')
+    vi.stubEnv('TOKY_DISABLE_AUTH', 'true')
+    auth.mockResolvedValue(null)
+
+    const response = await POST(makeRequest({ diff: cleanDiff, description: '' }))
+
+    expect(response.status).toBe(200)
+    const [, , prBody] = openPullRequest.mock.calls[0]
+    expect(prBody).toContain('Submitted via the Toky web app by @token-owner.')
+  })
+
+  it('ignores TOKY_DISABLE_AUTH on Vercel and still requires a session', async () => {
+    vi.stubEnv('VERCEL', '1')
+    vi.stubEnv('TOKY_DISABLE_AUTH', 'true')
+    auth.mockResolvedValue(null)
+
+    const response = await POST(makeRequest({ diff: cleanDiff, description: '' }))
+
+    expect(response.status).toBe(401)
+    expect(getTokenOwnerLogin).not.toHaveBeenCalled()
+  })
+
+  it('lists a changed reference as old target → new target in the PR body', async () => {
+    getBaseTokensFileMeta.mockResolvedValue({
+      sha: 'file-sha',
+      content: {
+        '🌐 Global': {
+          '🌈 Color': {
+            Black: { $type: 'color', $value: { hex: '#000000' } },
+            Grey: { $type: 'color', $value: { hex: '#888888' } },
+            White: { $type: 'color', $value: '{🌐 Global.🌈 Color.Black}' },
+          },
+        },
+      },
+    })
+    const referenceDiff = [
+      { ...cleanDiff[0], before: '{🌐 Global.🌈 Color.Black}', value: '{🌐 Global.🌈 Color.Grey}' },
+    ]
+
+    await POST(makeRequest({ diff: referenceDiff, description: '' }))
+
+    const [, , prBody] = openPullRequest.mock.calls[0]
+    expect(prBody).toContain('White: 🌐 Global/🌈 Color/Black → 🌐 Global/🌈 Color/Grey')
   })
 
   it('credits the signed-in user in the initial PR body, not any client-supplied field', async () => {

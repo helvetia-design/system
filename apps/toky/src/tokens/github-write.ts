@@ -36,6 +36,14 @@ async function assertOk(response: Response, action: string): Promise<void> {
   }
 }
 
+/** Login of the account that owns TOKY_GITHUB_TOKEN. */
+export async function getTokenOwnerLogin(): Promise<string> {
+  const response = await apiFetch('https://api.github.com/user', { headers: authHeaders() })
+  await assertOk(response, 'read the owner of TOKY_GITHUB_TOKEN')
+  const { login } = (await response.json()) as { login: string }
+  return login
+}
+
 // One standing branch per target base, e.g. "toky/update-next" — a second
 // submit against the same base reuses it (and its still-open PR) instead of
 // spawning a new branch/PR every time. Slashes in the base (e.g.

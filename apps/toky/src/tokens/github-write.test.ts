@@ -9,6 +9,7 @@ import {
   getBaseTokensFileMeta,
   getBrandTokensFileMeta,
   getFileMeta,
+  getTokenOwnerLogin,
   insertBrandIntoIndexSource,
   listBranches,
   listTokenBrandFiles,
@@ -470,6 +471,23 @@ describe('workingBranchFor', () => {
   it('flattens slashes in the base into a single path segment', () => {
     expect(workingBranchFor('next')).toBe('toky/update-next')
     expect(workingBranchFor('release/2026-08')).toBe('toky/update-release-2026-08')
+  })
+})
+
+describe('getTokenOwnerLogin', () => {
+  it("returns the login of TOKY_GITHUB_TOKEN's owner", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ login: 'octocat' }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(getTokenOwnerLogin()).resolves.toBe('octocat')
+    expect(fetchMock.mock.calls[0][0]).toBe('https://api.github.com/user')
+    expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe('Bearer test-token')
+  })
+
+  it('throws when GitHub rejects the token', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('Bad credentials', { status: 401 })))
+
+    await expect(getTokenOwnerLogin()).rejects.toThrow('read the owner of TOKY_GITHUB_TOKEN')
   })
 })
 
