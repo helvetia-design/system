@@ -9,6 +9,7 @@ import {
   getBaseTokensFileMeta,
   getBrandTokensFileMeta,
   getFileMeta,
+  getTokenOwnerLogin,
   insertBrandIntoIndexSource,
   listBranches,
   listTokenBrandFiles,
@@ -473,13 +474,30 @@ describe('workingBranchFor', () => {
   })
 })
 
+describe('getTokenOwnerLogin', () => {
+  it("returns the login of TOKY_GITHUB_TOKEN's owner", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ login: 'octocat' }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(getTokenOwnerLogin()).resolves.toBe('octocat')
+    expect(fetchMock.mock.calls[0][0]).toBe('https://api.github.com/user')
+    expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe('Bearer test-token')
+  })
+
+  it('throws when GitHub rejects the token', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('Bad credentials', { status: 401 })))
+
+    await expect(getTokenOwnerLogin()).rejects.toThrow('read the owner of TOKY_GITHUB_TOKEN')
+  })
+})
+
 describe('resolveReadRef', () => {
   it('reads from base directly when no working branch exists yet', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('not found', { status: 404 })))
 
     const result = await resolveReadRef('next')
 
-    expect(result).toEqual({ ref: 'next', status: { state: 'synced', prUrl: null, prNumber: null } })
+    expect(result).toEqual({ ref: 'next', status: { state: 'synced', baseRef: 'next', prUrl: null, prNumber: null } })
   })
 
   it('reads from the working branch and reports pending when it has an open PR', async () => {
@@ -495,7 +513,12 @@ describe('resolveReadRef', () => {
 
     expect(result).toEqual({
       ref: 'toky/update-next',
-      status: { state: 'pending', prUrl: 'https://github.com/helvetia-design/system/pull/7', prNumber: 7 },
+      status: {
+        state: 'pending',
+        baseRef: 'next',
+        prUrl: 'https://github.com/helvetia-design/system/pull/7',
+        prNumber: 7,
+      },
     })
   })
 
@@ -510,7 +533,7 @@ describe('resolveReadRef', () => {
 
     expect(result).toEqual({
       ref: 'toky/update-next',
-      status: { state: 'pending', prUrl: null, prNumber: null },
+      status: { state: 'pending', baseRef: 'next', prUrl: null, prNumber: null },
     })
   })
 })
