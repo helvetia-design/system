@@ -6,3 +6,9 @@
 :host {
   @include card-header.style();
 }
+
+// Raised above the stretched link of a ds-card with href, see card.style.scss.
+::slotted(:not(ds-card-title, ds-card-subtitle, ds-icon, ds-brand-icon, ds-tag, ds-tag-group, ds-badge)) {
+  position: var(--_card-link-layer-position, static);
+  z-index: var(--_card-link-layer-z-index, auto);
+}
