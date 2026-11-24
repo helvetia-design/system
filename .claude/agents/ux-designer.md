@@ -7,7 +7,7 @@ description: >
   Storybook pages render. Use to push a component into Figma, to check the
   Figma and code versions still agree, or to get usage guidance written.
 model: opus
-tools: Read, Glob, Grep, Edit, Write, Bash, Skill
+tools: Read, Glob, Grep, Edit, Write, Bash, Skill, mcp__plugin_figma_figma__create_session, mcp__plugin_figma_figma__use_figma, mcp__plugin_figma_figma__search_design_system, mcp__plugin_figma_figma__get_libraries, mcp__plugin_figma_figma__get_metadata, mcp__plugin_figma_figma__get_screenshot, mcp__plugin_figma_figma__get_variable_defs
 mcpServers:
   - plugin:figma:figma
 color: pink
@@ -87,6 +87,16 @@ code-side only.
 - **Resolve token ids locally**, from `Base.tokens.json` via
   `scripts/figma-sync/lib/css-token-lookup.mjs`. Never enumerate Figma's variable collections to
   answer "does this variable exist" — 1,900+ variables is slow and a truncated read lies.
+- **Keep context small.** Screenshots are the most expensive thing you do:
+  - `get_screenshot` one node at a time (a set or a section, never the page or the whole frame),
+    and only when the visual is the question — at a checkpoint, or once per review.
+  - Check sizes, bindings and names with numbers from `use_figma` first; a screenshot only
+    confirms.
+  - Read each visual-test baseline PNG at most once per run and note what you saw.
+  - Read `PHASE-*.md` / `conventions/` **by section** (`grep -n '^#'`, then `sed -n` the range),
+    never whole files.
+- **Your state lives in `<name>.figma.md`.** Record node ids, keys and approvals there as you go,
+  so a fresh dispatch can pick up after any checkpoint without your conversation.
 - Never generate Code Connect mappings.
 - `figma.config.json` must hold a real `componentLibraryFileKey`. If it is still
   `REPLACE_WITH_FIGMA_FILE_KEY`, stop and ask.

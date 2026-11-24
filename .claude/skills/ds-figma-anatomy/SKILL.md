@@ -12,7 +12,7 @@ and [`conventions/document-sections.md`](../ds-code-to-figma/conventions/documen
 (the `Section`/`Preview`/`Title` masters and how to insert into a `SLOT`). Read those; this skill
 is the contract.
 
-Load `figma-use` before any `use_figma` call.
+Load `figma-use` once, before the first `use_figma` call (skip if already loaded this run).
 
 ## Input
 

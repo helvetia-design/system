@@ -51,6 +51,11 @@ You have no Bash, so you cannot run `scripts/figma-sync/lib/css-token-lookup.mjs
 Read the ids out of `Base.tokens.json` directly and name the CSS var → token → variable-id
 triple per row. `ds-figma-mapping` re-resolves them with the script and records them.
 
+**A responsive token needs a `device` id.** A token with `com.helvetia.responsive` is bound in
+Figma through its Device variable, so its `com.figma.variableId` must carry a `device` key next to
+`mobile`/`tablet`/`desktop`. No `device` key → blocking handoff to the token-engineer
+(`ds-sync-figma-tokens`). Mobile/tablet/desktop ids alone are not enough.
+
 **A value with no token behind it is a hard stop.** List it as a blocking handoff to the
 token-engineer with the value it needs and where it is used. Do not propose a hardcoded Figma
 value as a fallback — Figma cannot represent an untokenized value without lying about it.
@@ -101,7 +106,8 @@ The file must contain:
 4. The default variant
 5. Anatomy: every `@part`, described
 6. Token resolution table — value → token, one row per styled property
-7. **Blocking handoffs** — unresolved tokens, missing nested-component mappings
+7. **Blocking handoffs** — unresolved tokens, responsive tokens with no `device` id, missing
+   nested-component mappings
 8. Open questions, each with a recommended answer
 
 Mark every statement as a decision (backed by a file you read) or an assumption.

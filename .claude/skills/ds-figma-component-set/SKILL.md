@@ -9,10 +9,18 @@ Build the real Figma `COMPONENT_SET` for a component family.
 
 **Mechanics live in [`PHASE-3-BUILD.md`](../ds-code-to-figma/PHASE-3-BUILD.md)** — the template
 clone, header fields, labeled-set layout, Variations cards and the asset-component special case.
-Read it. This skill is the contract around it, not a replacement for it.
+This skill is the contract around it. **Read it by section** (`grep -n '^#'` first), only what
+this family needs:
 
-Load the `figma-use` skill before any `use_figma` call — that is its own mandatory rule — and
-`figma-generate-library` for variable-binding and component-reuse discipline.
+| Section of `PHASE-3-BUILD.md`                                                              | Read when                                             |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `## Instructions`, `Category pages`, `Labeled component set`, `Documentation frame header` | always                                                |
+| `Text properties`                                                                          | the mapping file has a `figmaPropertyType: text` prop |
+| `Slots`                                                                                    | the mapping file has `slots:`                         |
+| `Interactions`                                                                             | the set has a `state` axis                            |
+| `Variations`                                                                               | the mapping file has `variations:` entries            |
+
+Load the `figma-use` skill once, before the first `use_figma` call.
 
 ## Input
 
@@ -31,8 +39,9 @@ Check, and hard-stop on any failure rather than working around it:
 - Every **nested** component (an independent DS component from another family, e.g. `ds-icon`
   inside `ds-button`) already has its own `<child>.figma.md` with a recorded component key. If
   not, stop: that family must be built first. Never recreate it, never substitute a plain shape.
-- Every token in the plan's table exists as a Figma variable. A missing one is a token-engineer
-  handoff, not a hardcoded value.
+- Every binding in the mapping file has a recorded **library key** (`ds-figma-mapping` Phase 2
+  checked it is published). Import each with `importVariableByKeyAsync` — never look ids up again,
+  never a hardcoded value. A missing key is that skill's hard stop, not something to fix here.
 
 **Sub-components** of this family are the exception — this run builds them
 ([`conventions/families.md`](../ds-code-to-figma/conventions/families.md)).

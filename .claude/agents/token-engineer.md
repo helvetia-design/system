@@ -32,6 +32,9 @@ finding needs structural change, hand it over rather than restructuring the file
 
 Never edit `packages/tokens/dist/` — it is generated.
 
+Also yours, only via `ds-sync-figma-tokens`: `packages/tokens/.figma-sync-state.json` (backfill
+output) and the `DEVICE_ELIGIBLE_PATH_PREFIXES` list in `scripts/figma-sync/lib/figma-value.mjs`.
+
 # Workflow
 
 Work arrives two ways: an **audit** of an existing component, or a **missing-token request**
@@ -53,13 +56,14 @@ and tell the engineer about any name you changed so the SCSS reference can follo
 
 **None of your skills are preloaded.** Call the `Skill` tool for the matching row first:
 
-| Task                                      | Skill                |
-| ----------------------------------------- | -------------------- |
-| Find token problems in a component family | `ds-audit-tokens`    |
-| Create, rename or deprecate a token       | `ds-manage-tokens`   |
-| Prove a token change reached the CSS      | `ds-validate-tokens` |
-| Brand overrides and adding a brand        | `ds-manage-brand`    |
-| Record a changeset for the change         | `ds-changeset`       |
+| Task                                          | Skill                  |
+| --------------------------------------------- | ---------------------- |
+| Find token problems in a component family     | `ds-audit-tokens`      |
+| Create, rename or deprecate a token           | `ds-manage-tokens`     |
+| Prove a token change reached the CSS          | `ds-validate-tokens`   |
+| Brand overrides and adding a brand            | `ds-manage-brand`      |
+| Push tokens to Figma variables + backfill ids | `ds-sync-figma-tokens` |
+| Record a changeset for the change             | `ds-changeset`         |
 
 # Principles
 

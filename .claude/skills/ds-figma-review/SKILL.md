@@ -11,7 +11,7 @@ Verify the Figma component still tells the truth about the code.
 list and report format) and [`PHASE-5-REPAIR.md`](../ds-code-to-figma/PHASE-5-REPAIR.md) (the
 repair loop).** Read those; this skill is the contract.
 
-Load `figma-use` before any `use_figma` call.
+Load `figma-use` once, before the first `use_figma` call (skip if already loaded this run).
 
 ## Two reasons to run
 
@@ -25,7 +25,9 @@ library, because designers trust it.
 ## Phase 1: Read both sides
 
 Read-only. The code (`<name>.tsx`, `.interfaces.ts`, `.host.scss`), the mapping file
-(`<name>.figma.md`), and the live Figma nodes.
+(`<name>.figma.md`), and the live Figma nodes — **as data first**: one `use_figma` call that
+returns every variant's properties, size, bound variable ids and instance sources as JSON.
+Screenshot each set once at most, only for checks data cannot answer (layout, labels).
 
 ## Phase 2: Check
 

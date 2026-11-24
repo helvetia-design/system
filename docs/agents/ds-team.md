@@ -138,6 +138,7 @@ stay where they are; only new a11y coverage follows the rule above.
 | `ds-audit-tokens`               |  ³   |    —     |    —     |  —   |     W     |    —     |  —  |
 | `ds-manage-tokens`              |  —   |    —     |    —     |  —   |     W     |    —     |  —  |
 | `ds-manage-brand`               |  —   |    —     |    —     |  —   |     W     |    —     |  —  |
+| `ds-sync-figma-tokens`          |  —   |    —     |    —     |  —   |     W     |    —     |  —  |
 | `ds-document-component`         |  —   |    —     |    —     |  —   |     —     |    W     |  —  |
 | `ds-manage-stories`             |  —   |    —     |    —     |  —   |     —     |    W     |  —  |
 | `ds-document-guidelines`        |  —   |    —     |    —     |  —   |     —     |    W     |  —  |
@@ -485,6 +486,8 @@ component exists in code
   →  architect · ds-plan-figma-component      (variant axes, anatomy, token table)
   →  every value resolves to a token?
        no  →  token-engineer · ds-manage-tokens   (hard stop until it does)
+  →  every token has its Figma variable (incl. Device for responsive)?
+       no  →  token-engineer · ds-sync-figma-tokens  →  human publishes library
   →  ⛔ GATE: variant grouping + variant count approved
   →  ux-designer · ds-figma-mapping  →  ds-figma-component-set  →  ds-figma-review
        still failing after 3 repairs  →  hard stop, report
@@ -528,6 +531,11 @@ unmodified instance of the default variant, which is the thing a designer actual
 do's/don'ts and anatomy copy but **places nothing** — `apps/storybook/src/**` is the
 documentation-engineer's. The per-part description is written once, in `ds-figma-anatomy`, and
 reused verbatim in Storybook so the two surfaces cannot drift.
+
+**Dispatch.** One fresh ux-designer per stretch between checkpoints (map → default variant ⛔ →
+fan-out + review + copy me + measurements), not one agent resumed across them — a resumed agent
+re-pays its whole history every turn. `<name>.figma.md` plus the plan file are the handoff, so the
+dispatch prompt names the step and those two paths; it does not restate the plan's decisions.
 
 **Re-run `ds-figma-review` when the code changes.** A new prop, a new enum value or a renamed
 token silently makes the Figma component a lie, and Figma has no test suite to catch it. A

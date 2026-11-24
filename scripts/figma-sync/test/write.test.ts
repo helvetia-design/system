@@ -9,6 +9,7 @@ import {
   figmaTypographySubEntriesFor,
   figmaValueFor,
   flattenVariableId,
+  isDeviceEligibleResponsiveDimensionToken,
   isLineHeightNumberToken,
   resolvedTypeFor,
   resolvedTypeForToken,
@@ -1193,6 +1194,11 @@ describe('Device variable (responsive collection) push — MVP scope', () => {
   }
   const deviceBaseTokens = [space16Primitive, space40Primitive, deviceEligibleToken, componentRefToken]
 
+  it('isDeviceEligibleResponsiveDimensionToken matches Component/Logo/Size but not Component/Spinner/Logo', () => {
+    expect(isDeviceEligibleResponsiveDimensionToken({ path: ['🧩 Component', 'Logo', 'Size', 'Base'] })).toBe(true)
+    expect(isDeviceEligibleResponsiveDimensionToken({ path: ['🧩 Component', 'Spinner', 'Logo', 'Size'] })).toBe(false)
+  })
+
   it('assignVariableIds assigns a 4th temp "device" id, alongside the 3 breakpoint sub-ids, for an in-scope token', () => {
     const idByPath = assignVariableIds(deviceBaseTokens)
     expect(idByPath.get('📱 Device.↔️ Space.Lg')).toEqual({
@@ -1201,6 +1207,16 @@ describe('Device variable (responsive collection) push — MVP scope', () => {
       desktop: 'temp-📱 Device.↔️ Space.Lg-desktop',
       device: 'temp-📱 Device.↔️ Space.Lg-device',
     })
+  })
+
+  it('collectNewlyCreatedIds backfills a token whose 3 breakpoint ids exist and that only gained a device id', () => {
+    const synced = { ...deviceEligibleToken, variableId: { mobile: 'r-m', tablet: 'r-t', desktop: 'r-d' } }
+    const idByPath = assignVariableIds([synced])
+    resolveTempIds(idByPath, { 'temp-📱 Device.↔️ Space.Lg-device': 'r-dev' })
+    const complete = { mobile: 'r-m', tablet: 'r-t', desktop: 'r-d', device: 'r-dev' }
+
+    expect(collectNewlyCreatedIds([synced], idByPath)).toEqual([{ path: synced.path, variableId: complete }])
+    expect(collectNewlyCreatedIds([{ ...synced, variableId: complete }], idByPath)).toEqual([])
   })
 
   it('pass 1 creates the Device variable in the responsive collection, FLOAT, named with a /Device suffix', () => {
@@ -1569,6 +1585,25 @@ describe('description push', () => {
     })
 
     expect(variables).toEqual([{ action: 'UPDATE', id: 'VariableID:1:1', description: 'Pure white.' }])
+  })
+
+  it('skips a description Figma returns HTML-encoded but that matches once decoded', () => {
+    const baseTokens = [
+      {
+        path: ['Global', 'White'],
+        type: 'color',
+        value: { kind: 'literal', value: { components: [1, 1, 1], alpha: 1 } },
+        variableId: 'VariableID:1:1',
+        description: `A toggle's "x" <pill> & co.`,
+      },
+    ]
+    const { variables } = buildDescriptionUpdatePayload({
+      baseTokens,
+      idByPath: assignVariableIds(baseTokens),
+      remoteVariablesById: { 'VariableID:1:1': { description: 'A toggle&#39;s &quot;x&quot; &lt;pill&gt; &amp; co.' } },
+    })
+
+    expect(variables).toHaveLength(0)
   })
 
   it('skips an already-synced variable whose description already matches Figma', () => {

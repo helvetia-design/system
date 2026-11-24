@@ -12,7 +12,9 @@ a CSS var resolves to, which component key a nested child has, or which measured
 human agreed to show. Build it first; every other Figma skill reads it.
 
 Format: [`examples/mapping-file-format.md`](../ds-code-to-figma/examples/mapping-file-format.md).
-Full field semantics: [`PHASE-1-ANALYZE.md`](../ds-code-to-figma/PHASE-1-ANALYZE.md).
+Full field semantics: [`PHASE-1-ANALYZE.md`](../ds-code-to-figma/PHASE-1-ANALYZE.md) — grep it
+for the field you are filling; don't read it whole. Most of its analysis is already in the
+architect's plan.
 
 ## Input
 
@@ -44,8 +46,17 @@ risks truncating into a wrong answer. The repo's own JSON already holds it.
 Record the **id**, not just the token name — that is what a binding needs. Note responsive
 bindings under `device:`.
 
-A CSS var with no variable id is a **hard stop**: a token-engineer handoff, never a guess and
-never a hardcoded fallback.
+A CSS var with no variable id — or a responsive token with no `device` id — is a **hard stop**:
+a token-engineer handoff (`ds-sync-figma-tokens`), never a guess and never a hardcoded fallback.
+
+**Then check the library, before measuring anything.** The ids above belong to the variable
+source file; this file sees library copies with different ids. Search DS - Foundation
+(`search_design_system`) by exact variable name — for a responsive token, `…/Device` — and record
+each variable's **library key** next to its id. Search only the names you need, never the whole
+collection. A variable in `Base.tokens.json` but not in the library is synced but unpublished:
+stop and ask the human to publish DS - Foundation (main menu → Libraries → Publish) and accept the
+update in this file (Assets → Libraries → Update). The Figma API cannot publish. Recheck after they
+confirm. Stopping here costs nothing; stopping after the dev-server measurements wastes them.
 
 ## Phase 3: Record the structure
 

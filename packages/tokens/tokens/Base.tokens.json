@@ -26947,7 +26947,8 @@
             "com.figma.variableId": {
               "mobile": "VariableID:13:3445",
               "tablet": "VariableID:13:3446",
-              "desktop": "VariableID:13:3447"
+              "desktop": "VariableID:13:3447",
+              "device": "VariableID:287:996"
             },
             "com.figma.scopes": [
               "ALL_SCOPES"
@@ -26966,7 +26967,8 @@
             "com.figma.variableId": {
               "mobile": "VariableID:13:3448",
               "tablet": "VariableID:13:3449",
-              "desktop": "VariableID:13:3450"
+              "desktop": "VariableID:13:3450",
+              "device": "VariableID:287:997"
             },
             "com.figma.scopes": [
               "ALL_SCOPES"
@@ -26985,7 +26987,8 @@
             "com.figma.variableId": {
               "mobile": "VariableID:13:3451",
               "tablet": "VariableID:13:3452",
-              "desktop": "VariableID:13:3453"
+              "desktop": "VariableID:13:3453",
+              "device": "VariableID:287:998"
             },
             "com.figma.scopes": [
               "ALL_SCOPES"

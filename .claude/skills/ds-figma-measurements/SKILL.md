@@ -10,10 +10,13 @@ Document the sizes a designer must respect when building a screen.
 **Mechanics live in
 [`PHASE-8-DOCUMENT-MEASUREMENTS.md`](../ds-code-to-figma/PHASE-8-DOCUMENT-MEASUREMENTS.md) and
 [`conventions/measurements.md`](../ds-code-to-figma/conventions/measurements.md)** — the groups
-table, the visual vocabulary per kind, the section layout, and the behavior probe. Read those;
-this skill is the contract.
+table, the visual vocabulary per kind, the section layout, and the behavior probe. This skill is
+the contract. **Read by section** (`grep -n '^#'` first): steps `0`–`3` and `5` always; `4.
+Behavior` only when the mapping file has `measurements.behavior`. In `conventions/measurements.md`
+read only the kinds the confirmed triage uses — the triage is already decided in the mapping file;
+don't re-derive it.
 
-Load `figma-use` before any `use_figma` call.
+Load `figma-use` once, before the first `use_figma` call (skip if already loaded this run).
 
 ## The principle that decides everything
 

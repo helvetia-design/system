@@ -713,6 +713,20 @@ export function buildAliasPassPayload({
  *   remote" and gets folded into this pass redundantly with buildCreatePassPayload's CREATE —
  *   harmless, since Figma's UPDATE with the same description is a no-op.
  */
+// Figma's REST API returns descriptions HTML-encoded (`&#39;`, `&quot;`, …) though they are stored
+// and written as plain text — compare decoded, or every description with such a character is
+// rewritten on every run. `&amp;` last, so `&amp;lt;` decodes to `&lt;`, not `<`.
+function decodeHtmlEntities(text) {
+  return text
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+}
+
 export function buildDescriptionUpdatePayload({ baseTokens, idByPath, remoteVariablesById }) {
   const variables = []
   const seenVariableIds = new Set()
@@ -720,7 +734,7 @@ export function buildDescriptionUpdatePayload({ baseTokens, idByPath, remoteVari
   function pushIfChanged(id, description) {
     if (!id || isTempId(id) || seenVariableIds.has(id)) return
     seenVariableIds.add(id)
-    const remoteDescription = remoteVariablesById[id]?.description ?? ''
+    const remoteDescription = decodeHtmlEntities(remoteVariablesById[id]?.description ?? '')
     if (remoteDescription === description) return
     variables.push({ action: 'UPDATE', id, description })
   }
@@ -892,8 +906,11 @@ export function collectNewlyCreatedIds(baseTokens, idByPath) {
     .filter(token => {
       if (!isPushableToken(token)) return false
       if (!token.variableId) return true
-      if (!isSyncableTypographyToken(token) || !isCompositeVariableIdSet(token.variableId)) return false
-      return TYPOGRAPHY_SUB_PROPERTIES.some(sub => !token.variableId[sub])
+      if (!isCompositeVariableIdSet(token.variableId)) return false
+      // A composite token that gained a sub-id this run (a typography sub-property added later, or a
+      // responsive token's 'device' id once it became Device-eligible) must be backfilled too.
+      const assigned = idByPath.get(pathKey(token.path))
+      return Object.keys(assigned ?? {}).some(sub => !token.variableId[sub])
     })
     .map(token => ({ path: token.path, variableId: idByPath.get(pathKey(token.path)) }))
 }

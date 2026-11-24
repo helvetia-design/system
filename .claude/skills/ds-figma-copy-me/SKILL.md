@@ -12,7 +12,7 @@ Fill "👉 Copy me" — the first section of the documentation frame's left colu
 [`conventions/document-sections.md`](../ds-code-to-figma/conventions/document-sections.md).
 Read those; this skill is the contract.
 
-Load `figma-use` before any `use_figma` call.
+Load `figma-use` once, before the first `use_figma` call (skip if already loaded this run).
 
 ## When
 
