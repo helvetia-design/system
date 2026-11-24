@@ -1,5 +1,6 @@
 import {
   DsSteps,
+  expect,
   expectScreenshot,
   mountSsr,
   setupSsrVisualTest,
@@ -18,16 +19,12 @@ const PANELS = `
 
 const baseline = visualBaseline(TAG)
 const ssrBaseline = visualBaseline(TAG, `${TAG}.ssr.play.ts`)
-const SHIFT = 'SSR: steps render stacked before hydration, box height changes (#327)'
-const POST = 'SSR: step list gets extra top/left offset after hydration (#327)'
+const OFFSET = 'SSR: step list gets extra top/left offset before and after hydration (#326)'
 
 const FIXME: Record<string, string> = {
-  'basic': SHIFT,
-  'states': SHIFT,
-  'hidden': SHIFT,
-  'navigation': `${SHIFT}; ${POST}`,
-  'navigation-vertical': POST,
-  'colors': `${SHIFT}; ${POST}`,
+  'navigation': OFFSET,
+  'navigation-vertical': OFFSET,
+  'colors': OFFSET,
 }
 // The connector lines are drawn in the browser.
 const SSR_STATIC: readonly string[] = ['vertical']
@@ -57,5 +54,13 @@ test.describe('mountSsr', () => {
     const steps = new DsSteps(page.locator('ds-steps'))
     await steps.assertStepSelected('a')
     await steps.assertPanelVisible('a')
+  })
+})
+
+test.describe('slot attributes', () => {
+  test('server markup assigns the step slot', async () => {
+    const { html } = await renderToString(`<ds-steps>${PANELS}</ds-steps>`)
+
+    expect(html).toMatch(/<ds-step\b[^>]*\sslot="step"/)
   })
 })

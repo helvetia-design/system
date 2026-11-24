@@ -24,7 +24,7 @@ export class ModalHeader implements DsComponentInterface {
   @Element() el!: HTMLStencilElement
 
   connectedCallback(): void {
-    this.el.slot = 'header'
+    this.el.setAttribute('slot', 'header')
   }
 
   /**

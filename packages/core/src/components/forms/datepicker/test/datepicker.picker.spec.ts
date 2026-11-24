@@ -17,12 +17,13 @@ describe('dsDate', () => {
       host?.remove()
     })
 
-    function setup(initialValue: string | null = null) {
+    function setup(initialValue: string | null = null, prefillHost?: (popupHostEl: HTMLDivElement) => void) {
       host = document.createElement('div')
       document.body.appendChild(host)
       const shadowRoot = host.attachShadow({ mode: 'open' })
       const popupHostEl = document.createElement('div')
       shadowRoot.appendChild(popupHostEl)
+      prefillHost?.(popupHostEl)
 
       let selected: string | null | undefined
       controller = new DatepickerController({
@@ -65,6 +66,17 @@ describe('dsDate', () => {
       await airDatepicker().selectDate(new Date(2024, 0, 15))
 
       expect(getSelected()).toBe('2024-01-15')
+    })
+
+    // Bug: https://github.com/helvetia-design/system/issues/328
+    test('replaces server-rendered calendar markup in the host instead of appending a second calendar', () => {
+      const stale = document.createElement('div')
+      stale.className = 'air-datepicker'
+      const { popupHostEl } = setup(null, el => el.append(stale, document.createElement('div'), 'text'))
+
+      expect(popupHostEl.childNodes).toHaveLength(1)
+      expect(popupHostEl.firstElementChild).not.toBe(stale)
+      expect(popupHostEl.firstElementChild?.classList.contains('air-datepicker')).toBe(true)
     })
 
     // Bug: https://github.com/helvetia-design/system/issues/2209

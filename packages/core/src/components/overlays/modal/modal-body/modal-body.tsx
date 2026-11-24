@@ -24,7 +24,7 @@ export class ModalBody implements DsComponentInterface {
   @Element() el!: HTMLStencilElement
 
   connectedCallback(): void {
-    this.el.slot = 'body'
+    this.el.setAttribute('slot', 'body')
   }
 
   /**

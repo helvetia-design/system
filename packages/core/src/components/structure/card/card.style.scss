@@ -451,7 +451,7 @@ $spaces: ('sm', 'lg');
     max-width: fit-content;
   }
 
-  :host(.is-image-teaser-wide) #card,
+  :host(.is-image-teaser-wide-left) #card,
   :host(.is-image-teaser-wide-center) #card,
   :host(.is-image-teaser-wide-right) #card {
     @include tablet() {

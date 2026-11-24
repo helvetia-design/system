@@ -118,7 +118,7 @@ TileHtml.storyName = '🌍 Tile'
 export const Centered = Story({
   ...withRender(
     ({ slot, slotHeader }) => `
-<ds-card color="yellow-light" align="center">
+<ds-card color="yellow" align="center">
   <ds-card-header>
     <ds-card-title>${slotHeader}</ds-card-title>
   </ds-card-header>
@@ -136,7 +136,7 @@ Centered.storyName = '🧩 Centered'
 export const CenteredHtml = Story({
   ...withRender(
     ({ slot, slotHeader }) => `
-<article class="ds-card align-center is-yellow-light">
+<article class="ds-card align-center is-yellow">
   <header class="ds-card-header">
     <h3 class="ds-title">${slotHeader}</h3>
   </header>
@@ -516,7 +516,7 @@ export const Images = Story({
     </ds-card>
   </div>
   <div class="ds-col is-one-third">
-    <ds-card color="purple-light" space="sm">
+    <ds-card color="purple" space="sm">
       <picture>
         <img src="/assets/images/placeholder.png" alt="placeholder" />
       </picture>
@@ -596,7 +596,7 @@ export const ImagesHtml = Story({
     </article>
   </div>
   <div class="ds-col is-one-third">
-    <article class="ds-card is-purple-light has-space-sm">
+    <article class="ds-card is-purple has-space-sm">
       <picture>
         <img src="/assets/images/placeholder.png" alt="placeholder" />
       </picture>
@@ -654,7 +654,7 @@ ImagesHtml.storyName = '🌍 Images'
 export const ImageTeaser = Story({
   ...withRender(
     () => `
-<ds-card image-teaser="wide">
+<ds-card image-teaser="wide-left">
   <a slot="picture" class="ds-image-link" href="#" aria-hidden="true" tabindex="-1">
     <picture>
       <img src="/assets/images/placeholder.png" alt="placeholder" />

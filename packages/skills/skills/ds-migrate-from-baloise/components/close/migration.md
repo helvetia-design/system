@@ -36,10 +36,10 @@ Edit each finding yourself, using the mapping below. Read the whole element when
 
 | old (`bal-close`) | new (`ds-close`) | handling |
 | --- | --- | --- |
-| `size="small"` | `size="sm"` | Rewrite to the short value. Also rewrite `size='small'`, `size={"small"}`, and `size={'small'}`. |
+| `size="small"` | `size="md"` | `md` is the only `ds-close` size and the closest to legacy small. Do not write `size="sm"`, `ds-close` rejects it. Also rewrite `size='small'`, `size={"small"}`, and `size={'small'}`. |
 | `size="medium"` | `size="md"` | Rewrite to the short value. Also rewrite `size='medium'`, `size={"medium"}`, and `size={'medium'}`. |
 | `size=""` or `size` omitted | omit `size` | Drop `size`. Leave it unset. |
-| `[size]="x"`, `[attr.size]="x"`, `size={x}` | `size` | Dynamic value. Do not guess the mapping. HTML: copy the binding unchanged and list the file and line in the report for manual review. React and Angular: copy it when the expression's type only admits `sm` or `md`. Otherwise apply Unmapped props and handlers (`SKILL.md`). The report says that `small` is now `sm` and `medium` is now `md`. |
+| `[size]="x"`, `[attr.size]="x"`, `size={x}` | `size` | Dynamic value. Do not guess the mapping. HTML: copy the binding unchanged and list the file and line in the report for manual review. React and Angular: copy it when the expression's type only admits `md`. Otherwise apply Unmapped props and handlers (`SKILL.md`). The report says that `small` and `medium` are now `md`. |
 | `inverted` | `inverted` | Copy as-is, including `inverted="true"`, `inverted={true}`, and `[inverted]="x"`. |
 | _(none)_ | `disabled` | New prop. Nothing to migrate from. Leave it unset. |
 | _(none)_ | `button` | New prop. Nothing to migrate from. Leave it unset. |
@@ -70,7 +70,7 @@ Needs your attention when found:
 
 Coverage only, written to the file:
 
-3. Every `size="small"` or `"medium"` rewritten to `"sm"` or `"md"`.
+3. Every `size="small"` or `"medium"` rewritten to `"md"`. Legacy small has no size of its own in `ds-close`.
 
 Leave every change unstaged for the consumer to review, including `ds-migration-report.md`. Stop. Do not run `git add` or `git commit`.
 

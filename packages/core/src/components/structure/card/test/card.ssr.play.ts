@@ -15,8 +15,7 @@ import { renderToString } from '@helvetia-design/core/hydrate'
 import { TAG, VARIANTS } from './card.variants'
 
 const baseline = visualBaseline(TAG)
-const FIXME =
-  'SSR: renderToString reports Hydrate Error for invalid props in card.visual.html (image-teaser="wide", color="yellow-light", "purple-light") (#330)'
+const FIXME = 'SSR: ds-card server markup has extra vertical spacing from ds-heading (#326)'
 const PAGE_URL = `/components/structure/${TAG}/test/${TAG}.visual.html`
 
 test.describe('ssr', () => {

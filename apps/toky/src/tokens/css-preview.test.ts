@@ -56,10 +56,10 @@ describe('resolvedValueToCss', () => {
     expect(resolvedValueToCss(700, 'fontWeight', ['🌐 Global', '🔤 Font', 'Weight', '700'])).toBe('700')
   })
 
-  it('joins a fontFamily array, leaving simple names and generic keywords unquoted', () => {
-    // dist/css/base.tokens.css: --ds-global-font-family-heading: BaloiseCreateHeadline, Arial, sans-serif;
-    expect(resolvedValueToCss(['BaloiseCreateHeadline', 'Arial', 'sans-serif'], 'fontFamily', [])).toBe(
-      'BaloiseCreateHeadline, Arial, sans-serif',
+  it('joins a fontFamily array, quoting names with spaces and leaving generic keywords unquoted', () => {
+    // dist/css/base.tokens.css: --ds-global-font-family-heading: "Baloise Create Headline", Arial, sans-serif;
+    expect(resolvedValueToCss(['Baloise Create Headline', 'Arial', 'sans-serif'], 'fontFamily', [])).toBe(
+      '"Baloise Create Headline", Arial, sans-serif',
     )
   })
 
