@@ -15,10 +15,6 @@ const PAGE_URL = `/components/forms/${TAG}/test/${TAG}.visual.html`
 test.describe('ssr', () => {
   HOST_VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
-      test.fixme(
-        true,
-        'SSR: global stylesheet not adopted into the shadow root after hydration, native input keeps its UA margin (#326)',
-      )
       const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
       const el = page.getByTestId(variant)
 

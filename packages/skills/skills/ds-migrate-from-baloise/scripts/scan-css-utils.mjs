@@ -188,7 +188,9 @@ function sortDynamic(dynamic) {
       seen.set(key, { ...entry })
       continue
     }
+    const core = Boolean(first.group || first.core || entry.group || entry.core)
     if (!entry.group) delete first.group
+    if (!first.group && core) first.core = true
     if (entry.classes) first.classes = [...(first.classes ?? []), ...entry.classes]
   }
   return [...seen.values()].sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line)
@@ -196,6 +198,16 @@ function sortDynamic(dynamic) {
 
 function coreOnly(moves) {
   return moves.every(move => CORE_GROUPS.has(move.group))
+}
+
+function hasCore(moves) {
+  return moves.some(move => CORE_GROUPS.has(move.group))
+}
+
+// A place that mixes `css/core` and other classes keeps both legacy lines, so it gets `core` instead of the `core` group.
+function coreMark(moves) {
+  if (moves.length > 0 && coreOnly(moves)) return { group: 'core' }
+  return hasCore(moves) ? { core: true } : {}
 }
 
 function mappedMoves(names, index) {
@@ -217,7 +229,7 @@ function collect({ file, text, comments }, index, found, dynamic) {
       line: lineOf(offset),
       snippet: snippetAt(offset),
       reason,
-      ...(moves.length > 0 && coreOnly(moves) ? { group: 'core' } : {}),
+      ...coreMark(moves),
       ...extra,
     })
   const inComment = offset => comments[offset] !== text[offset]
@@ -267,7 +279,8 @@ function collect({ file, text, comments }, index, found, dynamic) {
     for (const move of mapClassTokens(tokens, index, siblings)) {
       found.push({ file, line: lineOf(move.offset), snippet: snippetAt(move.offset), ...move })
     }
-    for (const reason of context.reasons) report(context.start, reason)
+    const inner = hasCore(mappedMoves(context.inner ?? [], index)) ? { core: true } : {}
+    for (const reason of context.reasons) report(context.start, reason, [], inner)
   }
 
   const literals = [...codeLiterals(text, comments, extension), ...boundAttributeLiterals(text)]
@@ -424,11 +437,33 @@ function findContexts(text) {
     })
   }
 
-  for (const match of text.matchAll(/\bclassList\s*\.\s*(?:add|remove|toggle|contains)\s*\(/g)) {
+  for (const match of text.matchAll(/@HostBinding\(\s*(["'])class\1\s*\)[ \t]*\n?/g)) {
+    const open = match.index + match[0].length
+    const lineEnd = text.indexOf('\n', open)
+    const close = lineEnd === -1 ? text.length : lineEnd
+    const context = { start: match.index, end: close, strings: [], reasons: [] }
+    addLiterals(context, literalsIn(text.slice(open, close), open))
+    contexts.push(context)
+  }
+
+  for (const match of text.matchAll(
+    /\b(?:classList\s*\.\s*(?:add|remove|toggle|contains)|addClass|removeClass)\s*\(/g,
+  )) {
     const open = match.index + match[0].length
     const close = closingParen(text, open - 1)
     const context = { start: match.index, end: close + 1, strings: [], reasons: [] }
     addLiterals(context, literalsIn(text.slice(open, close), open))
+    contexts.push(context)
+  }
+
+  for (const match of text.matchAll(/\bsetAttribute\s*\(/g)) {
+    const open = match.index + match[0].length
+    const close = closingParen(text, open - 1)
+    const args = splitTopLevel(text.slice(open, close), open)
+    const name = args.findIndex(arg => /^\s*(["'])class\1\s*$/.test(arg.value))
+    if (name === -1) continue
+    const context = { start: match.index, end: close + 1, strings: [], reasons: [] }
+    for (const arg of args.slice(name + 1)) addLiterals(context, literalsIn(arg.value, arg.offset))
     contexts.push(context)
   }
 
@@ -455,7 +490,24 @@ function interpolated(start, end, value, offset, marker) {
   const open = marker ?? (value.includes('{{') ? '{{' : '${')
   if (!value.includes(open)) return plain(start, end, value, offset)
   const reason = open === '{{' ? 'interpolation' : 'template substitution'
-  return { start, end, strings: staticParts(value, offset, open), reasons: [reason] }
+  return { start, end, strings: staticParts(value, offset, open), reasons: [reason], inner: innerClasses(value, open) }
+}
+
+// The literals inside `${…}` or `{{ … }}`, such as `{{ on ? 'table' : '' }}`, cannot be rewritten in place, but name classes.
+function innerClasses(value, open) {
+  const names = []
+  let at = value.indexOf(open)
+  while (at !== -1) {
+    const from = at + open.length
+    const end = open === '${' ? endOfSubstitution(value, from) - 1 : value.indexOf('}}', from)
+    const stop = end < 0 ? value.length : end
+    for (const literal of literalsIn(value.slice(from, stop), 0)) {
+      if (literal.compared) continue
+      names.push(...literal.parts.flatMap(part => tokensOf(part.value, 0).map(token => token.value)), ...literal.inner)
+    }
+    at = value.indexOf(open, stop)
+  }
+  return names.filter(name => CLASS_TOKEN_RE.test(name))
 }
 
 function staticParts(value, offset, open) {
@@ -493,7 +545,9 @@ function jsxExpressionContext(text, start, open, close) {
   const lone = literals.length === 1 && /^\s*["'`]/.test(expression) && /["'`]\s*$/.test(expression)
   if (!lone && !literals.some(literal => literal.concatenated)) {
     if (literals.length > 0 && !readsValue(expression)) return bindingContext(text, start, open, close)
-    const keys = [...expression.matchAll(/[{,]\s*([A-Za-z_$][\w$-]*)\s*:/g)].map(match => match[1])
+    const keys = [...expression.matchAll(/[{,]\s*(?:(["'])([^"'\n]+)\1|([A-Za-z_$][\w$-]*))\s*:/g)].flatMap(match =>
+      (match[2] ?? match[3]).split(/\s+/).filter(Boolean),
+    )
     return keys.length > 0 ? { start, end: close + 1, keys } : undefined
   }
   const context = { start, end: close + 1, strings: [], reasons: [] }
@@ -507,6 +561,7 @@ function addLiterals(context, literals) {
     if (literal.substitution) context.reasons.push('template substitution')
     if (literal.concatenated) context.reasons.push('string concatenation')
     context.strings.push(...literal.parts)
+    context.inner = [...(context.inner ?? []), ...literal.inner]
   }
 }
 
@@ -607,6 +662,7 @@ function literalsIn(source, offset) {
       parts: substitution
         ? staticParts(value, offset + literal.start + 1, '${')
         : staticPart(value, 0, value.length, offset + literal.start + 1, joinedBefore, joinedAfter),
+      inner: substitution ? innerClasses(value, '${') : [],
     })
   }
   return literals

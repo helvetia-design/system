@@ -49,8 +49,10 @@ import {
   buildNameUpdatePayload,
   collectNewlyCreatedIds,
   committedVariableIds,
+  dropUnknownVariableIds,
   findForeignCollectionVariableIds,
   findResolvedTypeMismatches,
+  isLikelyDifferentFigmaFile,
   resolveTempIds,
 } from './lib/write.mjs'
 
@@ -116,7 +118,7 @@ async function dryRun(
   console.log(`\nFigma file has ${figmaVariableIds.size} variables.`)
   if (missingInFigma.length > 0) {
     console.log(
-      `  ${missingInFigma.length} token variableId(s) not found in Figma (would fail to update): ${missingInFigma.slice(0, 10).join(', ')}${missingInFigma.length > 10 ? ', …' : ''}`,
+      `  ${missingInFigma.length} token variableId(s) not found in Figma (will be recreated and backfilled; the run fails if most are missing): ${missingInFigma.slice(0, 10).join(', ')}${missingInFigma.length > 10 ? ', …' : ''}`,
     )
   }
   if (missingInTokens.length > 0) {
@@ -233,18 +235,25 @@ async function writePull(
 ) {
   const localVariables = await getLocalVariables(figmaFileKey, figmaToken)
 
-  // Fail fast, before any POST, if the tokens tree already carries variableIds this file has never
-  // seen — almost always TOKENS_DIR_OVERRIDE was meant to be set (testing against a sandbox file
-  // with the production tokens directory). Left undetected, this surfaces later as a cryptic 400
-  // from Figma's alias pass, after the create pass has already written.
-  const unknownIds = committedVariableIds(baseTokens).filter(id => !localVariables.variables[id])
-  if (unknownIds.length > 0) {
+  // Fail fast, before any POST, if most committed variableIds are unknown to this file — almost
+  // always TOKENS_DIR_OVERRIDE was meant to be set (testing against a sandbox file with the production
+  // tokens directory). Left undetected, this surfaces later as a cryptic 400 from Figma's alias pass,
+  // after the create pass has already written. A few unknown ids are normal (a partial earlier run,
+  // a variable deleted in Figma): they are dropped from the tokens and the token is recreated and backfilled.
+  const committedIds = committedVariableIds(baseTokens)
+  const unknownIds = dropUnknownVariableIds(baseTokens, localVariables.variables)
+  if (isLikelyDifferentFigmaFile(committedIds.length, unknownIds.length)) {
     throw new Error(
-      `${unknownIds.length} committed variableId(s) don't exist in file ${figmaFileKey} (e.g. ${unknownIds
+      `${unknownIds.length} of ${committedIds.length} committed variableId(s) don't exist in file ${figmaFileKey} (e.g. ${unknownIds
         .slice(0, 5)
         .join(', ')}). This usually means the tokens directory was round-tripped against a ` +
         `different Figma file — set TOKENS_DIR_OVERRIDE to a scratch tokens directory for sandbox-` +
         `file testing, or point FIGMA_FILE_KEY at the file these variableIds actually belong to.`,
+    )
+  }
+  if (unknownIds.length > 0) {
+    console.log(
+      `Recreating token(s) whose committed variableId(s) don't exist in Figma (${unknownIds.length}): ${unknownIds.slice(0, 5).join(', ')}${unknownIds.length > 5 ? ', …' : ''}`,
     )
   }
 
@@ -274,22 +283,6 @@ async function writePull(
     )
   }
 
-  // Figma can't change a variable's resolvedType after creation, so a token whose existing
-  // variable(s) no longer match the type this run expects (e.g. LineHeight FLOAT -> "150%" STRING)
-  // is deleted here, in its own POST ahead of everything else — a same-name CREATE in the same
-  // batch would collide with the not-yet-deleted original — then handled as a brand-new token
-  // below: no variableId, so it gets a fresh one, which the backfill commit writes back.
-  const mismatches = findResolvedTypeMismatches(baseTokens, localVariables.variables)
-  if (mismatches.length > 0) {
-    const staleIds = mismatches.flatMap(({ ids }) => ids)
-    console.log(
-      `Pass 0: recreating ${mismatches.length} token(s) whose Figma variable type changed (${staleIds.length} variable(s) deleted)…`,
-    )
-    await postVariables(figmaFileKey, figmaToken, buildDeleteVariablesPayload(staleIds))
-    for (const id of staleIds) delete localVariables.variables[id]
-    for (const { token } of mismatches) delete token.variableId
-  }
-
   const { collectionId, modeIdByBrand } = await resolveBrandCollection(
     localVariables,
     brandNames,
@@ -310,11 +303,32 @@ async function writePull(
   // variable it would otherwise create. Scoped per collection — a Device
   // variable's name-fallback match only makes sense against the responsive
   // collection's own variables, not the brand collection's.
-  const nameIndex = buildNameIndex(localVariables, collectionId)
-  const responsiveNameIndex = responsiveCollectionId
-    ? buildNameIndex(localVariables, responsiveCollectionId)
-    : new Map()
-  const idByPath = assignVariableIds(baseTokens, nameIndex, responsiveNameIndex)
+  const assignIds = () =>
+    assignVariableIds(
+      baseTokens,
+      buildNameIndex(localVariables, collectionId),
+      responsiveCollectionId ? buildNameIndex(localVariables, responsiveCollectionId) : new Map(),
+    )
+  let idByPath = assignIds()
+
+  // Figma can't change a variable's resolvedType after creation, so a token whose existing
+  // variable(s) no longer match the type this run expects (e.g. LineHeight FLOAT -> "150%" STRING)
+  // is deleted here, in its own POST ahead of everything else — a same-name CREATE in the same
+  // batch would collide with the not-yet-deleted original — then handled as a brand-new token
+  // below: no variableId, so it gets a fresh one, which the backfill commit writes back. Checked
+  // against idByPath, so a variable the token only reaches by name is covered too; the ids are
+  // reassigned afterwards so the freed names get temp ids instead of the deleted ones.
+  const mismatches = findResolvedTypeMismatches(baseTokens, localVariables.variables, idByPath)
+  if (mismatches.length > 0) {
+    const staleIds = mismatches.flatMap(({ ids }) => ids)
+    console.log(
+      `Pass 0: recreating ${mismatches.length} token(s) whose Figma variable type changed (${staleIds.length} variable(s) deleted)…`,
+    )
+    await postVariables(figmaFileKey, figmaToken, buildDeleteVariablesPayload(staleIds))
+    for (const id of staleIds) delete localVariables.variables[id]
+    for (const { token } of mismatches) delete token.variableId
+    idByPath = assignIds()
+  }
 
   // Deletions (docs/adr/0019-pull-auto-deletes-figma-variables.md) are
   // baseline-relative — only a variableId this Action previously synced
@@ -332,7 +346,7 @@ async function writePull(
   // against a nonexistent id 400s the *entire* batch, taking this run's
   // creates and mode-values down with it.
   const existingState = loadSyncStateFile(inputs.syncStateFile)
-  const removedIds = findRemovedVariableIds(existingState, baseTokens)
+  const removedIds = findRemovedVariableIds(existingState, idByPath)
   const deletableIds = removedIds.filter(id => localVariables.variables[id])
   const staleBaselineIds = removedIds.filter(id => !localVariables.variables[id])
   if (deletableIds.length > 0) {

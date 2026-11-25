@@ -36,6 +36,14 @@ async function assertOk(response: Response, action: string): Promise<void> {
   }
 }
 
+/** Login of the account that owns TOKY_GITHUB_TOKEN. */
+export async function getTokenOwnerLogin(): Promise<string> {
+  const response = await apiFetch('https://api.github.com/user', { headers: authHeaders() })
+  await assertOk(response, 'read the owner of TOKY_GITHUB_TOKEN')
+  const { login } = (await response.json()) as { login: string }
+  return login
+}
+
 // One standing branch per target base, e.g. "toky/update-next" — a second
 // submit against the same base reuses it (and its still-open PR) instead of
 // spawning a new branch/PR every time. Slashes in the base (e.g.
@@ -319,8 +327,13 @@ export async function updatePullRequestBody(prNumber: number, body: string): Pro
 
 export interface SyncStatus {
   state: 'synced' | 'pending'
+  baseRef: string
   prUrl: string | null
   prNumber: number | null
+}
+
+export function syncedStatus(baseRef: string): SyncStatus {
+  return { state: 'synced', baseRef, prUrl: null, prNumber: null }
 }
 
 // Where the editor should actually read from: if a Toky-authored branch for
@@ -332,12 +345,12 @@ export async function resolveReadRef(base: string): Promise<{ ref: string; statu
   const branch = workingBranchFor(base)
   const exists = await branchExists(branch)
   if (!exists) {
-    return { ref: base, status: { state: 'synced', prUrl: null, prNumber: null } }
+    return { ref: base, status: syncedStatus(base) }
   }
 
   const pr = await findOpenPullRequest(branch)
   return {
     ref: branch,
-    status: { state: 'pending', prUrl: pr?.url ?? null, prNumber: pr?.number ?? null },
+    status: { state: 'pending', baseRef: base, prUrl: pr?.url ?? null, prNumber: pr?.number ?? null },
   }
 }

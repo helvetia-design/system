@@ -1018,4 +1018,99 @@ describe('places a rewrite would break', () => {
     expect(moves(result)).toEqual([{ file: 'a.tsx', line: 1, from: 'table', to: 'ds-table', group: 'core' }])
     expect(result.dynamic).toEqual([])
   })
+
+  it('marks an interpolation or substitution whose literals name a core.css class with core, not the core group', () => {
+    const root = createScratchDir()
+    write(root, 'a.component.html', `<table class="{{ striped ? 'table is-striped' : 'table' }}"></table>\n`)
+    write(
+      root,
+      'b.tsx',
+      [
+        "export const B = () => <table className={`${s ? 'table is-striped' : 'table'}`} />",
+        "export const C = () => <div className={`${mode === 'grid' ? 'mb-small' : ''}`} />",
+        '',
+      ].join('\n'),
+    )
+
+    const result = scanCssUtils(root)
+
+    expect(moves(result)).toEqual([])
+    expect(result.dynamic.map(({ file, line, reason, group, core }) => ({ file, line, reason, group, core }))).toEqual([
+      { file: 'a.component.html', line: 1, reason: 'interpolation', group: undefined, core: true },
+      { file: 'b.tsx', line: 1, reason: 'template substitution', group: undefined, core: true },
+      { file: 'b.tsx', line: 2, reason: 'template substitution', group: undefined, core: undefined },
+    ])
+  })
+
+  it('reads HostBinding class, Renderer2 addClass and setAttribute class like classList', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'a.component.ts',
+      [
+        'export class A {',
+        "  @HostBinding('class') cls = 'table'",
+        "  @HostBinding('class')",
+        "  other = 'radius-large'",
+        '  constructor(renderer: Renderer2, el: ElementRef) {',
+        "    renderer.addClass(el.nativeElement, 'link')",
+        "    renderer.setAttribute(el.nativeElement, 'class', 'button')",
+        "    el.nativeElement.setAttribute('class', 'field')",
+        "    el.nativeElement.setAttribute('type', 'button')",
+        '  }',
+        '}',
+        '',
+      ].join('\n'),
+    )
+
+    const result = scanCssUtils(root)
+
+    expect(moves(result).map(({ line, from, to, group }) => ({ line, from, to, group }))).toEqual([
+      { line: 2, from: 'table', to: 'ds-table', group: 'core' },
+      { line: 4, from: 'radius-large', to: 'radius-lg', group: 'renamed' },
+      { line: 6, from: 'link', to: 'ds-link', group: 'core' },
+      { line: 7, from: 'button', to: 'ds-button', group: 'core' },
+      { line: 8, from: 'field', to: 'ds-field', group: 'core' },
+    ])
+    expect(result.dynamic).toEqual([])
+  })
+
+  it('reads quoted object keys in a className call and marks a mixed place with core, without the core group that would free the utilities line', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'a.tsx',
+      [
+        "export const A = () => <div className={cx({ 'table': a })} />",
+        'export const B = () => <div className={cx({ "table": a, grid: b })} />',
+        "const mixed = 'table shadow-small'",
+        '',
+      ].join('\n'),
+    )
+
+    const result = scanCssUtils(root)
+
+    expect(
+      result.dynamic.map(({ line, reason, group, core, classes }) => ({ line, reason, group, core, classes })),
+    ).toEqual([
+      {
+        line: 1,
+        reason: 'non-literal class binding',
+        group: 'core',
+        core: undefined,
+        classes: [{ from: 'table', to: 'ds-table', group: 'core' }],
+      },
+      {
+        line: 2,
+        reason: 'non-literal class binding',
+        group: undefined,
+        core: true,
+        classes: [
+          { from: 'table', to: 'ds-table', group: 'core' },
+          { from: 'grid', to: 'ds-grid', group: 'structure' },
+        ],
+      },
+      { line: 3, reason: 'string literal outside a class context', group: undefined, core: true, classes: undefined },
+    ])
+  })
 })

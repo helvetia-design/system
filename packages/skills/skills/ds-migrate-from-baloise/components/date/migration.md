@@ -40,7 +40,8 @@ Edit each finding yourself, using the mapping below. Read the whole element when
 
 | old (`bal-date`) | new (`ds-datepicker`) | handling |
 | --- | --- | --- |
-| `name`, `invalid`, `disabled`, `readonly`, `freeSolo`, `placeholder`, `autocomplete`, `value`, `min`, `max`, `min-year`, `max-year`, `defaultDate`, `allowedDates`, `debounce`, `autoInvalidOff` | same | Copy as-is, in every form (`disabled`, `disabled="true"`, `[disabled]="x"`, `disabled={x}`). Keep form bindings such as `[(ngModel)]`, `formControlName`, and `[formControl]` unchanged. |
+| `name`, `invalid`, `disabled`, `readonly`, `freeSolo`, `placeholder`, `autocomplete`, `value`, `min`, `max`, `defaultDate`, `allowedDates`, `debounce`, `autoInvalidOff` | same | Copy as-is, in every form (`disabled`, `disabled="true"`, `[disabled]="x"`, `disabled={x}`). Keep form bindings such as `[(ngModel)]`, `formControlName`, and `[formControl]` unchanged. |
+| `min-year`, `max-year` (`minYearProp`, `maxYearProp` in React and Angular) | same | Copy as-is, in every form (`min-year="1990"`, `[attr.min-year]="x"`, `minYearProp={x}`, `[minYearProp]="x"`). Legacy and `ds-datepicker` use the same attribute and property names. |
 | `required` set | `required` | Copy as-is. |
 | `required` omitted | `required` set to false | Follow the required default rule in `SKILL.md`. Report each file where this was added. |
 | `triggerIcon`, `closeOnSelect` | _(no equivalent)_ | Drop it in every form (bare, `="true"`, `="false"`, `{true}`, `[closeOnSelect]="x"`). Report each dropped prop as a behaviour difference. `ds-datepicker` opens the popup only from the calendar button, which is what `triggerIcon` did, and always closes it after a selection, so only `closeOnSelect` set to false loses behaviour. |

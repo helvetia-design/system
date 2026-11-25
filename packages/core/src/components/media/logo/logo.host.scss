@@ -17,7 +17,7 @@
 :host {
   @include vars.base(logo);
   @include vars.local(logo-color, var(--ds-logo-color-primary));
-  @include vars.local(logo-height, var(--ds-logo-size-base-mobile));
+  @include vars.local(logo-height, var(--ds-logo-size-base));
 }
 
 /**
@@ -43,10 +43,6 @@
   height: var(--_logo-height);
   & > div {
     height: var(--_logo-height);
-  }
-
-  @include desktop {
-    --mod-logo-height: var(--ds-logo-size-base-desktop);
   }
 
   #animated {
@@ -77,17 +73,9 @@
 }
 
 :host(.is-sm) {
-  --mod-logo-height: var(--ds-logo-size-sm-mobile);
-
-  @include desktop {
-    --mod-logo-height: var(--ds-logo-size-sm-desktop);
-  }
+  --mod-logo-height: var(--ds-logo-size-sm);
 }
 
 :host(.is-lg) {
-  --mod-logo-height: var(--ds-logo-size-lg-mobile);
-
-  @include desktop {
-    --mod-logo-height: var(--ds-logo-size-lg-desktop);
-  }
+  --mod-logo-height: var(--ds-logo-size-lg);
 }

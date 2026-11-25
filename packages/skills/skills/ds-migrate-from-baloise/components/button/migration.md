@@ -100,7 +100,7 @@ Still rewrite the tag — the button keeps working, and a `(dsClick)` or `onDsCl
 | `size="small"` | `size="sm"` | 32px on both sides. Also rewrite `size='small'`, `size={"small"}`, and `size={'small'}`. |
 | `expanded` | `wide` | Rename. Same meaning: the button fills the available width. |
 | `loading` | `loading` | Copy as-is. Behaviour change: `ds-button` also disables the native button while loading, where `bal-button` only hid the label and stayed clickable. Mention once, not per occurrence. |
-| `outlined` | `outlined` | Copy as-is. It has no visual effect on either side — `is-outlined` has no CSS in either design system. Mention once that it is inert. |
+| `outlined` | _(no equivalent)_ | Drop it in every form (`outlined`, `outlined="true"`, `outlined={x}`, `[outlined]="x"`). `ds-button` has no `outlined` prop. Legacy `is-outlined` had no CSS, so nothing changes visually. Mention once that it was dropped. |
 | `rounded` | _(no equivalent)_ | Drop it. Legacy `is-rounded` was real styling (a pill-shaped button); nothing replaces it. Mention each dropped occurrence. |
 | `isActive` | `a11yCurrent` on a navigation entry, otherwise _(no equivalent)_ | Rewrite it only when the button is a navigation entry. It is one when it has `href`, its click handler navigates, or it sits in a navbar or nav menu. A static `is-active` or `isActive` (true literal) becomes `aria-current="page"` in HTML and `a11yCurrent="page"` in React and Angular. `ds-button` reads the HTML `aria-current` once on load and moves it to the native element. A bound value becomes `a11yCurrent={cond ? 'page' : undefined}` in React and `[a11yCurrent]="cond ? 'page' : ''"` in Angular. In HTML with JavaScript, a value that changes becomes `el.a11yCurrent = cond ? 'page' : ''`. Do not use `setAttribute('aria-current', …)`, because `ds-button` reads it only on load. Remove a false literal. `ds-button` forwards `a11yCurrent` as `aria-current` to the native element. The forced pressed look of legacy `is-active` is gone. On a navigation entry, also rewrite `color` as the current-navigation-entry section above describes. When the button is not a navigation entry, drop `isActive`. Its pressed look is lost. Mention each occurrence. |
 | `balPopup` / the `bal-popup` attribute | leave the attribute | Leave the `bal-popup` attribute in every form (bare, `bal-popup="<id>"`, `[attr.bal-popup]`, `setAttribute('bal-popup', …)`) unchanged. The popup migration rewrites it to `data-popup`, because `ds-popup` finds its trigger through `data-popup="<id>"`. Report each one. Drop `[balPopup]` and `balPopup={…}` property bindings. The legacy prop was never reflected to the attribute, so those bindings did nothing on either side. |
@@ -176,7 +176,7 @@ Coverage only, written to the file:
 14. Every dropped `[balPopup]` or `balPopup={…}` binding.
 15. Every numeric `value` written as a string, and every non-literal `value` binding with its outcome: copied, or removed (Unmapped).
 16. Every `BalButtonBundle` expanded into `DsButton` and `DsButtonGroup`.
-17. One-time note: `outlined` is inert on both sides.
+17. One-time note: every `outlined` was dropped. It had no visual effect, and `ds-button` has no such prop.
 
 Leave every change unstaged for the consumer to review, including `ds-migration-report.md`. Stop. Do not run `git add` or `git commit`.
 

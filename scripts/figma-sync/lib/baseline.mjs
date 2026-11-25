@@ -8,7 +8,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import { pathKey } from './alias.mjs'
-import { flattenVariableId } from './figma-value.mjs'
+import { flattenVariableId, isTempId } from './figma-value.mjs'
 
 /** Tolerant of a missing file — there is no baseline yet on a repo's first-ever sync. */
 export function loadSyncStateFile(path) {
@@ -34,6 +34,9 @@ export function applyVariableIdPatch(tree, newIds) {
   const patched = structuredClone(tree)
 
   for (const { path, variableId } of newIds) {
+    if (flattenVariableId(variableId).some(({ id }) => isTempId(id))) {
+      throw new Error(`applyVariableIdPatch: token ${pathKey(path)} still has an unresolved temp id.`)
+    }
     const node = getNodeAtPath(patched, path)
     if (!node || typeof node !== 'object' || !('$value' in node)) {
       throw new Error(`applyVariableIdPatch: no token leaf found at path ${pathKey(path)}`)

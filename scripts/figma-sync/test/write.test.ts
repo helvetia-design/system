@@ -20,12 +20,14 @@ import {
   buildDescriptionUpdatePayload,
   buildNameUpdatePayload,
   collectNewlyCreatedIds,
+  dropUnknownVariableIds,
   figmaBorderSubVariableName,
   figmaResponsiveDimensionSubVariableName,
   figmaShadowSubVariableName,
   figmaTypographySubVariableName,
   figmaVariableName,
   findResolvedTypeMismatches,
+  isLikelyDifferentFigmaFile,
   resolveTempIds,
 } from '../lib/write.mjs'
 
@@ -59,7 +61,9 @@ describe('figma-value', () => {
   })
 
   it('sends only the first entry of a fontFamily array — Figma has no font-stack concept', () => {
-    expect(figmaValueFor('fontFamily', ['BaloiseCreateHeadline', 'Arial', 'sans-serif'])).toBe('BaloiseCreateHeadline')
+    expect(figmaValueFor('fontFamily', ['Baloise Create Headline', 'Arial', 'sans-serif'])).toBe(
+      'Baloise Create Headline',
+    )
     expect(figmaValueFor('fontFamily', ['inherit'])).toBe('inherit')
   })
 
@@ -279,7 +283,7 @@ describe('figmaTypographySubEntriesFor', () => {
   const familyToken = {
     path: ['Global', 'Font', 'Family', 'Heading'],
     type: 'fontFamily',
-    value: { kind: 'literal', value: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'] },
+    value: { kind: 'literal', value: ['Baloise Create Headline', 'Arial', 'sans-serif'] },
   }
   const weightToken = {
     path: ['Global', 'Font', 'Weight', '700'],
@@ -770,7 +774,7 @@ describe('typography push (two-pass write payload)', () => {
   const familyPrimitive = {
     path: ['Global', 'Font', 'Family', 'Heading'],
     type: 'fontFamily',
-    value: { kind: 'literal', value: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'] },
+    value: { kind: 'literal', value: ['Baloise Create Headline', 'Arial', 'sans-serif'] },
   }
   const weightPrimitive = {
     path: ['Global', 'Font', 'Weight', '700'],
@@ -1867,5 +1871,228 @@ describe('findResolvedTypeMismatches', () => {
   it('ignores a token with no variableId or no matching remote variable', () => {
     expect(findResolvedTypeMismatches([{ ...lineHeightToken, variableId: undefined }], {})).toEqual([])
     expect(findResolvedTypeMismatches([lineHeightToken], {})).toEqual([])
+  })
+})
+
+describe('findResolvedTypeMismatches with idByPath (name-matched variables)', () => {
+  const lineHeightToken = {
+    path: ['🌐 Global', '🔤 Font', 'LineHeight', '2'],
+    type: 'number',
+    value: { kind: 'literal', value: 1.3 },
+  }
+
+  it('lists a token without variableId whose name-matched Figma variable has another type, and recreates it after the delete', () => {
+    const remote: Record<string, { id: string; name: string; variableCollectionId: string; resolvedType: string }> = {
+      'VariableID:9:9': {
+        id: 'VariableID:9:9',
+        name: '🌐 Global/🔤 Font/LineHeight/2',
+        variableCollectionId: 'coll-1',
+        resolvedType: 'FLOAT',
+      },
+    }
+    const nameIndexOf = () => buildNameIndex({ variables: remote }, 'coll-1')
+
+    const idByPath = assignVariableIds([lineHeightToken], nameIndexOf())
+    expect(idByPath.get('🌐 Global.🔤 Font.LineHeight.2')).toBe('VariableID:9:9')
+    expect(findResolvedTypeMismatches([lineHeightToken], remote, idByPath)).toEqual([
+      { token: lineHeightToken, ids: ['VariableID:9:9'] },
+    ])
+
+    delete remote['VariableID:9:9']
+    const reassigned = assignVariableIds([lineHeightToken], nameIndexOf())
+    expect(reassigned.get('🌐 Global.🔤 Font.LineHeight.2')).toBe('temp-🌐 Global.🔤 Font.LineHeight.2')
+    const { variables } = buildCreatePassPayload({
+      baseTokens: [lineHeightToken],
+      brandTokensByName: { Base: [lineHeightToken] },
+      idByPath: reassigned,
+      collectionId: 'coll-1',
+      modeIdByBrand: { Base: 'm-base' },
+    })
+    expect(variables).toEqual([
+      expect.objectContaining({ action: 'CREATE', id: 'temp-🌐 Global.🔤 Font.LineHeight.2', resolvedType: 'STRING' }),
+    ])
+  })
+
+  it('skips temp ids', () => {
+    const idByPath = assignVariableIds([lineHeightToken])
+    const remote = { 'temp-🌐 Global.🔤 Font.LineHeight.2': { resolvedType: 'FLOAT' } }
+    expect(findResolvedTypeMismatches([lineHeightToken], remote, idByPath)).toEqual([])
+  })
+
+  it('does not name-match a variable another token still commits under its old name', () => {
+    const renamed = { path: ['A', 'C'], type: 'string', value: { kind: 'literal', value: 'c' }, variableId: 'V' }
+    const added = { path: ['A', 'B'], type: 'number', value: { kind: 'literal', value: 1 } }
+    const idByPath = assignVariableIds([renamed, added], new Map([['A/B', 'V']]))
+    expect(idByPath.get('A.B')).toBe('temp-A.B')
+    expect(idByPath.get('A.C')).toBe('V')
+    expect(findResolvedTypeMismatches([renamed, added], { V: { resolvedType: 'STRING' } }, idByPath)).toEqual([])
+  })
+})
+
+describe('dropUnknownVariableIds', () => {
+  it('drops a plain id Figma does not have and keeps one it has', () => {
+    const unknown = { path: ['A'], type: 'string', value: { kind: 'literal', value: 'x' }, variableId: 'gone' }
+    const known = { path: ['B'], type: 'string', value: { kind: 'literal', value: 'y' }, variableId: 'here' }
+    const dropped = dropUnknownVariableIds([unknown, known], { here: {} })
+    expect(dropped).toEqual(['gone'])
+    expect(unknown.variableId).toBeUndefined()
+    expect(known.variableId).toBe('here')
+  })
+
+  it('drops only the missing sub-ids of a composite id and the whole id once none remain', () => {
+    const partial = {
+      path: ['Global', 'Shadow', 'Base'],
+      type: 'shadow',
+      value: { kind: 'literal', value: [] },
+      variableId: { offsetX: 'x', offsetY: 'y', blur: 'b', spread: 's', color: 'c' } as
+        Record<string, string> | undefined,
+    }
+    const allGone = {
+      path: ['Alias', 'Border', 'Grey'],
+      type: 'border',
+      value: { kind: 'literal', value: {} },
+      variableId: { color: 'bc', width: 'bw', style: 'bs' } as Record<string, string> | undefined,
+    }
+    const dropped = dropUnknownVariableIds([partial, allGone], { x: {}, y: {}, b: {}, s: {} })
+    expect(dropped).toEqual(['c', 'bc', 'bw', 'bs'])
+    expect(partial.variableId).toEqual({ offsetX: 'x', offsetY: 'y', blur: 'b', spread: 's' })
+    expect(allGone.variableId).toBeUndefined()
+  })
+
+  it('completes only the dropped shadow sub-id as a CREATE, even when the dropped key is the shape discriminator', () => {
+    const shadow = {
+      path: ['Global', 'Shadow', 'Base'],
+      type: 'shadow',
+      value: {
+        kind: 'literal',
+        value: {
+          color: { colorSpace: 'srgb', components: [0, 0, 0], alpha: 0.15, hex: '#000000' },
+          offsetX: { value: 0, unit: 'rem' },
+          offsetY: { value: 0.25, unit: 'rem' },
+          blur: { value: 0.75, unit: 'rem' },
+          spread: { value: 0, unit: 'rem' },
+        },
+      },
+      variableId: { offsetX: 'x', offsetY: 'y', blur: 'b', spread: 's', color: 'c' } as Record<string, string>,
+    }
+    dropUnknownVariableIds([shadow], { y: {}, b: {}, s: {}, c: {} })
+    const idByPath = assignVariableIds([shadow])
+    expect(idByPath.get('Global.Shadow.Base')).toEqual({
+      offsetX: 'temp-Global.Shadow.Base-offsetX',
+      offsetY: 'y',
+      blur: 'b',
+      spread: 's',
+      color: 'c',
+    })
+    const { variables } = buildCreatePassPayload({
+      baseTokens: [shadow],
+      brandTokensByName: { Base: [shadow] },
+      idByPath,
+      collectionId: 'coll-1',
+      modeIdByBrand: { Base: 'm-base' },
+    })
+    expect(variables).toEqual([expect.objectContaining({ action: 'CREATE', id: 'temp-Global.Shadow.Base-offsetX' })])
+    resolveTempIds(idByPath, { 'temp-Global.Shadow.Base-offsetX': 'real-x' })
+    expect(collectNewlyCreatedIds([shadow], idByPath)).toEqual([
+      {
+        path: shadow.path,
+        variableId: { offsetX: 'real-x', offsetY: 'y', blur: 'b', spread: 's', color: 'c' },
+      },
+    ])
+  })
+})
+
+describe('isLikelyDifferentFigmaFile', () => {
+  it('is fatal when most committed ids are unknown', () => {
+    expect(isLikelyDifferentFigmaFile(100, 100)).toBe(true)
+    expect(isLikelyDifferentFigmaFile(100, 51)).toBe(true)
+  })
+
+  it('is not fatal for a few unknown ids, or none', () => {
+    expect(isLikelyDifferentFigmaFile(100, 1)).toBe(false)
+    expect(isLikelyDifferentFigmaFile(100, 50)).toBe(false)
+    expect(isLikelyDifferentFigmaFile(100, 0)).toBe(false)
+    expect(isLikelyDifferentFigmaFile(0, 0)).toBe(false)
+  })
+})
+
+describe('collectNewlyCreatedIds for a composite token that lacks sub-ids', () => {
+  const deviceToken = {
+    path: ['📱 Device', '↔️ Space', 'Lg'],
+    type: 'dimension',
+    value: { kind: 'literal', value: { value: 16, unit: 'px' } },
+    responsive: {
+      mobile: { value: 16, unit: 'px' },
+      tablet: { value: 24, unit: 'px' },
+      desktop: { value: 32, unit: 'px' },
+    },
+    variableId: { mobile: 'm', tablet: 't', desktop: 'd' } as Record<string, string>,
+  }
+
+  it('backfills the new device id of a responsive dimension token that has the 3 breakpoint ids', () => {
+    const idByPath = assignVariableIds([deviceToken])
+    expect(idByPath.get('📱 Device.↔️ Space.Lg')).toEqual({
+      mobile: 'm',
+      tablet: 't',
+      desktop: 'd',
+      device: 'temp-📱 Device.↔️ Space.Lg-device',
+    })
+    resolveTempIds(idByPath, { 'temp-📱 Device.↔️ Space.Lg-device': 'real-device' })
+    expect(collectNewlyCreatedIds([deviceToken], idByPath)).toEqual([
+      { path: deviceToken.path, variableId: { mobile: 'm', tablet: 't', desktop: 'd', device: 'real-device' } },
+    ])
+  })
+
+  it('does not report a composite token whose ids are already complete', () => {
+    const complete = { ...deviceToken, variableId: { mobile: 'm', tablet: 't', desktop: 'd', device: 'dev' } }
+    const idByPath = assignVariableIds([complete])
+    expect(collectNewlyCreatedIds([complete], idByPath)).toEqual([])
+  })
+})
+
+describe('assignVariableIds for a composite token missing sub-ids', () => {
+  it('name-matches the missing sub-id of a border token', () => {
+    const border = {
+      path: ['Alias', 'Border', 'Composite', 'Grey'],
+      type: 'border',
+      value: { kind: 'literal', value: { color: '{A.Color}', width: '{A.Width}', style: '{A.Style}' } },
+      variableId: { color: 'bc', width: 'bw' } as Record<string, string>,
+    }
+    const nameIndex = new Map([[figmaBorderSubVariableName(border.path, 'style'), 'bs']])
+    expect(assignVariableIds([border], nameIndex).get('Alias.Border.Composite.Grey')).toEqual({
+      color: 'bc',
+      width: 'bw',
+      style: 'bs',
+    })
+  })
+
+  const responsiveToken = {
+    path: ['Alias', 'Space', 'Lg'],
+    type: 'dimension',
+    value: { kind: 'literal', value: { value: 16, unit: 'px' } },
+    responsive: {
+      mobile: { value: 16, unit: 'px' },
+      tablet: { value: 24, unit: 'px' },
+      desktop: { value: 32, unit: 'px' },
+    },
+  }
+
+  it('gives a responsive token missing its tablet id a temp id for it', () => {
+    const token = { ...responsiveToken, variableId: { mobile: 'm', desktop: 'd' } }
+    expect(assignVariableIds([token]).get('Alias.Space.Lg')).toEqual({
+      mobile: 'm',
+      tablet: 'temp-Alias.Space.Lg-tablet',
+      desktop: 'd',
+    })
+  })
+
+  it('keeps the existing device id of a responsive token that is not Device-eligible', () => {
+    const token = { ...responsiveToken, variableId: { mobile: 'm', tablet: 't', desktop: 'd', device: 'dev' } }
+    expect(assignVariableIds([token]).get('Alias.Space.Lg')).toEqual({
+      mobile: 'm',
+      tablet: 't',
+      desktop: 'd',
+      device: 'dev',
+    })
   })
 })

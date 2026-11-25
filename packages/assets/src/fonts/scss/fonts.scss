@@ -6,7 +6,7 @@ $font-heading-bold-woff: string.insert('/BaloiseCreateHeadline-bold.woff', $font
 $font-heading-bold-woff2: string.insert('/BaloiseCreateHeadline-bold.woff2', $font-path, 1);
 
 @font-face {
-  font-family: BaloiseCreateHeadline;
+  font-family: 'Baloise Create Headline';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -21,7 +21,7 @@ $font-heading-light-woff: string.insert('/BaloiseCreateHeadline-light.woff', $fo
 $font-heading-light-woff2: string.insert('/BaloiseCreateHeadline-light.woff2', $font-path, 1);
 
 @font-face {
-  font-family: BaloiseCreateHeadline;
+  font-family: 'Baloise Create Headline';
   font-style: normal;
   font-weight: 300;
   font-display: swap;
@@ -35,7 +35,7 @@ $font-text-bold-woff: string.insert('/BaloiseCreateText-bold.woff', $font-path, 
 $font-text-bold-woff2: string.insert('/BaloiseCreateText-bold.woff2', $font-path, 1);
 
 @font-face {
-  font-family: BaloiseCreateText;
+  font-family: 'Baloise Create Text';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -47,6 +47,53 @@ $font-text-bold-woff2: string.insert('/BaloiseCreateText-bold.woff2', $font-path
 
 $font-text-regular-woff: string.insert('/BaloiseCreateText-regular.woff', $font-path, 1);
 $font-text-regular-woff2: string.insert('/BaloiseCreateText-regular.woff2', $font-path, 1);
+
+@font-face {
+  font-family: 'Baloise Create Text';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    local('BaloiseCreateText'),
+    local('BaloiseCreateText-regular'),
+    url('#{$font-text-regular-woff2}') format('woff2'),
+    url('#{$font-text-regular-woff}') format('woff');
+}
+
+/* Deprecated: legacy no-space family names, kept so apps that hardcode them keep working. Remove in next major. */
+@font-face {
+  font-family: BaloiseCreateHeadline;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('BaloiseCreateHeadline'),
+    local('BaloiseCreateHeadline-bold'),
+    url('#{$font-heading-bold-woff2}') format('woff2'),
+    url('#{$font-heading-bold-woff}') format('woff');
+}
+
+@font-face {
+  font-family: BaloiseCreateHeadline;
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src:
+    local('BaloiseCreateHeadline-light'),
+    url('#{$font-heading-light-woff2}') format('woff2'),
+    url('#{$font-heading-light-woff}') format('woff');
+}
+
+@font-face {
+  font-family: BaloiseCreateText;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('BaloiseCreateText-bold'),
+    url('#{$font-text-bold-woff2}') format('woff2'),
+    url('#{$font-text-bold-woff}') format('woff');
+}
 
 @font-face {
   font-family: BaloiseCreateText;
