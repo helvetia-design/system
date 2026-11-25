@@ -1,6 +1,6 @@
 ---
 name: ds-repair-component
-description: Resolve component findings from a code, architecture, accessibility or testing review — verify each finding against the implementation, fix the valid ones, and report a per-finding status. Use when working through review feedback or a token-check report on a component.
+description: Verify and fix component findings from a code, architecture, a11y, testing or token review, with per-finding status. Use when working through review feedback.
 ---
 
 # ds-repair-component

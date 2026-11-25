@@ -1,6 +1,6 @@
 ---
 name: ds-design-guidelines
-description: Author a component's usage guidance — when to use it, when not to, and concrete do's and don'ts with real markup — plus the anatomy copy, in the exact shape Storybook's UsageExamples and ComponentParts blocks consume. Hands the result to the documentation-engineer to place. Writes no Storybook files.
+description: Author a component's usage guidance (when to use, do's and don'ts with markup) and anatomy copy in the shape Storybook's blocks consume. Hands off to docs; writes no Storybook files.
 ---
 
 # ds-design-guidelines

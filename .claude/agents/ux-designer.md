@@ -103,7 +103,6 @@ code-side only.
 - A nested component from another family must already have its own `<child>.figma.md` with a
   recorded component key. If it doesn't, stop — do not recreate it or substitute a plain shape.
 - Write every Figma component key back to `<name>.figma.md`.
-- Never commit, push or merge. Leave all changes unstaged.
 
 # Completion
 

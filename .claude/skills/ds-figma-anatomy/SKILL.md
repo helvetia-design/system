@@ -1,6 +1,6 @@
 ---
 name: ds-figma-anatomy
-description: Build the 📐 Anatomy section of a component's Figma documentation frame — a labeled diagram of the component's @part structure plus a legend naming and describing each part. Also produces the part descriptions the Storybook ComponentParts block uses.
+description: Build the 📐 Anatomy section of a component's Figma doc frame — labeled @part diagram and legend; also yields part descriptions for Storybook's ComponentParts.
 ---
 
 # ds-figma-anatomy

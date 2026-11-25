@@ -1,6 +1,6 @@
 ---
 name: ds-plan-figma-component
-description: Analyze a component's code for its Figma representation — props/states to variant axes, @part anatomy, which design token every styled value resolves to, and the proposed variant grouping with a variant-count budget check. Produces the plan the UX designer builds from. Read-only; touches no Figma.
+description: Plan a component's Figma representation — variant axes, @part anatomy, token per styled value, variant grouping within budget. Read-only; the UX designer builds from it.
 ---
 
 # ds-plan-figma-component

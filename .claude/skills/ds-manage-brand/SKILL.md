@@ -1,6 +1,6 @@
 ---
 name: ds-manage-brand
-description: Maintain brand token files (OrangeVacations and future brands) — adding or changing a brand's overrides of Base, keeping brand and Base in sync, and adding a new brand. Use when a brand's colors or values change, when a new Base token needs a brand value, or when adding a brand.
+description: Maintain brand token files (OrangeVacations and future brands) — brand overrides of Base, Base/brand sync, new brands. Use when brand values change or a new Base token needs a brand value.
 ---
 
 # ds-manage-brand

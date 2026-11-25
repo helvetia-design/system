@@ -1,6 +1,6 @@
 ---
 name: ds-sync-figma-tokens
-description: Push Base.tokens.json into Figma variables and write the new variableIds back into the repo. Use when a Figma build is blocked because a token has no Figma variable, or new tokens must reach Figma before the CI sync runs.
+description: Push Base.tokens.json into Figma variables and write variableIds back. Use when a Figma build is blocked on a missing variable or new tokens must reach Figma before CI sync.
 ---
 
 # ds-sync-figma-tokens

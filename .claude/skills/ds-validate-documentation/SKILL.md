@@ -1,6 +1,6 @@
 ---
 name: ds-validate-documentation
-description: Verify documentation is accurate and builds — every documented prop/event/slot exists in the source, every code example works against the current API, storyIds resolve, and the Storybook build succeeds. Use after writing or changing any Storybook page, story or guide.
+description: Verify docs match the source and build — props/events/slots exist, examples work, storyIds resolve, Storybook builds. Use after changing any Storybook page, story or guide.
 ---
 
 # ds-validate-documentation

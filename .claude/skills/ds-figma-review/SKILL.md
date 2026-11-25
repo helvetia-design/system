@@ -1,6 +1,6 @@
 ---
 name: ds-figma-review
-description: Check a built Figma component against the code it mirrors — variants, token bindings, nested components, layout — write a verdict report and repair failures. Use after building a Figma component, or when its code has changed since.
+description: Check a built Figma component against its code — variants, token bindings, nesting, layout — write a verdict and repair failures. Use after a Figma build or when its code changed.
 ---
 
 # ds-figma-review

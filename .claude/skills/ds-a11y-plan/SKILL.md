@@ -1,6 +1,6 @@
 ---
 name: ds-a11y-plan
-description: Define the accessibility requirements for a component before or during implementation — semantics, ARIA, keyboard map, focus management, and the specific WCAG 2.2 AA criteria that apply. Use when planning a new component or adding an interactive feature, so the engineer knows what to build and the verifier knows what to check.
+description: Define a component's accessibility requirements — semantics, ARIA, keyboard map, focus, applicable WCAG 2.2 AA criteria. Use when planning a component or an interactive feature.
 ---
 
 # ds-a11y-plan

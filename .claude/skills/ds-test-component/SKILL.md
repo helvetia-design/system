@@ -1,6 +1,6 @@
 ---
 name: ds-test-component
-description: Auto-generate a DS component's unit, interaction and visual test files plus its Playwright Page Object. Use when creating new components or setting up test coverage. Accessibility tests (.a11y.play.ts) are the a11y-expert's — this skill does not write them.
+description: Generate a component's unit, interaction and visual tests plus its Page Object (not `.a11y.play.ts`). Use for new components or missing test coverage.
 ---
 
 # Test Component

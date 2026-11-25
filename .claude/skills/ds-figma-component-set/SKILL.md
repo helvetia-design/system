@@ -1,6 +1,6 @@
 ---
 name: ds-figma-component-set
-description: Build a component family's Figma COMPONENT_SET from an approved plan — clone the category documentation frame, build and confirm the default variant, fan out the labeled set with every value bound to a Figma variable, fill Variations, and write the component key back to <name>.figma.md.
+description: Build a component family's Figma COMPONENT_SET from an approved plan — default variant, full labeled set bound to Figma variables, component key written to <name>.figma.md.
 ---
 
 # ds-figma-component-set

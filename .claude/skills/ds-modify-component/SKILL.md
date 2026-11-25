@@ -1,6 +1,6 @@
 ---
 name: ds-modify-component
-description: Fix a bug in or extend an existing design system component while preserving its architecture and backward compatibility — impact assessment, smallest sufficient change, regression coverage. Use for component bug fixes and additive changes to components that already ship.
+description: Fix a bug in or extend a shipped component, preserving architecture and backward compatibility — smallest change plus regression coverage. Use for bug fixes and additive changes.
 ---
 
 # ds-modify-component

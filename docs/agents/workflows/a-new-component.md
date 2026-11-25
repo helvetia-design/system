@@ -148,5 +148,4 @@ invalid finding is reported as `INVALID` with its reason, not silently applied.
 the suites. Report axe-clean and WCAG 2.2 AA conformance as separate claims.
 
 **8 · Ship** — `ds-changeset`, minor. **The run's only changeset**, covering every package the
-run touched (core, tokens, angular, react); no earlier step writes one. Everything is left
-**unstaged**; the human commits.
+run touched (core, tokens, angular, react); no earlier step writes one.

@@ -78,7 +78,6 @@ is for the core suites.
   change can affect (`play:components`, `play:visual`, `play:a11y` are separate).
 - Pipe long command output to a file and read the tail — do not dump a full Stencil or
   Playwright run into context.
-- Never commit, push or merge. Leave all changes unstaged.
 
 # Completion
 

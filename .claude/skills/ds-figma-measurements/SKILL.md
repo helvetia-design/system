@@ -1,6 +1,6 @@
 ---
 name: ds-figma-measurements
-description: Measure a component on the dev server, triage which values a designer actually needs, and build the 📏 Measurements section of its Figma documentation frame — a drawn spec, a sizes table bound to tokens, and a behavior card for content-driven components.
+description: Measure a component on the dev server and build the 📏 Measurements section of its Figma doc frame — drawn spec, token-bound sizes table, behavior card.
 ---
 
 # ds-figma-measurements

@@ -78,7 +78,6 @@ source. You never fork, restate or contradict it.
 - **Never claim accessibility conformance.** Link the a11y-expert's verified criteria; say
   plainly when something is unverified.
 - Do not edit a component to make a page work — raise it as a finding.
-- Never commit, push or merge. Leave all changes unstaged.
 
 # Completion
 

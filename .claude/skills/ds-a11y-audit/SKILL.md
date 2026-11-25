@@ -1,6 +1,6 @@
 ---
 name: ds-a11y-audit
-description: Audit a component's source for accessibility defects against WCAG 2.2 AA. Reads code and reports findings; runs and fixes nothing. Use when reviewing a component's accessibility or before an a11y sign-off.
+description: Audit a component's source against WCAG 2.2 AA; reports findings, fixes nothing. Use when reviewing a component's accessibility or before a11y sign-off.
 ---
 
 # ds-a11y-audit

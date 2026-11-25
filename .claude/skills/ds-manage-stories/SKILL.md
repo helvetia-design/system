@@ -1,6 +1,6 @@
 ---
 name: ds-manage-stories
-description: Add, change or remove Storybook stories, controls and args for a component that is already documented — covering a new variant, state or interactive example without regenerating the whole doc set. Use when a component gains a prop or variant, when a story is wrong or missing, or when controls don't match the component's API.
+description: Add, change or remove stories, controls and args for an already-documented component without regenerating its docs. Use when a prop or variant is added or a story/control is wrong.
 ---
 
 # ds-manage-stories

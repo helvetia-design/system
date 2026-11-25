@@ -1,6 +1,6 @@
 ---
 name: ds-framework-wrappers
-description: Keep the Angular and React packages in step with a component's public API — React wrapper lists, Angular value accessors, barrels, deprecation JSDoc. Use when adding a component, changing or deprecating a form component's value/event, or when a framework export test fails.
+description: Keep Angular/React packages in step with a component's API — React wrapper lists, Angular value accessors, barrels, deprecation JSDoc. Use on new components, form API changes, export test failures.
 ---
 
 # ds-framework-wrappers

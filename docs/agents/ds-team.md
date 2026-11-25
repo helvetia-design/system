@@ -7,7 +7,7 @@ agent — it dispatches the agents below and holds no component context of its o
 
 The orchestrator routes. It does not investigate.
 
-- **Never `Read` a component source file end-to-end.** `Grep`/`Glob` for the one fact a routing
+- **Don't `Read` a component source file end-to-end.** `Grep`/`Glob` for the one fact a routing
   or clarifying decision actually needs. A planner is about to read that file properly; reading
   it first pays for it twice and changes nothing about where the work goes.
 - **Grill the human before dispatching a planner** — the `grilling` skill, to an empty frontier,
@@ -22,18 +22,16 @@ The orchestrator routes. It does not investigate.
   for this reason.
 - **One agent, one suite.** Each agent runs the narrowest suite covering its own files and nothing
   more — no whole-package builds, no re-running another agent's suite "to be safe".
-  `ds-validate-component` does the cross-cutting pass once, in step 7. On `ds-country-select` four
-  separate agents each ran the component suite.
+  `ds-validate-component` does the cross-cutting pass once, in step 7.
 - **Dispatch the plan's whole file list, not just the obvious part.** Per-component `CONTEXT.md`,
   the framework barrels, the ADR and the changeset are named in the plan from the start; leaving
   them unassigned turns them into an extra agent run after the tests are already green.
-- **Out-of-scope findings become issues at the plan gate — never only a plan line.** Plans are
+- **Out-of-scope findings become issues at the plan gate, not just a plan line.** Plans are
   gitignored and overwritten by the next run, so a defect that lives only there is lost. Every
   planner returns an "Out-of-scope findings" list next to its blocking decisions; the orchestrator
   drafts one GitHub issue per finding (label `needs-triage`, see `issue-tracker.md`), shows the
   drafts at the gate, files them on the human's OK with `gh issue create`, and links the numbers
-  in the brief. On `ds-country-select` eight phone-input a11y defects and two hardcoded values
-  surfaced this way and had nowhere to go.
+  in the brief.
 - **A known-broken environment is a documented fact, not a discovery.** Before an agent
   investigates a failing suite, check `packages/playwright/CONTEXT.md` (SSR hydration failure,
   missing visual baselines for a new component) and `packages/core/CONTEXT.md` "Testing
@@ -140,53 +138,13 @@ not edited — use a local locator meanwhile.
 Shipped components still keep their keyboard tests in `.component.play.ts` (15 of them). They
 stay where they are; only new a11y coverage follows the rule above.
 
-## Skill × agent matrix
+## Skills per agent
 
-`W` = owner (writes) · `R` = shared, read or run only · `—` = not available
-
-| Skill                           | Arch | Comp-Eng | Test-Eng | A11y | Token-Eng | Docs-Eng | UX  |
-| ------------------------------- | :--: | :------: | :------: | :--: | :-------: | :------: | :-: |
-| `ds-plan-component`             |  W   |    —     |    —     |  —   |     —     |    —     |  —  |
-| `ds-implement-component`        |  —   |    W     |    —     |  —   |     —     |    —     |  —  |
-| `ds-modify-component`           |  —   |    W     |    —     |  —   |     —     |    —     |  —  |
-| `ds-repair-component`           |  —   |    W     |    —     |  —   |     —     |    —     |  —  |
-| `ds-framework-wrappers`         |  —   |    W     |    —     |  —   |     —     |    —     |  —  |
-| `ds-lint-component`             |  —   |    W¹    |    —     |  —   |     —     |    —     |  —  |
-| `ds-test-component`             |  —   |    —     |    W     |  —   |     —     |    —     |  —  |
-| `ds-update-screenshots`         |  —   |    —     |    W²    |  —   |     —     |    —     |  —  |
-| `ds-a11y-plan`                  |  —   |    —     |    —     |  W   |     —     |    —     |  —  |
-| `ds-a11y-audit`                 |  —   |    —     |    —     |  W   |     —     |    —     |  —  |
-| `ds-a11y-test`                  |  —   |    —     |    —     |  W   |     —     |    —     |  —  |
-| `ds-a11y-verify`                |  —   |    —     |    —     |  W   |     —     |    —     |  —  |
-| `ds-audit-tokens`               |  ³   |    —     |    —     |  —   |     W     |    —     |  —  |
-| `ds-manage-tokens`              |  —   |    —     |    —     |  —   |     W     |    —     |  —  |
-| `ds-manage-brand`               |  —   |    —     |    —     |  —   |     W     |    —     |  —  |
-| `ds-sync-figma-tokens`          |  —   |    —     |    —     |  —   |     W     |    —     |  —  |
-| `ds-document-component`         |  —   |    —     |    —     |  —   |     —     |    W     |  —  |
-| `ds-manage-stories`             |  —   |    —     |    —     |  —   |     —     |    W     |  —  |
-| `ds-document-guidelines`        |  —   |    —     |    —     |  —   |     —     |    W     |  —  |
-| `ds-code-to-figma`              |  —   |    —     |    —     |  —   |     —     |    —     | R⁴  |
-| `ds-plan-figma-component`       |  W   |    —     |    —     |  —   |     —     |    —     |  —  |
-| `ds-figma-mapping`              |  —   |    —     |    —     |  —   |     —     |    —     |  W  |
-| `ds-figma-component-set`        |  —   |    —     |    —     |  —   |     —     |    —     |  W  |
-| `ds-figma-copy-me`              |  —   |    —     |    —     |  —   |     —     |    —     |  W  |
-| `ds-figma-anatomy`              |  —   |    —     |    —     |  —   |     —     |    —     |  W  |
-| `ds-figma-measurements`         |  —   |    —     |    —     |  —   |     —     |    —     |  W  |
-| `ds-figma-review`               |  —   |    —     |    —     |  —   |     —     |    —     |  W  |
-| `ds-design-guidelines`          |  —   |    —     |    —     |  —   |     —     |    —     |  W  |
-| **`ds-validate-component`**     |  —   |    R     |    R     |  R   |     —     |    —     |  —  |
-| **`ds-validate-tokens`**        |  —   |    R     |    R     |  —   |     R     |    —     |  —  |
-| **`ds-validate-documentation`** |  —   |    —     |    —     |  —   |     —     |    W     |  —  |
-| **`ds-changeset`**              |  —   |    R     |    —     |  —   |     R     |    —     |  —  |
-
-¹ `--fix` writes — only the component-engineer may use that flag.
-² user-invoked only; posts a PR comment. Never triggered proactively.
-³ cannot run it (no Bash) — the architect **reads** an existing `<family>.token-check.md`.
-⁴ the **mechanics reference** (`conventions/`, `PHASE-*.md`) the eight Figma skills above read
-from; not run end-to-end any more.
-
-**Rule:** a skill that writes has exactly one owner. A skill that only reads, reports or runs
-checks can be shared with any agent whose tools can execute it.
+Each agent file's Workflow table lists its skills — that is the source of truth. A skill that
+writes has exactly one owner; one that only reads, reports or runs checks
+(`ds-validate-*`, `ds-audit-tokens`, `ds-changeset`) can be shared with any agent whose tools
+run it. Only the component-engineer runs `ds-lint-component --fix`. `ds-update-screenshots` is
+user-invoked only.
 
 ## Handoff artifacts
 
@@ -268,10 +226,10 @@ shadcn/ui answers _what to build_; Swiss Post and Ionic answer _how_ (mechanics 
   `ds-update-screenshots` is user-invoked only. Never `pnpm play:update`.
 - **Evidence or it didn't happen.** "Tests pass" without the output is not a result. A check
   that didn't run is named, with the reason.
-- **Never weaken, skip or delete a test** to make a suite pass.
+- Never weaken, skip or delete a test to make a suite pass.
 - **Source beats docs.** Where `CONTEXT.md`, an ADR or a doc page disagrees with the code, the
   code wins and the doc gets fixed.
 - **Pipe long output to a file and read the tail.** A full Stencil or Playwright run does not
   belong in an agent's context.
-- Agents run in parallel **only** within the fan-out steps above, where file sets are disjoint.
+- Agents run in parallel only within the fan-out steps, where file sets are disjoint.
   Two agents never write the same file.

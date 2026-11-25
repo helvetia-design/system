@@ -1,6 +1,6 @@
 ---
 name: ds-a11y-verify
-description: Verify a component meets WCAG 2.2 AA by running its a11y and keyboard suites and manually checking what automation cannot — per-criterion PASS/FAIL/NOT_VERIFIED with evidence. Use for accessibility sign-off, before release, or to confirm an a11y fix actually landed.
+description: Run a component's a11y suites and manual checks for per-criterion WCAG 2.2 AA PASS/FAIL/NOT_VERIFIED evidence. Use for a11y sign-off or to confirm an a11y fix landed.
 ---
 
 # ds-a11y-verify

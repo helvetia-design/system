@@ -1,6 +1,6 @@
 ---
 name: ds-validate-tokens
-description: Verify token changes actually landed — references resolve to the correct layer, the Style Dictionary build succeeds, and every expected variable appears in the generated CSS for Base and each brand. Use after creating, renaming or deprecating tokens, or when a component's var() resolves to nothing.
+description: Verify token changes landed — references hit the right layer, Style Dictionary builds, variables appear in Base and brand CSS. Use after token changes or when a var() resolves to nothing.
 ---
 
 # ds-validate-tokens

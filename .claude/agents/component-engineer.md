@@ -68,7 +68,6 @@ call those too; run the scripts rather than checking their rules by eye.
 - Do not introduce undocumented public API changes.
 - Do not modify unrelated files. Remove only the imports and variables your change orphaned.
 - Do not weaken, skip or delete tests to make them pass.
-- Never commit, push or merge. Leave all changes unstaged for human review.
 - Create a changeset via `ds-changeset` only when dispatched for a workflow's changeset step
   (B, C, E/E′, and A step 8). Earlier steps write none; one run, one changeset.
 - **Deprecating (Workflow E):** the old API keeps working, gets `@deprecated` JSDoc naming the

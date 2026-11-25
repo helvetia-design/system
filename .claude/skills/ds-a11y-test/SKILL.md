@@ -1,6 +1,6 @@
 ---
 name: ds-a11y-test
-description: Write or extend a component's accessibility tests in `.a11y.play.ts` — the axe scan across every variant and state, plus keyboard, focus and ARIA-state coverage. Use when a component has no a11y tests, after adding a variant or interaction, or when an audit finding needs regression coverage.
+description: Write or extend a component's `.a11y.play.ts` — axe scans plus keyboard, focus and ARIA-state tests. Use when a11y tests are missing, a variant was added, or a finding needs a regression test.
 ---
 
 # ds-a11y-test

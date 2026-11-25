@@ -1,6 +1,6 @@
 ---
 name: ds-manage-tokens
-description: Create, modify or deprecate design tokens in Base.tokens.json — choosing the right layer, naming to the anatomy convention, wiring references, and handling the breaking-change path for renames and removals. Use when a component needs a token that doesn't exist, when fixing an audit finding, or when retiring a token.
+description: Create, modify or deprecate tokens in Base.tokens.json — layer, naming, references, breaking-change path. Use when a token is missing, an audit finding needs fixing, or a token retires.
 ---
 
 # ds-manage-tokens

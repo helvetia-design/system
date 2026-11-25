@@ -1,6 +1,6 @@
 ---
 name: ds-code-to-figma
-description: Push a Helvetia Design System component from code into the Figma component library — resolving props/variants/states to Figma variant properties bound to existing Figma variables (tokens), reusing existing Figma components for nested children.
+description: Mechanics reference for pushing a component into the Figma library — variant properties bound to Figma variables, nested component reuse. Read by the ds-figma-* skills.
 ---
 
 # ds-code-to-figma

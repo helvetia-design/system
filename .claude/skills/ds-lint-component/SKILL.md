@@ -1,6 +1,6 @@
 ---
 name: ds-lint-component
-description: Lint and fix Helvetia Design System components for style guide compliance. Checks prop validation coverage, divider comment formatting, and lifecycle hook setup. Use when building or reviewing DS components, or when user asks to lint/check a component.
+description: Lint and fix DS components for style-guide compliance — prop validation, divider comments, lifecycle hooks. Use when building, reviewing or asked to lint a component.
 ---
 
 # Lint Component

@@ -1,6 +1,6 @@
 ---
 name: ds-figma-copy-me
-description: Fill the 👉 Copy me section of a component's Figma documentation frame — one unmodified instance of the default variant, the "drag this into your design" example. Always present, never skipped. Run after the Figma review passes and before Anatomy.
+description: Fill the 👉 Copy me section of a component's Figma doc frame with one default-variant instance. Never skipped; run after Figma review, before Anatomy.
 ---
 
 # ds-figma-copy-me

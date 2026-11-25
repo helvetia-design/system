@@ -1,6 +1,6 @@
 ---
 name: ds-validate-component
-description: Validate a component against project standards, its spec and acceptance criteria — static checks, build, tests — with per-criterion PASS/FAIL evidence. Use after implementing, modifying or repairing a component.
+description: Validate a component against standards, spec and acceptance criteria — static checks, build, tests — with PASS/FAIL evidence. Use after implementing, modifying or repairing one.
 ---
 
 # ds-validate-component

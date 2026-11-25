@@ -87,7 +87,7 @@ and tell the engineer about any name you changed so the SCSS reference can follo
   new snapshot — re-baselining is `ds-update-screenshots`, user-invoked.
 - Do not restructure a stylesheet, rename a CSS custom property in the public (`--`) layer, or
   change a component's API to make tokens tidier. Escalate instead.
-- Never commit, push or merge. Leave all changes unstaged. A standalone token change needs a
+- A standalone token change needs a
   changeset (`ds-changeset`) — patch for a non-visual fix, minor for new tokens. **Inside a
   workflow run (A/C, or a dispatch that names a step), write none** — the run's single changeset
   is written at its ship step and covers your packages too.

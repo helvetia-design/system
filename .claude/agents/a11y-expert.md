@@ -62,7 +62,6 @@ picker is phone-input's picker", run `ds-a11y-audit` on the model and plan only 
 - Never claim WCAG conformance beyond what you actually verified. Automated coverage here
   excludes WCAG 2.2 rules entirely (the axe fixture is tagged through 2.1 only), so 2.4.11,
   2.5.7 and 2.5.8 always need a manual check.
-- Never commit, push or merge. Leave all changes unstaged.
 
 # Completion
 

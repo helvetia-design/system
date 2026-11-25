@@ -1,6 +1,6 @@
 ---
 name: ds-document-guidelines
-description: Write the non-component Storybook documentation — foundations, design guidelines, developer guides, migrations, CSS utility pages and token pages. Use for anything under apps/storybook/src outside a component folder, such as onboarding, integration guides, or explaining a system-wide concept.
+description: Write non-component Storybook docs — foundations, guidelines, developer guides, migrations, CSS utility and token pages. Use for anything in apps/storybook/src outside a component folder.
 ---
 
 # ds-document-guidelines

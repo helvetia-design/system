@@ -1,6 +1,6 @@
 ---
 name: ds-implement-component
-description: Implement a new design system component from an approved technical specification and architecture plan — files, public API, behavior, styling, tokens and accessibility. Use after an architecture plan has been approved and it's time to write the component.
+description: Implement a new component from an approved architecture plan — files, API, behavior, styling, tokens, a11y. Use once the plan is approved.
 ---
 
 # ds-implement-component

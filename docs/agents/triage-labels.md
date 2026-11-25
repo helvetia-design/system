@@ -6,6 +6,8 @@ This file documents the canonical label vocabulary used by the `triage` agent to
 
 The `triage` agent moves issues through five states using these labels:
 
+An issue gets `ready-for-agent` or `ready-for-human` only once it passes the [Definition of Ready](definition-of-ready.md).
+
 | Label                    | Purpose                                           | When Applied                                                                 |
 | ------------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------- |
 | **`🔍 needs-triage`**    | Issue needs evaluation by a maintainer            | When a new issue is opened; agent removes it after triage                    |

@@ -1,6 +1,6 @@
 ---
 name: ds-audit-tokens
-description: Audit a component family's SCSS/TSX for design-token problems — wrong layer, borrowed or missing tokens, hardcoded literals. Writes a findings report; fixes nothing. Use when reviewing a component's tokens or before a Figma sync.
+description: Audit a component family's SCSS/TSX for token problems — wrong layer, borrowed or missing tokens, hardcoded literals. Report only. Use when reviewing tokens or before a Figma sync.
 ---
 
 # ds-audit-tokens

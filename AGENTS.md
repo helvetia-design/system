@@ -31,7 +31,6 @@ pnpm play -- --grep="<test name>"            # Single Playwright test
 - Component code standards: `docs/STYLE_GUIDE.md`. Architecture, CSS variable cascade, deprecation policy: `docs/ARCHITECTURE.md`.
 - Setup and troubleshooting: `docs/DEVELOPMENT.md`. Contribution and release flow: `CONTRIBUTING.md`. Security: `SECURITY.md`, `docs/SECRETS.md`.
 - Issues: GitHub Issues — `docs/agents/issue-tracker.md`, labels in `docs/agents/triage-labels.md`.
-- General coding behavior (think first, simplicity, surgical changes): `docs/agents/behavioral-guidelines.md`.
 
 ## DS team
 
