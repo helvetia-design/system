@@ -38,9 +38,15 @@ runs once, for the whole frame; step 7 writes back into every member's mapping f
    below — never create a page named after the component itself.
 3. Build **the default variant first** (every variant property at its code default,
    `state=default`). **Create it directly inside this
-   component's own documentation frame on the category page:** the parent is
-   `<Component> Documentation` › `body` › `Component Sets` › `Sets` (from step 2). Never build it
-   on a scratch page, at the page root, or off-canvas and move it in later. Wire up:
+   component's own documentation frame on the category page**, in a temporary `review` frame:
+   the parent is `<Component> Documentation` › `body` › `Component Sets` › `Sets` › `review`
+   (from step 2). Never build it on a scratch page, at the page root, or off-canvas and move it in
+   later. Set up the review frame first, then wire up the variant:
+   - **Hide every template example stack** in `Sets` (`Primary`, `Inverted`) with
+     `visible = false`. Don't delete them: step 5 clones their prototypes.
+   - **Insert a plain structural frame named `review`** as the first child of `Sets`:
+     `fills = []`, `layoutMode = 'VERTICAL'`, both axes `HUG`, no padding, gap or stroke. The
+     default variant is its only child, so the link you send shows nothing else.
    - The component's shape/layout.
    - Every styled value bound to its Foundation variable from Phase 1 (never a literal).
      **Import by key, then bind** — `figma.variables.importVariableByKeyAsync(key)` with the key
@@ -102,15 +108,20 @@ runs once, for the whole frame; step 7 writes back into every member's mapping f
      variables recorded in `device:`; a mismatch is a hard stop. **Never create a variable** —
      a missing routing variable was already listed in Phase 1 (stop and list); if one is missing
      at build time, stop and list it the same way.
-4. **Stop and have the user confirm this one variant directly in Figma** — give them the node link
-   (`https://www.figma.com/design/<fileKey>?node-id=<id>`) and wait. Don't send a screenshot as
+4. **Stop and have the user confirm this one variant directly in Figma** — give them the link to
+   the `review` frame (`https://www.figma.com/design/<fileKey>?node-id=<id>`) and wait. Don't send a screenshot as
    the checkpoint. This catches a structural mistake (wrong variable bound, wrong nested
    instance) once, before it's replicated across the whole component set. List the text
    properties it carries, so the user can try them from the right panel.
-5. On confirmation, fan out: build the remaining variants, reusing the same
-   bindings and nested instances, and present them as a labeled set per
-   [Labeled component set](#labeled-component-set) below — inside the same `Sets` frame.
-   Then fill the Variations placeholder, per [Variations](#variations).
+5. On confirmation, fan out: set the hidden template stacks back to `visible = true`, build the
+   remaining variants, reusing the same bindings and nested instances, and present them as a
+   labeled set per [Labeled component set](#labeled-component-set) below — inside the same `Sets`
+   frame. The confirmed variant moves out of `review` into the stack and becomes the set's first
+   layer (top-left cell). Then delete the empty `review` frame. A clone keeps its source's
+   `visible`, so anything cloned while they are hidden comes out hidden: show them first, then check every
+   label, bracket and divider you cloned is `visible`. **Family:** each set gets its own `review`
+   round in build order; for the next set's checkpoint, hide any template stacks still in `Sets`
+   again (never the finished stacks). Then fill the Variations placeholder, per [Variations](#variations).
 6. **Stop and have the user approve the documentation frame directly in Figma** — the filled
    `Header`, the finished component set(s) and the Variations section — give them the link to the frame and wait. Any change loops back to step 5. Don't continue to Phase 4 on an
    assumed approval.
@@ -208,7 +219,11 @@ values**; clone a prototype and change only text and positions.
    order. **Lay out the grid after the component properties are added and bound** (`show <name>`
    booleans, swaps, text properties): binding a layer's `visible` or a text default changes the
    variant's width, so variants placed before stay off-centre. Changing a text property's default
-   later (e.g. `Button` → `Label`) needs the variants re-centred (seen on `ds-button`: up to 6px).
+   later (e.g. `Button` → `Label`) needs the variants re-centred (seen on `ds-button`: up to 6px),
+   **and** the Anatomy (Phase 7) and Measurements (Phase 8) drawings redrawn: their instances show
+   the default text, so they change size while every marker stays where it was placed (seen on
+   `ds-button` and `ds-spinner`, 20. and 23.11.2026). The same goes for any later change that
+   resizes the default variant.
    **Taller than the `Documentation` column:** the cloned `Component Sets` column is `FILL`
    height and clips anything below it. Set it to `layoutSizingVertical = 'HUG'` (seen on
    `ds-input`, 120 variants: the lower 9 row dividers reported no render bounds). Only then:
@@ -351,8 +366,7 @@ transition: null }` (instant). Both triggers revert by themselves on mouse-leave
   return reactions.
 - Only the options the component has: no `hover` → no hover reaction; no `active` → no press
   reaction.
-- **No reactions** on `state=focus` (Figma has no keyboard-focus trigger, and a click must not show
-  the `:focus-visible` ring), on `state=active`, and on every blocked component state's `true`
+- **No reactions** on `state=active`, and on every blocked component state's `true`
   variant (`disabled` doesn't react in code). Reactions stay inside their group: `invalid=true`
   hover goes to `invalid=true` active, never to the `invalid=false` one.
 - A CSS `transition` in code is not copied into Figma — note it in the mapping file.

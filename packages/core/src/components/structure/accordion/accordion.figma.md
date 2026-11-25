@@ -68,7 +68,7 @@ props:
   - name: summaryLevel
     figmaPropertyType: excluded # semantic heading tag only (<h1>…<h5> id=header); measured: no margin, typography from #summary → no visual effect
   - name: button, buttonWide, buttonColor, buttonSize, buttonLabelOpen, buttonLabelClose, buttonIconOpen, buttonIconClose
-    figmaPropertyType: excluded # button mode out of scope until Button is in Figma (user's call 19.11.2026, TODO.md)
+    figmaPropertyType: excluded # button mode not needed in Figma (user decision 19.11.2026; an AccordionButton set was built and removed again)
 
 states:
   figmaProperty: state
@@ -234,7 +234,7 @@ measurements: # confirmed by the user 19.11.2026, measured on the dev server (14
 | `summary` slot                      | text `summary`                 | "Summary"                        | text-only use                                                                                                             |
 | `content` slot                      | `SLOT` `content`               | empty                            | open slot, no `show` boolean — `open` decides visibility                                                                  |
 
-- Excluded: `group`, `summaryLevel` (no visual effect); button mode (TODO.md).
+- Excluded: `group`, `summaryLevel` (no visual effect); button mode (not needed, user decision 19.11.2026).
 - No variations (no `show` booleans), no top-level split.
 
 Grid (`state` on columns; rows nested by option count: `open` (2) › `marker position` (2) ›
@@ -264,7 +264,3 @@ Count: `marker=none` exists only with `marker position=right` (no visual differe
 - `plus-minus` closed looks like `plus` closed; kept, since open differs.
 - Code-side: `vars.focus-styles` uses literal 2px / 5px although `Focus/Size/Inner` / `Outer` exist.
 - Code-side: JSDoc of `buttonIconOpen` / `buttonIconClose` says "BalIcon".
-
-## Unresolved
-
-- Font family and line height / letter spacing as literals (TODO.md).

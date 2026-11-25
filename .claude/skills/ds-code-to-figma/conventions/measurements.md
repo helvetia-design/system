@@ -40,8 +40,8 @@ Rules that apply on top of the groups:
 
 - **No radius on a circle or pill.** Skip the radius row when the radius is at least half of the
   component's height (and width, if smaller), e.g. `9999` or `50%`. The shape says it all.
-- **States don't get measurements.** Hover/active/disabled change color, not geometry. The one exception
-  is the focus ring: show its width once, on an extra `focus` instance, as a `shape` row.
+- **States don't get measurements.** Hover/active/disabled change color, not geometry. Focus is
+  ignored (no focus ring row).
 - **Every shown row is drawn.** `show: table` is only for a value that has no place on any instance
   (rare — say why in `reason`). A table row without a marker confuses more than it helps.
 - **Only the default set.** An `inverted` split changes colors, never geometry.
@@ -62,7 +62,7 @@ Rules that apply on top of the groups:
 - **Shape visibility.** The same applies to the default _state_: when its background is
   transparent and no border draws the shape (`ds-close`), the box a size line measures can't be
   seen. Propose a `drawnState` whose background shows the shape (`hover`) — always a 🟡 ask
-  with the reason, like `drawnColor`. The focus instance stays `state=focus`.
+  with the reason, like `drawnColor`.
 - **Symmetric padding is one row.** `Padding X` when left = right; `Padding L` / `Padding R` as two
   rows when they differ. Never mix an axis label with a side label on one component.
 - **Measured ≠ token is a finding, not a value.** When the measured px doesn't match the resolved
@@ -80,23 +80,23 @@ kind, even when a card has several rows of it):
 | --------- | --------------------------------------------- | ---------------- |
 | `size`    | width, height, icon/glyph size (incl. limits) | green (success)  |
 | `spacing` | padding, gap                                  | red (danger)     |
-| `shape`   | radius, border width, focus ring              | blue (info)      |
+| `shape`   | radius, border width                          | blue (info)      |
 | `type`    | font size/weight/line-height                  | purple           |
 | hit area  | not a kind: the hit-area outline              | orange (warning) |
 
 **What → marker** (component names in `../PHASE-8-DOCUMENT-MEASUREMENTS.md` step 0):
 
-| What                     | Marker                                                                                                   |
-| ------------------------ | -------------------------------------------------------------------------------------------------------- |
-| width / height           | dimension line with end ticks, outside the component — solid for a fixed value, dashed for `Min` / `Max` |
-| padding                  | 20% tint on every side the token applies to **plus** a `spacing` dimension line below each tinted side   |
-| gap                      | hatched overlay between the two children **plus** a `spacing` dimension line below each gap              |
-| icon / glyph size        | text-free overlay (25% fill + 1px outline) on the nested part, plus a width line above the component     |
-| radius                   | circle with the radius's own size, sitting in the corner; leader diagonally outward                      |
-| border width, focus ring | leader: 3px dot (no outline) centered on the edge or ring, line outward, pill with the value             |
-| typography               | dashed outline on the text's line box, leader from its edge, pill with size / weight / line-height       |
-| hit area                 | dashed orange outline around the hit area (warning color, not a kind)                                    |
-| behavior                 | no line — text label (`Hug ↔`, `Fill ↔`, `Truncates`, `Wraps`)                                           |
+| What              | Marker                                                                                                   |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
+| width / height    | dimension line with end ticks, outside the component — solid for a fixed value, dashed for `Min` / `Max` |
+| padding           | 20% tint on every side the token applies to **plus** a `spacing` dimension line below each tinted side   |
+| gap               | hatched overlay between the two children **plus** a `spacing` dimension line below each gap              |
+| icon / glyph size | text-free overlay (25% fill + 1px outline) on the nested part, plus a width line above the component     |
+| radius            | circle with the radius's own size, sitting in the corner; leader diagonally outward                      |
+| border width      | leader: 3px dot (no outline) centered on the edge, line outward, pill with the value                     |
+| typography        | dashed outline on the text's line box, leader from its edge, pill with size / weight / line-height       |
+| hit area          | dashed orange outline around the hit area (warning color, not a kind)                                    |
+| behavior          | no line — text label (`Hug ↔`, `Fill ↔`, `Truncates`, `Wraps`)                                           |
 
 **Labels**: every marker label is the same soft **pill** — a fill in the kind's `-1` tint, a 1px
 outline in the kind color, a solid number bubble first (white number; it matches the Sizes table,
@@ -163,7 +163,7 @@ allows, all lines of one side on one row:
 | horizontal padding (left/right), row gap  | bottom                                                                    |
 | vertical padding (top/bottom), column gap | right (`side=right`)                                                      |
 | radius                                    | a free corner — top-right preferred                                       |
-| leaders (type, border, focus ring, …)     | right preferred; any side with space, outside that side's dimension lines |
+| leaders (type, border, …)                 | right preferred; any side with space, outside that side's dimension lines |
 
 Never draw on top of content except the padding tint, the gap hatch and the icon overlay.
 When pills collide, follow "Dimension pill placement" above — move the pill, never the line.
@@ -186,10 +186,9 @@ The Measurements `Section` (`Flat`) holds up to three nested `Default` `Preview`
 1. **Drawing** — **every numbered table row is drawn here exactly once.** One **main** instance
    of the default table-axis option (`base`, or the implicit default), default state, every
    optional part on, in the `drawnColor` (see "Border visibility"). Add an **extra** instance only
-   for a row that can't be drawn on the main one — a value that only exists in a state (the focus
-   ring on `focus`), or a limit that only binds with other content (a `min width` that a short
+   for a row that can't be drawn on the main one — a limit that only binds with other content (a `min width` that a short
    label actually hits). Extra instances sit in a row below the main one, each with a one-word
-   caption (`Focus`, `Min content`) and only its own markers. Never one instance per table-axis option —
+   caption (`Min content`) and only its own markers. Never one instance per table-axis option —
    the table compares options; the only exception is an option that changes the structure (other
    parts or layout), not just values. A part built as two text nodes
    (`../PHASE-3-BUILD.md` → "Text properties") is measured and marked on the node visible in

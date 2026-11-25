@@ -15,6 +15,7 @@ export const VARIANTS = [
   'html-tags',
   'square',
   'icon',
+  'brand-icons',
   'loading',
   'group',
   'two-row-button-group',
