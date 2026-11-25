@@ -29,9 +29,9 @@ The orchestrator routes. It does not investigate.
 - **Out-of-scope findings become issues at the plan gate, not just a plan line.** Plans are
   gitignored and overwritten by the next run, so a defect that lives only there is lost. Every
   planner returns an "Out-of-scope findings" list next to its blocking decisions; the orchestrator
-  drafts one GitHub issue per finding (label `needs-triage`, see `issue-tracker.md`), shows the
-  drafts at the gate, files them on the human's OK with `gh issue create`, and links the numbers
-  in the brief.
+  dispatches 📣 issue-manager · `ds-issue-write` to draft one GitHub issue per finding, shows the
+  drafts at the gate, re-dispatches it with `post` on the human's OK, and links the numbers in
+  the brief.
 - **A known-broken environment is a documented fact, not a discovery.** Before an agent
   investigates a failing suite, check `packages/playwright/CONTEXT.md` (SSR hydration failure,
   missing visual baselines for a new component) and `packages/core/CONTEXT.md` "Testing
@@ -49,6 +49,7 @@ The orchestrator routes. It does not investigate.
 | 🧬 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                                                                 |           |
 | 📖 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                                                             |           |
 | 🎨 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                                                     |           |
+| 📣 `issue-manager`          | sonnet | `docs/plans/github/**` drafts; GitHub issues, comments, labels and PR bodies — after a gate                                         |           |
 
 Plus 🐙 the **orchestrator** — the main session, which dispatches but owns no files.
 
@@ -151,18 +152,19 @@ user-invoked only.
 Agents hand over **files, never prose**. This keeps the orchestrator's context small and makes
 a run resumable.
 
-| Artifact                                          | Written by         | Read by                                                      |
-| ------------------------------------------------- | ------------------ | ------------------------------------------------------------ |
-| `docs/plans/components/<component>-brief.md`      | orchestrator       | every agent, first — `## Gate decisions` overrides the plans |
-| `docs/plans/components/<component>-plan.md`       | architect¹         | component-engineer, test-engineer, docs                      |
-| `docs/plans/components/<component>-a11y-plan.md`  | a11y-expert¹       | component-engineer, test-engineer                            |
-| `docs/plans/components/<component>-figma-plan.md` | architect¹         | ux-designer                                                  |
-| `test/<name>.visual.html`                         | component-engineer | **human review**, test-engineer                              |
-| `<family>.token-check.md`                         | token-engineer     | token-engineer, architect                                    |
-| a11y audit findings                               | a11y-expert        | component-engineer                                           |
-| `<name>.figma.md`                                 | ux-designer        | ux-designer, next family that nests it                       |
-| `<name>.figma-validation.md`                      | ux-designer        | ux-designer, component-engineer                              |
-| anatomy + do's/don'ts copy                        | ux-designer        | documentation-engineer                                       |
+| Artifact                                           | Written by         | Read by                                                      |
+| -------------------------------------------------- | ------------------ | ------------------------------------------------------------ |
+| `docs/plans/components/<component>-brief.md`       | orchestrator       | every agent, first — `## Gate decisions` overrides the plans |
+| `docs/plans/components/<component>-plan.md`        | architect¹         | component-engineer, test-engineer, docs                      |
+| `docs/plans/components/<component>-a11y-plan.md`   | a11y-expert¹       | component-engineer, test-engineer                            |
+| `docs/plans/components/<component>-figma-plan.md`  | architect¹         | ux-designer                                                  |
+| `test/<name>.visual.html`                          | component-engineer | **human review**, test-engineer                              |
+| `<family>.token-check.md`                          | token-engineer     | token-engineer, architect                                    |
+| a11y audit findings                                | a11y-expert        | component-engineer                                           |
+| `<name>.figma.md`                                  | ux-designer        | ux-designer, next family that nests it                       |
+| `<name>.figma-validation.md`                       | ux-designer        | ux-designer, component-engineer                              |
+| anatomy + do's/don'ts copy                         | ux-designer        | documentation-engineer                                       |
+| `docs/plans/github/*.md` (issue, reply, PR drafts) | issue-manager      | **human gate**, then issue-manager in `post` mode            |
 
 ¹ Each planner **writes its own plan file** — the architect's `Write` is scoped to
 `docs/plans/components/**` and nothing else — and returns only a summary: the path, the blocking
@@ -194,6 +196,22 @@ are in the root `AGENTS.md`.
 | C — Feature              | [workflows/c-feature.md](workflows/c-feature.md)                           |
 | D — Component into Figma | [workflows/d-component-into-figma.md](workflows/d-component-into-figma.md) |
 | E / E′ — Deprecation     | [workflows/e-deprecation.md](workflows/e-deprecation.md)                   |
+
+## GitHub — the closing step of A, B, C and E, and Workflow F
+
+Everything the team writes on GitHub goes through 📣 issue-manager, in two dispatches:
+
+1. **Draft** — `ds-pr-body` always; `ds-issue-reply` (`in-progress`) too when the run started
+   from an issue. Drafts land in `docs/plans/github/` (gitignored).
+2. **⛔ Gate** — the orchestrator shows the draft paths; the human edits or approves.
+3. **Post** — re-dispatch (or `SendMessage` the same agent) with `post` and the approved paths.
+   No PR yet → the agent reports the `gh pr create --body-file …` line for the human instead.
+
+`Closes #N` is the PR body's first line, so the PR and issue cross-link and merging closes the
+issue — only when the PR targets the default branch (`ds-pr-body` checks).
+
+**Workflow F — Triage** (standalone, no component): 📣 `ds-issue-triage` drafts a decision table
+plus replies → ⛔ gate → 📣 `post` applies labels and comments. Never closes issues.
 
 ## Figma drift check — the closing step of B, C and E
 

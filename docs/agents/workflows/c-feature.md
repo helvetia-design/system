@@ -19,6 +19,7 @@ feature request
                + ds-a11y-verify if a colour changed  →  repair by owner
   →  ds-changeset (minor)
   →  Figma drift check     (only if it applies — see ../ds-team.md)
+  →  issue-manager · ds-pr-body ∥ ds-issue-reply  →  ⛔ GATE  →  post   (see ../ds-team.md → GitHub)
   →  human reviews and commits
 ```
 

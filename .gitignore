@@ -20,6 +20,7 @@ Base.tokens.json.backup
 debug.js
 *.token-check.md
 docs/plans/components/
+docs/plans/github/
 tsconfig.tsbuildinfo
 *.tsbuildinfo
 
