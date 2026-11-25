@@ -1343,6 +1343,9 @@ export namespace Components {
           * @default 'primary'
          */
         "color": InputColor;
+        /**
+          * LISTENERS ------------------------------------------------------
+         */
         "configChanged": (state: { language: DsLanguage; region: DsRegion; }) => Promise<void>;
         /**
           * The description of the file upload, displayed below the drop zone.
@@ -6591,6 +6594,10 @@ declare namespace LocalJSX {
           * @default ''
          */
         "dropZoneLabel"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
         /**
           * If `true` below the drop-zone area it generates a file list.
           * @default true
