@@ -517,11 +517,16 @@ export namespace Components {
      */
     interface DsCard {
         /**
+          * Accessible name of the card link. Defaults to the text of the `ds-card-title`. Only applies when an `href` is provided.
+          * @default ''
+         */
+        "a11yLabel": string;
+        /**
           * Defines the text alignment of the card content.
          */
         "align"?: CardAlignment;
         /**
-          * If `true` the card has a hover effect.
+          * If `true` the card has a hover effect. Set `href` as well to make the card a keyboard accessible link.
           * @default false
          */
         "clickable": boolean;
@@ -545,6 +550,11 @@ export namespace Components {
          */
         "fullheight": boolean;
         /**
+          * Specifies the URL of the page the card links to. A link is stretched over the whole card, so the card becomes focusable and operable by keyboard.
+          * @default ''
+         */
+        "href": string;
+        /**
           * If `true` the card image is displayed as a teaser, which means it is displayed with a large image.
           * @default undefined
          */
@@ -555,6 +565,11 @@ export namespace Components {
          */
         "inverted": boolean;
         /**
+          * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+          * @default ''
+         */
+        "rel": string;
+        /**
           * If `true` the card gets a light background to indicate a selection.
           * @default false
          */
@@ -563,6 +578,10 @@ export namespace Components {
           * Defines the space of the card content.
          */
         "space"?: CardSpace;
+        /**
+          * Specifies where to display the linked URL. Only applies when an `href` is provided.
+         */
+        "target"?: ButtonTarget;
         /**
           * If `true` the card gets a tile look, it has a brand icon on the left
           * @default false
@@ -5658,11 +5677,16 @@ declare namespace LocalJSX {
      */
     interface DsCard {
         /**
+          * Accessible name of the card link. Defaults to the text of the `ds-card-title`. Only applies when an `href` is provided.
+          * @default ''
+         */
+        "a11yLabel"?: string;
+        /**
           * Defines the text alignment of the card content.
          */
         "align"?: CardAlignment;
         /**
-          * If `true` the card has a hover effect.
+          * If `true` the card has a hover effect. Set `href` as well to make the card a keyboard accessible link.
           * @default false
          */
         "clickable"?: boolean;
@@ -5686,6 +5710,11 @@ declare namespace LocalJSX {
          */
         "fullheight"?: boolean;
         /**
+          * Specifies the URL of the page the card links to. A link is stretched over the whole card, so the card becomes focusable and operable by keyboard.
+          * @default ''
+         */
+        "href"?: string;
+        /**
           * If `true` the card image is displayed as a teaser, which means it is displayed with a large image.
           * @default undefined
          */
@@ -5696,6 +5725,11 @@ declare namespace LocalJSX {
          */
         "inverted"?: boolean;
         /**
+          * Specifies the relationship of the target object to the link object. The value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).
+          * @default ''
+         */
+        "rel"?: string;
+        /**
           * If `true` the card gets a light background to indicate a selection.
           * @default false
          */
@@ -5704,6 +5738,10 @@ declare namespace LocalJSX {
           * Defines the space of the card content.
          */
         "space"?: CardSpace;
+        /**
+          * Specifies where to display the linked URL. Only applies when an `href` is provided.
+         */
+        "target"?: ButtonTarget;
         /**
           * If `true` the card gets a tile look, it has a brand icon on the left
           * @default false
@@ -9313,6 +9351,10 @@ declare namespace LocalJSX {
         "align": CardAlignment;
         "space": CardSpace;
         "color": CardColor;
+        "href": string;
+        "target": ButtonTarget;
+        "rel": string;
+        "a11yLabel": string;
     }
     interface DsCardActionsAttributes {
         "align": CardActionsAlignment;
