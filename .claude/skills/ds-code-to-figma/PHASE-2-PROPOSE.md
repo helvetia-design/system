@@ -18,7 +18,6 @@ user sign-off on it — before anything is built.
   or the step 3 count exceeds 500.
 - `conventions/component-set-rendering.md` → "Option and axis ordering" — **required read before
   step 2**; it governs `figmaOptions:` order and the grid sketch.
-- `CONVENTIONS.md` — cross-phase rules; not a required read in this phase.
 
 ## Instructions
 

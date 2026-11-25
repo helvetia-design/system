@@ -148,6 +148,7 @@ playwright.visual.config.ts
 .worktrees
 .superpowers
 .claude/settings.local.json
+.claude/launch.json
 
 docs/superpowers
 

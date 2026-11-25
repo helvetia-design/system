@@ -2,7 +2,7 @@
 
 Which sizes go into the "📏 Measurements" section, and how each one is drawn. Phase 1 step 6 uses the
 first half (measure, classify, triage) to write `<name>.figma.md`'s `measurements:`; Phase 8 uses the
-second half (visual vocabulary, layout) to render it. See `../CONVENTIONS.md` for the index.
+second half (visual vocabulary, layout) to render it.
 
 ## Principle
 

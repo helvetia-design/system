@@ -1,7 +1,7 @@
 # Conventions — general Figma Plugin API mechanics (any phase)
 
 Gotchas and techniques that apply to building any frame/section in this skill, not one specific
-phase or section. See `../CONVENTIONS.md` for the index.
+phase or section.
 
 ## Platform limits
 

@@ -22,7 +22,7 @@
 | properties (both sets) | pass   | variants `size` [base, md], `state` [default, hover, focus, active], `disabled` [false, true]; BOOLEAN `show tooltip` default false (`#6406:0` / `#6408:0`); no text / swap properties |
 | component states       | pass   | `disabled=true` only with `state=default` (blocked in code)                                                                                                                            |
 | splits / counts        | pass   | rule 2 `inverted` → CloseInverted; 10 + 10 variants (≤ 500)                                                                                                                            |
-| excluded               | pass   | `button`, `buttonColor`, `buttonSize` — not built (rebuild-decisions.md)                                                                                                               |
+| excluded               | pass   | `button`, `buttonColor`, `buttonSize` — not built                                                                                                                                      |
 
 ## 4. Bindings (scripted check over all 20 variants — 0 failures)
 

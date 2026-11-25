@@ -21,7 +21,7 @@ sets: # filled in by Phase 3 — one entry per component set (top-level split), 
   figmaMasterNodeId: null
   figmaPage: Core / <Category> # the shared category page, e.g. "Core / Indicators" — NOT this
 
-# component's own name; multiple components share one page (see CONVENTIONS.md's category table)
+# component's own name; multiple components share one page (see PHASE-3-BUILD.md → "Category pages")
 
 figmaDocFrameNodeId: null # this component's "<Component> Documentation" frame id within the
 

@@ -14,8 +14,6 @@ the measurements triage (6) are presented **once for the whole family** (`conven
 - Figma Variables: the Foundation library file (`figma.config.json` → `foundationLibraryFileKey`),
   read once per run for the variable names (step 5)
 - Any nested DS components' already-written `<child>.figma.md` files
-- [`rebuild-decisions.md`](rebuild-decisions.md) — the component's section, if it has one:
-  decisions from earlier runs to apply instead of asking again (re-ask only where the code changed)
 - The component's `*.visual.html` under `test/`, rendered by the dev server (step 6)
 
 ## References

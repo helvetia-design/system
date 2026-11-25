@@ -1,7 +1,6 @@
 # Conventions — token resolution & prop analysis (Phase 1)
 
-Relevant to Phase 1's analysis. See `../CONVENTIONS.md` for the index and
-cross-phase rules.
+Relevant to Phase 1's analysis.
 
 ## Resolving tokens
 

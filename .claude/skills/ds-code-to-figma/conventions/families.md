@@ -1,6 +1,6 @@
 # Conventions — component families (sub-components)
 
-Relevant to every phase. See `../CONVENTIONS.md` for the index and glossary, and
+Relevant to every phase. See
 [ADR-0036](../../../../docs/adr/0036-figma-doc-unit-follows-storybook-page.md) for why the
 documentation unit follows the Storybook page.
 
@@ -118,7 +118,7 @@ sub-components.
 
 ## 7. Documentation frame
 
-- One documentation frame per owner, never per sub-component (`page-structure.md`).
+- One documentation frame per owner, never per sub-component (`PHASE-3-BUILD.md` → "Category pages").
 - Every set of the family is a stack in the owner's `Sets`, **owner's sets first** (default set, then
   its `…Inverted`), then each sub-component's sets in build order (§2) — display order, not build
   order (decided 23.11.2026, `ds-list`). With more than one

@@ -239,7 +239,7 @@ for (const M of SPEC.members)
     //    height of fixed-size layers, without a variable. `review`, not fail: some are documented
     //    literals (mapping `tokens:` → bind: false). Compare each against that list before calling it
     //    fine. Not checked: line height and letter spacing (they sync as STRING variables, which
-    //    Figma can't bind — documented literals, TODO.md); nested instances' own size (their main
+    //    Figma can't bind — documented literals); nested instances' own size (their main
     //    component or the parent's padding sets it); absolute layers (overlays such as tooltip-anchor).
     const fields = [
       'paddingLeft',

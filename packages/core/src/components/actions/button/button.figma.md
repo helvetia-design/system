@@ -1,8 +1,7 @@
 # button → Figma mapping
 
 > **Status: done (19.11.2026)** — Phases 1–8 built and confirmed by the user — rebuild of the Button component in the DS Core
-> Components file, tokens from the DS Foundation library. Decisions from earlier runs:
-> `.claude/skills/ds-code-to-figma/rebuild-decisions.md` → "Button". Brand icons left out (no
+> Components file, tokens from the DS Foundation library. Brand icons left out (no
 > Helvetia brand-icon assets; `ds-brand-icon` takes raw SVG / URL only).
 
 ```yaml
@@ -38,7 +37,7 @@ anatomy: # letters follow the drawing, left to right (user decision 19.11.2026);
   - letter: E
     part: icon-right
     description: 'The trailing icon wrapper.'
-# Two Anatomy instances (rebuild-decisions.md): `loading` (A spinner, B native) and default with both icons on (C, D, E).
+# Two Anatomy instances: `loading` (A spinner, B native) and default with both icons on (C, D, E).
 
 props:
   - name: color
@@ -132,7 +131,7 @@ props:
     figmaPropertyType: component state (blocked) # disabled=true only with state=default
   - name: loading
     figmaPropertyType: component state (blocked) # loading=true only with state=default; label stays visible
-  # Instance overrides, not variants (rebuild-decisions.md, approved 04.11.2026):
+  # Instance overrides, not variants (approved 04.11.2026):
   - {
       name: square,
       figmaPropertyType: instance override,
@@ -275,7 +274,7 @@ tokens: # names checked in the Foundation file (18.11.2026); 320 Button variable
 measurements: # confirmed by the user 18.11.2026, measured on the dev server (fresh build)
   drawnOption: base
   drawnColor: secondary
-  drawnColorReason: "primary and the status colors draw the border in the fill color — the border and the padding inside it can't be seen (rebuild-decisions.md)"
+  drawnColorReason: "primary and the status colors draw the border in the fill color — the border and the padding inside it can't be seen"
   options: [base, sm, lg]
   behavior:
     width: hug # wide: fill

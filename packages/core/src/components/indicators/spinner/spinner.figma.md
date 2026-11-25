@@ -1,8 +1,7 @@
 # spinner → Figma mapping
 
 > **Status: done (18.11.2026)** — Phases 1–8 built and confirmed by the user — rebuild of the Spinner component in the DS Core
-> Components file, tokens from the DS Foundation library. Decisions from earlier runs:
-> `.claude/skills/ds-code-to-figma/rebuild-decisions.md` → "Spinner".
+> Components file, tokens from the DS Foundation library.
 
 ```yaml
 sets: # default set first
@@ -64,7 +63,7 @@ props:
   - name: deactivated
     type: boolean
     figmaPropertyType: excluded
-    note: 'Stops the animation only — no static visual effect (rebuild-decisions.md).'
+    note: 'Stops the animation only — no static visual effect.'
   # Generated: the translated aria-label ("Laden") is not rendered — no property.
 
 states: [] # no pseudo-classes in spinner.host.scss
@@ -325,7 +324,7 @@ measurements: # confirmed by the user 18.11.2026, measured on the dev server
 - **Logo glyph:** traced from the live Lottie frame that matches the visual test snapshot (9
   rotated squares → one unioned vector `logo`, 88.6% of `inner`, centered).
 - **Circle on inverted:** the progress arc uses `Text/Color/Primary` (navy) on the dark background —
-  invisible, same as in code (rebuild-decisions.md).
+  invisible, same as in code.
 - **Typography:** the label uses the composite token `🧩 Component/Spinner/Label/Typo`; the token
   sync splits it into seven Foundation variables. Foundation has no text styles.
 - **Code drift (follow-up, not fixed here):** `spinner.tsx` `getColor()` hardcodes `#000d6e` /

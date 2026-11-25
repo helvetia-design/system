@@ -160,7 +160,7 @@ Labels`, set, `Grid`). Below the set, the set's fill covers every divider.
      axis's remaining options follow canonical order.
      d. **Inverted background:** every `…Inverted` stack sits on a dark background cloned from the
      template's `Inverted` stack — same fill and variable binding as that template node (the dark
-     `Alias/Surface/Primary`, per `conventions/page-structure.md`). A light or missing background is a
+     `Alias/Surface/Primary`). A light or missing background is a
      `fail`.
      **Checkpoint leftovers** (`PHASE-3-BUILD.md` step 3/5): no `review` frame is left in `Sets`,
      and every stack, label, bracket and divider in `Sets` is `visible`. A leftover `review` frame

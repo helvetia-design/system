@@ -1,8 +1,7 @@
 # Conventions — content-selection props and threshold mitigations (Phase 2, Phase 3)
 
 Relevant to Phase 2's grouping proposal when a component has an open-ended content prop or
-exceeds the variant threshold, and to Phase 3 when building wrapper sets. See `../CONVENTIONS.md` for the index
-(the core "same layers → variant, different layers → top-level split" test lives in
+exceeds the variant threshold, and to Phase 3 when building wrapper sets (the core "same layers → variant, different layers → top-level split" test lives in
 `../PHASE-2-PROPOSE.md` step 1).
 
 ## Prop-to-variant mapping

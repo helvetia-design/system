@@ -4,7 +4,6 @@ How to fill the documentation frame's left-column sections, in column order (Cop
 Anatomy, Measurements; Names for asset components). The frame
 itself, its header and the 2-column body come from the `🗂️ Template / Category` clone in
 `../PHASE-3-BUILD.md`; the `Documentation` column already holds placeholder `Section` instances.
-See `../CONVENTIONS.md` for the index.
 
 ## The shared components
 

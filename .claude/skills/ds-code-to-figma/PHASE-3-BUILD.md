@@ -16,7 +16,6 @@ explicit user confirmation on.
 ## References
 
 - `figma-use` skill — mandatory before any `use_figma` call.
-- `CONVENTIONS.md` — for the seeded category-copy table.
 - The Figma page **`🗂️ Template / Category`** in the library file — the only source of page and
   documentation-frame styling (see [Category pages](#category-pages)). This skill holds no layout,
   spacing, colour or font values for it.
@@ -136,7 +135,24 @@ Components are grouped onto one shared Figma page per code category, not one pag
 The category is the folder under `packages/core/src/components/<category>/` (see
 `packages/core/CONTEXT.md`'s Usage-Category Taxonomy). The target page name is
 **`Core / <Category>`** — Title Case, plural, matching the folder name (`indicators` →
-`Core / Indicators`).
+`Core / Indicators`). The category copy for each page's `Category Header` comes from this table —
+never invent it:
+
+| Category (folder) | Page name           | Title      | Lead                                                                                   |
+| ----------------- | ------------------- | ---------- | -------------------------------------------------------------------------------------- |
+| `indicators`      | `Core / Indicators` | Indicators | Indicators communicate status, progress, or emphasis to the user.                      |
+| `actions`         | `Core / Actions`    | Actions    | Actions let users trigger a task, submission, or navigation with a single interaction. |
+| `forms`           | `Core / Forms`      | Forms      | Forms collect, validate, and submit user input across a range of field types.          |
+| `media`           | `Core / Media`      | Media      | Media displays brand, imagery, and iconography consistently across the product.        |
+| `navigation`      | `Core / Navigation` | Navigation | Navigation helps users move between and orient themselves within views.                |
+| `overlays`        | `Core / Overlays`   | Overlays   | Overlays surface contextual content above the page without losing the user's place.    |
+| `structure`       | `Core / Structure`  | Structure  | Structure organizes and arranges content into a clear, consistent layout.              |
+
+**One documentation frame per documentation owner**, never per sub-component or per inverted set:
+every sub-component set and every `…Inverted` set is an extra stack in the owner's `Sets`
+(`conventions/families.md` §7,
+[ADR-0036](../../../docs/adr/0036-figma-doc-unit-follows-storybook-page.md)). **Never lock any
+node** this skill builds.
 
 **All styling comes from the template page `🗂️ Template / Category`.** Never hand-build the shell
 and never write layout, spacing, colour or font values in this skill — clone, then change only
@@ -146,7 +162,7 @@ what's listed below.
 2. Search `figma.root.children` for a page named exactly `Core / <Category>`.
    - **Not found → clone the whole template page** (`templatePage.clone()`), rename it
      `Core / <Category>`, and override `Category Header`'s `component` and `lead` text from the
-     fixed category-copy table in `CONVENTIONS.md`. Never invent copy; if the category is missing
+     category-copy table above. Never invent copy; if the category is missing
      from the table, **hard stop** and ask for title/lead text.
    - **Found → reuse it.** Clone only the template's `Component Documentation` frame and move it
      into the existing page's `Documentation Frames` row, **appended last** (`framesRow.appendChild`) — never inserted at a sorted position, never repositioning a sibling component's frame (clone from the template every time,
@@ -343,7 +359,7 @@ variant (mechanics: `conventions/build-mechanics.md` → "Slots").
    variant where it shows with one text node `text` ("Lorem ipsum dolor sit amet, consectetur
    adipisicing elit."), `FILL` width, wrapping, bound to `🧩 Component/Text/Typo/Paragraph/*` and
    `🔗 Alias/🔤 Text/Color/Primary` (user decision 19.11.2026; replaced by a `Text` instance once
-   Text is in Figma, TODO.md). Fill a
+   Text is in Figma). Fill a
    slot in an instance by `appendChild`, never with `setProperties`; turn on its `show` boolean
    first, or the slot isn't reachable.
 4. Add slots before the grid layout (step 4 of "Labeled component set"), like text properties.

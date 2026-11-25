@@ -1,7 +1,6 @@
 # Conventions — Component Set labeling, sizing, and rendering (Phase 3)
 
-Relevant to Phase 3's "Labeled component set" section specifically. See `../CONVENTIONS.md` for the
-index.
+Relevant to Phase 3's "Labeled component set" section specifically.
 
 ## Option and axis ordering
 

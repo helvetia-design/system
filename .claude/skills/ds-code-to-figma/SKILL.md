@@ -141,15 +141,15 @@ flowchart TD
     P8G --> Done(["Done: component live in Figma"]):::phase
 ```
 
-🔵 **code** — reads or writes a file in this repo (`.tsx`/`.scss`, `name.figma.md`, `CONVENTIONS.md`, test snapshots).
+🔵 **code** — reads or writes a file in this repo (`.tsx`/`.scss`, `name.figma.md`, test snapshots).
 🟣 **figma** — a `use_figma`/`get_screenshot` call against the live Figma file.
 🟡 **human** — a required stop-and-wait checkpoint; never assume approval and keep going.
 
 The human checkpoints (Phase 1's anatomy review and measurements triage, Phase 2's mapping confirmation, Phase 3's
 first-variant and documentation-frame approvals in Figma, and the Copy me / Anatomy / Measurements
 confirmations in Phases 6–8) are the only _required_ stops. Phases 4–5 run on their own and stop
-only on a `blocked` verdict or a repair hard stop. For the full list of every checkpoint and
-hard-stop condition across all eight phases in one place, see [`DECISIONS.md`](DECISIONS.md).
+only on a `blocked` verdict or a repair hard stop. Each phase file lists its own checkpoints and
+hard stops.
 
 ## Rules
 
@@ -173,7 +173,10 @@ reusing existing components, since the same discipline applies here.
 - **Tokens live in the Foundation library**, not in the component file: `figma.config.json` →
   `foundationLibraryFileKey` and `foundationVariableCollections`. Components bind to Foundation
   variables, imported by key (`conventions/tokens-and-props.md` → "Binding Foundation
-  variables"). The Foundation library must be published and added to the component file.
+  variables"). The Foundation library must be published and added to the component file. If
+  reading the Foundation file or importing a variable by key fails, stop and ask the user to
+  publish Foundation and add it to the component file. An empty library listing from the
+  component file alone is not a stop (known Figma quirk, `conventions/tokens-and-props.md`).
 - The target component must already exist in code (`packages/core/src/components/<category>/<name>/`).
 - If the family uses a **nested component** (an independent DS component from another family, e.g.
   a button using an icon), the nested component's own `<child>.figma.md` must already exist and
@@ -186,13 +189,20 @@ reusing existing components, since the same discipline applies here.
 
 Read only the documentation needed for the task:
 
-- [`CONVENTIONS.md`](CONVENTIONS.md) — cross-phase rules (category copy, no-lock, no assumed attributes), indexed by topic into
-  [`conventions/`](conventions/) (tokens & props, content-selection & mitigations, page structure, Component Set
-  rendering, general build mechanics).
+- [`conventions/tokens-and-props.md`](conventions/tokens-and-props.md) — resolving design tokens,
+  no assumed attributes, verifying claimed values (Phase 1).
+- [`conventions/content-selection-and-mitigations.md`](conventions/content-selection-and-mitigations.md)
+  — wrapper + Instance Swap pattern, 500-variant mitigations (Phases 2–3).
+- [`conventions/component-set-rendering.md`](conventions/component-set-rendering.md) — Component
+  Set axis labeling, sizing, screenshots (Phase 3).
+- [`conventions/document-sections.md`](conventions/document-sections.md) — `Section` / `Preview` /
+  `Title` mechanics (Phases 6–8).
+- [`conventions/measurements.md`](conventions/measurements.md) — which sizes to show and how
+  (Phases 1 and 8).
+- [`conventions/build-mechanics.md`](conventions/build-mechanics.md) — general Figma Plugin API
+  gotchas (any phase).
 - [`conventions/families.md`](conventions/families.md) — owner / sub-component resolution, lockstep
   phases, parent-set props, slots, anatomy and measurements for families (every phase).
-- [`DECISIONS.md`](DECISIONS.md) — every checkpoint and hard-stop condition across all eight
-  phases, in one place.
 - `PHASE-1-ANALYZE.md` … `PHASE-8-DOCUMENT-MEASUREMENTS.md` — the full workflow, one file per phase (see
   "## Workflow" above).
 - [`packages/tokens/CONTEXT.md`](../../../packages/tokens/CONTEXT.md) — token layers and naming.
@@ -214,7 +224,7 @@ Provide:
 
 - `<name>.figma.md` next to each family member's `.tsx` — one per member (owner and every
   sub-component).
-- `PHASE-2-PROPOSE.md`'s mapping table, `CONVENTIONS.md` and `conventions/*.md` are updated only when the user approves a new rule addition.
+- `PHASE-2-PROPOSE.md`'s mapping table and `conventions/*.md` are updated only when the user approves a new rule addition.
 - Created Figma component — documentation frames and component set
 - Validation results — `<name>.figma-validation.md` (Phase 4, with the Phase 5 repair log)
 - Unresolved issues

@@ -1,8 +1,7 @@
 # icon → Figma mapping
 
 > **Status: done (17.11.2026)** — Phases 1–8 built and confirmed by the user — rebuild of the Icon component in the DS Core Components
-> file, tokens from the DS Foundation library. Decisions from earlier runs:
-> `.claude/skills/ds-code-to-figma/rebuild-decisions.md` → "Icon".
+> file, tokens from the DS Foundation library.
 
 ```yaml
 sets:
@@ -38,7 +37,7 @@ props:
     type: enum
     options: [primary, info, grey, success, danger, warning]
     figmaPropertyType: excluded
-    note: 'No color axis (user decision 17.11.2026, Gery''s note "Set color with variables"): the glyph''s vector fill is bound to Component/Icon/Color/Primary and designers or parent components set another color variable on it. Replaces the earlier 8-option color axis (rebuild-decisions.md).'
+    note: 'No color axis (user decision 17.11.2026, Gery''s note "Set color with variables"): the glyph''s vector fill is bound to Component/Icon/Color/Primary and designers or parent components set another color variable on it. Replaces the earlier 8-option color axis.'
   - name: inverted
     type: boolean
     figmaPropertyType: excluded
@@ -50,7 +49,7 @@ props:
   - name: invalid
     type: boolean
     figmaPropertyType: excluded
-    note: 'Same look as color=danger, no own token (rebuild-decisions.md).'
+    note: 'Same look as color=danger, no own token.'
   - name: inline
     type: boolean
     figmaPropertyType: excluded
@@ -151,7 +150,7 @@ measurements: # confirmed by the user 17.11.2026, measured on the dev server
   built per `conventions/content-selection-and-mitigations.md` (component › `box` › `Vector`,
   unbound navy; `information`, `triangle` and `whats-app` flattened to one `Vector`). They live in
   the Core Components file for now; the DS Assets file is planned to take them later.
-- **"🖼️ Icon names" section** (rebuild-decisions.md): a 9 × 9 grid of all 79 icons at
+- **"🖼️ Icon names" section**: a 9 × 9 grid of all 79 icons at
   `size=md`, each an instance of the wrapper's default variant with its `icon` swap set to the
   glyph, the name underneath. Inserted after Measurements with `Title` `kind=names`.
 - **No Variations section:** no `show` boolean defaulting to `false`.
