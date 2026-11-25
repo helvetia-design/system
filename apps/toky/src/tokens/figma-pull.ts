@@ -26,6 +26,7 @@ import {
   isBorderFigmaId,
   isFigmaAlias,
   isLineHeightPath,
+  isOpacityPath,
   isLiteralValueEqual,
   isResponsiveDimensionFigmaId,
   isShadowFigmaId,
@@ -34,6 +35,7 @@ import {
   isTypographyFigmaId,
   letterSpacingPercentFor,
   lineHeightFromFigmaPercent,
+  opacityFromFigma,
   pathFromFigmaVariableName,
   RESPONSIVE_DIMENSION_SUB_PROPERTIES,
   SHADOW_SUB_PROPERTIES,
@@ -341,6 +343,18 @@ function deriveValue(
       }
     }
     return { kind: 'literal', type: dtcgType, rawValue: multiplier }
+  }
+
+  // An Opacity `number` token round-trips Figma's 0-100 back to this codebase's 0-1.
+  if (dtcgType === 'number' && isOpacityPath(lineHeightPath)) {
+    const opacity = opacityFromFigma(modeValue)
+    if (opacity === undefined) {
+      return {
+        kind: 'unsupported',
+        reason: `Opacity value "${String(modeValue)}" on "${variable.name}" is not a number in 0-100 — skipped.`,
+      }
+    }
+    return { kind: 'literal', type: dtcgType, rawValue: opacity }
   }
 
   return { kind: 'literal', type: dtcgType, rawValue: modeValue }
