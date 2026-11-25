@@ -58,6 +58,7 @@ beforeEach(() => {
   delete process.env.NEW_IDS_FILE
   delete process.env.REMOVED_IDS_FILE
   delete process.env.TARGET_BRANCH
+  delete process.env.BASE_SHA
   delete process.env.TOKENS_DIR_OVERRIDE
   delete process.env.TOKY_CONFIG_PATH
   delete process.env.TOKENS_ROOT
@@ -65,7 +66,9 @@ beforeEach(() => {
 
 afterEach(() => {
   process.env = { ...originalEnv }
+  process.exitCode = undefined
   vi.unstubAllGlobals()
+  vi.restoreAllMocks()
 })
 
 describe('backfill-commit.mjs TARGET_BRANCH default', () => {
@@ -155,6 +158,22 @@ describe('backfill-commit.mjs value-only sync (no new/removed ids)', () => {
   })
 })
 
+describe('backfill-commit.mjs unresolved temp ids', () => {
+  it('fails without committing when NEW_IDS still holds a temp id', async () => {
+    process.env.NEW_IDS = JSON.stringify([{ path: ['A'], variableId: 'temp-A' }])
+    const fetchMock = routingFetchMock()
+    vi.stubGlobal('fetch', fetchMock)
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+    await import('../backfill-commit.mjs')
+    await vi.waitFor(() => expect(process.exitCode).toBe(1))
+
+    const calls = fetchMock.mock.calls.map(([url, init]) => ({ url: url as string, method: init?.method ?? 'GET' }))
+    expect(calls.some(({ url, method }) => method === 'POST' && url.endsWith('/git/commits'))).toBe(false)
+    expect(calls.some(({ url, method }) => method === 'PATCH' && url.includes('/git/refs/heads/'))).toBe(false)
+  })
+})
+
 describe('backfill-commit.mjs extension source', () => {
   it('reads and writes the token file and sync state named by the Toky config', async () => {
     const root = mkdtempSync(join(tmpdir(), 'figma-sync-ext-backfill-'))
@@ -180,5 +199,70 @@ describe('backfill-commit.mjs extension source', () => {
       'packages/tokens/tokens/Extensions.tokens.json',
       'packages/tokens/.figma-sync-state.json',
     ])
+  })
+})
+
+describe('backfill-commit.mjs pinned base sha', () => {
+  function movedHeadFetchMock(refPatchStatus = 200) {
+    return vi.fn(async (url: string, init?: RequestInit) => {
+      const method = init?.method ?? 'GET'
+      if (url.includes('/contents/packages/tokens/.figma-sync-state.json'))
+        return new Response('not found', { status: 404 })
+      if (url.includes('/contents/packages/tokens/tokens/Base.tokens.json')) {
+        return jsonResponse({ sha: 'base-file-sha', content: Buffer.from('{}').toString('base64') })
+      }
+      if (url.includes('/git/ref/heads/')) return jsonResponse({ object: { sha: 'moved-head-sha' } })
+      if (url.includes('/git/commits/pinned-sha') || url.includes('/git/commits/moved-head-sha'))
+        return jsonResponse({ tree: { sha: 'tree-sha' } })
+      if (method === 'POST' && url.endsWith('/git/blobs')) return jsonResponse({ sha: 'blob-sha' })
+      if (method === 'POST' && url.endsWith('/git/trees')) return jsonResponse({ sha: 'new-tree-sha' })
+      if (method === 'POST' && url.endsWith('/git/commits')) return jsonResponse({ sha: 'new-commit-sha' })
+      if (method === 'PATCH' && url.includes('/git/refs/heads/')) return jsonResponse({}, refPatchStatus)
+      throw new Error(`Unexpected fetch call: ${method} ${url}`)
+    })
+  }
+
+  it('reads both files at BASE_SHA and makes it the commit parent although the branch head moved', async () => {
+    process.env.BASE_SHA = 'pinned-sha'
+    const fetchMock = movedHeadFetchMock()
+    vi.stubGlobal('fetch', fetchMock)
+
+    await import('../backfill-commit.mjs')
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    const urls = fetchMock.mock.calls.map(([url]) => url as string)
+    const contentUrls = urls.filter(url => url.includes('/contents/'))
+    expect(contentUrls).toHaveLength(2)
+    expect(contentUrls.every(url => url.endsWith('?ref=pinned-sha'))).toBe(true)
+    expect(urls.some(url => url.includes('/git/ref/heads/'))).toBe(false)
+    const commitCall = fetchMock.mock.calls.find(
+      ([url, init]) => init?.method === 'POST' && url.endsWith('/git/commits'),
+    )
+    expect(JSON.parse(commitCall?.[1]?.body as string).parents).toEqual(['pinned-sha'])
+  })
+
+  it('fails loudly when the ref update is rejected', async () => {
+    process.env.BASE_SHA = 'pinned-sha'
+    vi.stubGlobal('fetch', movedHeadFetchMock(422))
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+    await import('../backfill-commit.mjs')
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining('422') }))
+    expect(process.exitCode).toBe(1)
+  })
+
+  it('pins the current branch head once when BASE_SHA is unset', async () => {
+    const fetchMock = movedHeadFetchMock()
+    vi.stubGlobal('fetch', fetchMock)
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+    await import('../backfill-commit.mjs')
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    const urls = fetchMock.mock.calls.map(([url]) => url as string)
+    expect(urls.filter(url => url.includes('/git/ref/heads/'))).toHaveLength(1)
+    expect(urls.filter(url => url.includes('/contents/')).every(url => url.endsWith('?ref=moved-head-sha'))).toBe(true)
   })
 })
