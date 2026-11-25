@@ -1,6 +1,6 @@
 ---
 name: ds-document-component
-description: Use when writing or generating Storybook documentation for a Helvetia Design System component — creates stories.ts, doc-config.ts, and six MDX subpages (Overview, Usage, Variants, Styling, Accessibility, Testing) using reusable Storybook blocks (ComponentLead, ComponentPublicMethods, ComponentParts, CanvasTabs, ComponentPageObject) for dynamic data binding to components.json
+description: Write or generate a component's Storybook documentation — stories, doc-config and the six MDX subpages. Use when a component has no docs yet or needs its doc set regenerated.
 ---
 
 # Write Component Docs

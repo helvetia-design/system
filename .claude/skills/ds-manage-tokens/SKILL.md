@@ -94,7 +94,6 @@ Follow `ds-validate-tokens`. A definition that isn't in the generated CSS doesn'
 ## Deliver
 
 Report tokens added, renamed or deprecated; which are visual changes; any name you corrected
-from a request; and the changeset (`ds-changeset`) — patch for a non-visual fix, minor for new
-tokens, major for a removal.
-
-Leave every change unstaged.
+from a request; and, for a standalone token change only, the changeset (`ds-changeset`) — patch
+for a non-visual fix, minor for new tokens, major for a removal. Inside a workflow run (A/C, or a
+dispatch that names a step) write none; the run's ship step covers it.

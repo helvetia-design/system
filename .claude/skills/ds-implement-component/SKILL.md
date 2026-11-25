@@ -185,9 +185,7 @@ plan is a specification you were handed, not a suggestion.
 > anyway. It reached an axe run, a repair dispatch and a test rewrite before being fixed — one
 > grep for `no-results` against the plan would have caught it here, at zero rework cost.
 
-Then follow the `ds-validate-component` skill for the new component and anything it touches.
-
-Run the narrowest suite that covers your own files. Do not run other agents' suites or whole-package
+Then run the narrowest suite that covers your own files. Do not run other agents' suites or whole-package
 builds to "be safe" — step 7 of the workflow does the cross-cutting pass once.
 
 Fix defects within the approved scope. If a fix needs an architectural change, stop and
@@ -203,7 +201,6 @@ Return:
 - Validation results, with evidence
 - Deviations from the plan and unresolved issues
 
-Create a changeset with the `ds-changeset` skill (minor for a new component). Leave every
-change unstaged — never commit.
+Write no changeset — the workflow's ship step writes the run's single one.
 
 **Do not silently change the approved architecture.**

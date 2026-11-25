@@ -74,5 +74,3 @@ Stop and let the human approve the Measurements section in Figma.
 - Values measured but **not** shown, with the group that excluded them — so the next run doesn't
   re-litigate the triage
 - Handoffs: any shown value with no token behind it
-
-Never commit.

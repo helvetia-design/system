@@ -1,6 +1,6 @@
 ---
 name: ds-plan-component
-description: Turn a component specification or GitHub issue into a technical implementation plan for the design system — public API, slots, responsive behavior, tokens, accessibility, files to touch, and ordered steps. Use when planning a new component, reworking an existing one, or scoping a breaking change. Produces a plan only; writes no production code.
+description: Turn a component spec or GitHub issue into a technical implementation plan — API, slots, tokens, a11y, files, ordered steps. Use when planning a new component, reworking one, or scoping a breaking change. Writes no production code.
 ---
 
 # ds-plan-component

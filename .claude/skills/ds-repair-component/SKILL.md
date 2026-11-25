@@ -44,7 +44,6 @@ patch here.
 - Preserve the approved architecture.
 - Keep each fix focused on its finding; don't bundle in unrelated cleanups.
 - Add regression coverage where the finding was a real defect.
-- Never weaken, skip or delete a test to make it pass.
 
 ## Phase 4: Validate
 
@@ -61,5 +60,3 @@ For every finding, return:
 
 For `INVALID`, give the reason it doesn't hold. For `BLOCKED` or `REQUIRES_APPROVAL`, state
 what is needed to unblock it.
-
-Leave every change unstaged — never commit.

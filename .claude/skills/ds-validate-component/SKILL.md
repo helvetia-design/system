@@ -1,6 +1,6 @@
 ---
 name: ds-validate-component
-description: Validate a design system component against project standards, its technical specification and acceptance criteria — static checks, build, types, lint, unit/interaction/visual/a11y tests, then per-criterion PASS/FAIL reporting with evidence. Use after implementing, modifying or repairing a component, or when asked to verify a component's quality.
+description: Validate a component against project standards, its spec and acceptance criteria — static checks, build, tests — with per-criterion PASS/FAIL evidence. Use after implementing, modifying or repairing a component.
 ---
 
 # ds-validate-component
@@ -62,7 +62,8 @@ Then check by reading, what no script covers:
 - Architecture compliance (`docs/ARCHITECTURE.md`, `packages/core/CONTEXT.md`).
 - Public API consistency — `ds-` prefix, `ds<Name>` events, `listenTo*`/`*Changed`/`handle*`
   handler naming, `readonly` on every `@Prop()`.
-- A new component is exported from `packages/core/src/index.ts`.
+- `packages/core/src/index.ts` exports a public interface type only when the plan names one; a
+  new component needs no entry.
 - No new dependencies that weren't approved.
 - TypeScript and lint errors.
 

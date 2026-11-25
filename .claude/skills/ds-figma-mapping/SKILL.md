@@ -1,6 +1,6 @@
 ---
 name: ds-figma-mapping
-description: Create or update a component family's <name>.figma.md mapping file — the record of props, anatomy, states, resolved Figma variable ids, nested component keys, variations and the measurements triage. Resolves token ids locally with css-token-lookup.mjs and measures the component on the dev server. Every other Figma skill reads or writes this file.
+description: Create or update a component family's <name>.figma.md mapping file, which every other Figma skill reads. Use as the first Figma step for a component, or when its props, tokens or anatomy changed.
 ---
 
 # ds-figma-mapping
@@ -108,4 +108,4 @@ Before handing off, every one of these or a recorded hard stop:
 - Confirm the checklist has no unresolved gaps, then hand to `ds-figma-component-set`
 
 `sets:` and the component keys are filled in later by `ds-figma-component-set` — leave them
-empty here. Never commit.
+empty here.

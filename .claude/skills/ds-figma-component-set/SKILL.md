@@ -86,4 +86,4 @@ sub-component. Without that key the next family that nests this one cannot find 
 - Handoffs: missing tokens, missing nested-component mappings
 - Hand off to `ds-figma-review` to check the result against the code
 
-Never generate Code Connect mappings. Never commit.
+Never generate Code Connect mappings.

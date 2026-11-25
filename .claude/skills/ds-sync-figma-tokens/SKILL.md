@@ -1,6 +1,6 @@
 ---
 name: ds-sync-figma-tokens
-description: Push Base.tokens.json into the Figma variable file with scripts/figma-sync (pull.mjs), then write the new variableIds back into the repo locally (backfill-commit.mjs). Use when a Figma build is blocked because a token has no Figma variable — e.g. a responsive Component token that needs a Device variable — or when new tokens must reach Figma before the CI sync runs.
+description: Push Base.tokens.json into Figma variables and write the new variableIds back into the repo. Use when a Figma build is blocked because a token has no Figma variable, or new tokens must reach Figma before the CI sync runs.
 ---
 
 # ds-sync-figma-tokens

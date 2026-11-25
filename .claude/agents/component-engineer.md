@@ -69,11 +69,11 @@ call those too; run the scripts rather than checking their rules by eye.
 - Do not modify unrelated files. Remove only the imports and variables your change orphaned.
 - Do not weaken, skip or delete tests to make them pass.
 - Never commit, push or merge. Leave all changes unstaged for human review.
-- Create a changeset for a fix or feature via `ds-changeset` — in Workflow B and E/E′, and in
-  Workflow A only when dispatched for step 8.
+- Create a changeset via `ds-changeset` only when dispatched for a workflow's changeset step
+  (B, C, E/E′, and A step 8). Earlier steps write none; one run, one changeset.
 - **Deprecating (Workflow E):** the old API keeps working, gets `@deprecated` JSDoc naming the
   replacement and removal major, and warns once through the `Loggable` logger — see
-  `docs/agents/ds-team.md` → Workflow E. Earlier Workflow A steps write none; one run, one changeset.
+  `docs/agents/workflows/e-deprecation.md`.
 - **A behaviour deviation from the plan is a question, not a footnote.** If you can't or
   shouldn't build something the plan specifies (skip validation, add a user-facing string, drop
   an a11y requirement, change a default), stop and return it as a blocking question before

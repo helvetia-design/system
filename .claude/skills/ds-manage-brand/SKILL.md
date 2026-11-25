@@ -76,5 +76,5 @@ Check the brand visually through Storybook's theme switcher, not only in the CSS
 - Build output, and confirmation all four CSS files carry the token set
 - Visual impact per brand, with the Storybook evidence
 
-Brand value changes are visual: create a changeset (`ds-changeset`) and leave everything
-unstaged.
+Brand value changes are visual: a standalone change gets a changeset (`ds-changeset`). Inside a
+workflow run write none; the run's ship step covers it.

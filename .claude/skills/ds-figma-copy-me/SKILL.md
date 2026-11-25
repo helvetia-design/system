@@ -57,7 +57,5 @@ Iterate with the human in Figma before moving on — same discipline as every ot
 
 - The filled `kind=copy-me` `Section`, by node name
 - Confirmation that no property was overridden
-- Next: `ds-figma-anatomy` (or straight to `ds-figma-measurements` if the component has no
-  `@part` tags)
-
-Never commit.
+- Next: `ds-figma-anatomy` ∥ `ds-figma-measurements` ∥ `ds-design-guidelines` (anatomy skipped
+  if the component has no `@part` tags)

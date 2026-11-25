@@ -1,6 +1,6 @@
 ---
 name: ds-figma-review
-description: Check a built Figma component against the code it mirrors — variant axes against props, token bindings against the SCSS cascade, nested components against their own sets, header and layout against the template. Writes a pass/fail/blocked verdict report and repairs the failures. Use after building a Figma component, or when code has changed since.
+description: Check a built Figma component against the code it mirrors — variants, token bindings, nested components, layout — write a verdict report and repair failures. Use after building a Figma component, or when its code has changed since.
 ---
 
 # ds-figma-review
@@ -74,5 +74,3 @@ component-engineer or token-engineer. Report it; do not "fix" Figma to match a b
 - `<name>.figma-validation.md` with the verdict and repair log
 - Code-side findings, routed by owner
 - Unresolved failures after 3 iterations
-
-Never commit.

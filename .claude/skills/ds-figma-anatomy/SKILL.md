@@ -63,5 +63,3 @@ Stop and let the human approve the Anatomy section in Figma before moving on.
 - The part table: number, `part` name, description, always/conditional — **ready to hand to the
   documentation-engineer** for the Storybook page
 - Any `@part` tag that appears in code but not in the plan, or vice versa
-
-Never commit.

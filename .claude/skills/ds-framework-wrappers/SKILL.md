@@ -1,6 +1,6 @@
 ---
 name: ds-framework-wrappers
-description: Keep the Angular and React packages in step with a component's public API — the React wrapper re-export lists (client + server), the Angular value-accessor wrapper for a form component, the barrel exports, and the deprecation JSDoc on both. Use when adding a component, adding or deprecating a form component's value/event, or when a framework package's export test fails.
+description: Keep the Angular and React packages in step with a component's public API — React wrapper lists, Angular value accessors, barrels, deprecation JSDoc. Use when adding a component, changing or deprecating a form component's value/event, or when a framework export test fails.
 ---
 
 # ds-framework-wrappers
@@ -89,4 +89,4 @@ for a form component — don't write or run them here.
 ## Report
 
 Files changed per package, the Angular config chosen (`changeEvent`/`blurEvent`/`valueProp`,
-`extractValue` if any) and why, and the build/test output tail. Never commit.
+`extractValue` if any) and why, and the build/test output tail.

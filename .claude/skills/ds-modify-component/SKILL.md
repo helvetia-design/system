@@ -74,8 +74,9 @@ breaking change needs an approved plan (`ds-plan-component`) and a deprecation p
 
 ## Phase 4: Validate
 
-Follow the `ds-validate-component` skill. The reproduction test from Phase 1 must now pass,
-and the component's existing suite must stay green.
+Run the narrowest suite that covers your change: the reproduction test from Phase 1 must now
+pass, and the component's existing suite must stay green. The full `ds-validate-component` pass
+is a separate workflow step (Workflow B), not part of this skill — Workflow C has none.
 
 ## Phase 5: Deliver
 
@@ -87,5 +88,4 @@ Report:
 - Validation results, with evidence
 - Remaining risks
 
-Create a changeset with the `ds-changeset` skill (patch for a fix, minor for an addition).
-Leave every change unstaged — never commit.
+Write no changeset here — the workflow's changeset step writes it (patch for a fix, minor for an addition).
