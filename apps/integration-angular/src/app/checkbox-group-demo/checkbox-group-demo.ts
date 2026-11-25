@@ -23,6 +23,11 @@ export class CheckboxGroupDemo {
     }),
   })
 
+  protected readonly fieldsetForm = new FormGroup({
+    terms: new FormControl<boolean>(true, { nonNullable: true }),
+    newsletter: new FormControl<boolean>(false, { nonNullable: true }),
+  })
+
   protected readonly autoInvalidOffForm = new FormGroup({
     fruits: new FormControl<string[]>(['apple'], {
       nonNullable: true,
@@ -45,5 +50,13 @@ export class CheckboxGroupDemo {
 
   protected setReactiveFormValue() {
     this.reactiveForm.controls.fruits.setValue(['banana', 'cherry'])
+  }
+
+  protected setReactiveFormSingleValue() {
+    this.reactiveForm.controls.fruits.setValue(['apple'])
+  }
+
+  protected isArray(value: unknown) {
+    return Array.isArray(value)
   }
 }

@@ -15,6 +15,12 @@ import { withValueAccessor } from './value-accessor'
  * own `value: any[]` type, so `writeValue`/`handleChange` already pass the array straight through unmodified —
  * the same `config` shape (`changeEvent`/`blurEvent`/`valueProp`) as `ds-input` carries over unchanged.
  *
+ * `writeValue()` turns on core's `control` mode before the first value lands: without it the group ignores value
+ * writes and its children's boolean `dsChange` bubbles up to the accessor, turning the form value into a boolean
+ * instead of an array. It is set only once a form directive binds the group, because `control` also swallows the
+ * children's own `dsChange` and overwrites their `checked`, which would break a group used as a plain fieldset
+ * around checkboxes that each carry their own `formControlName`.
+ *
  * `inputs`/`outputs` are re-declared rather than inherited: Angular's compiler resolves a component's inputs
  * and outputs statically from its own `@Component` decorator at build time. `DsCheckboxGroupInputs`/
  * `DsCheckboxGroupOutputs` are generated from `../generated/proxies.ts` (see
@@ -40,4 +46,9 @@ export class DsCheckboxGroup extends withValueAccessor<HTMLDsCheckboxGroupElemen
   changeEvent: 'dsChange',
   blurEvent: 'dsBlur',
   valueProp: 'value',
-})(DsCheckboxGroupElement) {}
+})(DsCheckboxGroupElement) {
+  override writeValue(value: HTMLDsCheckboxGroupElement['value']): void {
+    this.el.control = true
+    super.writeValue(value)
+  }
+}
