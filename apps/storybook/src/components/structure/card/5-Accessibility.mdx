@@ -42,7 +42,7 @@ import { CARD_DOC_CONFIG, getCardTabs } from './card.doc-config'
       title: 'Keyboard Navigation',
       content: (
         <p style={{ margin: '0.5rem 0 0 0' }}>
-          If cards are clickable, ensure the entire card is keyboard accessible. Users should be able to activate cards using keyboard alone.
+          If cards are clickable, set <code>href</code> so the card renders a real link that is reachable with Tab and opens with Enter. The <code>clickable</code> property alone only changes the look.
         </p>
       ),
     },

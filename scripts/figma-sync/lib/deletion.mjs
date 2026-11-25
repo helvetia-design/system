@@ -13,16 +13,19 @@ import { flattenVariableId } from './figma-value.mjs'
 
 /**
  * @param {import('./baseline.mjs').SyncState | null} existingState
- * @param {import('./tokens.mjs').Token[]} currentBaseTokens the just-merged tree's tokens
+ * @param {Map<string, string | Record<string, string>>} idByPath from assignVariableIds — the ids this run
+ *   keeps using, including name-matched ones a token never committed
  * @returns {string[]} variableIds safe to delete in Figma
  */
-export function findRemovedVariableIds(existingState, currentBaseTokens) {
+export function findRemovedVariableIds(existingState, idByPath) {
   if (!existingState) return []
 
   // flattenVariableId turns a shadow token's 5-sub-id object into 5 plain
   // ids (and a normal token's single string into a 1-element list) — see
   // docs/plans/shadow-token-type-plan.md.
-  const currentIds = new Set(currentBaseTokens.flatMap(t => flattenVariableId(t.variableId).map(({ id }) => id)))
+  const currentIds = new Set(
+    [...idByPath.values()].flatMap(id => flattenVariableId(id).map(({ id: flatId }) => flatId)),
+  )
   return Object.keys(existingState.entries).filter(id => !currentIds.has(id))
 }
 

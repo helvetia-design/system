@@ -110,4 +110,73 @@ test.describe('component', () => {
 
     await expect(page.locator('ds-card')).not.toHaveClass(/(^|\s)is-purple(\s|$)/)
   })
+
+  test.describe('link', () => {
+    test('should not render a link without href', async ({ page }) => {
+      await page.mount(`<ds-card clickable>Card content</ds-card>`)
+
+      await expect(page.locator('ds-card #link')).toHaveCount(0)
+    })
+
+    test('should render a link named after the card title', async ({ page }) => {
+      await page.mount(`
+        <ds-card href="/target" target="_blank" rel="noopener">
+          <ds-card-header>
+            <ds-card-title>My Title</ds-card-title>
+          </ds-card-header>
+        </ds-card>
+      `)
+
+      const link = page.getByRole('link', { name: 'My Title' })
+      await expect(link).toHaveAttribute('href', '/target')
+      await expect(link).toHaveAttribute('target', '_blank')
+      await expect(link).toHaveAttribute('rel', 'noopener')
+      await expect(page.locator('ds-card')).toHaveClass(/is-clickable/)
+    })
+
+    test('should prefer a11yLabel over the card title', async ({ page }) => {
+      await page.mount(`
+        <ds-card href="/target" a-1-1y-label="Open offer">
+          <ds-card-title>My Title</ds-card-title>
+        </ds-card>
+      `)
+
+      await expect(page.getByRole('link', { name: 'Open offer' })).toBeVisible()
+    })
+
+    test('should be reachable with the Tab key', async ({ page }) => {
+      await page.mount(`
+        <ds-card href="/target">
+          <ds-card-title>My Title</ds-card-title>
+        </ds-card>
+      `)
+
+      await page.keyboard.press('Tab')
+
+      await expect(page.getByRole('link', { name: 'My Title' })).toBeFocused()
+    })
+
+    test('should keep action and header controls above the link', async ({ page }) => {
+      await page.mount(`
+        <ds-card href="/target">
+          <ds-card-header>
+            <ds-card-title>My Title</ds-card-title>
+            <ds-close></ds-close>
+          </ds-card-header>
+          <ds-card-actions>
+            <ds-button>OK</ds-button>
+          </ds-card-actions>
+        </ds-card>
+      `)
+
+      for (const selector of ['ds-button', 'ds-close']) {
+        const box = await page.locator(selector).boundingBox()
+        const hit = await page.evaluate(
+          ([x, y]) => document.elementFromPoint(x, y)?.closest('ds-button, ds-close')?.tagName ?? null,
+          [box!.x + box!.width / 2, box!.y + box!.height / 2],
+        )
+        expect(hit).toBe(selector.toUpperCase())
+      }
+    })
+  })
 })

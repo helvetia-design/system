@@ -162,7 +162,7 @@ Two independent implementations keep this projection in sync, sharing the same v
 #### Figma Sync — Language
 
 **Variable identity**:
-The stable key used to match one token to one Figma Variable across syncs: `$extensions.com.figma.variableId` when present, falling back to name/path only for tokens that have never round-tripped through a sync.
+The stable key used to match one token to one Figma Variable across syncs: `$extensions.com.figma.variableId` when present, falling back to name/path only for tokens that have never round-tripped through a sync. A committed `variableId` that the Figma file doesn't have is dropped for that run: the token is matched by name or recreated, and its new id is backfilled. If most committed ids are unknown, the run fails instead, since the tokens were then synced against a different file.
 _Avoid_: token name (as identity — names can change; a rename is not a delete+add)
 
 **Pull (from Code)**:
@@ -207,7 +207,7 @@ _Avoid_: partial typography token, override token
 
 #### Second token source
 
-The sync scripts (`scripts/figma-sync`) serve more than one token source. Core is the default. A second source, today `helvetia-design/extensions` with `packages/tokens/tokens/Extensions.tokens.json`, has its own `figma-sync.yml` and `figma-conflict-check.yml`. They check out this repo, compile `packages/tokens`, and run `scripts/figma-sync` with `TOKY_CONFIG_PATH` (the source's `toky.config.json`) and `TOKENS_ROOT` (the source's checkout). The sync and the Figma conflict check in both repos only act on Toky's `toky/update-main` branch (a merged PR for the sync, an open PR for the conflict check). The variableId write-back goes to `GITHUB_REPOSITORY` at the source's `repo.ref` from its Toky config, unless `TARGET_BRANCH` is set.
+The sync scripts (`scripts/figma-sync`) serve more than one token source. Core is the default. A second source, today `helvetia-design/extensions` with `packages/tokens/tokens/Extensions.tokens.json`, has its own `figma-sync.yml` and `figma-conflict-check.yml`. They check out this repo, compile `packages/tokens`, and run `scripts/figma-sync` with `TOKY_CONFIG_PATH` (the source's `toky.config.json`) and `TOKENS_ROOT` (the source's checkout). The sync and the Figma conflict check in both repos only act on Toky's `toky/update-main` branch (a merged PR for the sync, an open PR for the conflict check). The variableId write-back goes to `GITHUB_REPOSITORY` at the source's `repo.ref` from its Toky config, unless `TARGET_BRANCH` is set. The source's workflow should pass `BASE_SHA`, the sha of the token repo commit it checked out (a commit of `GITHUB_REPOSITORY` on the target branch); without it, the backfill pins the branch head at backfill time.
 
 This repo's `figma-conflict-check.yml` also runs on every PR that touches token files. It loads `Extensions.tokens.json` from extensions `main` and comments the names of extension tokens that reference a core token the PR removes or renames. It does not block the merge.
 

@@ -31,6 +31,28 @@ describe('applyVariableIdPatch', () => {
     })
   })
 
+  it('throws when an id is still a temp id, naming the token path', () => {
+    expect(() =>
+      applyVariableIdPatch(tree, [{ path: ['🌐 Global', '🌈 Color', 'White'], variableId: 'temp-🌐 Global.White' }]),
+    ).toThrow(/🌐 Global\.🌈 Color\.White/)
+  })
+
+  it('throws when one sub-id of a composite variableId is still a temp id', () => {
+    expect(() =>
+      applyVariableIdPatch(tree, [
+        {
+          path: ['🌐 Global', '🌈 Color', 'White'],
+          variableId: {
+            mobile: 'VariableID:1:2',
+            tablet: 'VariableID:1:3',
+            desktop: 'VariableID:1:4',
+            device: 'temp-x-device',
+          },
+        },
+      ]),
+    ).toThrow(/temp id/)
+  })
+
   it('does not touch a token outside the patch list', () => {
     const patched = applyVariableIdPatch(tree, [
       { path: ['🌐 Global', '🌈 Color', 'White'], variableId: 'VariableID:9:9' },

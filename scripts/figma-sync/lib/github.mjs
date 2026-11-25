@@ -68,14 +68,14 @@ export async function canReadRepository(repository, token) {
 
 /**
  * Creates one commit containing every file in `files` (each `{ path, content }`),
- * against `branch`'s current tip, then fast-forwards `branch` to it — one
- * atomic operation, or none at all (docs/adr/0014). Direct to `branch`, no
- * PR — the bot token needs branch-protection bypass rights for this call
- * to succeed (docs/adr/0017-direct-commit-variableid-backfill.md).
+ * on top of `baseSha`, then fast-forwards `branch` to it — one atomic
+ * operation, or none at all (docs/adr/0014). `baseSha` must be the commit
+ * `files` were derived from: the ref update is not forced, so it fails if
+ * `branch` has moved since, instead of reverting the commits in between.
+ * Direct to `branch`, no PR — the bot token needs branch-protection bypass
+ * rights for this call to succeed (docs/adr/0017-direct-commit-variableid-backfill.md).
  */
-export async function commitFiles({ branch, files, message, token }) {
-  const baseSha = await getRefSha(branch, token)
-
+export async function commitFiles({ branch, baseSha, files, message, token }) {
   const commitResponse = await fetch(`${API_ROOT}/git/commits/${baseSha}`, { headers: authHeaders(token) })
   await assertOk(commitResponse, `read commit ${baseSha}`)
   const baseCommit = await commitResponse.json()
@@ -126,9 +126,15 @@ export async function commitFiles({ branch, files, message, token }) {
  * a PR number directly, no separate "PR comment" API exists.
  */
 export async function listIssueComments(prNumber, token) {
-  const response = await fetch(`${API_ROOT}/issues/${prNumber}/comments`, { headers: authHeaders(token) })
-  await assertOk(response, `list comments on #${prNumber}`)
-  return response.json()
+  const comments = []
+  let url = `${API_ROOT}/issues/${prNumber}/comments?per_page=100`
+  while (url) {
+    const response = await fetch(url, { headers: authHeaders(token) })
+    await assertOk(response, `list comments on #${prNumber}`)
+    comments.push(...(await response.json()))
+    url = response.headers.get('link')?.match(/<([^>]+)>;\s*rel="next"/)?.[1]
+  }
+  return comments
 }
 
 export async function createIssueComment(prNumber, body, token) {

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { buildSyncState } from '../lib/baseline.mjs'
 import { buildDeleteVariablesPayload, findRemovedVariableIds } from '../lib/deletion.mjs'
+import { assignVariableIds } from '../lib/write.mjs'
+
+function idMapOf(tokens: { path: string[]; variableId?: string | Record<string, string> }[]) {
+  return new Map(tokens.map(token => [token.path.join('.'), token.variableId as string | Record<string, string>]))
+}
 
 describe('findRemovedVariableIds', () => {
   const existingState = {
@@ -14,7 +19,7 @@ describe('findRemovedVariableIds', () => {
 
   it('returns baseline ids that no longer appear in the current token tree', () => {
     const currentTokens = [{ path: ['A'], type: 'string', value: { kind: 'literal', value: 'x' }, variableId: 'v1' }]
-    expect(findRemovedVariableIds(existingState, currentTokens)).toEqual(['v2'])
+    expect(findRemovedVariableIds(existingState, idMapOf(currentTokens))).toEqual(['v2'])
   })
 
   it('returns nothing when every baseline id is still present', () => {
@@ -22,11 +27,17 @@ describe('findRemovedVariableIds', () => {
       { path: ['A'], type: 'string', value: { kind: 'literal', value: 'x' }, variableId: 'v1' },
       { path: ['B'], type: 'string', value: { kind: 'literal', value: 'y' }, variableId: 'v2' },
     ]
-    expect(findRemovedVariableIds(existingState, currentTokens)).toEqual([])
+    expect(findRemovedVariableIds(existingState, idMapOf(currentTokens))).toEqual([])
   })
 
   it('returns nothing when there is no baseline yet (first-ever sync)', () => {
-    expect(findRemovedVariableIds(null, [])).toEqual([])
+    expect(findRemovedVariableIds(null, new Map())).toEqual([])
+  })
+
+  it('keeps a name-matched id for a token that lost its variableId', () => {
+    const lostId = { path: ['B'], type: 'string', value: { kind: 'literal', value: 'y' } }
+    const idByPath = assignVariableIds([lostId], new Map([['B', 'v2']]))
+    expect(findRemovedVariableIds(existingState, idByPath)).toEqual(['v1'])
   })
 
   it('never flags a Figma-side-only variable — only ever compares against the baseline, not current Figma state', () => {
@@ -36,7 +47,7 @@ describe('findRemovedVariableIds', () => {
     // something this run ever owned.
     const currentTokens = [{ path: ['A'], type: 'string', value: { kind: 'literal', value: 'x' }, variableId: 'v1' }]
     const staleBaseline = { ...existingState, entries: { v1: existingState.entries.v1 } }
-    expect(findRemovedVariableIds(staleBaseline, currentTokens)).toEqual([])
+    expect(findRemovedVariableIds(staleBaseline, idMapOf(currentTokens))).toEqual([])
   })
 
   it("treats all 5 of a shadow token's sub-ids as present, not just one", () => {
@@ -67,7 +78,7 @@ describe('findRemovedVariableIds', () => {
         },
       },
     ]
-    expect(findRemovedVariableIds(shadowState, currentTokens)).toEqual([])
+    expect(findRemovedVariableIds(shadowState, idMapOf(currentTokens))).toEqual([])
   })
 
   it('flags only the shadow sub-ids actually missing, not the whole token', () => {
@@ -85,7 +96,7 @@ describe('findRemovedVariableIds', () => {
         variableId: { offsetX: 'shadow-x', offsetY: 'shadow-y', blur: 'shadow-b', spread: 'shadow-s' },
       },
     ]
-    expect(findRemovedVariableIds(shadowState, currentTokens)).toEqual(['shadow-c'])
+    expect(findRemovedVariableIds(shadowState, idMapOf(currentTokens))).toEqual(['shadow-c'])
   })
 })
 
