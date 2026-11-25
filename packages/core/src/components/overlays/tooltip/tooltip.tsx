@@ -12,7 +12,7 @@ import {
 
 let tooltipIds = 0
 
-/** SSR/no-DOM fallback, kept in sync with `--ds-tooltip-offset` (`Alias.Space.Gap.XS`). */
+/** SSR/no-DOM fallback, kept in sync with `--ds-tooltip-offset` and `--ds-tooltip-gutter` (`Alias.Space.Gap.XS`). */
 const DEFAULT_OFFSET = 8
 
 /**
@@ -78,6 +78,7 @@ export class Tooltip implements DsComponentInterface {
 
   /**
    * Defines the maximum width of the tooltip content in pixels.
+   * Defaults to the `--ds-tooltip-max-width` token; always capped to the viewport.
    */
   @Prop()
   @Type('number')
@@ -207,9 +208,11 @@ export class Tooltip implements DsComponentInterface {
       placement: this.placement,
       strategy: 'fixed',
       middleware: [
-        dsBrowser.hasWindow && !window.frameElement ? shift() : undefined,
-        flip(),
         offset(this.resolveOffset()),
+        flip(),
+        dsBrowser.hasWindow && !window.frameElement
+          ? shift({ padding: this.resolvePx('--_tooltip-gutter') })
+          : undefined,
       ].filter(Boolean) as any[],
     })
 
@@ -267,12 +270,13 @@ export class Tooltip implements DsComponentInterface {
    * converted here instead of being used as a `var()` in the stylesheet.
    */
   private resolveOffset(): number {
-    if (this.offset !== undefined) {
-      return this.offset
-    }
+    return this.offset !== undefined ? this.offset : this.resolvePx('--_tooltip-offset')
+  }
 
+  /** Reads a length custom property (px or rem) as a number; falls back to `DEFAULT_OFFSET`. */
+  private resolvePx(property: string): number {
     try {
-      const value = getComputedStyle(this.el).getPropertyValue('--_tooltip-offset').trim()
+      const value = getComputedStyle(this.el).getPropertyValue(property).trim()
       const amount = Number.parseFloat(value)
 
       if (!Number.isNaN(amount)) {
