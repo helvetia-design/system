@@ -19,6 +19,20 @@ test('basic', async ({ page, a11y }) => {
   await a11y('ds-card')
 })
 
+test('link', async ({ page, a11y }) => {
+  await page.mount(`
+    <ds-card href="/target">
+      <ds-card-header>
+        <ds-card-title>Heading</ds-card-title>
+      </ds-card-header>
+      <ds-card-content>Lorem ipsum dolor sit amet.</ds-card-content>
+      <ds-card-actions>
+        <ds-button>Button</ds-button>
+      </ds-card-actions>
+    </ds-card>`)
+  await a11y('ds-card')
+})
+
 test('css-basic', async ({ page, a11y }) => {
   await page.mount(`
     <article class="card">

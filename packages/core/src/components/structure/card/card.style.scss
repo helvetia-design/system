@@ -350,6 +350,37 @@ $backgrounds: (
 }
 
 //
+// Link
+// --------------------------------
+@include hybrid.host($use-host) {
+  :host {
+    @include vars.focus(card);
+  }
+
+  // Interactive children are raised above the stretched link so they stay clickable.
+  :host(.has-link) {
+    --_card-link-layer-position: relative;
+    --_card-link-layer-z-index: 1;
+
+    ::slotted(ds-card-actions) {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  #link {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--_card-radius);
+    outline: none;
+
+    &:focus-visible {
+      @include vars.focus-styles(card);
+    }
+  }
+}
+
+//
 // Space
 // --------------------------------
 $spaces: ('sm', 'lg');

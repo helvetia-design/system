@@ -112,6 +112,29 @@ export const TileHtml = Story({
 })
 TileHtml.storyName = '🌍 Tile'
 
+// Link
+// ------------------------------------------------------
+
+export const Link = Story({
+  ...withRender(
+    ({ slot }) => `
+<ds-card tile href="#">
+  <ds-card-header>
+    <ds-brand-icon tile size="sm" svg='${BrandIconInvestSaveChfPurple}' color="purple"></ds-brand-icon>
+    <ds-card-title>Link</ds-card-title>
+    <ds-card-subtitle>Subtitle</ds-card-subtitle>
+  </ds-card-header>
+  <ds-card-content>
+    ${slot}
+  </ds-card-content>
+  <ds-card-actions>
+    <ds-button color="secondary">Button</ds-button>
+  </ds-card-actions>
+</ds-card>`,
+  ),
+})
+Link.storyName = '🧩 Link'
+
 // Centered
 // ------------------------------------------------------
 

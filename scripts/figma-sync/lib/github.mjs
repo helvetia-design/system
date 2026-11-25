@@ -44,29 +44,38 @@ export async function getRefSha(branch, token) {
  * baffling "Unexpected end of JSON input" from `JSON.parse('')` downstream. The Git Blobs API has no
  * such limit (up to 100MB), so fall back to it via the sha the Contents API still returns correctly.
  */
-export async function getFileContent(path, ref, token) {
-  const response = await fetch(`${API_ROOT}/contents/${path}?ref=${ref}`, { headers: authHeaders(token) })
+export async function getFileContent(path, ref, token, repository) {
+  const apiRoot = repository ? `https://api.github.com/repos/${repository}` : API_ROOT
+  const response = await fetch(`${apiRoot}/contents/${path}?ref=${ref}`, { headers: authHeaders(token) })
   if (response.status === 404) return null
   await assertOk(response, `fetch ${path} at ${ref}`)
   const json = await response.json()
   if (json.content) return { sha: json.sha, content: Buffer.from(json.content, 'base64').toString('utf-8') }
 
-  const blobResponse = await fetch(`${API_ROOT}/git/blobs/${json.sha}`, { headers: authHeaders(token) })
+  const blobResponse = await fetch(`${apiRoot}/git/blobs/${json.sha}`, { headers: authHeaders(token) })
   await assertOk(blobResponse, `fetch blob for ${path} at ${ref}`)
   const blob = await blobResponse.json()
   return { sha: json.sha, content: Buffer.from(blob.content, 'base64').toString('utf-8') }
 }
 
+/** False when `repository` answers 404, which GitHub also returns for a private repo the token cannot see. */
+export async function canReadRepository(repository, token) {
+  const response = await fetch(`https://api.github.com/repos/${repository}`, { headers: authHeaders(token) })
+  if (response.status === 404) return false
+  await assertOk(response, `read repository ${repository}`)
+  return true
+}
+
 /**
  * Creates one commit containing every file in `files` (each `{ path, content }`),
- * against `branch`'s current tip, then fast-forwards `branch` to it — one
- * atomic operation, or none at all (docs/adr/0014). Direct to `branch`, no
- * PR — the bot token needs branch-protection bypass rights for this call
- * to succeed (docs/adr/0017-direct-commit-variableid-backfill.md).
+ * on top of `baseSha`, then fast-forwards `branch` to it — one atomic
+ * operation, or none at all (docs/adr/0014). `baseSha` must be the commit
+ * `files` were derived from: the ref update is not forced, so it fails if
+ * `branch` has moved since, instead of reverting the commits in between.
+ * Direct to `branch`, no PR — the bot token needs branch-protection bypass
+ * rights for this call to succeed (docs/adr/0017-direct-commit-variableid-backfill.md).
  */
-export async function commitFiles({ branch, files, message, token }) {
-  const baseSha = await getRefSha(branch, token)
-
+export async function commitFiles({ branch, baseSha, files, message, token }) {
   const commitResponse = await fetch(`${API_ROOT}/git/commits/${baseSha}`, { headers: authHeaders(token) })
   await assertOk(commitResponse, `read commit ${baseSha}`)
   const baseCommit = await commitResponse.json()
@@ -117,9 +126,15 @@ export async function commitFiles({ branch, files, message, token }) {
  * a PR number directly, no separate "PR comment" API exists.
  */
 export async function listIssueComments(prNumber, token) {
-  const response = await fetch(`${API_ROOT}/issues/${prNumber}/comments`, { headers: authHeaders(token) })
-  await assertOk(response, `list comments on #${prNumber}`)
-  return response.json()
+  const comments = []
+  let url = `${API_ROOT}/issues/${prNumber}/comments?per_page=100`
+  while (url) {
+    const response = await fetch(url, { headers: authHeaders(token) })
+    await assertOk(response, `list comments on #${prNumber}`)
+    comments.push(...(await response.json()))
+    url = response.headers.get('link')?.match(/<([^>]+)>;\s*rel="next"/)?.[1]
+  }
+  return comments
 }
 
 export async function createIssueComment(prNumber, body, token) {

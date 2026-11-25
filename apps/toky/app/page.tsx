@@ -1,7 +1,13 @@
 import type { TokyConfig } from '@helvetia-design/tokens/toky-config'
 import { getTokyConfig, toClientSettings } from '@/src/tokens/config'
 import { fetchBaseTokensFile, githubRefFor } from '@/src/tokens/github'
-import { getBrandTokensFileMeta, listBranches, listTokenBrandFiles, resolveReadRef } from '@/src/tokens/github-write'
+import {
+  getBrandTokensFileMeta,
+  listBranches,
+  listTokenBrandFiles,
+  resolveReadRef,
+  syncedStatus,
+} from '@/src/tokens/github-write'
 import type { SyncStatus } from '@/src/tokens/github-write'
 import { flattenTokenDocument, parseTokenDocument } from '@/src/tokens/flatten'
 import {
@@ -18,8 +24,6 @@ import { TokenEditor } from './token-editor'
 // not a snapshot frozen at the last build/deploy. (Unless TOKY_LOCAL_TOKENS
 // is set — see loadTokensFromLocalDisk.)
 export const dynamic = 'force-dynamic'
-
-const DEFAULT_SYNC_STATUS: SyncStatus = { state: 'synced', prUrl: null, prNumber: null }
 
 type LoadedTokens = {
   tokens: FlatToken[]
@@ -57,7 +61,7 @@ async function loadTokensFromLocalDisk(config: TokyConfig): Promise<LoadedTokens
   return {
     tokens: parseTokenDocument(doc, referenceTokens),
     error: null,
-    syncStatus: DEFAULT_SYNC_STATUS,
+    syncStatus: syncedStatus(base),
     branches: [base],
     tokenBrands,
     brandTokens: Object.fromEntries(brandEntries),
@@ -74,7 +78,7 @@ async function loadTokens(config: TokyConfig): Promise<LoadedTokens> {
       return {
         tokens: [],
         error: err instanceof Error ? err.message : 'Unknown error reading local token files',
-        syncStatus: DEFAULT_SYNC_STATUS,
+        syncStatus: syncedStatus(base),
         branches: [base],
         tokenBrands: [],
         brandTokens: {},
@@ -125,7 +129,7 @@ async function loadTokens(config: TokyConfig): Promise<LoadedTokens> {
     return {
       tokens: [],
       error: err instanceof Error ? err.message : 'Unknown error',
-      syncStatus: DEFAULT_SYNC_STATUS,
+      syncStatus: syncedStatus(base),
       branches: [base],
       tokenBrands: [],
       brandTokens: {},

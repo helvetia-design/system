@@ -24,6 +24,7 @@ import {
   isSyncableResponsiveDimensionToken,
   isSyncableShadowToken,
   isSyncableTypographyToken,
+  isTempId,
   resolvedTypeForToken,
   RESPONSIVE_DIMENSION_SUB_PROPERTIES,
   RESPONSIVE_DIMENSION_SUB_PROPERTY_RESOLVED_TYPE,
@@ -78,6 +79,25 @@ function singleAliasTargetId(targetVariableId) {
   return targetVariableId.device
 }
 
+// Keeps the sub-ids a composite token already carries and completes each missing one — name-matched
+// if Figma already has it (an interrupted earlier run), else a fresh temp id — so existing variables
+// are never touched or recreated.
+function completeSubIds(token, subProperties, subVariableName, nameIndex) {
+  const key = pathKey(token.path)
+  return Object.fromEntries(
+    subProperties.map(sub => [
+      sub,
+      token.variableId[sub] ?? nameIndex.get(subVariableName(token.path, sub)) ?? `temp-${key}-${sub}`,
+    ]),
+  )
+}
+
+// A name match on an id another token still commits is that token's variable under its old name
+// (renamed in code, not yet in Figma), so it is not a match.
+function withoutIds(nameIndex, ids) {
+  return new Map([...nameIndex].filter(([, id]) => !ids.has(id)))
+}
+
 // A reference token (lib/alias.mjs's buildTokenIndex) lives in another source's collection: it is
 // aliased by its committed variableId and never gets an entry in idByPath.
 function aliasTargetIdFor(target, idByPath) {
@@ -97,7 +117,8 @@ function aliasTargetIdFor(target, idByPath) {
  * documented path/name *fallback* match, for a token that's never
  * round-tripped an id — e.g. it was already created in Figma under this
  * exact name by an earlier partial run); failing that, a fresh temp id.
- * Computed once against Base — a brand override reuses Base's variableId,
+ * A composite token that already has some sub-ids keeps them and completes only the missing ones the
+ * same way. Computed once against Base — a brand override reuses Base's variableId,
  * it never mints its own (docs/adr/0012-brand-modes-not-collections.md) —
  * and reused for every brand's mode-values.
  *
@@ -106,13 +127,16 @@ function aliasTargetIdFor(target, idByPath) {
  * @param {Map<string, string>} existingResponsiveNameIndex Figma variable name -> real id, scoped to the "Design Responsive Tokens" collection — only consulted for a Device-eligible responsive dimension token's 4th 'device' id, which lives in that separate collection
  */
 export function assignVariableIds(baseTokens, existingNameIndex = new Map(), existingResponsiveNameIndex = new Map()) {
+  const committedIds = new Set(committedVariableIds(baseTokens))
+  const nameIndex = withoutIds(existingNameIndex, committedIds)
+  const responsiveNameIndex = withoutIds(existingResponsiveNameIndex, committedIds)
   const idByPath = new Map()
   for (const token of baseTokens) {
     const key = pathKey(token.path)
 
     if (isSyncableShadowToken(token)) {
       if (isCompositeVariableIdSet(token.variableId)) {
-        idByPath.set(key, token.variableId)
+        idByPath.set(key, completeSubIds(token, SHADOW_SUB_PROPERTIES, figmaShadowSubVariableName, nameIndex))
         continue
       }
       // Path/name fallback match, per sub-property — only used if every one
@@ -121,7 +145,7 @@ export function assignVariableIds(baseTokens, existingNameIndex = new Map(), exi
       // them); otherwise every sub-property gets a fresh temp id, rather
       // than mixing real and temp ids within one shadow token's identity.
       const bySubProperty = Object.fromEntries(
-        SHADOW_SUB_PROPERTIES.map(sub => [sub, existingNameIndex.get(figmaShadowSubVariableName(token.path, sub))]),
+        SHADOW_SUB_PROPERTIES.map(sub => [sub, nameIndex.get(figmaShadowSubVariableName(token.path, sub))]),
       )
       const allFound = SHADOW_SUB_PROPERTIES.every(sub => bySubProperty[sub])
       idByPath.set(
@@ -133,12 +157,12 @@ export function assignVariableIds(baseTokens, existingNameIndex = new Map(), exi
 
     if (isSyncableBorderToken(token)) {
       if (isCompositeVariableIdSet(token.variableId)) {
-        idByPath.set(key, token.variableId)
+        idByPath.set(key, completeSubIds(token, BORDER_SUB_PROPERTIES, figmaBorderSubVariableName, nameIndex))
         continue
       }
       // Path/name fallback match, per sub-property — same "all-or-nothing" reasoning as shadow's.
       const bySubProperty = Object.fromEntries(
-        BORDER_SUB_PROPERTIES.map(sub => [sub, existingNameIndex.get(figmaBorderSubVariableName(token.path, sub))]),
+        BORDER_SUB_PROPERTIES.map(sub => [sub, nameIndex.get(figmaBorderSubVariableName(token.path, sub))]),
       )
       const allFound = BORDER_SUB_PROPERTIES.every(sub => bySubProperty[sub])
       idByPath.set(
@@ -151,28 +175,14 @@ export function assignVariableIds(baseTokens, existingNameIndex = new Map(), exi
     if (isSyncableTypographyToken(token)) {
       if (isCompositeVariableIdSet(token.variableId)) {
         // A typography token committed before a sub-property was added (e.g. letterSpacing) carries
-        // fewer ids than TYPOGRAPHY_SUB_PROPERTIES lists. Keep the ids it has and complete only the
-        // missing ones — name-matched if Figma already has it (an interrupted earlier run), else a
-        // fresh temp id — so the existing variables are never touched or recreated.
-        idByPath.set(
-          key,
-          Object.fromEntries(
-            TYPOGRAPHY_SUB_PROPERTIES.map(sub => [
-              sub,
-              token.variableId[sub] ??
-                existingNameIndex.get(figmaTypographySubVariableName(token.path, sub)) ??
-                `temp-${key}-${sub}`,
-            ]),
-          ),
-        )
+        // fewer ids than TYPOGRAPHY_SUB_PROPERTIES lists, same as a composite token that lost an id
+        // to an unknown-id drop (see dropUnknownVariableIds).
+        idByPath.set(key, completeSubIds(token, TYPOGRAPHY_SUB_PROPERTIES, figmaTypographySubVariableName, nameIndex))
         continue
       }
       // Path/name fallback match, per sub-property — same "all-or-nothing" reasoning as shadow's.
       const bySubProperty = Object.fromEntries(
-        TYPOGRAPHY_SUB_PROPERTIES.map(sub => [
-          sub,
-          existingNameIndex.get(figmaTypographySubVariableName(token.path, sub)),
-        ]),
+        TYPOGRAPHY_SUB_PROPERTIES.map(sub => [sub, nameIndex.get(figmaTypographySubVariableName(token.path, sub))]),
       )
       const allFound = TYPOGRAPHY_SUB_PROPERTIES.every(sub => bySubProperty[sub])
       idByPath.set(
@@ -191,22 +201,25 @@ export function assignVariableIds(baseTokens, existingNameIndex = new Map(), exi
       // so a token whose siblings already round-tripped a real id can still pick up a fresh 'device'
       // id the first time it becomes Device-eligible, without touching the siblings' own ids.
       const deviceId = deviceEligible
-        ? (existingResponsiveNameIndex.get(figmaResponsiveDimensionDeviceVariableName(token.path)) ??
-          `temp-${key}-device`)
+        ? (responsiveNameIndex.get(figmaResponsiveDimensionDeviceVariableName(token.path)) ?? `temp-${key}-device`)
         : undefined
 
       if (isCompositeVariableIdSet(token.variableId)) {
-        idByPath.set(
-          key,
-          deviceEligible ? { ...token.variableId, device: token.variableId.device ?? deviceId } : token.variableId,
+        const completed = completeSubIds(
+          token,
+          RESPONSIVE_DIMENSION_SUB_PROPERTIES,
+          figmaResponsiveDimensionSubVariableName,
+          nameIndex,
         )
+        const device = deviceEligible ? (token.variableId.device ?? deviceId) : token.variableId.device
+        idByPath.set(key, device ? { ...completed, device } : completed)
         continue
       }
       // Path/name fallback match, per sub-property — same "all-or-nothing" reasoning as shadow's.
       const bySubProperty = Object.fromEntries(
         RESPONSIVE_DIMENSION_SUB_PROPERTIES.map(sub => [
           sub,
-          existingNameIndex.get(figmaResponsiveDimensionSubVariableName(token.path, sub)),
+          nameIndex.get(figmaResponsiveDimensionSubVariableName(token.path, sub)),
         ]),
       )
       const allFound = RESPONSIVE_DIMENSION_SUB_PROPERTIES.every(sub => bySubProperty[sub])
@@ -218,14 +231,10 @@ export function assignVariableIds(baseTokens, existingNameIndex = new Map(), exi
       continue
     }
 
-    const fallbackId = existingNameIndex.get(figmaVariableName(token.path))
+    const fallbackId = nameIndex.get(figmaVariableName(token.path))
     idByPath.set(key, token.variableId ?? fallbackId ?? `temp-${key}`)
   }
   return idByPath
-}
-
-function isTempId(id) {
-  return id.startsWith('temp-')
 }
 
 /**
@@ -251,6 +260,46 @@ export function committedVariableIds(baseTokens) {
     }
   }
   return ids
+}
+
+/**
+ * Removes every committed variableId that Figma doesn't have from the in-memory tokens, so the token
+ * is name-matched or recreated this run and its new id is backfilled — the same way pass 0 handles a
+ * type mismatch. A plain id drops the whole `variableId`; a composite id drops only the missing
+ * sub-ids, and the whole `variableId` once none remain.
+ *
+ * @param {import('./tokens.mjs').Token[]} baseTokens
+ * @param {Record<string, unknown>} remoteVariablesById
+ * @returns {string[]} the dropped ids
+ */
+export function dropUnknownVariableIds(baseTokens, remoteVariablesById) {
+  const dropped = []
+  for (const token of baseTokens) {
+    if (!token.variableId) continue
+    if (!isCompositeVariableIdSet(token.variableId)) {
+      if (remoteVariablesById[token.variableId]) continue
+      dropped.push(token.variableId)
+      delete token.variableId
+      continue
+    }
+    for (const [sub, id] of Object.entries(token.variableId)) {
+      if (!id || remoteVariablesById[id]) continue
+      dropped.push(id)
+      delete token.variableId[sub]
+    }
+    if (Object.keys(token.variableId).length === 0) delete token.variableId
+  }
+  return dropped
+}
+
+const DIFFERENT_FILE_UNKNOWN_ID_SHARE = 0.5
+
+/**
+ * True when most committed ids are unknown to Figma, which points at a token tree round-tripped
+ * against another file rather than a few ids deleted in Figma.
+ */
+export function isLikelyDifferentFigmaFile(committedCount, unknownCount) {
+  return committedCount > 0 && unknownCount / committedCount > DIFFERENT_FILE_UNKNOWN_ID_SHARE
 }
 
 /**
@@ -845,14 +894,17 @@ export function buildNameUpdatePayload({ baseTokens, idByPath, remoteVariablesBy
  *
  * @param {import('./tokens.mjs').Token[]} baseTokens
  * @param {Record<string, { resolvedType: string }>} remoteVariablesById
+ * @param {Map<string, string | Record<string, string>>} [idByPath] from assignVariableIds, so a variable
+ *   a token only reaches by name is checked too; without it, only committed variableIds are
  * @returns {{ token: import('./tokens.mjs').Token, ids: string[] }[]} `ids` are every variableId of the
  *   token that exists in Figma (the ones to DELETE)
  */
-export function findResolvedTypeMismatches(baseTokens, remoteVariablesById) {
+export function findResolvedTypeMismatches(baseTokens, remoteVariablesById, idByPath) {
   const mismatches = []
   for (const token of baseTokens) {
-    if (!isPushableToken(token) || !token.variableId) continue
-    const flattened = flattenVariableId(token.variableId)
+    const variableId = idByPath?.get(pathKey(token.path)) ?? token.variableId
+    if (!isPushableToken(token) || !variableId) continue
+    const flattened = flattenVariableId(variableId).filter(({ id }) => !isTempId(id))
     const mismatched = flattened.some(({ id, subProperty }) => {
       const remote = remoteVariablesById[id]
       return remote && remote.resolvedType !== expectedResolvedTypeFor(token, subProperty)
@@ -896,21 +948,20 @@ export function resolveTempIds(idByPath, tempIdToRealId) {
 /**
  * Tokens whose Figma identity changed this run, as `{ path, variableId }` — what
  * docs/adr/0017-direct-commit-variableid-backfill.md's write-back commit needs. Two kinds: tokens
- * that had no `variableId` at the start of the run, and typography tokens that had one but were
- * missing sub-property ids added since (e.g. letterSpacing) — for those, `variableId` is the full
- * completed id set, existing ids included, since the backfill replaces the whole value. Call only
- * after `resolveTempIds`, so every entry already holds a real Figma id, never a temp one.
+ * that had no `variableId` at the start of the run, and composite tokens whose id set was missing
+ * sub-ids (added since, e.g. letterSpacing or `device`, or dropped as unknown) — for those,
+ * `variableId` is the full completed id set, existing ids included, since the backfill replaces the
+ * whole value. Call only after `resolveTempIds`, so every entry already holds a real Figma id, never
+ * a temp one.
  */
 export function collectNewlyCreatedIds(baseTokens, idByPath) {
   return baseTokens
     .filter(token => {
       if (!isPushableToken(token)) return false
       if (!token.variableId) return true
-      if (!isCompositeVariableIdSet(token.variableId)) return false
-      // A composite token that gained a sub-id this run (a typography sub-property added later, or a
-      // responsive token's 'device' id once it became Device-eligible) must be backfilled too.
-      const assigned = idByPath.get(pathKey(token.path))
-      return Object.keys(assigned ?? {}).some(sub => !token.variableId[sub])
+      const completed = idByPath.get(pathKey(token.path))
+      if (!isCompositeVariableIdSet(token.variableId) || !isCompositeVariableIdSet(completed)) return false
+      return Object.entries(completed).some(([sub, id]) => token.variableId[sub] !== id)
     })
     .map(token => ({ path: token.path, variableId: idByPath.get(pathKey(token.path)) }))
 }

@@ -1,4 +1,5 @@
-import { getAppRoot, getRootElement, waitForDesignSystem } from '../helpers'
+import { debounceEvent, getAppRoot, getRootElement, waitForDesignSystem } from '../helpers'
+import type { EventEmitter } from '@stencil/core'
 
 const createDoc = (...tags: string[]) => {
   const elements = Object.fromEntries(tags.map(tag => [tag, { tag }]))
@@ -63,5 +64,26 @@ describe('waitForDesignSystem', () => {
 
     expect(dsButton.configChanged).toHaveBeenCalledWith({ animated: true })
     expect(other.configChanged).not.toHaveBeenCalled()
+  })
+})
+
+describe('debounceEvent', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  test('does not nest debounces when wrapping the same emitter repeatedly', () => {
+    const emit = vi.fn()
+    let emitter = { emit } as unknown as EventEmitter
+    emitter = debounceEvent(emitter, 300)
+    emitter = debounceEvent(emitter, 300)
+    emitter = debounceEvent(emitter, 300)
+
+    emitter.emit('value')
+
+    vi.advanceTimersByTime(299)
+    expect(emit).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(emit).toHaveBeenCalledTimes(1)
+    expect(emit).toHaveBeenCalledWith('value')
   })
 })

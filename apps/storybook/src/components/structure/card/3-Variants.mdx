@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
 import { Banner, BannerTabs, CanvasTabs, Footer, StoryHeading } from '../../../../.storybook/blocks'
 import * as CardStories from './card.stories'
 import { CARD_DOC_CONFIG, getCardTabs } from './card.doc-config'
@@ -25,6 +25,16 @@ Use the `tile` property to display a compact card with a brand icon, a tag and a
 selectable options or coverage tiles.
 
 <CanvasTabs htmlOf={CardStories.TileHtml} of={CardStories.Tile} />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={CardStories.Link}></StoryHeading>
+
+Set `href` to make the whole card a link. The card stretches one link over its full area, so it is focusable and
+opens with Enter. The text of the `ds-card-title` becomes the link name, or set the `a11yLabel` property. Buttons in
+`ds-card-actions` and controls in `ds-card-header` stay clickable on their own. Only available as web component.
+
+<Canvas of={CardStories.Link} />
 
 {/* ------------------------------------------------------ */}
 

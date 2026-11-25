@@ -642,6 +642,10 @@ export function flattenVariableId(variableId) {
   return []
 }
 
+export function isTempId(id) {
+  return id.startsWith('temp-')
+}
+
 // Shared shape-detection used by flattenVariableId and write.mjs's resolveTempIds — kept in one
 // place so a 4th composite type only needs one new branch, not one per caller.
 export function subPropertiesForVariableIdShape(variableId) {
