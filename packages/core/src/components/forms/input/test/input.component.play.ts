@@ -79,7 +79,7 @@ test.describe('disabled', () => {
   })
 })
 
-test.describe.skip('form reset', () => {
+test.describe('form reset', () => {
   test('should reset to initial value', async ({ page }) => {
     await page.mount(`
       <form>
@@ -93,6 +93,7 @@ test.describe.skip('form reset', () => {
     await input.clear()
     await input.fill('Tony Stark')
     await input.blur()
+    await page.waitForChanges()
     expect(changeSpy).toHaveReceivedEventTimes(1)
     expect(changeSpy).toHaveReceivedEventDetail('Tony Stark')
 
