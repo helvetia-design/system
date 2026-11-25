@@ -57,12 +57,10 @@ props:
     figmaProperty: marker position
     figmaPropertyType: variant
     figmaOptions: [right, left]
-  - name: summary # text-only slot → text property (user's call 19.11.2026)
+  - name: summary # slot (user decision 25.11.2026, was a text property) — custom summaries like the Stack Accordion story
     type: slot
     figmaProperty: summary
-    figmaPropertyType: text
-    node: label
-    default: Summary
+    figmaPropertyType: slot # see slots:
   - name: group
     figmaPropertyType: excluded # no visual effect
   - name: summaryLevel
@@ -92,6 +90,15 @@ nested:
         active: 'Component/Accordion/Summary/Color/Active (--icon-color)'
 
 slots:
+  - codeSlot: summary
+    figmaSlot: summary
+    part: summary
+    position: first child of #summary, before marker (after it for marker position=left)
+    content: open # any content (Stack Accordion: brand icon + title + text + toggle — sub-components later)
+    preferred: []
+    defaultFill: 'the former `label` text node "Summary" (typography per summary visual level, color per state — bindings unchanged)'
+    shownWhen: always # no show boolean
+    figmaPropertyKey: 'summary#6875:0'
   - codeSlot: content # plus the default slot, same #inner
     figmaSlot: content
     part: content
@@ -100,10 +107,9 @@ slots:
     preferred: []
     defaultFill: 'text node "Lorem ipsum dolor sit amet, consectetur adipisicing elit." — Text/Typo/Paragraph, Alias/Text/Color/Primary (user decision 19.11.2026; Text instance later, TODO.md)'
     shownWhen: open=true # code: hidden={!open}; no show boolean, the open axis decides (user's call 19.11.2026)
-    figmaPropertyKey: 'content#6304:393'
+    figmaPropertyKey: 'content#6875:337' # recreated 25.11.2026 so summary comes first
 
 variations: [] # no show booleans — placeholder deleted
-# summary text property key: summary#6304:0
 
 tokens: # all checked in Foundation 19.11.2026
   - { cssVar: --ds-accordion-header-min-height, figmaVariable: 🧩 Component/Accordion/Header/MinHeight, resolved: true } # 40
