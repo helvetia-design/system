@@ -27,6 +27,7 @@ const outRoot = path.join(packageRoot, 'dist')
 
 // Source → destination, both relative to the repo root and the package root respectively.
 // Add to this list when the repo grows agent-facing material; nothing here is filtered.
+// The build inputs in ../turbo.json mirror COPY and CONTEXT_GLOB_DIRS; change both together.
 const COPY = [
   ['CONTEXT.md', 'CONTEXT.md'],
   ['CONTEXT-MAP.md', 'CONTEXT-MAP.md'],

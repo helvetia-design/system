@@ -100,6 +100,13 @@ export const config: Config = {
      * {@link https://stenciljs.com/docs/config-extras#experimentalslotfixes}
      */
     experimentalSlotFixes: true,
+    /**
+     * Without this the hydrate build omits `globalStyle` from declarative shadow roots, so SSR markup keeps UA
+     * margins on native elements. Adds about 2.5 KB of CSS per shadow root to the SSR output. Stencil sets no CSP
+     * nonce on this `<style>`, see packages/core/CONTEXT.md.
+     * {@link https://stenciljs.com/docs/config-extras}
+     */
+    addGlobalStyleToComponents: true,
   },
   outputTargets: [
     /**
