@@ -4,6 +4,7 @@ import { buildNameIndex, findCollectionAndModes, findResponsiveCollectionAndMode
 import {
   figmaBorderSubEntriesFor,
   figmaLineHeightPercentFor,
+  figmaLiteralValueFor,
   figmaResponsiveDimensionSubEntriesFor,
   figmaShadowSubValuesFor,
   figmaTypographySubEntriesFor,
@@ -150,6 +151,20 @@ describe('isLineHeightNumberToken / figmaLineHeightPercentFor', () => {
 
   it('throws on a non-number value', () => {
     expect(() => figmaLineHeightPercentFor('1.3')).toThrow(/Unsupported LineHeight value/)
+  })
+})
+
+describe('figmaLiteralValueFor — Opacity', () => {
+  it("scales an Opacity number token to Figma's 0-100, float noise dropped", () => {
+    expect(figmaLiteralValueFor({ type: 'number', path: ['🌐 Global', '🗂️ Elevation', 'Opacity', '30'] }, 0.3)).toBe(30)
+    expect(figmaLiteralValueFor({ type: 'number', path: ['🔗 Alias', '🌫️ Opacity', 'Full'] }, 1)).toBe(100)
+    expect(
+      figmaLiteralValueFor({ type: 'number', path: ['🧩 Component', 'Steps', 'Step', 'Opacity', 'Disabled'] }, 0.4),
+    ).toBe(40)
+  })
+
+  it('leaves other number tokens untouched', () => {
+    expect(figmaLiteralValueFor({ type: 'number', path: ['🌐 Global', 'ZIndex', '1'] }, 0.5)).toBe(0.5)
   })
 })
 
@@ -440,7 +455,7 @@ describe('LineHeight number token push (two-pass write payload)', () => {
   }
   const tokens = [lineHeightToken, opacityToken]
 
-  it("writes a LineHeight number token's mode-value as a percentage string, but leaves a same-type Opacity token unscaled", () => {
+  it("writes a LineHeight number token's mode-value as a percentage string, and an Opacity token scaled to Figma's 0-100", () => {
     const idByPath = assignVariableIds(tokens)
     const { variableModeValues } = buildCreatePassPayload({
       baseTokens: tokens,
@@ -451,7 +466,7 @@ describe('LineHeight number token push (two-pass write payload)', () => {
     })
     const byId = Object.fromEntries(variableModeValues.map(v => [v.variableId, v.value]))
     expect(byId[idByPath.get('🌐 Global.🔤 Font.LineHeight.2')]).toBe('130%')
-    expect(byId[idByPath.get('🔗 Alias.🌫️ Opacity.Half')]).toBe(0.5)
+    expect(byId[idByPath.get('🔗 Alias.🌫️ Opacity.Half')]).toBe(50)
   })
 })
 
