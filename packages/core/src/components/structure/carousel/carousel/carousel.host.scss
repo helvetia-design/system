@@ -10,7 +10,7 @@ $focus-overhang: 7px;
  * @prop --carousel-scroll-fade-background: Background color for the edge-fade gradient in the product variant.
  * @prop --carousel-scroll-fade-width: Width of the edge-fade gradient in the product variant.
  * @prop --carousel-radius: Border radius of the slide track.
- * @prop --carousel-pagination-gap: Gap between the slide track and the dot pagination.
+ * @prop --carousel-pagination-gap: Gap between the track and the dot pagination.
  * @prop --carousel-scroll-btn-size: Width and height of the scroll arrow buttons.
  * @prop --carousel-scroll-btn-radius: Border radius of the scroll arrow buttons.
  * @prop --carousel-scroll-btn-inset: Offset of the slide-variant arrow buttons from the image edge.
@@ -101,6 +101,11 @@ $focus-overhang: 7px;
 // Pagination (dots variant) — centered below the track
 :host(.is-slide) .pagination {
   align-self: center;
+}
+
+// Same spacing below the track for both variants.
+:host(.is-slide) .pagination,
+:host(.is-tile) .pagination {
   margin-top: var(--_carousel-pagination-gap);
 }
 

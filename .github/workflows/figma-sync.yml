@@ -30,6 +30,13 @@ jobs:
           fetch-depth: 1
           token: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
 
+      # The write-back commit builds on exactly this commit; if `main` moved during the sync, it fails
+      # instead of reverting the newer commits.
+      - name: Pin checked-out commit
+        id: pin
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - uses: ./.github/workflows/actions/setup-environment
 
       - name: Install dependencies
@@ -60,6 +67,7 @@ jobs:
         env:
           NEW_IDS_FILE: ${{ steps.sync.outputs.new_ids_file }}
           REMOVED_IDS_FILE: ${{ steps.sync.outputs.removed_ids_file }}
+          BASE_SHA: ${{ steps.pin.outputs.sha }}
           MERGE_COMMIT_SHA: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
           GITHUB_TOKEN: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
         run: node scripts/figma-sync/backfill-commit.mjs

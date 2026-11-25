@@ -850,6 +850,16 @@ on `@helvetia-design/react`, and a client-only carve-out for the Modal/Toast/Sna
 idioms) is the next ticket — see
 [ADR-0031](../../docs/adr/0031-ssr-hydrate-build.md).
 
+`extras.addGlobalStyleToComponents: true` makes the hydrate build prepend a
+`<style>` with the `globalStyle` (`src/global/global.scss`) to every
+declarative shadow root. Without it the server markup has no reset and native
+elements keep their UA margins (#326). The client keeps that `<style>` after
+hydration, because it has no `sty-id`. Cost: about 2.5 KB of CSS per shadow
+root in the SSR output. Known limitation: Stencil (4.45.x) does not set the
+CSP `nonce` on this `<style>`, while component styles get it from
+`<meta name="csp-nonce">`. With a nonce-based `style-src` policy the browser
+blocks the reset in SSR markup.
+
 ## Token Preview Listener
 
 `packages/core/src/global/token-preview.ts` (wired into the `globalScript`, `src/global/global.ts`, so it's bundled into every `www` page — playground.html and every `*.visual.html`) listens for `postMessage` from an embedding parent window and applies token changes live via `document.documentElement.style.setProperty`/`removeProperty`. It is a no-op unless the page is actually embedded in an iframe (`window.parent` is a distinct window). That also covers Node hydrate, where Stencil's `window.parent` is `null` and a `postMessage` would throw. It never activates during normal component consumption or Playwright visual-regression runs. No origin allowlist yet — MVP is localhost-only (toky ↔ core dev-server); see [`docs/plans/toky-live-token-preview-plan.md`](../../docs/plans/toky-live-token-preview-plan.md) for the message contract and the deferred "deployed / other DS websites" phase where real origin validation is planned.

@@ -15,6 +15,8 @@
  *
  * Reads NEW_IDS_FILE / REMOVED_IDS_FILE (paths to JSON files pull.mjs wrote, from its outputs) —
  * or, for small local test payloads only, the inline-JSON NEW_IDS / REMOVED_IDS env vars.
+ * BASE_SHA (remote mode): the commit the sync job checked out. Both files are read at it and the
+ * commit is built on it; the commit fails if the target branch has moved since.
  * Run with: node scripts/figma-sync/backfill-commit.mjs
  *
  * TOKENS_DIR_OVERRIDE (optional, shared with pull.mjs/conflict-check.mjs):
@@ -36,7 +38,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { relative, resolve } from 'node:path'
 import { applyVariableIdPatch, buildSyncState, loadSyncStateFile } from './lib/baseline.mjs'
 import { resolveSyncInputs } from './lib/config.mjs'
-import { commitFiles, getFileContent } from './lib/github.mjs'
+import { commitFiles, getFileContent, getRefSha } from './lib/github.mjs'
 import { commitFilesLocally } from './lib/local-git.mjs'
 import { flattenTokens, loadTokenFile } from './lib/tokens.mjs'
 
@@ -54,13 +56,22 @@ async function runRemote({ newIds, removedIds, syncedAt, inputs }) {
   const mergeCommitSha = requireEnv('MERGE_COMMIT_SHA')
   const branch = process.env.TARGET_BRANCH ?? inputs.config.repo.ref
 
+  // Both reads and the commit parent use this one sha, so a push to the branch in between makes the
+  // ref update fail instead of being reverted. BASE_SHA is the commit the sync job checked out; the
+  // head read here is the fallback for callers that don't set it and only protects the window after this read.
+  let baseSha = process.env.BASE_SHA
+  if (!baseSha) {
+    baseSha = await getRefSha(branch, token)
+    console.warn(`BASE_SHA is not set — pinning ${branch} head ${baseSha} read just now.`)
+  }
+
   const files = []
 
   // Always read the current tree — the baseline must be rebuilt from every token's live resolved
   // value on every successful sync (not just a run that added/removed variableIds), so a
   // value-only change that merged without touching ids still refreshes its stale baseline entry.
-  const baseFile = await getFileContent(TOKEN_FILE_PATH, branch, token)
-  if (!baseFile) throw new Error(`${TOKEN_FILE_PATH} not found on ${branch}.`)
+  const baseFile = await getFileContent(TOKEN_FILE_PATH, baseSha, token)
+  if (!baseFile) throw new Error(`${TOKEN_FILE_PATH} not found at ${baseSha}.`)
   const currentTree = JSON.parse(baseFile.content)
   const patchedTree = newIds.length > 0 ? applyVariableIdPatch(currentTree, newIds) : currentTree
   const patchedTokens = flattenTokens(patchedTree)
@@ -68,7 +79,7 @@ async function runRemote({ newIds, removedIds, syncedAt, inputs }) {
     files.push({ path: TOKEN_FILE_PATH, content: JSON.stringify(patchedTree, null, 2) + '\n' })
   }
 
-  const stateFile = await getFileContent(SYNC_STATE_PATH, branch, token)
+  const stateFile = await getFileContent(SYNC_STATE_PATH, baseSha, token)
   const existingState = stateFile ? JSON.parse(stateFile.content) : null
   const syncState = buildSyncState({
     existingState,
@@ -80,7 +91,7 @@ async function runRemote({ newIds, removedIds, syncedAt, inputs }) {
   files.push({ path: SYNC_STATE_PATH, content: JSON.stringify(syncState, null, 2) + '\n' })
 
   const message = buildCommitMessage(newIds, removedIds)
-  const result = await commitFiles({ branch, files, message, token })
+  const result = await commitFiles({ branch, baseSha, files, message, token })
   console.log(`Committed to ${branch}: ${result.sha} (${message.split('\n')[0]})`)
 }
 
