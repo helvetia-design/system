@@ -40,12 +40,6 @@ The orchestrator routes. It does not investigate.
   Requirements" (no component-level unit specs — Vitest covers pure helpers only). All are recorded
   there. Re-proving one costs a full Playwright run and changes nothing.
 
-Measured cost of ignoring this, for one component (`ds-country-select`, Workflow A): **~1.05M
-tokens across ~500 agent tool calls** — roughly 535k to plan and implement, 510k to test, document
-and repair. The orchestrator's duplicate read of `phone-input.tsx` and its re-emission of the
-returned plan were ~35k of that and produced no new information; rediscovering known-broken
-environment facts was ~80k more, and is now recorded in the package `CONTEXT.md` files instead.
-
 ## The agents
 
 | Agent                       | Model  | Writes                                                                                                                              | Read-only |
@@ -88,19 +82,12 @@ needs no entry there unless the plan names a public interface type. Generated fi
 (`components.d.ts`, Angular `generated/*`, `apps/storybook/.storybook/story-paths.json` from
 `scripts/build-docs.mjs`) are never hand-edited and never assigned.
 
-Each agent's symbol is its label everywhere in a run: the orchestrator prefixes a dispatch and
-a status line with it — including the Agent tool's `description` field (`🏛️ Plan ds-x for
-Figma`), which is the label the UI's running-agents list shows next to the agent name — and an agent prefixes its own completion report. One glance says who is
-talking in a transcript where seven of them are. The symbol is cosmetic — the agent's identity
-is its `name`, which never changes.
+Each agent's symbol is its label in a run: it prefixes every dispatch, status line, completion
+report and the Agent tool's `description` (`🏛️ Plan ds-x for Figma`). The agent's identity is
+still its `name`.
 
-### Kickoff banner
-
-The orchestrator's **very first output** on a DS-team request — before any tool call, including
-reading this file — is one banner: the workflow, the target, and the agents in the order they
-will run. Printed once per run, not per step. Its format and the per-workflow step lines live
-only in `CLAUDE.md` (loaded every session, so the banner needs no read first). The status board
-below follows it straight away.
+The kickoff banner (format and step lines in the root `AGENTS.md`) comes first, once per run;
+the status board follows it.
 
 ### Status board
 
@@ -240,7 +227,7 @@ were deleted after execution, and a throwaway component plan must never become a
 # Workflows
 
 One file per workflow — read only the one the run needs. The step lines for the kickoff banner
-are in `CLAUDE.md`.
+are in the root `AGENTS.md`.
 
 | Workflow                 | File                                                                       |
 | ------------------------ | -------------------------------------------------------------------------- |
@@ -272,35 +259,7 @@ first to 🧬 token-engineer · `ds-sync-figma-tokens`, as in Workflow D step 2.
 
 ## External references
 
-Three references, two questions. **shadcn answers what to build. Swiss Post and Ionic answer
-how. Never swap them — only shadcn is a design reference.**
-
-| Reference                                                   | Answers                                    | Used by                                         | Take                                                                                                                                                                                                 | Never take                                                                                                                 |
-| ----------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| [shadcn/ui](https://ui.shadcn.com/docs/components)          | **What to build** — UX, anatomy, API shape | architect<br/>`ds-plan-component`               | Anatomy and sub-component split, which variants and states are worth having, composed vs. configured, edge cases its docs surface                                                                    | React, Radix, Tailwind, `cn()`, `class-variance-authority`, `asChild`, utility-class styling, hook APIs, any copied source |
-| [Swiss Post DS](https://github.com/swisspost/design-system) | **How** — design-system architecture       | component-engineer<br/>`ds-implement-component` | Component-family decomposition, `@Prop()`/slot conventions for a DS, the token pipeline, Angular/React wrapper generation, versioning and changeset flow, Storybook structure, composite-widget a11y | **Any design or UX.** Swiss Post's brand, visual language and interaction choices                                          |
-| [Ionic](https://github.com/ionic-team/ionic-framework)      | **How** — deep Stencil runtime             | component-engineer<br/>`ds-implement-component` | Slot forwarding, delegated focus, `formAssociated` and value accessors, overlay/portal and scroll-lock, output-target behavior, SSR and hydration, async `@Method()`                                 | **Any design or UX.** Mobile-first sizing, touch targets, density, gestures, theming system, `ios`/`md` modes, API naming  |
-
-**Swiss Post vs. Ionic.** Swiss Post is the nearest peer — a Swiss enterprise design system
-on Stencil, desktop web, multi-framework: the same problem shape as ours. Ionic is an app
-framework, mobile-first, but the largest production Stencil codebase in the open. Go to
-Swiss Post for how a _design system_ on Stencil is put together; go to Ionic for a hard
-runtime problem at scale. When both have an answer, Swiss Post is usually the closer fit.
-
-This system is desktop-oriented across 320px–2560px, so neither Stencil reference is ever
-consulted for design — only for mechanisms this repo has no precedent for.
-
-**Precedence, highest first:** this repo's existing components → `STYLE_GUIDE.md` and ADRs →
-the ARIA Authoring Practices pattern → shadcn (design) / Swiss Post and Ionic (mechanics).
-Where an external reference disagrees with anything above it, the higher one wins. A
-precedent inside this repo always beats all three — if `ds-modal` already solves focus
-return, copy `ds-modal`.
-
-Cite them as references, never as justifications on their own. "shadcn does X", "Swiss Post
-does Y" and "Ionic does Z" are not reasons.
-
-Applies to Workflow A and C. Not to bug fixes (Workflow B) — a fix matches the component it's
-fixing.
+shadcn/ui answers _what to build_; Swiss Post and Ionic answer _how_ (mechanics only, never design). Precedence and take/never-take lists: `ds-plan-component` (architect) and `ds-implement-component` (component-engineer). Workflows A and C only.
 
 ## Rules that hold in every workflow
 

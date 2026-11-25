@@ -94,61 +94,9 @@ This is enforced automatically, not just by convention: `libs/output-target-web/
 - **Handler naming**: `listenTo<Event>` (@Listen), `<Prop>Changed` (@Watch), `handle<Event>` (DOM handlers)
 - **CSS classes**: `.is-<state>` for states (e.g., `.is-disabled`, `.is-primary`), `.mod-<variant>` for modifiers
 
-### CSS Variable Cascade
+### CSS Variable Cascade and Naming
 
-Components use a **four-layer CSS variable system** that enables customization while maintaining Shadow DOM encapsulation:
-
-```
---_component-prop        (private, computed only)
-  → --component-prop     (public, consumer override)
-    → --mod-component    (modifier, from .is-* classes)
-      → --ds-token       (design token default)
-```
-
-| Layer            | Prefix   | Owner             | Purpose                                                   |
-| ---------------- | -------- | ----------------- | --------------------------------------------------------- |
-| **Private**      | `--_`    | System (computed) | Internal CSS rule values, never override from outside     |
-| **Public**       | `--`     | Consumer          | Component instance override, set from outside Shadow DOM  |
-| **Modifier**     | `--mod-` | System (variants) | Set by variant classes like `.is-primary`, `.is-disabled` |
-| **Design Token** | `--ds-`  | Design System     | Figma default value, only changed via token updates       |
-
-**How It Works:**
-
-When you set a CSS property with `vars.local()`:
-
-```scss
-// In component SCSS:
-@include vars.local(tag-color, var(--ds-alias-text-color-primary));
-
-// Generates:
-// --_tag-color: var(--tag-color, var(--mod-tag-color, var(--ds-alias-text-color-primary)))
-```
-
-When the component renders:
-
-1. **Private value** (`--_tag-color`) is computed from the cascade
-2. CSS rules use the private variable internally
-3. Modifiers override via `--mod-tag-color` (when `.is-primary` class is set)
-4. Consumers override via `--tag-color` (from outside)
-5. Falls back to design token `--ds-alias-text-color-primary` if nothing is set
-
-### Component Variable Naming
-
-Component variables use consistent naming:
-
-- **Component-level property**: `--component-<css-property>` → `--tag-color`
-- **Element-level property**: `--component-<element>-<css-property>` → `--button-label-font-family`
-
-The same naming pattern applies to private (`--_`) and modifier (`--mod-`) layers:
-
-```scss
---_tag-color              // private component-level
---_button-label-font-family    // private element-level
---mod-tag-color           // modifier component-level
---mod-button-label-font-family // modifier element-level
-```
-
-**Requirement:** Component variables must always reference **alias tokens** or **component tokens** from `packages/tokens`. Never hard-code values or reference global tokens directly.
+The four-layer cascade (`--_` private → `--` public → `--mod-` modifier → `--ds-` token), the `vars.local()` mixin and the component/element variable naming are defined in [ARCHITECTURE.md → CSS Variable Cascade](../../docs/ARCHITECTURE.md#css-variable-cascade). Component variables reference alias or component tokens only — never hard-coded values or global tokens.
 
 ### Common Component Variables
 
