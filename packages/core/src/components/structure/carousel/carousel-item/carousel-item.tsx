@@ -76,7 +76,7 @@ export class CarouselItem implements DsComponentInterface {
   readonly src: string = ''
 
   /**
-   * Emitted when the user clicks this item (product variant).
+   * Emitted when the user clicks or presses Enter or Space on a tile item.
    */
   @Event() dsCarouselItemSelect!: EventEmitter<{ name: string }>
 
@@ -88,6 +88,14 @@ export class CarouselItem implements DsComponentInterface {
   private handleClick = () => {
     if (this.carouselVariant === 'tile') {
       this.dsCarouselItemSelect.emit({ name: this.name })
+    }
+  }
+
+  private handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.target !== this.el) return
+    if (ev.key === 'Enter' || ev.key === ' ') {
+      ev.preventDefault()
+      this.handleClick()
     }
   }
 
@@ -122,6 +130,7 @@ export class CarouselItem implements DsComponentInterface {
           tabIndex={0}
           aria-pressed={String(this.selected)}
           onClick={this.handleClick}
+          onKeyDown={this.handleKeyDown}
         >
           <slot />
         </Host>
