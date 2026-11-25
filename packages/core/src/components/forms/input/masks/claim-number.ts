@@ -36,6 +36,7 @@ export class ClaimNumber implements InputMaskFormatterInterface {
 
   private formatValue(value: string): string {
     const newValue = value.trim().toUpperCase()
+    if (!newValue) return ''
     const parts = [
       newValue.substring(0, 2),
       newValue.substring(2, 8),
