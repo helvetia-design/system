@@ -44,17 +44,26 @@ export async function getRefSha(branch, token) {
  * baffling "Unexpected end of JSON input" from `JSON.parse('')` downstream. The Git Blobs API has no
  * such limit (up to 100MB), so fall back to it via the sha the Contents API still returns correctly.
  */
-export async function getFileContent(path, ref, token) {
-  const response = await fetch(`${API_ROOT}/contents/${path}?ref=${ref}`, { headers: authHeaders(token) })
+export async function getFileContent(path, ref, token, repository) {
+  const apiRoot = repository ? `https://api.github.com/repos/${repository}` : API_ROOT
+  const response = await fetch(`${apiRoot}/contents/${path}?ref=${ref}`, { headers: authHeaders(token) })
   if (response.status === 404) return null
   await assertOk(response, `fetch ${path} at ${ref}`)
   const json = await response.json()
   if (json.content) return { sha: json.sha, content: Buffer.from(json.content, 'base64').toString('utf-8') }
 
-  const blobResponse = await fetch(`${API_ROOT}/git/blobs/${json.sha}`, { headers: authHeaders(token) })
+  const blobResponse = await fetch(`${apiRoot}/git/blobs/${json.sha}`, { headers: authHeaders(token) })
   await assertOk(blobResponse, `fetch blob for ${path} at ${ref}`)
   const blob = await blobResponse.json()
   return { sha: json.sha, content: Buffer.from(blob.content, 'base64').toString('utf-8') }
+}
+
+/** False when `repository` answers 404, which GitHub also returns for a private repo the token cannot see. */
+export async function canReadRepository(repository, token) {
+  const response = await fetch(`https://api.github.com/repos/${repository}`, { headers: authHeaders(token) })
+  if (response.status === 404) return false
+  await assertOk(response, `read repository ${repository}`)
+  return true
 }
 
 /**
