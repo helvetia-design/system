@@ -10,6 +10,7 @@ import {
   Listen,
   Prop,
   State,
+  Watch,
 } from '@stencil/core'
 import {
   deserializeBooleanAttribute,
@@ -113,6 +114,11 @@ export class Checkbox implements DsComponentInterface {
   @Type('boolean')
   checked: boolean = false
   private initialValue = false
+
+  @Watch('checked')
+  protected checkedChanged() {
+    this.updateFormValue()
+  }
 
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form. The user can neither edit nor focus on the control, nor its form control descendants.
@@ -218,11 +224,11 @@ export class Checkbox implements DsComponentInterface {
 
   connectedCallback(): void {
     this.initialValue = this.checked
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+    this.updateFormValue()
   }
 
   componentWillLoad() {
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+    this.updateFormValue()
     this.inheritAttributes = inheritAttributes(this.el, ['aria-label', 'tabindex', 'title'])
   }
 
@@ -247,7 +253,6 @@ export class Checkbox implements DsComponentInterface {
   private handleChange = (ev: Event) => {
     this.checked = (ev.target as HTMLInputElement).checked
     this.dsChange.emit(this.checked)
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
   }
 
   private handleClick = (ev: MouseEvent) => {
@@ -279,7 +284,6 @@ export class Checkbox implements DsComponentInterface {
     this.nativeInput?.focus()
     this.checked = !this.checked
     this.dsChange.emit(this.checked)
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
   }
 
   private handleFocus = (ev: FocusEvent) => {
@@ -298,6 +302,10 @@ export class Checkbox implements DsComponentInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private updateFormValue() {
+    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+  }
 
   private hasHint(): boolean {
     return this.el.querySelector('[slot="hint"]') !== null

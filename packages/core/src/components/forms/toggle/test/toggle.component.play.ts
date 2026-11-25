@@ -1,4 +1,4 @@
-import { DsToggle, expect, test } from '@helvetia-design/playwright'
+import { DsPage, DsToggle, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 test.describe('dsChange', () => {
   test('should fire dsChange with true when checked', async ({ page }) => {
@@ -126,5 +126,44 @@ test.describe('required attribute', () => {
 
     await expect(toggle.el).toHaveJSProperty('required', false)
     await expect(toggle.nativeInput).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mount = (page: DsPage) =>
+    page.mount(`<form><ds-toggle name="field" value="yes" checked>Toggle</ds-toggle></form>`)
+
+  test('should submit its value only while checked', async ({ page }) => {
+    await mount(page)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+    await toggle.uncheck()
+    expect(await getFormEntries(page)).toEqual([])
+    await toggle.check()
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+  })
+
+  test('should submit after a programmatic checked change', async ({ page }) => {
+    await mount(page)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    await toggle.el.evaluate((el: HTMLDsToggleElement) => {
+      el.checked = false
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should submit its initial state after form.reset()', async ({ page }) => {
+    await mount(page)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    await toggle.uncheck()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
   })
 })

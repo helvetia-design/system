@@ -86,7 +86,7 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
   componentDidLoad() {
     this.inputValue = this.component.value
     this.committedValue = this.component.value
-    setFormValue(this.component.internals, this.inputValue as ControlValue)
+    setFormValue(this.component.internals, toControlValue(this.inputValue))
   }
 
   /**
@@ -131,9 +131,17 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
       this.component.value = newValue
       this.inputValue = newValue
       this.committedValue = newValue
-      setFormValue(this.component.internals, this.inputValue as ControlValue)
       this.component.dsChange.emit(this.component.value)
     }
+  }
+
+  valueChanged = () => {
+    this.inputValue = this.component.value
+    // Only while not focused: a focused change is exactly what onBlur's dsChange must still catch.
+    if (!this.component.focused) {
+      this.committedValue = this.component.value
+    }
+    setFormValue(this.component.internals, toControlValue(this.component.value))
   }
 
   setBlur = async (): Promise<void> => {
@@ -150,6 +158,9 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
  * HELPER FUNCTIONS
  * ------------------------------------------------------
  */
+
+const toControlValue = (value: unknown): ControlValue =>
+  typeof value === 'number' && isNaN(value) ? null : (value as ControlValue)
 
 export const getControlTarget = (ev: Event): HTMLInputElement | null => {
   return ev.target as HTMLInputElement | null

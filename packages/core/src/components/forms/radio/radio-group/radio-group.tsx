@@ -223,6 +223,7 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
   @Prop({ mutable: true, reflect: true }) value?: any | null
   @Watch('value')
   valueChanged() {
+    this.updateFormValue()
     this.handleValueChange()
   }
 
@@ -255,7 +256,7 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
 
   connectedCallback() {
     this.initialValue = this.value
-    setFormValue(this.internals, this.value)
+    this.updateFormValue()
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })
@@ -368,7 +369,6 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
         if (!this.readonly) {
           this.value = next.value
           this.dsChange.emit(this.value)
-          setFormValue(this.internals, this.value)
         }
       }
 
@@ -380,7 +380,6 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
         if (!this.readonly) {
           this.value = this.allowEmptySelection && this.value === current.value ? undefined : current.value
           this.dsChange.emit(this.value)
-          setFormValue(this.internals, this.value)
         }
       }
     }
@@ -440,7 +439,6 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
         this.value = undefined
       }
       this.dsChange.emit(this.value)
-      setFormValue(this.internals, this.value)
     }
   }
 
@@ -448,6 +446,10 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private updateFormValue() {
+    setFormValue(this.internals, this.value ?? null)
+  }
 
   private passDownAttributes() {
     const isInvalid = this.invalid || this.hasInvalidTextSlotContent

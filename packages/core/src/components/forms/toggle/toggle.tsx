@@ -9,6 +9,7 @@ import {
   Listen,
   Prop,
   State,
+  Watch,
 } from '@stencil/core'
 import {
   deserializeBooleanAttribute,
@@ -87,6 +88,11 @@ export class Toggle implements DsComponentInterface {
   @Prop({ mutable: true, reflect: true })
   @Type('boolean')
   checked: boolean = false
+
+  @Watch('checked')
+  protected checkedChanged() {
+    this.updateFormValue()
+  }
 
   /**
    * If `true`, the toggle is dense and has less size.
@@ -187,7 +193,7 @@ export class Toggle implements DsComponentInterface {
 
   connectedCallback(): void {
     this.initialValue = this.checked
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+    this.updateFormValue()
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })
@@ -198,7 +204,7 @@ export class Toggle implements DsComponentInterface {
   }
 
   componentWillLoad() {
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+    this.updateFormValue()
     this.inheritAttributes = inheritAttributes(this.el, ['aria-label', 'tabindex', 'title'])
   }
 
@@ -229,13 +235,21 @@ export class Toggle implements DsComponentInterface {
   private handleChange = (ev: Event): void => {
     this.checked = (ev.target as HTMLInputElement).checked
     this.dsChange.emit(this.checked)
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
   }
 
   private handleFocus = (ev: FocusEvent) => {
     if (this.disabled || this.readonly) return
     this.focused = true
     this.dsFocus.emit(ev)
+  }
+
+  /**
+   * PRIVATE METHODS
+   * ─────────────────────────────────────────────────────
+   */
+
+  private updateFormValue() {
+    setFormValue(this.internals, this.checked ? (this.value as string) : null)
   }
 
   /**

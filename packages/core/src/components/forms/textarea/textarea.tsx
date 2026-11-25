@@ -245,11 +245,7 @@ export class Textarea implements DsComponentInterface, FieldInterface, FormContr
 
   @Watch('value')
   valueChanged() {
-    this.control.inputValue = this.value
-    // Only while not focused: a focused change is exactly what onBlur's dsChange must still catch.
-    if (!this.focused) {
-      this.control.committedValue = this.value
-    }
+    this.control.valueChanged()
   }
 
   /**
