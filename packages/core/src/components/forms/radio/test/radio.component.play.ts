@@ -1,4 +1,4 @@
-import { DsRadio, expect, test } from '@helvetia-design/playwright'
+import { DsInput, DsRadio, expect, test } from '@helvetia-design/playwright'
 
 const GROUP = `
   <ds-radio-group name="heroes" label="Label">
@@ -226,6 +226,47 @@ test.describe('radio-group', () => {
     await page.keyboard.press('ArrowDown')
 
     expect(blurSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should fire dsFocus once when focus enters the group', async ({ page }) => {
+    await page.mount(`<button data-testid="before">Before</button>${GROUP}<button data-testid="after">After</button>`)
+    const group = page.locator('ds-radio-group')
+    const focusSpy = await group.spyOnEvent('dsFocus')
+
+    await page.getByTestId('before').focus()
+    await page.keyboard.press('Tab')
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+
+    await page.keyboard.press('ArrowDown')
+    await expect(new DsRadio(page.locator('ds-radio[value="tony-stark"]')).nativeInput).toBeFocused()
+    await page.keyboard.press('ArrowDown')
+    await expect(new DsRadio(page.locator('ds-radio[value="black-widow"]')).nativeInput).toBeFocused()
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Shift+Tab')
+    expect(focusSpy).toHaveReceivedEventTimes(2)
+  })
+
+  test('should not swallow dsChange of a nested non-radio control', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label">
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-input label="Other"></ds-input>
+      </ds-radio-group>
+    `)
+    const changeSpy = await page.spyOnEvent('dsChange')
+    const input = new DsInput(page.locator('ds-input'))
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+
+    await input.fill('Peter')
+    await input.blur()
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('Peter')
+
+    await steve.select()
+    expect(changeSpy).toHaveReceivedEventTimes(2)
+    expect(changeSpy).toHaveReceivedEventDetail('steve-rogers')
   })
 
   test('should reset to initial value on form reset', async ({ page }) => {

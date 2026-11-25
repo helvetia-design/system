@@ -69,6 +69,108 @@ test.describe('dsChange', () => {
     expect(changeSpy).toHaveReceivedEventDetail(['de', 'it'])
     await select.assertValue(['German', 'Italian'])
   })
+
+  test('should not fire dsChange when the value is set programmatically', async ({ page }) => {
+    await page.mount(`<ds-select label="Country"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+    const changeSpy = await select.el.spyOnEvent('dsChange')
+
+    await select.el.evaluate((el: HTMLDsSelectElement) => (el.value = 'it'))
+    await page.waitForChanges()
+    await select.assertValue('Italy')
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+
+    await select.select('Germany')
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('de')
+  })
+
+  test('should keep a value that is set before its options exist', async ({ page }) => {
+    await page.mount(`<ds-select label="Country"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    const changeSpy = await select.el.spyOnEvent('dsChange')
+
+    await select.el.evaluate((el: HTMLDsSelectElement) => (el.value = 'de'))
+    await page.waitForChanges()
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+
+    await expect(select.el).toHaveJSProperty('value', 'de')
+    await select.assertValue('Germany')
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
+})
+
+test.describe('dsFocus and dsBlur', () => {
+  test('should fire dsFocus and dsBlur once when tabbing in and out', async ({ page }) => {
+    await page.mount(`
+      <button data-testid="before">Before</button>
+      <ds-select label="Country"></ds-select>
+      <button data-testid="after">After</button>
+    `)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+    const focusSpy = await select.el.spyOnEvent('dsFocus')
+    const blurSpy = await select.el.spyOnEvent('dsBlur')
+
+    await page.getByTestId('before').focus()
+    await page.keyboard.press('Tab')
+    await expect(select.trigger).toBeFocused()
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+    expect(blurSpy).toHaveReceivedEventTimes(0)
+
+    await page.keyboard.press('Tab')
+    await expect(page.getByTestId('after')).toBeFocused()
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+    expect(blurSpy).toHaveReceivedEventTimes(1)
+  })
+
+  test('should not fire dsBlur when the popup opens and closes while the trigger keeps focus', async ({ page }) => {
+    await page.mount(`<ds-select label="Country"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+    const focusSpy = await select.el.spyOnEvent('dsFocus')
+    const blurSpy = await select.el.spyOnEvent('dsBlur')
+
+    await select.trigger.focus()
+    await page.keyboard.press('Enter')
+    await select.assertOpen()
+    await page.keyboard.press('Escape')
+    await select.assertClosed()
+
+    await expect(select.trigger).toBeFocused()
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+    expect(blurSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not fire dsBlur when focus moves into the search input', async ({ page }) => {
+    await page.mount(`<ds-select label="Country" searchable></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+    const focusSpy = await select.el.spyOnEvent('dsFocus')
+    const blurSpy = await select.el.spyOnEvent('dsBlur')
+
+    await select.open()
+    await select.assertOpen()
+    await expect(select.searchInput).toBeFocused()
+
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+    expect(blurSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should fire dsBlur once when clicking outside the open popup', async ({ page }) => {
+    await page.mount(`<button data-testid="outside">Outside</button><ds-select label="Country"></ds-select>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+    const blurSpy = await select.el.spyOnEvent('dsBlur')
+
+    await select.open()
+    await expect(select.trigger).toHaveAttribute('aria-activedescendant', /.+/)
+    await page.getByTestId('outside').click()
+    await select.assertClosed()
+
+    expect(blurSpy).toHaveReceivedEventTimes(1)
+  })
 })
 
 test.describe('closeOnSelect', () => {

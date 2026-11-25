@@ -21,6 +21,7 @@ import {
   LogInstance,
   hasTagName,
   isDescendant,
+  isOutside,
   stopEventBubbling,
   areArraysEqual,
   hasValue,
@@ -309,14 +310,17 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
       // above: consumers (and the `@helvetia-design/angular` `ControlValueAccessor`, which listens for `dsBlur`
       // directly on this host to mark the bound `NgControl` as touched) only ever interact with the group, not
       // its individual checkboxes, and the child event was just stopped from bubbling any further than this.
-      this.dsBlur.emit(ev.detail)
+      if (isOutside(this.el, ev.detail?.relatedTarget)) {
+        this.dsBlur.emit(ev.detail)
+      }
     }
   }
 
   @Listen('dsChange', { capture: true, target: 'document' })
   listenToDsChange(ev: UIEvent) {
     if (this.control) {
-      if (isDescendant(this.el, ev.target as HTMLElement)) {
+      const target = ev.target as HTMLElement
+      if (isDescendant(this.el, target) && hasTagName(target, 'ds-checkbox')) {
         stopEventBubbling(ev)
         this.updateValues()
       }
@@ -328,6 +332,9 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     const { target } = ev
     if (target && isDescendant(this.el, target) && hasTagName(target, 'ds-checkbox')) {
       stopEventBubbling(ev)
+      if (isOutside(this.el, ev.detail?.relatedTarget)) {
+        this.dsFocus.emit(ev.detail)
+      }
     }
   }
 

@@ -17,6 +17,7 @@ import {
   type LogInstance,
   stopEventBubbling,
   isDescendant,
+  isOutside,
   ListenToResize,
   Type,
   watchInvalidTextSlot,
@@ -267,9 +268,15 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
    */
   @Listen('focusout')
   listenToFocusOut(ev: FocusEvent) {
-    const relatedTarget = ev.relatedTarget as HTMLElement | null
-    if (!relatedTarget || !isDescendant(this.el, relatedTarget)) {
+    if (isOutside(this.el, ev.relatedTarget)) {
       this.dsBlur.emit(ev)
+    }
+  }
+
+  @Listen('focusin')
+  listenToFocusIn(ev: FocusEvent) {
+    if (isOutside(this.el, ev.relatedTarget)) {
+      this.dsFocus.emit(ev)
     }
   }
 

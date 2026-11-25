@@ -74,7 +74,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
 
   @Element() el!: HTMLStencilElement
 
-  @State() focused = false
+  private focused = false
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() slottedOptions: SelectOption[] = []
@@ -331,6 +331,22 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
     }
   }
 
+  @Listen('focusin')
+  listenToFocusIn(ev: FocusEvent) {
+    if (this.focused) return
+    this.focused = true
+    this.dsFocus.emit(ev)
+  }
+
+  @Listen('focusout')
+  listenToFocusOut(ev: FocusEvent) {
+    const relatedTarget = ev.relatedTarget as Node | null
+    // For focus moves inside the shadow root, the browser reports the host as relatedTarget, so those are not a blur.
+    if (!this.focused || (relatedTarget && this.el.contains(relatedTarget))) return
+    this.focused = false
+    this.dsBlur.emit(ev)
+  }
+
   @Listen('reset', { capture: true, target: 'document' })
   listenToReset(ev: UIEvent) {
     const form = ev.target as HTMLElement
@@ -443,14 +459,6 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
       clearable: this.clearable,
       data: this.buildSlimData(),
       onChange: newVal => this.handleAfterChange(newVal),
-      onOpen: () => {
-        this.focused = true
-        this.dsFocus.emit(new FocusEvent('focus'))
-      },
-      onClose: () => {
-        this.focused = false
-        this.dsBlur.emit(new FocusEvent('blur'))
-      },
     })
   }
 

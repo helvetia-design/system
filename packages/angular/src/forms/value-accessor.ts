@@ -66,6 +66,8 @@ export class DsValueAccessor<
   ) {}
 
   private readonly handleChange = (event: Event) => {
+    // Nested form controls (e.g. a ds-input inside a ds-radio-group) bubble their own events through this host.
+    if (event.target !== this.element) return
     const value = this.config.extractValue
       ? this.config.extractValue(event, this.element)
       : (event as CustomEvent<Element[K]>).detail
@@ -81,7 +83,8 @@ export class DsValueAccessor<
     this.cdr?.markForCheck()
   }
 
-  private readonly handleBlur = () => {
+  private readonly handleBlur = (event: Event) => {
+    if (event.target !== this.element) return
     // Just notify the control; don't also derive invalid state from here. `onTouched()` (wired up by
     // e.g. `FormControlName`) marks the control touched, which — like the value change `onChange()`
     // triggers on the change event — is itself observed via the `control.events` subscription below,

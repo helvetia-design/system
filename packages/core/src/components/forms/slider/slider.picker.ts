@@ -109,10 +109,14 @@ export class SliderPickerController {
     // used by the picker's setValue() and by test helpers driving the widget programmatically —
     // only fires 'update' + 'set', never 'change'. Real user interactions fire both together,
     // so 'set' covers both cases while 'change' alone would miss programmatic commits.
+
+    // noUiSlider fires 'update' synchronously when the handler is bound.
+    this.suppressEvents = true
     this.slider.on('update', values => {
       if (this.suppressEvents) return
       this.config.onInput(Number(values[0]))
     })
+    this.suppressEvents = false
     this.slider.on('set', values => {
       if (this.suppressEvents) return
       this.config.onChange(Number(values[0]))
