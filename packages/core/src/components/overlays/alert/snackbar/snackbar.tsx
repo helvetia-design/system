@@ -307,7 +307,7 @@ export class Snackbar implements DsComponentInterface, AlertComponent, DsBreakpo
               target={this.actionTarget}
               href={this.actionHref}
               onClick={ev => {
-                stopEventBubbling(ev)
+                ev.stopPropagation()
                 this.dsActionClick.emit(ev)
                 this.actionHandler(this.alertId)
               }}
