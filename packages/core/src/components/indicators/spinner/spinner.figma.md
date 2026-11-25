@@ -162,8 +162,7 @@ tokens: # all checked in the Foundation file (18.11.2026)
       cssVar: --ds-spinner-label-typo-font-family,
       figmaVariable: 🧩 Component/Spinner/Label/Typo/FontFamily,
       resolved: true,
-      bind: false,
-    } # value `BaloiseCreateText` is the CSS name; Figma font is `Baloise Create Text` → literal until the sync writes Figma names (user decision 18.11.2026, TODO.md)
+    } # bound (Figma font name `Baloise Create Text` synced 24.11.2026)
   - {
       cssVar: --ds-spinner-label-typo-font-size,
       figmaVariable: 🧩 Component/Spinner/Label/Typo/FontSize,
@@ -212,7 +211,7 @@ completeness:
     ring stroke: Circle/<Primary|Inverted>/Background, weight Circle/Thickness/MD | SM
     progress arc stroke: Circle/<Primary|Inverted>/Progress, same weight
   - node: label (text)
-    family: literal `Baloise Create Text` (variable holds the CSS name `BaloiseCreateText` — not a Figma font; TODO.md)
+    family: Label/Typo/FontFamily (Baloise Create Text)
     size / weight: Label/Typo/FontSize / FontWeight (fontStyle)
     line-height / letter-spacing / decoration: literal from Label/Typo/* (not bindable)
     color: Label/Color/Primary | Inverted

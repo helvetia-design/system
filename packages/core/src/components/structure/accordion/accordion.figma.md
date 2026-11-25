@@ -125,7 +125,7 @@ tokens: # all checked in Foundation 19.11.2026
   # Typography — per option of `summary visual level`, <T> = Typo (base) | Level/<N> (hN); TitleTypo unused (no option):
   #   🧩 Component/Accordion/Summary/<T>/FontSize      → bound (Device routing: base/h5 16, h4 18, h3 20/24/24, h2 24/32/32, h1 28/40/40)
   #   🧩 Component/Accordion/Summary/<T>/FontWeight    → bound (base 400, hN 700)
-  #   🧩 Component/Accordion/Summary/<T>/FontFamily    → bind: false, literal `Baloise Create Text` (base) / `Baloise Create Headline` (hN) — CSS name in the variable (TODO.md)
+  #   🧩 Component/Accordion/Summary/<T>/FontFamily    → bound (`Baloise Create Text` base / `Baloise Create Headline` hN)
   #   🧩 Component/Accordion/Summary/<T>/LineHeight    → bind: false, STRING — literal 1.5 (base) / 1.3 (hN)
   #   🧩 Component/Accordion/Summary/<T>/LetterSpacing → bind: false, STRING "0%" — literal
   #   🧩 Component/Accordion/Summary/<T>/TextDecoration, /TextTransform → none, nothing to apply
@@ -133,7 +133,7 @@ tokens: # all checked in Foundation 19.11.2026
   - { cssVar: --ds-text-typo-paragraph-font-size, figmaVariable: 🧩 Component/Text/Typo/Paragraph/FontSize, resolved: true } # bound
   - { cssVar: --ds-text-typo-paragraph-font-weight, figmaVariable: 🧩 Component/Text/Typo/Paragraph/FontWeight, resolved: true } # bound (fontStyle)
   - { cssVar: null, figmaVariable: 🔗 Alias/🔤 Text/Color/Primary, resolved: true } # inherited-context color
-  # family `Baloise Create Text`, line height 150%, letter spacing 0 as literals (same exceptions as the summary)
+  # family bound (`Text/Typo/Paragraph/FontFamily`); line height 150%, letter spacing 0 as literals (same exceptions as the summary)
 # No breakpoint mixins → no device: section (font sizes are responsive through the Device alias).
 
 completeness:

@@ -262,7 +262,7 @@ tokens: # names checked in the Foundation file (18.11.2026); 320 Button variable
   - { figmaVariable: '🧩 Component/Button/Size/<Base|SM|LG>/PaddingX', resolved: true } # 24 / 12 / 24
   - { figmaVariable: '🧩 Component/Button/Size/<Base|SM|LG>/Gap', resolved: true } # 8
   - { figmaVariable: '🧩 Component/Button/Size/<Base|SM|LG>/Radius', resolved: true } # 4
-  - { figmaVariable: '🧩 Component/Button/Size/<Base|SM|LG>/Label/Typo/*', resolved: true } # Headline, 16 / 14 / 18 (→ Device/Text/Size/*/Device), Bold, 130%; family literal `Baloise Create Headline` (TODO.md), line height / letter spacing / decoration literal
+  - { figmaVariable: '🧩 Component/Button/Size/<Base|SM|LG>/Label/Typo/*', resolved: true } # Headline, 16 / 14 / 18 (→ Device/Text/Size/*/Device), Bold, 130%; family bound (Baloise Create Headline), line height / letter spacing / decoration literal
   - { figmaVariable: '🧩 Component/Button/Spinner/Size', resolved: true } # 24
   - { figmaVariable: '🧩 Component/Button/Flat/MinHeight', resolved: true } # 28
   - { cssVar: --ds-tooltip-offset, figmaVariable: '🧩 Component/Tooltip/Offset', resolved: true } # 8 — bound inside TooltipAnchor (wrapper padding toward the trigger)

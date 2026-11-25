@@ -57,14 +57,14 @@ tokens:
   - { cssVar: --ds-tooltip-padding-y, figmaVariable: 🧩 Component/Tooltip/PaddingY, resolved: true } # content padding top/bottom, 8
   - { cssVar: --ds-tooltip-offset, figmaVariable: 🧩 Component/Tooltip/Offset, resolved: true, bind: false } # trigger distance, 8 — documented only
   - { cssVar: --ds-tooltip-z-index, figmaVariable: 🧩 Component/Tooltip/ZIndex, resolved: true, bind: false } # no Figma equivalent
-  - { cssVar: '--ds-tooltip-text-*', figmaVariable: '🧩 Component/Tooltip/Text/*', resolved: true } # → Component/Text/Typo/Small: family Text, size Device/Text/Size/SM (14 desktop), weight Regular, line height 1.5, letter spacing 0, decoration none; family / line height / letter spacing literal (STRING variables, as in Button — TODO.md)
+  - { cssVar: '--ds-tooltip-text-*', figmaVariable: '🧩 Component/Tooltip/Text/*', resolved: true } # → Component/Text/Typo/Small: family Text (bound), size Device/Text/Size/SM (14 desktop), weight Regular, line height 1.5, letter spacing 0, decoration none; line height / letter spacing literal (STRING variables, as in Button)
 
 completenessChecklist:
   container: { fill: Tooltip/Color/Background, radius: Tooltip/Radius, shadow: Tooltip/Shadow/*, width: hug }
   content: { paddingX: Tooltip/PaddingX, paddingY: Tooltip/PaddingY }
   text (content):
     {
-      family: Tooltip/Text/FontFamily (literal),
+      family: Tooltip/Text/FontFamily,
       size: Tooltip/Text/FontSize,
       weight: Tooltip/Text/FontWeight,
       lineHeight: Tooltip/Text/LineHeight (literal 150%),
