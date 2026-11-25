@@ -112,16 +112,10 @@ Avoid unrelated changes, speculative options, and abstractions the plan didn't a
 ## Phase 4: Register
 
 - **Framework wrappers** — the component ships through Stencil's generated `Components`; you
-  add only the hand-written parts:
-  - Angular — **required for every form component**: `packages/angular/src/forms/ds-<name>.ts`
-    with the value accessor like the others (`withValueAccessor`, `NG_VALUE_ACCESSOR` provider,
-    `host: { 'data-ds-form-control': '' }`, generated `Inputs`/`Outputs`). Copy `ds-select.ts`
-    (scalar value) or `ds-input.ts` (text); export it from `packages/angular/src/index.ts`. Add
-    a value-extraction special case only if the event detail is not the plain value. The
-    test-engineer proves it in `apps/integration-angular`.
-  - React: an entry in `packages/react/src/wrappers.ts` and `wrappers.server.ts`.
-  - Run `pnpm build` in `packages/core` to regenerate `components.d.ts` and the Angular
-    `generated/*` files — never hand-edit them.
+  add only the hand-written parts with the `ds-framework-wrappers` skill — React re-export
+  lists (both files) for every component, the Angular value-accessor wrapper for every form
+  component. Run `pnpm build` in `packages/core` first to regenerate `components.d.ts` and the
+  framework `generated/*` files — never hand-edit them.
 - **`packages/core/src/index.ts`** — only when the plan names a public interface type to export
   (see [REFERENCE.md](REFERENCE.md#registration-in-indexts)); a new component needs no entry.
 - Create the mirrored Storybook folder `apps/storybook/src/components/<category>/<name>/`

@@ -30,7 +30,7 @@
 }
 
 #table-of-contents {
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
   font-weight: 700;
   color: var(--ds-global-color-primary-5);
   font-size: 1.25rem;
@@ -40,7 +40,7 @@
 nav[aria-labelledby='table-of-contents'] {
   padding-top: 5rem;
   z-index: 1001;
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
   font-weight: 700;
 }
 
@@ -66,7 +66,7 @@ nav[aria-labelledby='table-of-contents'] {
 }
 
 .sbdocs-content :where(p:not(.sb-anchor, .sb-unstyled, .sb-unstyled p)) {
-  font-family: 'BaloiseCreateText' !important;
+  font-family: 'Baloise Create Text' !important;
   color: var(--ds-global-color-primary-5) !important;
   font-size: 1rem;
 }
@@ -83,7 +83,7 @@ nav[aria-labelledby='table-of-contents'] {
 .sbdocs-content > div:not(.sb-unstyled) > h5,
 .sbdocs-content > h6,
 .sbdocs-content > div:not(.sb-unstyled) > h6 {
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
   font-weight: 700;
   color: var(--ds-global-color-primary-5);
   font-size: 1rem;
@@ -134,7 +134,7 @@ nav[aria-labelledby='table-of-contents'] {
 
 .sbdocs-content > p,
 .sbdocs-content > div:not(.sb-unstyled) > p {
-  font-family: 'BaloiseCreateText';
+  font-family: 'Baloise Create Text';
   font-weight: 400;
   color: var(--ds-global-color-primary-5);
   font-size: var(--ds-device-text-size-base);
@@ -254,14 +254,14 @@ a > code {
  ***************************************/
 
 .sbdocs-wrapper > div:not(.sbdocs-content) p {
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
   font-weight: 700;
   color: var(--ds-global-color-primary-5);
   font-size: 1rem;
 }
 
 .toc-link {
-  font-family: 'BaloiseCreateText';
+  font-family: 'Baloise Create Text';
   color: var(--ds-global-color-primary-5) !important;
   opacity: 0.7;
 }
@@ -538,7 +538,7 @@ div.has-visible-overflow > .docs-story > div:nth-child(2) {
 }
 
 .support__title {
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
   font-size: 1.2rem !important;
   font-weight: 700 !important;
   margin-top: 1rem !important;

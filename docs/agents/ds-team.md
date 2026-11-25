@@ -63,13 +63,10 @@ Plus 🐙 the **orchestrator** — the main session, which dispatches but owns n
 ² **Framework wrappers and the other cross-package files** are the component-engineer's, because
 they change in lockstep with the component's public API:
 
-- **Every form component gets an Angular wrapper with a value accessor** —
-  `packages/angular/src/forms/ds-<name>.ts`, same shape as the others: `withValueAccessor` mixin
-  (`value-accessor.ts`), `NG_VALUE_ACCESSOR` provider, `host: { 'data-ds-form-control': '' }`,
-  generated `Ds<Name>Inputs`/`Outputs`. Copy `ds-select.ts` (scalar value) or `ds-input.ts`
-  (text) and export it from `packages/angular/src/index.ts`. Without it `formControlName` and
-  `ngModel` silently do nothing — the proxy alone is not a form control.
-- `packages/react/src/wrappers.ts` and `wrappers.server.ts`
+- **The hand-authored framework layer**, via `ds-framework-wrappers`: every new component in
+  `packages/react/src/wrappers.ts` **and** `wrappers.server.ts`; every form component's Angular
+  value-accessor wrapper (`packages/angular/src/forms/ds-<name>.ts`) and its export — without
+  it `formControlName` and `ngModel` silently do nothing; deprecation JSDoc on both.
 - `docs/adr/**`, `packages/*/CONTEXT.md` and the component's own `CONTEXT.md`
 
 ³ **Framework integration tests** are the test-engineer's — for **every form component**, and for
@@ -92,9 +89,42 @@ needs no entry there unless the plan names a public interface type. Generated fi
 `scripts/build-docs.mjs`) are never hand-edited and never assigned.
 
 Each agent's symbol is its label everywhere in a run: the orchestrator prefixes a dispatch and
-a status line with it, and an agent prefixes its own completion report. One glance says who is
+a status line with it — including the Agent tool's `description` field (`🏛️ Plan ds-x for
+Figma`), which is the label the UI's running-agents list shows next to the agent name — and an agent prefixes its own completion report. One glance says who is
 talking in a transcript where seven of them are. The symbol is cosmetic — the agent's identity
 is its `name`, which never changes.
+
+### Kickoff banner
+
+The orchestrator's **very first output** on a DS-team request — before any tool call, including
+reading this file — is one banner: the workflow, the target, and the agents in the order they
+will run. Text only, in its own message, so the UI shows it instead of folding it into a tool
+group. Printed once per run, not per step. The per-workflow step lines live in `CLAUDE.md`
+(loaded every session, so the banner needs no read first).
+
+Rendered markdown, never a code block — box-drawing borders misalign on emoji widths. Steps
+are a numbered list, one item per `→` step; parallel (`∥`) steps share one item. Each step is
+`<emoji> **<agent>** / <action>`; consecutive steps by the same agent merge into one item with a
+nested numbered list of its actions.
+
+```markdown
+## 🐙 DS Team taking over
+
+**Workflow D — Component into Figma** · `ds-progress-bar`
+
+1. 🏛️ **architect** / plan
+2. 🧬 **token-engineer** / tokens
+3. ⛔ **human** / gate
+4. 🎨 **ux-designer**
+   1. map
+   2. build
+   3. review
+   4. copy me
+   5. anatomy ∥ measurements
+5. 📖 **documentation-engineer** / stories
+```
+
+The status board below follows it straight away.
 
 ### Status board
 
@@ -157,6 +187,7 @@ stay where they are; only new a11y coverage follows the rule above.
 | `ds-implement-component`        |  —   |    W     |    —     |  —   |     —     |    —     |  —  |
 | `ds-modify-component`           |  —   |    W     |    —     |  —   |     —     |    —     |  —  |
 | `ds-repair-component`           |  —   |    W     |    —     |  —   |     —     |    —     |  —  |
+| `ds-framework-wrappers`         |  —   |    W     |    —     |  —   |     —     |    —     |  —  |
 | `ds-lint-component`             |  —   |    W¹    |    —     |  —   |     —     |    —     |  —  |
 | `ds-test-component`             |  —   |    —     |    W     |  —   |     —     |    —     |  —  |
 | `ds-update-screenshots`         |  —   |    —     |    W²    |  —   |     —     |    —     |  —  |
@@ -232,7 +263,8 @@ were deleted after execution, and a throwaway component plan must never become a
 
 # Workflow A — New component
 
-Full pipeline. Use for a new component or a breaking change.
+Full pipeline. Use for a new component, or a breaking change that cannot go through a
+deprecation first (Workflow E).
 
 ```text
 0 grill the human           →  docs/plans/components/<name>-brief.md
@@ -318,7 +350,8 @@ where they differ. The orchestrator's dispatch names that order; it does not res
 
 **2 · Implement** — `ds-implement-component`. Writes component source, the `index.ts`
 export, and `test/<name>.visual.html` (plus `.style.html` for a CSS-only/hybrid component).
-Creates an _empty_ Storybook folder and generates no tests. It **reads tokens and
+Then `ds-framework-wrappers` for the React lists and, for a form component, the Angular
+wrapper. Creates an _empty_ Storybook folder and generates no tests. It **reads tokens and
 never creates them**: a missing token is referenced by the name it should have, with no
 fallback and nothing hardcoded, and reported as a blocking handoff.
 
@@ -396,7 +429,9 @@ bug report
        no (the common case)  →  validate
        yes                   →  escalate only the row that applies  →  validate
   →  ds-validate-component     (repro test passes, suite stays green)
-  →  ds-changeset (patch)      →  human reviews and commits
+  →  ds-changeset (patch)
+  →  Figma drift check         (only if it applies — see Workflow D)
+  →  human reviews and commits
 ```
 
 `ds-modify-component` reproduces the defect as a failing test first, greps every caller before
@@ -406,7 +441,7 @@ editing anything shared, and fixes the root cause once.
 
 | Trigger                                        | Add                                                         |
 | ---------------------------------------------- | ----------------------------------------------------------- |
-| Breaking public API change                     | architect — needs an approved plan first                    |
+| Breaking public API change                     | stop — it is Workflow E (deprecate first), or A if it can't |
 | A needed token does not exist                  | token-engineer                                              |
 | The fix needs an **a11y decision** or sign-off | a11y-expert — audits and verifies; the engineer still fixes |
 | A new suite, new test file, or variant matrix  | test-engineer                                               |
@@ -461,7 +496,9 @@ feature request
   →  visual or token surface changed?
        yes  →  ds-audit-tokens and/or ds-a11y-audit
                + ds-a11y-verify if a colour changed  →  repair by owner
-  →  ds-changeset (minor)  →  human reviews and commits
+  →  ds-changeset (minor)
+  →  Figma drift check     (only if it applies — see Workflow D)
+  →  human reviews and commits
 ```
 
 **A planner dispatch is always preceded by grilling** (Workflow A step 0), here too — a new
@@ -473,8 +510,8 @@ assessment are the point. A new prop reaches stories (`ds-manage-stories`) and t
 visual state reaches tokens too.
 
 **A form component's value, event or disabled/validity behaviour reaches the frameworks too.**
-The component-engineer checks the Angular value-accessor wrapper still fits (and adds one if a
-shipped form component lacks it); the test-engineer extends its `apps/integration-angular` and
+The component-engineer runs `ds-framework-wrappers` to check the Angular value-accessor wrapper
+still fits (and adds one if a shipped form component lacks it); the test-engineer extends its `apps/integration-angular` and
 `apps/integration-react` tests (see ownership note ³).
 
 **"Public API changes?" means a new prop, event, method or slot** — those need the architect
@@ -569,6 +606,91 @@ dispatch prompt names the step and those two paths; it does not restate the plan
 **Re-run `ds-figma-review` when the code changes.** A new prop, a new enum value or a renamed
 token silently makes the Figma component a lie, and Figma has no test suite to catch it. A
 library that drifts is worse than no library, because designers trust it.
+
+## Figma drift check — the closing step of B, C and E
+
+The orchestrator runs it after the changeset, **only when both hold**:
+
+1. a `<name>.figma.md` sits next to a changed `.tsx` — the component is in the Figma library;
+2. the change touched the Figma surface: a prop, enum value, slot or `@part` changed; a
+   Component token was added, renamed or re-pointed; or `test/<name>.visual.html` changed.
+
+A behavior-only fix — events, keyboard, logic, a11y attributes — skips it.
+
+**Dispatch:** one fresh 🎨 ux-designer · `ds-figma-review`, pointed at `<name>.figma.md` and
+the changed files. It repairs Figma and updates `<name>.figma.md`; a code-side defect it finds
+is a finding for the owner, not a Figma workaround. A new token with no Figma variable goes
+first to 🧬 token-engineer · `ds-sync-figma-tokens`, as in Workflow D step 2.
+
+**Figma MCP not authorized** → do not skip silently. The final report names the drift as open
+("`ds-<name>`: Figma out of date — `<what changed>`") so the human can run it later.
+
+---
+
+# Workflow E — Deprecation
+
+Retire a prop, enum value, event, slot, `@part`, token or whole component without breaking
+consumers. Policy: `docs/ARCHITECTURE.md` → Deprecation Policy. **Two runs, separated by
+releases:** deprecate now (minor), remove in a later major (E′). Never both in one run.
+
+```text
+E · deprecate
+0 grill the human           →  brief: what goes, its replacement, the removal major
+1 architect · ds-plan-component  (deprecation plan)  →  ⛔ GATE
+2 component-engineer · ds-modify-component           (old API keeps working + warns)
+3 token-engineer · ds-manage-tokens                  (only if tokens are deprecated)
+4 test ∥ docs                                         (parallel, disjoint files)
+5 ds-validate-component  →  6 ds-changeset (minor)  →  7 Figma drift check
+→  human reviews and commits
+
+E′ · remove — a later major, after the window in ARCHITECTURE.md
+⛔ GATE: human confirms the window has passed
+→  component-engineer removes  →  token-engineer removes  →  test ∥ docs
+→  ds-validate-component  →  ds-changeset (major)  →  Figma drift check
+```
+
+**0 · Grill** — always: a deprecation is a public API decision. Settle three things in the
+brief: what exactly is deprecated, what replaces it (or "nothing — drop it"), and the major in
+which it is removed. No replacement and no removal version means no deprecation yet.
+
+**1 · Plan** — the architect lists every consumer-facing surface the deprecated thing reaches:
+the prop/enum/event/slot/part, `--ds-<name>-*` tokens and public `--` CSS variables, Angular
+and React wrapper inputs/outputs, Storybook stories and controls, and other components that use
+it internally. Internal users migrate in this run; consumers migrate on their own schedule.
+Out-of-scope findings become issues as usual.
+
+**2 · Deprecate** — the component-engineer, from the plan:
+
+- `@deprecated Use <replacement> instead. Removed in <major>.` JSDoc on the member, so it
+  reaches `components.d.ts`, the wrappers and the editor.
+- The old API **keeps working**, mapped onto the replacement where one exists. A deprecation
+  that changes behavior is a breaking change — back to A.
+- One console warning per instance through the component's `Loggable` logger, naming the
+  component, the old API, the replacement and the removal major. It must also fire for an
+  initial attribute value, not only on `@Watch`.
+- Internal usages in other components move to the replacement.
+
+**3 · Tokens** — `ds-manage-tokens` Phase 5: the old token stays, resolves to the new one,
+and is marked deprecated in its `$description`.
+
+**4 · Test ∥ docs**
+
+| Agent                  | Skill               | Writes                                                                                               |
+| ---------------------- | ------------------- | ---------------------------------------------------------------------------------------------------- |
+| test-engineer          | `ds-test-component` | the old API still works and warns; the replacement works; existing tests stay — none deleted         |
+| documentation-engineer | `ds-manage-stories` | deprecated member out of controls and examples; a deprecation note with old → new markup on its page |
+
+**6 · Changeset** — minor, summary names the deprecated member, its replacement and the
+removal major.
+
+**7 · Figma drift check** — the deprecated value or prop is **removed from Figma now**, not at
+E′: new designs must stop using it while code still renders it. `ds-figma-review` treats a
+`@deprecated` code value as expected-absent.
+
+**E′ · Remove.** No grilling and no planner — the decisions were made at E; the brief and the
+E changeset are the record. The human gate only confirms the window has passed. Removing a
+test that covers the removed API is the one case where deleting a test is the change itself,
+not weakening the suite — the test-engineer names each one it deletes. Changeset: **major**.
 
 ---
 

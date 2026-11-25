@@ -1,6 +1,6 @@
 html {
   font-size: 16px;
-  font-family: 'BaloiseCreateText';
+  font-family: 'Baloise Create Text';
 }
 
 #root > div > div {
@@ -16,7 +16,7 @@ html {
  ***************************************/
 
 div[role='toolbar'] button {
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
 }
 
 button[aria-label='Show sidebar'],
@@ -35,7 +35,7 @@ button[aria-label='Open in editor'] {
   color: #000d6e;
   border: none;
   box-shadow: none;
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
 }
 
 button[aria-label='Show sidebar']:hover,
@@ -86,7 +86,7 @@ button[title='Chose your integration technology'] {
   color: #000d6e;
   border: none;
   box-shadow: none;
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
 }
 
 button[title='View on GitHub']:hover,
@@ -201,7 +201,7 @@ div[data-testid='tooltip'] button:active {
 
 .sidebar-subheading > button {
   color: #000d6e;
-  font-family: 'BaloiseCreateHeadline';
+  font-family: 'Baloise Create Headline';
   font-weight: 700;
   font-size: 18px;
   letter-spacing: 0;
@@ -250,7 +250,7 @@ div[data-testid='tooltip'] button:active {
 .sidebar-item > a,
 .sidebar-item > button {
   color: #000d6e;
-  font-family: 'BaloiseCreateText';
+  font-family: 'Baloise Create Text';
   font-weight: 400;
   font-size: 16px !important;
 }
@@ -379,7 +379,7 @@ svg[type='story'] {
 }
 
 .my-cookie strong {
-  font-family: BaloiseCreateHeadline, Arial, sans-serif;
+  font-family: 'Baloise Create Headline', Arial, sans-serif;
   font-size: 1.25rem;
   display: block;
   margin-bottom: 0.25rem;
@@ -400,7 +400,7 @@ svg[type='story'] {
 
 .my-cookie button {
   margin-top: 1.5rem;
-  font-family: BaloiseCreateHeadline, Arial, sans-serif;
+  font-family: 'Baloise Create Headline', Arial, sans-serif;
   background: transparent;
   border: 2px solid #000d6e;
   color: #000d6e;

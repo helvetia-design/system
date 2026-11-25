@@ -35,7 +35,7 @@ Per `PHASE-4-VALIDATE.md`. The checks that matter most, and what each catches:
 
 | Check                                                       | Catches                                                |
 | ----------------------------------------------------------- | ------------------------------------------------------ |
-| Every enum value in `.interfaces.ts` is a variant value     | a value added in code, missing in Figma                |
+| Every enum value in `.interfaces.ts` is a variant value¹    | a value added in code, missing in Figma                |
 | Every Figma variant value exists in `.interfaces.ts`        | a value removed in code, stale in Figma                |
 | Every styled value binds to a variable, none hardcoded      | a hardcode that will not follow a token change         |
 | Each bound variable is the one the SCSS cascade resolves to | bound to the wrong layer, or another component's token |
@@ -43,6 +43,9 @@ Per `PHASE-4-VALIDATE.md`. The checks that matter most, and what each catches:
 | Each icon slot has exactly one `INSTANCE_SWAP`              | a baked-in icon                                        |
 | `@part` tags match the Anatomy legend                       | a part renamed in code                                 |
 | Header fields and set layout match the template             | drift from the library's own conventions               |
+
+¹ A value or prop marked `@deprecated` in code is **expected absent** from Figma — Workflow E
+removes it there at deprecation so new designs stop using it. Its presence is the finding.
 
 **Comparing the two enum directions separately is the point.** "Figma has every code value" and
 "code has every Figma value" fail on different changes — an addition versus a removal — and a

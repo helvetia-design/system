@@ -60,7 +60,9 @@ describe('figma-value', () => {
   })
 
   it('sends only the first entry of a fontFamily array — Figma has no font-stack concept', () => {
-    expect(figmaValueFor('fontFamily', ['BaloiseCreateHeadline', 'Arial', 'sans-serif'])).toBe('BaloiseCreateHeadline')
+    expect(figmaValueFor('fontFamily', ['Baloise Create Headline', 'Arial', 'sans-serif'])).toBe(
+      'Baloise Create Headline',
+    )
     expect(figmaValueFor('fontFamily', ['inherit'])).toBe('inherit')
   })
 
@@ -280,7 +282,7 @@ describe('figmaTypographySubEntriesFor', () => {
   const familyToken = {
     path: ['Global', 'Font', 'Family', 'Heading'],
     type: 'fontFamily',
-    value: { kind: 'literal', value: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'] },
+    value: { kind: 'literal', value: ['Baloise Create Headline', 'Arial', 'sans-serif'] },
   }
   const weightToken = {
     path: ['Global', 'Font', 'Weight', '700'],
@@ -771,7 +773,7 @@ describe('typography push (two-pass write payload)', () => {
   const familyPrimitive = {
     path: ['Global', 'Font', 'Family', 'Heading'],
     type: 'fontFamily',
-    value: { kind: 'literal', value: ['BaloiseCreateHeadline', 'Arial', 'sans-serif'] },
+    value: { kind: 'literal', value: ['Baloise Create Headline', 'Arial', 'sans-serif'] },
   }
   const weightPrimitive = {
     path: ['Global', 'Font', 'Weight', '700'],

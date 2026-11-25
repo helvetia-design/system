@@ -171,7 +171,7 @@ jobs:
         uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
@@ -209,6 +209,9 @@ jobs:
           const componentsMatch = components.map(comp => comp === 'all' ? 'src/components/all/test/*visual.play.ts' : 'src/components/**/' + comp + '.visual.play.ts')
           const foundationMatch = components.map(comp => 'src/foundation/' + comp + '.visual.play.ts')
           const testMatch = [...componentsMatch, ...foundationMatch]
+          // SSR tests keep their own *-ssr-static baselines, so they need updating too.
+          const ssrMatch = components.map(comp => comp === 'all' ? '**/*.ssr.play.ts' : 'src/components/**/' + comp + '.ssr.play.ts')
+          const ssrProject = baseConfig.projects!.find(p => p.name === '🧬 SSR')!
 
           console.log('testMatch', testMatch)
 
@@ -225,6 +228,7 @@ jobs:
                 testMatch,
                 use: { ...devices['Pixel 5'] },
               },
+              { ...ssrProject, testMatch: ssrMatch },
             ],
           })
           TS

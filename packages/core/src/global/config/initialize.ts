@@ -1,5 +1,5 @@
 import { dsBrowser } from '@utils'
-import { config, configFromLocalStorage } from './config'
+import { Config, config, configFromLocalStorage } from './config'
 import { configFromMetaTag } from './config.meta'
 
 import { DsConfig } from './config.types'
@@ -11,7 +11,10 @@ export const setupDsConfig = (userConfig: DsConfig = {}, win = {} as any) => {
 
   win.DesignSystem = win.DesignSystem || {}
 
-  config.reset({
+  const existing = win.DesignSystem.config
+  const target: Config = typeof existing?.reset === 'function' ? existing : config
+
+  target.reset({
     ...configFromMetaTag(win),
     ...configFromLocalStorage(win),
     ...userConfig,
@@ -20,7 +23,7 @@ export const setupDsConfig = (userConfig: DsConfig = {}, win = {} as any) => {
     },
   })
 
-  win.DesignSystem.config = config
+  win.DesignSystem.config = target
 }
 
 export default setupDsConfig

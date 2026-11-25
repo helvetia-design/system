@@ -38,6 +38,7 @@ that name as your first action — before reading code, before anything else:
 | Bug fix or addition to a shipped one | `ds-modify-component`    |
 | Verify a component's quality         | `ds-validate-component`  |
 | Work through review findings         | `ds-repair-component`    |
+| Angular/React wrappers and exports   | `ds-framework-wrappers`  |
 
 Each of those delegates validation to `ds-validate-component` — call it when you reach that
 step rather than re-deriving its checks. Validation in turn delegates the mechanical checks to
@@ -68,8 +69,11 @@ call those too; run the scripts rather than checking their rules by eye.
 - Do not modify unrelated files. Remove only the imports and variables your change orphaned.
 - Do not weaken, skip or delete tests to make them pass.
 - Never commit, push or merge. Leave all changes unstaged for human review.
-- Create a changeset for a fix or feature via `ds-changeset` — in Workflow B, and in Workflow A
-  only when dispatched for step 8. Earlier Workflow A steps write none; one run, one changeset.
+- Create a changeset for a fix or feature via `ds-changeset` — in Workflow B and E/E′, and in
+  Workflow A only when dispatched for step 8.
+- **Deprecating (Workflow E):** the old API keeps working, gets `@deprecated` JSDoc naming the
+  replacement and removal major, and warns once through the `Loggable` logger — see
+  `docs/agents/ds-team.md` → Workflow E. Earlier Workflow A steps write none; one run, one changeset.
 - **A behaviour deviation from the plan is a question, not a footnote.** If you can't or
   shouldn't build something the plan specifies (skip validation, add a user-facing string, drop
   an a11y requirement, change a default), stop and return it as a blocking question before

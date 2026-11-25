@@ -73,10 +73,43 @@ For comprehensive technical information, see the dedicated documentation files:
 ### DS team
 
 Six specialist agents with disjoint file ownership, 22 `ds-*` skills, and the workflows for a
-new component, a bug fix and a feature. **You are the orchestrator** — dispatch them, don't do
+new component, a bug fix, a feature, a Figma mirror and a deprecation. **You are the orchestrator** — dispatch them, don't do
 their work. See `docs/agents/ds-team.md`.
 
 A bug fix is one agent (`component-engineer`), not the full pipeline.
+
+**Kickoff banner — your very first output on any DS-team request, before any tool call** (incl.
+reading `ds-team.md`). Text only, its own message, so the UI shows it and doesn't fold it into a
+tool group. Rendered markdown, not a code block (box borders break on emoji widths). Pick the
+workflow's step line and render it as a numbered list: one item per `→` step; `∥` (parallel)
+steps stay together on one item. Each step is `<emoji> **<agent>** / <action>` — the emoji maps
+to the agent (🐙 orchestrator, 🏛️ architect, 🧩 component-engineer, 🧪 test-engineer, ♿️ a11y-expert,
+🧬 token-engineer, 📖 documentation-engineer, 🎨 ux-designer, ⛔ human). Consecutive steps by the
+same agent merge into one item `<emoji> **<agent>**` with a nested numbered list of its actions.
+
+```markdown
+## 🐙 DS Team taking over
+
+**Workflow <X> — <name>** · `<ds-component>`
+
+1. 🏛️ **architect** / plan
+2. 🧩 **component-engineer**
+   1. reproduce
+   2. fix
+3. 🧪 **test-engineer** / test ∥ ♿️ **a11y-expert** / a11y-test
+4. …
+```
+
+- **A — New component:** `🐙 grill → 🏛️ plan ∥ ♿️ a11y-plan → ⛔ gate → 🧩 implement → 🧬 tokens → ⛔ visual gate → 🧪 test ∥ ♿️ a11y-test ∥ 📖 docs → 🧬 audit ∥ ♿️ audit → 🧩 repair → 🧩 validate → 🧩 changeset`
+- **B — Bug fix:** `🧩 reproduce → 🧩 fix → 🧩 validate → 🧩 changeset (patch) → 🎨 drift check`
+- **C — Feature:** `🐙 grill → 🏛️ plan → ⛔ gate → 🧩 modify → 🧬 tokens → 🧪 test ∥ ♿️ a11y-test ∥ 📖 docs → 🧬 audit ∥ ♿️ audit → 🧩 changeset (minor) → 🎨 drift check`
+- **D — Component into Figma:** `🏛️ plan → 🧬 tokens → ⛔ gate → 🎨 map → 🎨 build → 🎨 review → 🎨 copy me → 🎨 anatomy ∥ 🎨 measurements → 📖 stories`
+- **E — Deprecation:** `🐙 grill → 🏛️ plan → ⛔ gate → 🧩 deprecate → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (minor) → 🎨 drift check`
+- **E′ — Removal** (later major): `⛔ gate → 🧩 remove → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (major) → 🎨 drift check`
+
+`🎨 drift check` = `ds-figma-review`, only when the component has a `<name>.figma.md` and the change touched its Figma surface (see `ds-team.md` → Figma drift check).
+
+Then the status board (`ds-team.md` → Status board) on every dispatch, return and gate.
 
 ### Issue tracker
 
