@@ -62,6 +62,30 @@ Buttons support `disabled` and `loading` states. When loading, the label is repl
 
 {/* ------------------------------------------------------ */}
 
+<StoryHeading of={ButtonStories.BrandIcon}></StoryHeading>
+
+Use `brandIcon` to show a brand icon above the label, with a `brand-*` color. `brandSize` only accepts `lg`; leave it unset for the base size. `size` is ignored when `brandIcon` is set.
+
+<CanvasWithCodePen of={ButtonStories.BrandIcon} sourceState="shown" />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={ButtonStories.BrandIconColors}></StoryHeading>
+
+The brand icon follows the button's `brand-purple`, `brand-red`, `brand-yellow` or `brand-green` color.
+
+<CanvasWithCodePen of={ButtonStories.BrandIconColors} sourceState="shown" />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={ButtonStories.BrandIconStates}></StoryHeading>
+
+Brand icon buttons support `disabled` and `loading`, in both base and `lg` size. While loading, a spinner replaces the brand icon and the label stays visible.
+
+<CanvasWithCodePen of={ButtonStories.BrandIconStates} sourceState="shown" />
+
+{/* ------------------------------------------------------ */}
+
 <StoryHeading of={ButtonStories.AlertButtons}></StoryHeading>
 
 Alert color variants — `info`, `success`, `warning`, and `danger` — are used in response or notification contexts to communicate the severity of an action.
