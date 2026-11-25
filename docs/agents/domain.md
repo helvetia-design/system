@@ -76,6 +76,6 @@ See [CONTEXT-MAP.md](../../CONTEXT-MAP.md) for the full list of contexts and whi
 ## Maintaining Domain Docs
 
 - **Keep them current** — Update `CONTEXT.md` when architectural decisions change
-- **Collaborate with agents** — Use the `grill-with-docs` skill to refine terminology and decisions as the codebase evolves
+- **Collaborate with agents** — Use the `mattpocock-skills:grilling` skill to refine terminology and decisions as the codebase evolves
 - **Link related concepts** — Use `[[context-name]]` to reference other contexts in the monorepo
 - **Example-driven** — Include short, concrete examples of correct patterns and terminology

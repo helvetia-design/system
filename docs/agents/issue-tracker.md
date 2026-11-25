@@ -16,6 +16,8 @@ Use the GitHub web interface to create issues. When opening a new issue:
 4. **Assignees**: Assign to team members if known
 5. **Project**: Add to the design system project board if applicable
 
+Auditing a rewritten `ds-*` component against its LTS `bal-*` equivalent: create the issue from [component-audit.md](component-audit.md).
+
 ## Labels & Triage
 
 The `triage` agent uses labels to move issues through a state machine. See `docs/agents/triage-labels.md` for the canonical label vocabulary and how agents interact with them.

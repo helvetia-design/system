@@ -28,6 +28,11 @@ describe('public API', () => {
     expect(missing).toEqual([])
   })
 
+  test('server wrappers mirror the client wrappers', () => {
+    const serverSource = readFileSync(join(root, 'wrappers.server.ts'), 'utf8')
+    expect(serverSource.replaceAll("'./generated/components.server'", "'./generated/components'")).toBe(publicSource)
+  })
+
   test('exports overlay components, DsRootProvider, and hooks from the public barrel', () => {
     expect(indexSource).toContain("export { DsRootProvider } from './components/ds-root-provider'")
     expect(indexSource).toContain("export { Modal } from './components/modal'")

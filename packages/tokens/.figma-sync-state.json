@@ -76422,6 +76422,66 @@
       },
       "lastModifiedSource": "code",
       "lastModifiedAt": "2026-11-24T15:00:29.412Z"
+    },
+    "VariableID:287:996": {
+      "tokenPath": [
+        "🧩 Component",
+        "Logo",
+        "Size",
+        "Base"
+      ],
+      "subProperty": "device",
+      "resolvedValue": {
+        "kind": "reference",
+        "path": [
+          "🌐 Global",
+          "📏 Dimension",
+          "Size",
+          "24"
+        ]
+      },
+      "lastModifiedSource": "code",
+      "lastModifiedAt": "2026-11-24T05:55:40.543Z"
+    },
+    "VariableID:287:997": {
+      "tokenPath": [
+        "🧩 Component",
+        "Logo",
+        "Size",
+        "SM"
+      ],
+      "subProperty": "device",
+      "resolvedValue": {
+        "kind": "reference",
+        "path": [
+          "🌐 Global",
+          "📏 Dimension",
+          "Size",
+          "24"
+        ]
+      },
+      "lastModifiedSource": "code",
+      "lastModifiedAt": "2026-11-24T05:55:40.543Z"
+    },
+    "VariableID:287:998": {
+      "tokenPath": [
+        "🧩 Component",
+        "Logo",
+        "Size",
+        "LG"
+      ],
+      "subProperty": "device",
+      "resolvedValue": {
+        "kind": "reference",
+        "path": [
+          "🌐 Global",
+          "📏 Dimension",
+          "Size",
+          "32"
+        ]
+      },
+      "lastModifiedSource": "code",
+      "lastModifiedAt": "2026-11-24T05:55:40.543Z"
     }
   }
 }

@@ -96,6 +96,14 @@ A11y tests verify WCAG 2.2 AA compliance:
 - **Screen reader support** — Proper ARIA labels, roles, live regions
 - **Color contrast** — 4.5:1 for text, 3:1 for UI components
 
+**The axe fixture does not cover WCAG 2.2.** `a11y()` (`src/lib/functions/a11y.ts`) runs
+`AxeBuilder` tagged `wcag2a, wcag2aa, wcag21a, wcag21aa` — no `wcag22aa`, even though the
+installed `@axe-core/playwright` 4.14 ships those rules (including `target-size`). So **2.4.11
+Focus Not Obscured**, **2.5.7 Dragging Movements** and **2.5.8 Target Size** are never
+automatically checked here, and a green a11y suite is not WCAG 2.2 AA evidence by itself — those
+three need a manual pass (see `ds-a11y-verify`). This is the one place that explains why; other
+docs should link here rather than re-deriving it.
+
 ## Notable Patterns
 
 ### PO Organization
@@ -133,6 +141,13 @@ Snapshots are stored in `e2e/snapshots/` and tracked in git:
 - **Compare** — New screenshots are compared to baseline
 - **Update** — Run `/update-screenshots` bot command to re-baseline after intentional changes
 
+**A new component has no baseline, and that is not a failure to investigate.** Its first visual
+run reports `snapshot doesn't exist` for every variant and writes the PNGs to disk. That is
+expected — do not re-run the suite hoping for green, and **do not let those auto-written PNGs
+become the baseline**: delete them and leave baselining to the human via `/update-screenshots`.
+A baseline captured from an unreviewed component bakes the bug in, and every later run then
+defends it.
+
 ### SSR Screenshot Tests
 
 An SSR test renders the page of the visual test with `renderToString`, serves it, and holds back the client bundle. It takes one screenshot of the server markup and one after hydration. Both compare against the desktop baseline of the visual test. Desktop only.
@@ -167,6 +182,14 @@ Helpers:
 - `assertHydrated(page)` fails on console errors since `trackConsoleErrors(page)` and on leftover `c-id` attributes. `mountSsr()` uses it too.
 - `visualBaseline(tag, visualTestFile?)(name)` names the baseline of `screenshot(tag)(name)` in `<tag>.visual.play.ts`. The `🧬 SSR` project resolves it through its `snapshotPathTemplate`, so no baseline is renamed.
 
+**Known environment failure — do not re-prove it.** The `🧬 SSR` project currently fails on every
+variant of every component with `assertHydrated: N leftover c-id attribute(s)`. This reproduces
+identically on long-shipped components (`ds-phone-input` among them), so it is a tooling/environment
+problem, not a defect in whichever component you are working on. Write the `.ssr.play.ts` file to
+the pattern above, report the suite as blocked by this known issue, and move on — running it a
+second time against another component to confirm is a full Playwright run that tells you nothing
+new.
+
 The `variants.ts` file exists because Playwright does not allow a test file to import another test file.
 
 #### Foreign SSR server
@@ -199,7 +222,8 @@ Client-only components (`ds-modal`, `ds-toast`, `ds-snackbar`, see ADR 0031) kee
 
 ### Test File Organization
 
-Each component needs test files in `packages/core/src/components/<component>/test/`:
+Each component needs test files in `packages/core/src/components/<category>/<component>/test/`
+(see `packages/core/CONTEXT.md` for the category taxonomy):
 
 - `<component>.spec.ts` — Unit tests (Vitest)
 - `<component>.component.play.ts` — Interaction tests (Playwright)

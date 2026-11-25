@@ -109,7 +109,6 @@ async function lintFile(filePath) {
   const propDocs = extractPropDocs(content)
   const eventDocs = extractEventDocs(content)
   const methodDocs = extractMethodDocs(content)
-  const tokenViolations = checkDesignTokens(content)
 
   // Check prop validators (validation runs automatically — no setupValidation needed)
   for (const prop of props) {
@@ -164,7 +163,6 @@ async function lintFile(filePath) {
   })
 
   violations.push(...docViolations)
-  violations.push(...tokenViolations)
 
   return {
     file: relPath,
@@ -370,8 +368,7 @@ async function lintScssFile(filePath) {
   const relPath = path.relative(REPO_ROOT, filePath)
   const violations = []
 
-  const tokenViolations = checkDesignTokens(content)
-  violations.push(...tokenViolations)
+  // Token layering is audited by the ds-audit-tokens skill, not here.
 
   return {
     file: relPath,
@@ -545,91 +542,6 @@ function checkDocumentation(
         target: part.name,
         kind: 'part',
         message: `Missing description for @part "${part.name}"`,
-      })
-    }
-  }
-
-  return violations
-}
-
-function checkDesignTokens(content) {
-  const violations = []
-
-  // Skip .interfaces.ts files
-  if (content.includes('export type') && !content.includes('@Prop')) {
-    return violations
-  }
-
-  // Patterns for CSS variable usage
-  // Match everything between var( and closing paren/comma, including SCSS interpolation
-  const cssVarPattern = /var\(\s*--([^,)]+)/g
-  const varsLocalPattern = /vars\.local\s*\([^)]*var\s*\(\s*--([^,)]+)/g
-  const modifierPattern = /--mod-[\w-]+:\s*var\s*\(\s*--([^,)]+)/g
-
-  // Find tokens used in vars.local() context (these are allowed to use global tokens)
-  const allowedInVarsLocal = new Set()
-  let match
-  while ((match = varsLocalPattern.exec(content)) !== null) {
-    const tokenName = match[1].trim().split(/[\s#}]/)[0]
-    if (tokenName && tokenName.startsWith('ds-')) {
-      allowedInVarsLocal.add(tokenName)
-    }
-  }
-
-  // Find tokens used to set modifiers (also allowed - pattern: --mod-* uses global tokens as sources)
-  const allowedInModifiers = new Set()
-  const modifierMatches = content.matchAll(modifierPattern)
-  for (const match of modifierMatches) {
-    let tokenName = match[1].trim()
-    // Extract token name, stopping at space, newline, or SCSS interpolation
-    tokenName = tokenName.split(/[\s#}]/)[0]
-    if (tokenName && tokenName.startsWith('ds-')) {
-      allowedInModifiers.add(tokenName)
-    }
-  }
-
-  // Check all CSS variables
-  const usedTokens = new Set()
-  const cssVarMatches = content.matchAll(cssVarPattern)
-
-  for (const match of cssVarMatches) {
-    let tokenName = match[1].trim()
-
-    // Extract token name, stopping at space, newline, or SCSS interpolation
-    tokenName = tokenName.split(/[\s#}]/)[0]
-
-    // Skip if empty or contains SCSS interpolation syntax
-    if (!tokenName || tokenName.includes('#{')) {
-      continue
-    }
-
-    // Skip if already processed
-    if (usedTokens.has(tokenName)) continue
-    usedTokens.add(tokenName)
-
-    // Allowed patterns:
-    // - --_* (private variables)
-    // - --ds-alias-* (alias tokens)
-    // - --ds-component-* (component-specific tokens)
-    // - --mod-* (modifiers)
-    // - In vars.local() context: --ds-* (global tokens as defaults)
-    // - In modifier assignment: --ds-* (global tokens as sources for modifiers)
-
-    const isPrivate = tokenName.startsWith('_')
-    const isAlias = tokenName.startsWith('ds-alias-')
-    const isComponent = tokenName.startsWith('ds-component-')
-    const isModifier = tokenName.startsWith('mod-')
-    const isGlobal = tokenName.startsWith('ds-') && !isAlias && !isComponent
-    const isInVarsLocal = allowedInVarsLocal.has(tokenName)
-    const isInModifier = allowedInModifiers.has(tokenName)
-
-    // Flag global tokens that aren't in allowed contexts
-    if (isGlobal && !isInVarsLocal && !isInModifier) {
-      violations.push({
-        type: 'invalid-design-token',
-        severity: 'warn',
-        token: tokenName,
-        message: `Use alias (--ds-alias-*) or component (--ds-component-*) tokens instead of global (--${tokenName})`,
       })
     }
   }

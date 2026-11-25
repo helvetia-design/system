@@ -13,6 +13,7 @@
     "apps/storybook/public/*",
     "apps/storybook/assets/*",
     "CLAUDE.md",
+    "AGENTS.md",
     "docs/superpowers/*"
   ],
   "words": [
