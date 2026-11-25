@@ -3747,7 +3747,7 @@ export namespace Components {
      */
     interface DsTooltip {
         /**
-          * Defines the maximum width of the tooltip content in pixels.
+          * Defines the maximum width of the tooltip content in pixels. Defaults to the `--ds-tooltip-max-width` token; always capped to the viewport.
           * @default undefined
          */
         "contentWidth": number | undefined;
@@ -9214,7 +9214,7 @@ declare namespace LocalJSX {
      */
     interface DsTooltip {
         /**
-          * Defines the maximum width of the tooltip content in pixels.
+          * Defines the maximum width of the tooltip content in pixels. Defaults to the `--ds-tooltip-max-width` token; always capped to the viewport.
           * @default undefined
          */
         "contentWidth"?: number | undefined;

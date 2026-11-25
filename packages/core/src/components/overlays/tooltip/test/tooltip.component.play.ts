@@ -63,6 +63,24 @@ test.describe('component', () => {
     await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'true')
   })
 
+  test('should wrap long content and stay within a narrow viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 })
+    const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
+    await dsTooltip.el.evaluate(el => {
+      el.textContent = 'Long tooltip content that must wrap '.repeat(12) + 'a'.repeat(80)
+    })
+    await page.locator('#my-trigger').hover()
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+
+    const container = dsTooltip.el.locator('[part="container"]')
+    await expect(async () => {
+      const box = (await container.boundingBox())!
+      expect(box.x).toBeGreaterThanOrEqual(0)
+      expect(box.x + box.width).toBeLessThanOrEqual(320)
+      expect(box.height).toBeGreaterThan(60)
+    }).toPass()
+  })
+
   test('should stop the previous position tracker before starting a new one on hover then focus', async ({ page }) => {
     const trigger = page.locator('#my-trigger')
 

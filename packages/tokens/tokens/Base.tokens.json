@@ -25243,6 +25243,26 @@
             "ALL_SCOPES"
           ]
         }
+      },
+      "MaxWidth": {
+        "$type": "dimension",
+        "$value": "{🔗 Alias.📏 Size.Overlay.SM}",
+        "$description": "Maximum readable width of the tooltip container (320px at 16px root).",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      },
+      "Gutter": {
+        "$type": "dimension",
+        "$value": "{🔗 Alias.↔️ Space.Gap.XS}",
+        "$description": "Minimum distance between the tooltip container and the viewport edge (8px at 16px root).",
+        "$extensions": {
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
+        }
       }
     },
     "Table": {
