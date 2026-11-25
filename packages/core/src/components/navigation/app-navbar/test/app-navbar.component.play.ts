@@ -123,6 +123,36 @@ test('should release scroll lock and focus trap when breakpoint changes to deskt
   await expect(outside).toBeFocused()
 })
 
+test('should remove the Escape keydown listener when breakpoint changes to desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 600, height: 600 })
+
+  await page.mount(`
+      <ds-app-navbar>
+        <a href="/" slot="brand">Logo</a>
+        <a href="/about" slot="menu-start">About</a>
+      </ds-app-navbar>
+    `)
+
+  const navbar = new DsAppNavbar(page.locator('ds-app-navbar'))
+  await navbar.toggleSidebar()
+  await navbar.assertSidebarIsOpen()
+
+  await page.evaluate(() => {
+    ;(window as any).__removedListenerTypes = []
+    const originalRemoveEventListener = document.removeEventListener.bind(document)
+    document.removeEventListener = ((type: string, ...rest: unknown[]) => {
+      ;(window as any).__removedListenerTypes.push(type)
+      return (originalRemoveEventListener as any)(type, ...rest)
+    }) as any
+  })
+
+  await page.setViewportSize({ width: 1440, height: 600 })
+  await expect(navbar.el).not.toHaveClass(/is-open/)
+
+  const removedListenerTypes = await page.evaluate(() => (window as any).__removedListenerTypes)
+  expect(removedListenerTypes).toContain('keydown')
+})
+
 test('should release scroll lock when overflow ends on desktop', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 600 })
 
