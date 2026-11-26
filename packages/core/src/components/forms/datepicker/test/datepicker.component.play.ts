@@ -1,4 +1,4 @@
-import { DsDatepicker, expect, test } from '@helvetia-design/playwright'
+import { DsDatepicker, DsPage, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 test.describe('value assigned after load', () => {
   test('should render a value that is assigned after the component has loaded', async ({ page }) => {
@@ -264,5 +264,57 @@ test.describe('required attribute', () => {
 
     await expect(datepicker.el).toHaveJSProperty('required', false)
     await expect(datepicker.nativeInput).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mount = (page: DsPage) =>
+    page.mount(`<form><ds-datepicker name="field" label="Date" value="2026-07-13"></ds-datepicker></form>`)
+
+  test('should submit a typed date', async ({ page }) => {
+    await mount(page)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+
+    await date.nativeInput.click()
+    await date.nativeInput.press('ControlOrMeta+a')
+    await date.nativeInput.pressSequentially('14.07.2026')
+    await date.blur()
+
+    expect(await getFormEntries(page)).toEqual([['field', '2026-07-14']])
+  })
+
+  test('should submit a picked date', async ({ page }) => {
+    await mount(page)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+
+    await date.pick('2026-07-20')
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '2026-07-20']])
+  })
+
+  test('should submit a programmatic date', async ({ page }) => {
+    await mount(page)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+
+    await date.el.evaluate((el: HTMLDsDatepickerElement) => {
+      el.value = '2026-08-01'
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '2026-08-01']])
+  })
+
+  test('should submit the initial date after form.reset()', async ({ page }) => {
+    await mount(page)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+
+    await date.pick('2026-07-20')
+    await page.waitForChanges()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '2026-07-13']])
+    await date.assertValue('13.07.2026')
   })
 })

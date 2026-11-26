@@ -519,7 +519,8 @@ export function buildCreatePassPayload({
 
       // A standalone LineHeight `number` token (Global.Font.LineHeight.*, Alias.Text.LineHeight.*,
       // Component.*.LineHeight) is sent as a percentage string ("150%") for Figma's line-height
-      // convention, same as typography's own lineHeight sub-value above — see figmaLiteralValueFor.
+      // convention, same as typography's own lineHeight sub-value above; an Opacity `number` token is
+      // scaled to Figma's 0-100 — see figmaLiteralValueFor.
       variableModeValues.push({
         variableId: idByPath.get(pathKey(token.path)),
         modeId,
@@ -762,6 +763,20 @@ export function buildAliasPassPayload({
  *   remote" and gets folded into this pass redundantly with buildCreatePassPayload's CREATE —
  *   harmless, since Figma's UPDATE with the same description is a no-op.
  */
+// Figma's REST API returns descriptions HTML-encoded (`&#39;`, `&quot;`, …) though they are stored
+// and written as plain text — compare decoded, or every description with such a character is
+// rewritten on every run. `&amp;` last, so `&amp;lt;` decodes to `&lt;`, not `<`.
+function decodeHtmlEntities(text) {
+  return text
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+}
+
 export function buildDescriptionUpdatePayload({ baseTokens, idByPath, remoteVariablesById }) {
   const variables = []
   const seenVariableIds = new Set()
@@ -769,7 +784,7 @@ export function buildDescriptionUpdatePayload({ baseTokens, idByPath, remoteVari
   function pushIfChanged(id, description) {
     if (!id || isTempId(id) || seenVariableIds.has(id)) return
     seenVariableIds.add(id)
-    const remoteDescription = remoteVariablesById[id]?.description ?? ''
+    const remoteDescription = decodeHtmlEntities(remoteVariablesById[id]?.description ?? '')
     if (remoteDescription === description) return
     variables.push({ action: 'UPDATE', id, description })
   }

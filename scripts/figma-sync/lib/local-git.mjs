@@ -1,11 +1,14 @@
 /**
- * Local-git equivalent of lib/github.mjs's commitFiles — for testing
- * backfill-commit.mjs's patch/baseline logic end-to-end with a real `git
- * commit`, against a disposable local repo, with no GitHub API call and no
- * credentials at all. Selected by TOKENS_DIR_OVERRIDE
- * (docs/plans/figma-sync-action-plan.md's local-testing convention,
- * shared with pull.mjs) pointing at a `tokens/` directory inside a git
- * working tree — never used in figma-sync.yml.
+ * `isGitRepo`/`commitFilesLocally` are the local-git equivalent of lib/github.mjs's commitFiles —
+ * for testing backfill-commit.mjs's patch/baseline logic end-to-end with a real `git commit`,
+ * against a disposable local repo, with no GitHub API call and no credentials at all. Selected by
+ * TOKENS_DIR_OVERRIDE (docs/plans/figma-sync-action-plan.md's local-testing convention, shared with
+ * pull.mjs) pointing at a `tokens/` directory inside a git working tree — never used in
+ * figma-sync.yml.
+ *
+ * `readFileAtRef` is different: it's a real production path, read by
+ * extension-reference-check.mjs to diff the PR base's Base.tokens.json against head, and run for
+ * every same-repo PR via figma-conflict-check.yml's extension-references job.
  */
 import { execFileSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
@@ -46,6 +49,11 @@ export function commitFilesLocally({ repoRoot, files, message }) {
   const sha = git(['rev-parse', 'HEAD'], repoRoot)
 
   return { sha }
+}
+
+/** A file's content at `ref` (e.g. `HEAD^1`, a merge commit's base), read with `git show`. */
+export function readFileAtRef(ref, path, cwd) {
+  return git(['show', `${ref}:${path}`], cwd)
 }
 
 /** Path relative to the git repo root, for a file addressed relative to some other directory (e.g. tokensDir). */

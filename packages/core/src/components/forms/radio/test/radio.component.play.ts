@@ -1,4 +1,4 @@
-import { DsRadio, expect, test } from '@helvetia-design/playwright'
+import { DsPage, DsRadio, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 const GROUP = `
   <ds-radio-group name="heroes" label="Label">
@@ -273,5 +273,93 @@ test.describe('required attribute', () => {
     )
 
     await expect(page.locator('ds-radio-group')).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mount = (page: DsPage, attributes = '') =>
+    page.mount(`
+      <form>
+        <ds-radio-group ${attributes} name="heroes" label="Label" value="steve-rogers">
+          <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+          <ds-radio value="tony-stark">Tony Stark</ds-radio>
+          <ds-radio value="black-widow">Black Widow</ds-radio>
+        </ds-radio-group>
+      </form>
+    `)
+
+  test('should submit exactly one entry under the group name', async ({ page }) => {
+    await mount(page)
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'steve-rogers']])
+  })
+
+  test('should submit the selected radio after user input', async ({ page }) => {
+    await mount(page)
+
+    await new DsRadio(page.locator('ds-radio >> nth=1')).select()
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'tony-stark']])
+  })
+
+  test('should submit after a programmatic value change', async ({ page }) => {
+    await mount(page)
+
+    await page.locator('ds-radio-group').evaluate((el: HTMLDsRadioGroupElement) => {
+      el.value = 'black-widow'
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'black-widow']])
+  })
+
+  test('should submit no entry after deselecting with allowEmptySelection', async ({ page }) => {
+    await mount(page, 'allow-empty-selection')
+
+    await new DsRadio(page.locator('ds-radio >> nth=0')).select()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should submit no entry after a programmatic value = undefined', async ({ page }) => {
+    await mount(page)
+
+    await page.locator('ds-radio-group').evaluate((el: HTMLDsRadioGroupElement) => {
+      el.value = undefined
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('standalone radio should submit its value only while checked', async ({ page }) => {
+    await page.mount(`<form><ds-radio name="hero" value="steve-rogers">Steve Rogers</ds-radio></form>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    expect(await getFormEntries(page)).toEqual([])
+    await radio.select()
+    expect(await getFormEntries(page)).toEqual([['hero', 'steve-rogers']])
+  })
+
+  test('standalone radio should submit no entry after a programmatic checked = false', async ({ page }) => {
+    await page.mount(`<form><ds-radio name="hero" value="steve-rogers" checked>Steve Rogers</ds-radio></form>`)
+
+    expect(await getFormEntries(page)).toEqual([['hero', 'steve-rogers']])
+    await page.locator('ds-radio').evaluate((el: HTMLDsRadioElement) => {
+      el.checked = false
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should submit the initial value after form.reset()', async ({ page }) => {
+    await mount(page)
+
+    await new DsRadio(page.locator('ds-radio >> nth=1')).select()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'steve-rogers']])
   })
 })

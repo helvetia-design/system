@@ -53,6 +53,21 @@ export function lineHeightFromFigmaPercent(value: unknown): number | undefined {
   return Number((Number(match[1]) / LINE_HEIGHT_PERCENT_MULTIPLIER).toFixed(6))
 }
 
+// Figma's opacity is 0-100, this codebase's 0-1. Inverse of scripts/figma-sync/lib/figma-value.mjs's
+// figmaOpacityFor (reimplemented, same reason as above).
+export const OPACITY_PERCENT_MULTIPLIER = 100
+
+export function opacityFromFigma(value: unknown): number | undefined {
+  if (typeof value !== 'number' || value < 0 || value > OPACITY_PERCENT_MULTIPLIER) return undefined
+  return Number((value / OPACITY_PERCENT_MULTIPLIER).toFixed(6))
+}
+
+// Mirrors scripts/figma-sync/lib/figma-value.mjs's isOpacityNumberToken — an "Opacity" path segment
+// (incl. "🌫️ Opacity").
+export function isOpacityPath(path: string[]): boolean {
+  return path.some(segment => segment.endsWith('Opacity'))
+}
+
 // Mirrors scripts/figma-sync/lib/figma-value.mjs's isLineHeightNumberToken — "LineHeight" anywhere
 // in the path is this codebase's only way to tell a LineHeight `number` token apart from
 // Opacity/ZIndex/Radius, which share the same $type but must stay a raw unitless number.

@@ -156,21 +156,27 @@ function generateTestFiles(componentName, componentInfo, visualProps, slotsToDem
 
   const files = []
 
-  // Generate visual.html
-  const visualHtml = generateVisualHtml(componentName, visualProps, slotsToDemo)
-  const visualHtmlPath = path.join(testDir, `${componentName}.visual.html`)
-  // fs.writeFileSync(visualHtmlPath, visualHtml); // Would write in real implementation
-  files.push({ path: visualHtmlPath, content: visualHtml, type: 'visual' })
+  // The fixture is the engineer's; its data-testid sections tell us what to screenshot.
+  const variants = readVariantsFromFixture(path.join(testDir, `${componentName}.visual.html`))
+  const urlDir = componentUrlDir(REPO_ROOT, componentName)
+
+  const stylePath = path.join(testDir, `${componentName}.style.html`)
+  const styleVariants = fs.existsSync(stylePath) ? readVariantsFromFixture(stylePath) : null
+
+  // variants.ts — one list, shared by the visual and SSR suites.
+  const variantsTs = generateVariantsTs(componentName, variants)
+  files.push({ path: path.join(testDir, `${componentName}.variants.ts`), content: variantsTs, type: 'variants' })
 
   // Generate visual.play.ts
-  const visualPlayTs = generateVisualPlayTs(componentName, visualProps, slotsToDemo)
+  const visualPlayTs = generateVisualPlayTs(componentName, styleVariants, urlDir)
   const visualPlayTsPath = path.join(testDir, `${componentName}.visual.play.ts`)
   files.push({ path: visualPlayTsPath, content: visualPlayTs, type: 'visual' })
 
-  // Generate a11y.play.ts
-  const a11yPlayTs = generateA11yPlayTs(componentName, visualProps, slotsToDemo)
-  const a11yPlayTsPath = path.join(testDir, `${componentName}.a11y.play.ts`)
-  files.push({ path: a11yPlayTsPath, content: a11yPlayTs, type: 'a11y' })
+  // SSR only where there is a shadow root to hydrate: CSS-only components have no .host.scss.
+  if (hasShadowRoot(REPO_ROOT, componentName)) {
+    const ssrPlayTs = generateSsrPlayTs(componentName, componentInfo, urlDir)
+    files.push({ path: path.join(testDir, `${componentName}.ssr.play.ts`), content: ssrPlayTs, type: 'ssr' })
+  }
 
   // Generate component.play.ts
   const componentPlayTs = generateComponentPlayTs(componentName, componentInfo)
@@ -192,52 +198,117 @@ function generateTestFiles(componentName, componentInfo, visualProps, slotsToDem
   return files
 }
 
-function generateVisualHtml(componentName, visualProps, slotsToDemo) {
-  return `<!doctype html>
-<html dir="ltr" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-    <link rel="stylesheet" href="/assets/section.css" />
-    <link rel="stylesheet" href="/assets/tokens/base.tokens.css" />
-    <link rel="stylesheet" href="/assets/css/design-system.local.min.css" />
-    <link rel="stylesheet" href="/assets/css/utilities.min.css" />
-    <script type="module" src="/build/design-system.esm.js"></script>
-    <script nomodule src="/build/design-system.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <!-- Basic -->
-      <section data-testid="basic">
-        <span>Basic</span>
-        <ds-${componentName}>Default Content</ds-${componentName}>
-      </section>
-
-      <!-- Variants generated from props would go here -->
-      <!-- States: disabled, loading, invalid, etc. -->
-      <!-- Slots: icon, label, badge, etc. -->
-    </main>
-  </body>
-</html>`
+/**
+ * SSR/hydration only means something where there is a shadow root. A CSS-only component
+ * (`.style.scss`, no `.host.scss`) renders as plain classed HTML, so it gets no SSR test —
+ * see the component-type taxonomy in packages/core/CONTEXT.md.
+ */
+function hasShadowRoot(repoRoot, componentName) {
+  const dir = resolveComponentPath(repoRoot, componentName)
+  return globSync(`${dir}/*.host.scss`).length > 0
 }
 
-function generateVisualPlayTs(componentName, visualProps, slotsToDemo) {
-  return `import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
+/** One variant list, imported by both the visual and the SSR suite. */
+function generateVariantsTs(componentName, variants) {
+  return `export const TAG = '${componentName}'
 
-const TAG = '${componentName}'
-const VARIANTS = [
-  'basic',
-  // Add more variants
+export const VARIANTS = [${variants.map(v => `\n  '${v}',`).join('')}
 ]
+`
+}
 
-const image = screenshot(TAG)
+function generateSsrPlayTs(componentName, componentInfo, urlDir) {
+  const className = 'Ds' + componentName.charAt(0).toUpperCase() + componentName.slice(1)
 
-test.describe('style', () => {
+  return `import {
+  ${className},
+  expectScreenshot,
+  mountSsr,
+  setupSsrVisualTest,
+  test,
+  visualBaseline,
+} from '@helvetia-design/playwright'
+import { renderToString } from '@helvetia-design/core/hydrate'
+import { TAG, VARIANTS } from './${componentName}.variants'
+
+const baseline = visualBaseline(TAG)
+const PAGE_URL = \`${urlDir}/test/\${TAG}.visual.html\`
+
+test.describe('ssr', () => {
+  VARIANTS.forEach(variant => {
+    test(variant, async ({ page }) => {
+      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
+      const el = page.getByTestId(variant)
+
+      await expectScreenshot(el, baseline(variant))
+      await ssr.hydrate()
+      await expectScreenshot(el, baseline(variant))
+    })
+  })
+})
+
+test.describe('mountSsr', () => {
+  test('renders and hydrates', async ({ page }, testInfo) => {
+    await mountSsr(page, \`<ds-${componentName}>Content</ds-${componentName}>\`, renderToString, testInfo)
+
+    const ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)} = new ${className}(page.locator('ds-${componentName}'))
+    await ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)}.assertToBeVisible()
+  })
+})
+`
+}
+
+/** The dev server mirrors the source tree, so the URL carries the category folder. */
+function componentUrlDir(repoRoot, componentName) {
+  const abs = resolveComponentPath(repoRoot, componentName)
+  const idx = abs.indexOf(`${path.sep}components${path.sep}`)
+  return abs.slice(idx).split(path.sep).join('/')
+}
+
+/**
+ * The visual fixture is the component-engineer's artifact, not ours — it is how a human
+ * reviews the component before any test exists. We read its `data-testid` sections to learn
+ * which variants to screenshot; a variant with no section gets no test.
+ */
+function readVariantsFromFixture(fixturePath) {
+  if (!fs.existsSync(fixturePath)) {
+    throw new Error(
+      `Missing visual fixture: ${fixturePath}\n` +
+        'The component-engineer builds test/<name>.visual.html (ds-implement-component, Phase 5).\n' +
+        'Ask for it before generating visual tests — do not author it here.\n' +
+        'A CSS-only component has test/<name>.style.html instead and no .tsx, so it never reaches here.',
+    )
+  }
+  const html = fs.readFileSync(fixturePath, 'utf-8')
+  const ids = [...html.matchAll(/data-testid="([^"]+)"/g)].map(m => m[1])
+  const unique = [...new Set(ids)]
+  if (unique.length === 0) {
+    throw new Error(`No <section data-testid="..."> found in ${fixturePath} — nothing to screenshot.`)
+  }
+  return unique
+}
+
+function generateVisualPlayTs(componentName, styleVariants, urlDir) {
+  const styleBlock = styleVariants
+    ? `const STYLE_VARIANTS = [${styleVariants.map(v => `\n  '${v}',`).join('')}
+] as const
+
+`
+    : ''
+
+  return `import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
+import { TAG, VARIANTS } from './${componentName}.variants'
+
+${styleBlock}const image = screenshot(TAG)
+
+${
+  styleVariants
+    ? `test.describe('style', () => {
   test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(\`/components/\${TAG}/test/\${TAG}.style.html\`)
+    await page.setupVisualTest(\`${urlDir}/test/\${TAG}.style.html\`)
   })
 
-  VARIANTS.forEach(variant => {
+  STYLE_VARIANTS.forEach(variant => {
     test(variant, async ({ page }) => {
       const el = page.getByTestId(variant)
       await expectScreenshot(el, image(\`style-\${variant}\`))
@@ -245,9 +316,11 @@ test.describe('style', () => {
   })
 })
 
-test.describe('host', () => {
+`
+    : ''
+}test.describe('host', () => {
   test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(\`/components/\${TAG}/test/\${TAG}.visual.html\`)
+    await page.setupVisualTest(\`${urlDir}/test/\${TAG}.visual.html\`)
   })
 
   VARIANTS.forEach(variant => {
@@ -257,18 +330,6 @@ test.describe('host', () => {
     })
   })
 })
-`
-}
-
-function generateA11yPlayTs(componentName, visualProps, slotsToDemo) {
-  return `import { test } from '@helvetia-design/playwright'
-
-test('basic', async ({ page, a11y }) => {
-  await page.mount(\`<ds-${componentName}>Content</ds-${componentName}>\`)
-  await a11y('ds-${componentName}')
-})
-
-// Add comprehensive a11y tests for all variants, colors, states
 `
 }
 
@@ -391,8 +452,8 @@ function reportGeneration(componentName, files) {
   console.log(`  1. Review the generated files`)
   console.log(`  2. Fill in event handlers and state assertions`)
   console.log(`  3. Run visual tests: pnpm play -- --grep "${componentName}"`)
-  console.log(`  4. Run a11y tests: pnpm play -- --grep "a11y"`)
-  console.log(`  5. Run unit tests: pnpm test -- ${componentName}.util.spec.ts\n`)
+  console.log(`  4. Run unit tests: pnpm test -- ${componentName}.util.spec.ts`)
+  console.log(`  5. a11y coverage (.a11y.play.ts) is the a11y-expert's — hand it off\n`)
 }
 
 module.exports = {

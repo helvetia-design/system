@@ -732,6 +732,30 @@ describe('buildBasePullPlan', () => {
     expect(plan.deletes).toHaveLength(0)
   })
 
+  it("parses a matched Opacity number token's Figma 0-100 value back to 0-1", () => {
+    const opacity = token({
+      path: ['🔗 Alias', '🌫️ Opacity', 'Half'],
+      type: 'number',
+      figmaId: 'VariableID:opacity-half',
+      rawValue: 0.5,
+      resolvedValue: 0.5,
+    })
+    const v = variable({
+      id: 'VariableID:opacity-half',
+      name: '🔗 Alias/🌫️ Opacity/Half',
+      resolvedType: 'FLOAT',
+      valuesByMode: { [BASE_MODE]: 30 },
+    })
+    const plan = buildBasePullPlan({
+      original: [opacity],
+      working: [working(opacity)],
+      figmaMeta: meta([v]),
+      baseModeId: BASE_MODE,
+    })
+    expect(plan.updates).toHaveLength(1)
+    expect(plan.updates[0].rawValue).toBe(0.3)
+  })
+
   it("parses a matched LineHeight number token's Figma percentage string back to a raw multiplier", () => {
     const lineHeight2 = token({
       path: ['🌐 Global', '🔤 Font', 'LineHeight', '2'],
@@ -796,23 +820,23 @@ describe('buildBasePullPlan', () => {
     expect(plan.skipped.length).toBeGreaterThan(0)
   })
 
-  it('does not scale a plain (non-LineHeight) number token, e.g. Opacity', () => {
-    const opacity = token({
-      path: ['🔗 Alias', '🌫️ Opacity', 'Half'],
+  it('does not scale a plain (non-LineHeight) number token, e.g. ZIndex', () => {
+    const zIndex = token({
+      path: ['🌐 Global', 'ZIndex', '1'],
       type: 'number',
-      figmaId: 'VariableID:opacity-half',
+      figmaId: 'VariableID:zindex-1',
       rawValue: 0.5,
       resolvedValue: 0.5,
     })
     const v = variable({
-      id: 'VariableID:opacity-half',
-      name: '🔗 Alias/🌫️ Opacity/Half',
+      id: 'VariableID:zindex-1',
+      name: '🌐 Global/ZIndex/1',
       resolvedType: 'FLOAT',
       valuesByMode: { [BASE_MODE]: 0.6 },
     })
     const plan = buildBasePullPlan({
-      original: [opacity],
-      working: [working(opacity)],
+      original: [zIndex],
+      working: [working(zIndex)],
       figmaMeta: meta([v]),
       baseModeId: BASE_MODE,
     })

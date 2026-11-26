@@ -1,6 +1,6 @@
 ---
 name: ds-code-to-figma
-description: Push a Helvetia Design System component from code into the Figma component library — resolving props/variants/states to Figma variant properties bound to existing Figma variables (tokens), reusing existing Figma components for nested children.
+description: Mechanics reference for pushing a component into the Figma library — variant properties bound to Figma variables, nested component reuse. Read by the ds-figma-* skills.
 ---
 
 # ds-code-to-figma
@@ -153,11 +153,10 @@ hard stops.
 
 ## Rules
 
-- NEVER generate Code Connect mappings
-- NEVER invent a hardcoded value — always resolve to a Figma variable (design token)
-- NEVER commit — leave changes unstaged for the user to review
-- MUST treat a hard stop (missing token, missing nested component mapping) as a stop-and-wait point, not a failure to work around — surface it and wait for the user's decision
-- MUST run on the documentation owner and build the whole family; a sub-component never runs alone (`conventions/families.md`)
+- **Never generate Code Connect mappings.**
+- **Never invent a hardcoded value** — resolve every value to a Figma variable (design token).
+- A hard stop (missing token, missing nested component mapping) is a stop-and-wait point, not a failure to work around — surface it and wait for the user's decision.
+- Run on the documentation owner and build the whole family; a sub-component never runs alone (`conventions/families.md`).
 
 ## Instructions
 

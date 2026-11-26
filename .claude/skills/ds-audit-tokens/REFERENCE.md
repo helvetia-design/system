@@ -1,7 +1,7 @@
----
-name: ds-token-check
-description: Audit a component family's SCSS/TSX for design-token layer violations (raw Global/Alias/Device usage instead of a Component token), cross-component token borrows, Figma-readiness gaps (hardcoded literals, missing/typo tokens), naming-anatomy drift in the Component-layer tokens it actually uses, and an explicit Figma Property Checklist (Border/Background/Radius/Typography/Text-Color/Opacity/Padding/Gap/Margin, crossed per @Prop() variant×state) proving every Figma-bindable property has a Component token behind it. Findings are split into visual (breaking) changes first, then non-visual ones. Writes a single persisted Markdown report (<family>.token-check.md) for a later agent/session to fix from — never edits Base.tokens.json or any component source file itself. Use when the user asks to check/audit/review/lint a component's tokens, or before running ds-code-to-figma to make sure there's no token gap.
----
+# Token audit reference
+
+Detection rules, the Figma Property Checklist, script I/O and the report format for
+[`ds-audit-tokens`](SKILL.md). Read only the section the current step needs.
 
 # ds-token-check
 
@@ -327,8 +327,8 @@ Read only what the current step needs:
 A single component or sub-component name, e.g.:
 
 ```bash
-node .claude/skills/ds-token-check/scan.js tabs
-node .claude/skills/ds-token-check/scan.js tab    # resolves up to the tabs family too
+node .claude/skills/ds-audit-tokens/scan.js tabs
+node .claude/skills/ds-audit-tokens/scan.js tab    # resolves up to the tabs family too
 ```
 
 Output is JSON: the classified usage list, the derived `componentKeys`, the `naming`

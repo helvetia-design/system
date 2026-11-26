@@ -37,6 +37,17 @@ test('ds-checkbox-group reactive form: initial value, updates, disabled, and tou
   await expect(banana).not.toBeChecked()
   await expect(cherry).not.toBeChecked()
   await expect(page.getByTestId('reactive-checkbox-group-value')).toHaveText('Reactive value: apple')
+  await expect(page.getByTestId('reactive-checkbox-group-is-array')).toHaveText('Is array: true')
+
+  await banana.click()
+  await expect(page.getByTestId('reactive-checkbox-group-value')).toHaveText('Reactive value: apple,banana')
+  await expect(page.getByTestId('reactive-checkbox-group-is-array')).toHaveText('Is array: true')
+
+  await page.getByTestId('set-reactive-checkbox-group-single').click()
+  await expect(apple).toBeChecked()
+  await expect(banana).not.toBeChecked()
+  await expect(cherry).not.toBeChecked()
+  await expect(page.getByTestId('reactive-checkbox-group-value')).toHaveText('Reactive value: apple')
 
   await page.getByTestId('set-reactive-checkbox-group-value').click()
   await expect(apple).not.toBeChecked()
@@ -77,4 +88,26 @@ test('ds-checkbox-group reactive form: autoInvalidOff suppresses automatic inval
     'true',
   )
   await expect(autoInvalidOffCheckboxGroup.locator('[part="description"]')).not.toHaveAttribute('role', 'alert')
+  await expect(autoInvalidOffCheckboxGroup.locator('input[type="checkbox"][aria-invalid="true"]')).toHaveCount(0)
+})
+
+test('ds-checkbox-group without a form control keeps child formControlName checkboxes independent', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  const fieldsetGroup = page.getByTestId('fieldset-checkbox-group')
+  const terms = checkboxInput(fieldsetGroup, 'terms')
+  const newsletter = checkboxInput(fieldsetGroup, 'newsletter')
+  const value = page.getByTestId('fieldset-checkbox-group-value')
+
+  await expect(terms).toBeChecked()
+  await expect(newsletter).not.toBeChecked()
+  await expect(value).toHaveText('Fieldset value: true,false')
+
+  await newsletter.click()
+  await expect(value).toHaveText('Fieldset value: true,true')
+
+  await terms.click()
+  await expect(value).toHaveText('Fieldset value: false,true')
 })

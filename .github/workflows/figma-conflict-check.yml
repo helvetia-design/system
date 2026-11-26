@@ -40,3 +40,32 @@ jobs:
           FIGMA_API_TOKEN: ${{ secrets.FIGMA_API_TOKEN }}
           FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
         run: node scripts/figma-sync/conflict-check.mjs
+
+  extension-references:
+    name: 🔍 Figma Extension Reference Check
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+        with:
+          # HEAD is the PR merge commit; its first parent is the base the PR is compared against.
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      # Comment-only, never blocks merge (docs/adr/0018-non-blocking-conflict-check.md)
+      # — a script error here still fails the job, but *finding* a removed
+      # reference never does. The script needs no dependencies and no Figma access.
+      - name: Check extension tokens against removed core tokens
+        shell: bash
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: HEAD^1
+          GITHUB_TOKEN: ${{ secrets.DS_BOT_GITHUB_TOKEN }}
+          EXTENSIONS_READ_TOKEN: ${{ secrets.EXTENSIONS_READ_TOKEN }}
+        run: node scripts/figma-sync/extension-reference-check.mjs

@@ -65,6 +65,24 @@ export function isLineHeightNumberToken(token) {
   return token.type === 'number' && token.path.includes('LineHeight')
 }
 
+// Figma's opacity is 0-100, not the 0-1 CSS-style fraction this codebase stores in JSON (0.5) — so
+// an Opacity `number` token is scaled ×100 on the way out and stays a FLOAT. Detected by path, same
+// as LineHeight: an "Opacity" segment (Global.Elevation.Opacity.*, Alias.🌫️ Opacity.*,
+// Component.*.Opacity). Inverse: apps/toky/src/tokens/figma-map.ts's opacityFromFigma.
+export const OPACITY_PERCENT_MULTIPLIER = 100
+
+export function isOpacityNumberToken(token) {
+  return token.type === 'number' && token.path.some(segment => segment.endsWith('Opacity'))
+}
+
+export function figmaOpacityFor(literalValue) {
+  if (typeof literalValue !== 'number') {
+    throw new Error(`Unsupported Opacity value "${JSON.stringify(literalValue)}" — expected a number.`)
+  }
+  // toFixed drops float noise (0.3 * 100 === 30.000000000000004).
+  return Number((literalValue * OPACITY_PERCENT_MULTIPLIER).toFixed(LINE_HEIGHT_PERCENT_DECIMALS))
+}
+
 function formatFigmaPercent(multiplier) {
   return `${Number((multiplier * LINE_HEIGHT_PERCENT_MULTIPLIER).toFixed(LINE_HEIGHT_PERCENT_DECIMALS))}%`
 }
@@ -148,9 +166,9 @@ export const FONT_WEIGHT_KEYWORD_BY_NUMBER = {
  * conflict.mjs's current literal-token-only scope.
  */
 export function figmaLiteralValueFor(token, literalValue) {
-  return isLineHeightNumberToken(token)
-    ? figmaLineHeightPercentFor(literalValue)
-    : figmaValueFor(token.type, literalValue)
+  if (isLineHeightNumberToken(token)) return figmaLineHeightPercentFor(literalValue)
+  if (isOpacityNumberToken(token)) return figmaOpacityFor(literalValue)
+  return figmaValueFor(token.type, literalValue)
 }
 
 function channelToByte(value) {
@@ -583,6 +601,7 @@ const DEVICE_ELIGIBLE_PATH_PREFIXES = [
   ['📱 Device', '🔤 Text', 'Size'],
   ['📱 Device', '↔️ Space'],
   ['📱 Device', '🗃️ Container', 'Space'],
+  ['🧩 Component', 'Logo', 'Size'],
 ]
 
 function pathStartsWith(path, prefix) {
