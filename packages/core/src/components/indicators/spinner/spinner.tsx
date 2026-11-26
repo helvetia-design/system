@@ -182,6 +182,10 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
         // the element may have been removed while the animation module was loading
         if (this.animationFunction && this.innerEl && this.el.isConnected) {
           this.animationItem = this.animationFunction(this.innerEl, this.getColor())
+          if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            // shortcut: read once on start, no live listener; slowed not stopped so it still reads as loading
+            this.animationItem.setSpeed(0.25)
+          }
         }
       })
     }

@@ -377,7 +377,7 @@ export namespace Components {
          */
         "brandIcon": string;
         /**
-          * Size of the brand icon.
+          * Size of the brand icon. Unset renders the base size.
          */
         "brandSize": ButtonBrandSize;
         /**
@@ -385,6 +385,7 @@ export namespace Components {
           * @default 'primary'
          */
         "color": ButtonColor;
+        "configChanged": (state: DsConfigState) => Promise<void>;
         /**
           * If `true`, the user cannot interact with the button.
           * @default false
@@ -455,7 +456,7 @@ export namespace Components {
          */
         "shadow": boolean;
         /**
-          * Size of the button
+          * Size of the button. Ignored when `brandIcon` is set — use `brandSize` instead.
          */
         "size"?: ButtonSize;
         /**
@@ -5513,7 +5514,7 @@ declare namespace LocalJSX {
          */
         "brandIcon"?: string;
         /**
-          * Size of the brand icon.
+          * Size of the brand icon. Unset renders the base size.
          */
         "brandSize"?: ButtonBrandSize;
         /**
@@ -5615,7 +5616,7 @@ declare namespace LocalJSX {
          */
         "shadow"?: boolean;
         /**
-          * Size of the button
+          * Size of the button. Ignored when `brandIcon` is set — use `brandSize` instead.
          */
         "size"?: ButtonSize;
         /**
