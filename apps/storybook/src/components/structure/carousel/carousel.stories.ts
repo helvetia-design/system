@@ -5,9 +5,9 @@ import { props, StoryFactory, withComponentControls, withRender } from '../../..
 type Args = JSX.DsCarousel
 
 const SLIDE_ITEMS = `
-  <ds-carousel-item name="s1" src="/assets/images/landscape-coast.jpg"></ds-carousel-item>
-  <ds-carousel-item name="s2" src="/assets/images/landscape-rainforest.jpg"></ds-carousel-item>
-  <ds-carousel-item name="s3" src="/assets/images/landscape-mountain.jpg"></ds-carousel-item>`
+  <ds-carousel-item name="s1" src="/assets/images/landscape-coast.jpg" alt="Rocky coastline with waves breaking on the shore"></ds-carousel-item>
+  <ds-carousel-item name="s2" src="/assets/images/landscape-rainforest.jpg" alt="Dense green rainforest"></ds-carousel-item>
+  <ds-carousel-item name="s3" src="/assets/images/landscape-mountain.jpg" alt="Mountain range under a clear sky"></ds-carousel-item>`
 
 const slideStyle = (background: string) =>
   `display: flex; align-items: center; justify-content: center; height: 200px; border-radius: 0.5rem; font-size: 1.5rem; font-weight: 700; color: white; background: ${background};`

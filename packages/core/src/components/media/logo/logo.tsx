@@ -22,6 +22,7 @@ import {
   type LogInstance,
   OneOf,
   Type,
+  inheritAttributes,
 } from '@utils'
 import { DsComponentInterface, DsConfigObserver, DsConfigState, ListenToConfig } from '@global'
 import { LogoBaloise, LogoHelvetia } from './logo.icons'
@@ -57,6 +58,7 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
   private animationItem!: AnimationItem
   private animatedLogoElement!: HTMLDivElement
   private animationFunction?: LogoAnimationFunction
+  private hostAriaLabel?: string
 
   /**
    * PUBLIC PROPERTY API
@@ -98,12 +100,23 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
   readonly size?: LogoSize
 
   /**
+   * Accessible label for the logo. Defaults to an `aria-label` set on the host, then to the brand name.
+   */
+  @Prop()
+  @Type('string')
+  readonly a11yLabel?: string
+
+  /**
    * LIFECYCLE
    * ─────────────────────────────────────────────────────
    */
 
   connectedCallback() {
     this.animatedChanged()
+  }
+
+  componentWillLoad() {
+    this.hostAriaLabel = inheritAttributes(this.el, ['aria-label'])['aria-label']
   }
 
   componentDidUpdate() {
@@ -215,15 +228,17 @@ export class Logo implements DsComponentInterface, DsBreakpointObserver, DsConfi
    */
 
   render() {
-    const LogoElement =
-      this.brand === 'helvetia' || (!hasValue(this.brand) && this.configBrand === 'helvetia') ? (
-        <LogoHelvetia onlyText={this.animated} height={this.getHeight()} />
-      ) : (
-        <LogoBaloise onlyText={this.animated} height={this.getHeight()} />
-      )
+    const isHelvetia = this.brand === 'helvetia' || (!hasValue(this.brand) && this.configBrand === 'helvetia')
+    const LogoElement = isHelvetia ? (
+      <LogoHelvetia onlyText={this.animated} height={this.getHeight()} />
+    ) : (
+      <LogoBaloise onlyText={this.animated} height={this.getHeight()} />
+    )
 
     return (
       <Host
+        role="img"
+        aria-label={this.a11yLabel || this.hostAriaLabel || (isHelvetia ? 'Helvetia' : 'Baloise')}
         class={{
           'is-animated': this.isAnimated,
           'is-inverted': this.inverted,

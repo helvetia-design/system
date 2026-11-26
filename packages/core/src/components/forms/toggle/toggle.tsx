@@ -21,6 +21,7 @@ import {
   setFormValue,
   Type,
   watchInvalidTextSlot,
+  hasDefaultSlotContent,
 } from '@utils'
 import { Field } from '../input/field.util'
 import { DsComponentInterface, defaultConfig } from '@global'
@@ -300,6 +301,7 @@ export class Toggle implements DsComponentInterface {
           />
           <div id="slot" part="slot">
             <slot></slot>
+            {!hasDefaultSlotContent(this.el) && this.label}
           </div>
         </label>
       </Field>

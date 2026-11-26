@@ -218,9 +218,20 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
     }
   }
 
+  private get titleText(): string {
+    return this.el.querySelector('[slot="title"]')?.textContent?.trim() ?? ''
+  }
+
+  private get resolvedTriggerLabel(): string {
+    return this.triggerLabel || i18nDsHint[this.language].triggerLabel
+  }
+
+  private get dialogLabel(): string {
+    return this.label || this.titleText || this.resolvedTriggerLabel
+  }
+
   private hasTitle(): boolean {
-    const titleSlot = this.el.querySelector('[slot="title"]')
-    return titleSlot !== null && (titleSlot.textContent?.trim().length ?? 0) > 0
+    return this.titleText.length > 0
   }
 
   /**
@@ -230,7 +241,7 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
 
   render() {
     const closeLabel = this.closeLabel || this.innerCloseLabel
-    const triggerLabel = this.triggerLabel || i18nDsHint[this.language].triggerLabel
+    const triggerLabel = this.resolvedTriggerLabel
 
     return (
       <Host>
@@ -258,6 +269,7 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
             ref={el => (this.drawerEl = el as HTMLDsDrawerElement)}
             closable={false}
             backdropDismiss
+            label={this.dialogLabel}
             onDsWillPresent={this.handleWillPresent}
             onDsWillDismiss={this.handleWillDismiss}
           >
@@ -281,6 +293,7 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
             closable={false}
             placement={this.placement}
             backdropDismiss
+            label={this.dialogLabel}
             role="dialog"
             onDsWillPresent={this.handleWillPresent}
             onDsWillDismiss={this.handleWillDismiss}

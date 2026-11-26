@@ -180,3 +180,21 @@ test('should release scroll lock when overflow ends on desktop', async ({ page }
   await expect(navbar.el).not.toHaveClass(/is-open/)
   await expect(page.locator('body')).not.toHaveClass(/noscroll/)
 })
+
+test('should expose aria-expanded on the hamburger in both states', async ({ page }) => {
+  await page.setViewportSize({ width: 600, height: 600 })
+
+  await page.mount(`
+      <ds-app-navbar>
+        <a href="/" slot="brand">Logo</a>
+        <a href="/about" slot="menu-start">About</a>
+      </ds-app-navbar>
+    `)
+
+  const navbar = new DsAppNavbar(page.locator('ds-app-navbar'))
+  await expect(navbar.hamburger).toHaveAttribute('aria-expanded', 'false')
+
+  await navbar.toggleSidebar()
+
+  await expect(navbar.hamburger).toHaveAttribute('aria-expanded', 'true')
+})

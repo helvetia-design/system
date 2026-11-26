@@ -400,16 +400,19 @@ export class Button implements DsComponentInterface, DsConfigObserver {
   // snapshot of "<accessible name>, <loading text>" taken when loading turns true; separator is language-neutral
   private getAnnouncement() {
     if (!this.loading) return ''
-    const name = (
-      this.a11yLabel ||
-      this.inheritAttributes['aria-label'] ||
-      this.a11yTitle ||
-      this.inheritAttributes['title'] ||
-      this.getSlottedText(this.el) ||
-      ''
-    ).trim()
+    const text = this.getSlottedText(this.el).trim()
+    const name = (this.getAriaLabel(text) || text).trim()
     const loading = i18nDsSpinner[this.language].loading
     return name ? `${name}, ${loading}` : loading
+  }
+
+  // a11yTitle and title only name the button when it has no visible text
+  private getAriaLabel(text: string): string | undefined {
+    return (
+      this.a11yLabel ||
+      this.inheritAttributes['aria-label'] ||
+      (text ? undefined : this.a11yTitle || this.inheritAttributes['title'])
+    )
   }
 
   private get isIconInverted() {
@@ -515,8 +518,7 @@ export class Button implements DsComponentInterface, DsConfigObserver {
     const ariaAttributes = {
       // the internal tooltip replaces the native title tooltip when a11yTitle is set
       'title': this.a11yTitle ? undefined : this.inheritAttributes['title'],
-      'aria-label':
-        this.a11yLabel || this.inheritAttributes['aria-label'] || this.a11yTitle || this.inheritAttributes['title'],
+      'aria-label': this.getAriaLabel(this.getSlottedText(this.el).trim()),
       'aria-controls': this.a11yControls || this.inheritAttributes['aria-controls'],
       'aria-current': this.a11yCurrent || undefined,
       'aria-haspopup': this.a11yHaspopup || this.inheritAttributes['aria-haspopup'],

@@ -18989,6 +18989,32 @@
       "dependencyGraph": {},
       "props": [
         {
+          "name": "alt",
+          "type": "string | undefined",
+          "complexType": {
+            "original": "string",
+            "resolved": "string | undefined",
+            "references": {}
+          },
+          "mutable": false,
+          "attr": "alt",
+          "reflectToAttr": false,
+          "docs": "Alternative text of the image in image-variant slides. Leave empty for decorative images.",
+          "docsTags": [],
+          "values": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "undefined"
+            }
+          ],
+          "optional": true,
+          "required": false,
+          "getter": false,
+          "setter": false
+        },
+        {
           "name": "color",
           "type": "\"green\" | \"purple\" | \"red\" | \"yellow\" | undefined",
           "complexType": {
@@ -40433,6 +40459,32 @@
         ]
       },
       "props": [
+        {
+          "name": "a11yLabel",
+          "type": "string | undefined",
+          "complexType": {
+            "original": "string",
+            "resolved": "string | undefined",
+            "references": {}
+          },
+          "mutable": false,
+          "attr": "a-1-1y-label",
+          "reflectToAttr": false,
+          "docs": "Accessible label for the logo. Defaults to an `aria-label` set on the host, then to the brand name.",
+          "docsTags": [],
+          "values": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "undefined"
+            }
+          ],
+          "optional": true,
+          "required": false,
+          "getter": false,
+          "setter": false
+        },
         {
           "name": "animated",
           "type": "boolean",
