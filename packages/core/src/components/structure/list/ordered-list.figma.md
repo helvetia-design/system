@@ -176,12 +176,7 @@ tokens:
       bind: false,
       note: 'STRING variable, not bindable',
     }
-  - {
-      figmaVariable: '🧩 Component/List/Marker/Typo/LetterSpacing',
-      literal: '0%',
-      bind: false,
-      note: 'STRING variable, not bindable',
-    }
+  - { figmaVariable: '🔗 Alias/🔤 Text/LetterSpacing/Text', use: 'letterSpacing of marker and item label, bound' }
   - {
       figmaVariable: '🧩 Component/List/Marker/Typo/TextDecoration',
       literal: 'NONE',
@@ -197,12 +192,6 @@ tokens:
   - {
       figmaVariable: '🧩 Component/Text/Typo/Paragraph/LineHeight',
       literal: '150%',
-      bind: false,
-      note: 'STRING variable, not bindable',
-    }
-  - {
-      figmaVariable: '🧩 Component/Text/Typo/Paragraph/LetterSpacing',
-      literal: '0%',
       bind: false,
       note: 'STRING variable, not bindable',
     }
@@ -283,3 +272,4 @@ Open before Phase 3: typography variables for the `li` label (inherited from the
 - Anatomy diagram (25.11.2026): instance labels `List item 1`–`4`, width narrowed to 113 and centred. Marker placement (user decision): `A` on the marker, `B` centred on the item label, `C` on the list's top right corner.
 - Measurements: drawing (320 wide, markers once per text part, not per item), sizes table, behavior card (220 wide). Behavior from the dev render (wrapping); the 0px / long-word probe was not run.
 - Measurements confirmed by user (25.11.2026). Sizes table: px value only in each option cell (shared values repeated), full token name in the cell's layer name.
+- Letter spacing (26.11.2026): `letterSpacing` bound to `Alias/Text/LetterSpacing/Text` on the 12 item master text layers (`number`, `suffix`, `label`; both item sets), replacing the literal `0%`. Instances inherit it.

@@ -120,12 +120,7 @@ tokens: # list-native-* shared with ordered-list; extra:
       bind: false,
       note: 'STRING variable, not bindable',
     }
-  - {
-      figmaVariable: '🧩 Component/Text/Typo/Paragraph/LetterSpacing',
-      literal: '0%',
-      bind: false,
-      note: 'STRING variable, not bindable',
-    }
+  - { figmaVariable: '🔗 Alias/🔤 Text/LetterSpacing/Text', use: 'letterSpacing of item label, bound' }
   - {
       figmaVariable: '🧩 Component/Text/Typo/Paragraph/TextTransform',
       literal: 'ORIGINAL',
@@ -275,3 +270,4 @@ Open before Phase 3: typography variables for the `li` label (inherited from the
 - Copy me: section `6915:5753`, one default instance `6954:5809` (fill width, as `ordered-list`; `measurements:` not triaged yet), template placeholder removed. Confirmed by user (26.11.2026).
 - Anatomy (26.11.2026): instance `6955:5870`, width 113, labels `List item 1`–`4`. `A` on the bullet, `B` centred on the item label, `C` on the list's top right corner; leaders end 4px above each part's visible top (`A` 3px lower than `B` / `C`). Confirmed by user (26.11.2026).
 - Measurements (26.11.2026): drawing (320-wide list, 3 gap hatches, indent, item text box; extra one-item lists `circle` and `check` with icon-size overlays), sizes table (full token name in each cell's layer name), behavior card (220 wide). Confirmed by user (26.11.2026).
+- Letter spacing (26.11.2026): `letterSpacing` bound to `Alias/Text/LetterSpacing/Text` on the 80 item master labels (both item sets), replacing the literal `0%`. Instances inherit it.
