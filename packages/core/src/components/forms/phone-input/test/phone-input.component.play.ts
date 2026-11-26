@@ -285,6 +285,36 @@ test.describe('disabled', () => {
     await phone.assertToBeDisabled()
     expect(inputSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(
+      `<form><ds-phone-input name="phone" label="Phone number" initial-country="CH" value="+41791234567"></ds-phone-input></form>`,
+    )
+    const phone = new DsPhoneInput(page.locator('ds-phone-input'))
+    const form = page.locator('form')
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('phone'))).toBe(true)
+
+    await phone.el.evaluate((el: HTMLDsPhoneInputElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('phone'))).toBe(false)
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-phone-input name="phone" label="Phone number" initial-country="CH" value="+41791234567"></ds-phone-input></fieldset></form>`,
+    )
+    const phone = new DsPhoneInput(page.locator('ds-phone-input'))
+    const form = page.locator('form')
+
+    await phone.assertToBeDisabled()
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('phone'))).toBe(false)
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('phone'))).toBe(true)
+  })
 })
 
 test.describe('readonly', () => {

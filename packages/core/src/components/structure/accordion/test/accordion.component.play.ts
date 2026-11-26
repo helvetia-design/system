@@ -79,4 +79,26 @@ test.describe('component', () => {
 
     expect(spy).toHaveReceivedEventTimes(1)
   })
+
+  test('should not open on click or Enter when disabled', async ({ page }) => {
+    await page.mount(`
+      <ds-accordion disabled>
+        <span slot="summary">Title</span>
+        <span slot="content">Content</span>
+      </ds-accordion>
+    `)
+
+    const dsAccordion = new DsAccordion(page.locator('ds-accordion'))
+    const spy = await dsAccordion.el.spyOnEvent('dsToggle')
+
+    await expect(dsAccordion.summary).toBeDisabled()
+
+    await dsAccordion.summary.dispatchEvent('click')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
+
+    await expect(dsAccordion.summary).not.toBeFocused()
+    await dsAccordion.assertToBeClosed()
+    expect(spy).toHaveReceivedEventTimes(0)
+  })
 })

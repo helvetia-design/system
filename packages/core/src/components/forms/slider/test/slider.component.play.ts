@@ -122,6 +122,34 @@ test.describe('disabled', () => {
     await slider.assertToBeDisabled()
     expect(inputSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-slider name="volume" label="Volume" value="30"></ds-slider></form>`)
+    const slider = new DsSlider(page.locator('ds-slider'))
+    const form = page.locator('form')
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('volume'))).toBe(true)
+
+    await slider.el.evaluate((el: HTMLDsSliderElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('volume'))).toBe(false)
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-slider name="volume" label="Volume" value="30"></ds-slider></fieldset></form>`,
+    )
+    const slider = new DsSlider(page.locator('ds-slider'))
+    const form = page.locator('form')
+
+    await slider.assertToBeDisabled()
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('volume'))).toBe(false)
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('volume'))).toBe(true)
+  })
 })
 
 test.describe('readonly', () => {

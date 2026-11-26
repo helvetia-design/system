@@ -219,6 +219,36 @@ test.describe('disabled', () => {
 
     expect(changeSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-select name="country" label="Country" value="it"></ds-select></form>`)
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+    const form = page.locator('form')
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('country'))).toBe(true)
+
+    await select.el.evaluate((el: HTMLDsSelectElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('country'))).toBe(false)
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-select name="country" label="Country" value="it"></ds-select></fieldset></form>`,
+    )
+    const select = new DsSelect(page.locator('ds-select'))
+    await setOptions(page, select.el, COUNTRY_OPTIONS)
+    const form = page.locator('form')
+
+    await select.assertToBeDisabled()
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('country'))).toBe(false)
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('country'))).toBe(true)
+  })
 })
 
 test.describe('form reset', () => {

@@ -25,6 +25,7 @@ tester.run('ds/method-private', methodPrivate as any, {
     { code: `class C { componentDidRender() {} }` },
     { code: `class C { componentWillUpdate() {} }` },
     { code: `class C { componentDidUpdate() {} }` },
+    { code: `class C { formDisabledCallback(disabled: boolean) {} }` },
     { code: `class C { @Method() async open(): Promise<void> {} }` },
     { code: `class C { @Watch('value') valueChanged() {} }` },
     { code: `class C { @Listen('click') listenToClick() {} }` },

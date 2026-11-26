@@ -100,6 +100,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
   @State() displayValue = ''
   @State() resolvedCountry: string | undefined = undefined
   @State() nationalNumber = ''
+  @State() private formDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -221,7 +222,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form.
    */
-  @Prop()
+  @Prop({ reflect: true })
   @Type('boolean')
   readonly disabled: boolean = false
 
@@ -307,6 +308,10 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
     this.disconnectInvalidTextSlotWatcher?.()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.formDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -314,7 +319,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
 
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: MouseEvent) {
-    if ((this.disabled || this.readonly) && ev.target === this.el) {
+    if ((this.isDisabled || this.readonly) && ev.target === this.el) {
       stopEventBubbling(ev)
     }
 
@@ -379,14 +384,14 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
 
   private handleTriggerClick = (ev: MouseEvent) => {
     ev.preventDefault()
-    if (this.disabled || this.readonly) {
+    if (this.isDisabled || this.readonly) {
       return
     }
     this.pickerOpen ? this.closePicker() : this.openPicker()
   }
 
   private handleTriggerKeyDown = (ev: KeyboardEvent) => {
-    if (this.disabled || this.readonly) {
+    if (this.isDisabled || this.readonly) {
       return
     }
     if (isEnterKey(ev) || isSpaceKey(ev) || isArrowDownKey(ev)) {
@@ -514,7 +519,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
     if (this.pickerOpen) {
       this.closePicker()
     }
-    if (!this.disabled) {
+    if (!this.isDisabled) {
       this.dsFocus.emit(ev)
     }
   }
@@ -522,7 +527,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
   private handleBlur = (ev: FocusEvent) => {
     this.focused = false
     this.applyFormattedValue(this.displayValue, true)
-    if (!this.disabled) {
+    if (!this.isDisabled) {
       this.dsChange.emit(this.eventDetail())
       this.dsBlur.emit(ev)
     }
@@ -532,6 +537,10 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.formDisabled
+  }
 
   private initializeFromProps() {
     const available = this.getAvailableCountries()
@@ -706,7 +715,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
   }
 
   private openPicker() {
-    if (this.disabled || this.readonly || this.pickerOpen) {
+    if (this.isDisabled || this.readonly || this.pickerOpen) {
       return
     }
     this.filterQuery = ''
@@ -766,12 +775,12 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
     const visible = this.getVisibleCountries()
     const selected = available.find(country => country.code === this.resolvedCountry)
     const selectedName = selected ? getCountryName(selected.code, this.language) : ''
-    const pickerDisabled = this.disabled || this.readonly
+    const pickerDisabled = this.isDisabled || this.readonly
     const inputPlaceholder = this.placeholder || getExamplePlaceholder(this.resolvedCountry)
 
     return (
       <Field
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={isInvalid}
         label={this.label}
@@ -817,7 +826,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
             autocomplete="tel-national"
             aria-describedby="description"
             aria-invalid={isInvalid ? 'true' : 'false'}
-            disabled={this.disabled}
+            disabled={this.isDisabled}
             readonly={this.readonly}
             required={this.required}
             placeholder={inputPlaceholder}

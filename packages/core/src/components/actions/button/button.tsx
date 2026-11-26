@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, h, Host, Listen, Prop } from '@stencil/core'
+import { Component, Element, Event, EventEmitter, h, Host, Listen, Prop, State } from '@stencil/core'
 import { AttachInternals, HTMLStencilElement } from '@stencil/core/internal'
 import { DsComponentInterface } from '@global'
 import {
@@ -61,6 +61,8 @@ export class Button implements DsComponentInterface {
   @AttachInternals() internals!: ElementInternals
 
   @Element() el!: HTMLStencilElement
+
+  @State() private fieldsetDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -332,6 +334,10 @@ export class Button implements DsComponentInterface {
     this.dsDidRender.emit()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -339,7 +345,7 @@ export class Button implements DsComponentInterface {
 
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: UIEvent) {
-    if (this.disabled && ev.target && ev.target === this.el) {
+    if (this.isInactive && ev.target && ev.target === this.el) {
       ev.preventDefault()
       ev.stopPropagation()
     }
@@ -349,6 +355,14 @@ export class Button implements DsComponentInterface {
    * EVENT HANDLERS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled() {
+    return this.disabled || this.fieldsetDisabled
+  }
+
+  private get isInactive() {
+    return this.isDisabled || this.loading
+  }
 
   private get isIconInverted() {
     return this.inverted
@@ -395,7 +409,7 @@ export class Button implements DsComponentInterface {
   }
 
   private handleHostClick = (ev: MouseEvent) => {
-    if (this.disabled) {
+    if (this.isInactive) {
       ev.preventDefault()
       ev.stopPropagation()
     }
@@ -410,19 +424,22 @@ export class Button implements DsComponentInterface {
   }
 
   private handleClick = (ev: MouseEvent) => {
-    if (!this.disabled) {
-      if (this.elementType === 'submit') {
-        this.internals.form?.requestSubmit()
-      }
-      if (this.elementType === 'reset') {
-        this.internals.form?.reset()
-      }
+    if (this.isInactive) {
+      ev.preventDefault()
+      return
+    }
 
-      this.dsClick.emit(ev)
+    if (this.elementType === 'submit') {
+      this.internals.form?.requestSubmit()
+    }
+    if (this.elementType === 'reset') {
+      this.internals.form?.reset()
+    }
 
-      if (hasValue(this.href)) {
-        this.dsNavigate.emit(ev)
-      }
+    this.dsClick.emit(ev)
+
+    if (hasValue(this.href)) {
+      this.dsNavigate.emit(ev)
     }
   }
 
@@ -463,7 +480,7 @@ export class Button implements DsComponentInterface {
           [`is-${this.color || 'primary'}`]: true,
           [`is-${size}`]: hasValue(size),
           [`is-inverted`]: this.inverted,
-          [`is-disabled`]: this.disabled,
+          [`is-disabled`]: this.isDisabled,
           [`is-loading`]: this.loading,
           [`is-flat`]: this.flat,
           [`is-square`]: this.square,
@@ -478,12 +495,12 @@ export class Button implements DsComponentInterface {
           type={this.elementType}
           id="button"
           part="native"
-          disabled={this.disabled || this.loading}
+          disabled={this.isDisabled}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           onClick={this.handleClick}
           aria-busy={ariaBooleanToString(!!this.loading)}
-          aria-disabled={ariaBooleanToString(this.disabled || this.loading)}
+          aria-disabled={ariaBooleanToString(this.isInactive)}
           {...ariaAttributes}
         >
           {this.loading ? (

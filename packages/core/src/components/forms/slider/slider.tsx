@@ -76,6 +76,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() hasInvalidTextSlotContent = false
+  @State() private formDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -217,7 +218,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form. The user can neither edit nor focus on the control, nor its form control descendants.
    */
-  @Prop()
+  @Prop({ reflect: true })
   @Type('boolean')
   readonly disabled: boolean = false
 
@@ -319,6 +320,11 @@ export class Slider implements DsComponentInterface, FieldInterface {
     this.disconnectInvalidTextSlotWatcher?.()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.formDisabled = disabled
+    this.syncDisabledState()
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -326,7 +332,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
 
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: UIEvent) {
-    if ((this.disabled || this.readonly) && ev.target === this.el) {
+    if ((this.isDisabled || this.readonly) && ev.target === this.el) {
       ev.preventDefault()
       ev.stopPropagation()
     }
@@ -389,20 +395,20 @@ export class Slider implements DsComponentInterface, FieldInterface {
 
   private handleFocus = (ev: FocusEvent) => {
     this.focused = true
-    if (!this.disabled && !this.readonly) {
+    if (!this.isDisabled && !this.readonly) {
       this.dsFocus.emit(ev)
     }
   }
 
   private handleBlur = (ev: FocusEvent) => {
     this.focused = false
-    if (!this.disabled && !this.readonly) {
+    if (!this.isDisabled && !this.readonly) {
       this.dsBlur.emit(ev)
     }
   }
 
   private handleClick = (ev: MouseEvent) => {
-    if (!this.disabled && !this.readonly) {
+    if (!this.isDisabled && !this.readonly) {
       this.dsClick.emit(ev)
     }
   }
@@ -411,6 +417,10 @@ export class Slider implements DsComponentInterface, FieldInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.formDisabled
+  }
 
   // Called from `componentDidLoad` on first load, and again from `connectedCallback` when reconnecting after a DOM move.
   private mountPicker() {
@@ -423,7 +433,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
       max: this.max,
       step: this.step,
       value: this.value,
-      disabled: this.disabled || this.readonly,
+      disabled: this.isDisabled || this.readonly,
       invalid: this.invalid || this.hasInvalidTextSlotContent,
       onInput: value => {
         this.dsInput.emit(value)
@@ -448,7 +458,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
   }
 
   private syncDisabledState() {
-    this.picker?.setDisabled(this.disabled || this.readonly)
+    this.picker?.setDisabled(this.isDisabled || this.readonly)
   }
 
   /**
@@ -459,7 +469,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
   render() {
     return (
       <Field
-        disabled={this.disabled || this.readonly}
+        disabled={this.isDisabled || this.readonly}
         color={this.color}
         invalid={this.invalid}
         label={this.label}

@@ -20,6 +20,7 @@ import {
   hasTagName,
   isDescendant,
   OneOf,
+  passDownBooleanProp,
   Type,
   watchInvalidTextSlot,
   setFormValue,
@@ -454,12 +455,8 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
   private passDownAttributes() {
     const isInvalid = this.invalid || this.hasInvalidTextSlotContent
     this.getRadios().forEach(radio => {
-      if (this.disabled !== undefined) {
-        radio.disabled = this.disabled
-      }
-      if (this.readonly !== undefined) {
-        radio.readonly = this.readonly
-      }
+      passDownBooleanProp(radio, 'disabled', this.disabled)
+      passDownBooleanProp(radio, 'readonly', this.readonly)
       radio.invalid = isInvalid
       radio.labelPosition = this.labelPosition
       radio.tile = this.tile

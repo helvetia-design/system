@@ -14,6 +14,7 @@ const LIFECYCLE_HOOKS = new Set([
   'componentDidRender',
   'componentWillUpdate',
   'componentDidUpdate',
+  'formDisabledCallback',
   'render',
 ])
 

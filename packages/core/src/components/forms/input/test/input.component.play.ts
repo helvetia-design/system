@@ -77,6 +77,34 @@ test.describe('disabled', () => {
     await input.assertToBeDisabled()
     expect(inputSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-input name="hero" label="Hero" value="Steve Rogers"></ds-input></form>`)
+    const input = new DsInput(page.locator('ds-input'))
+    const form = page.locator('form')
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('hero'))).toBe(true)
+
+    await input.el.evaluate((el: HTMLDsInputElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('hero'))).toBe(false)
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-input name="hero" label="Hero" value="Steve Rogers"></ds-input></fieldset></form>`,
+    )
+    const input = new DsInput(page.locator('ds-input'))
+    const form = page.locator('form')
+
+    await input.assertToBeDisabled()
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('hero'))).toBe(false)
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('hero'))).toBe(true)
+  })
 })
 
 test.describe('form reset', () => {

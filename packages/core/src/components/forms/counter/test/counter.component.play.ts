@@ -123,6 +123,34 @@ test.describe('disabled', () => {
     await counter.assertToBeDisabled()
     expect(changeSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-counter name="quantity" label="Quantity" value="3"></ds-counter></form>`)
+    const counter = new DsCounter(page.locator('ds-counter'))
+    const form = page.locator('form')
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('quantity'))).toBe(true)
+
+    await counter.el.evaluate((el: HTMLDsCounterElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('quantity'))).toBe(false)
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-counter name="quantity" label="Quantity" value="3"></ds-counter></fieldset></form>`,
+    )
+    const counter = new DsCounter(page.locator('ds-counter'))
+    const form = page.locator('form')
+
+    await counter.assertToBeDisabled()
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('quantity'))).toBe(false)
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('quantity'))).toBe(true)
+  })
 })
 
 test.describe('readonly', () => {

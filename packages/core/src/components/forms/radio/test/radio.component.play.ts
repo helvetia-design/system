@@ -135,6 +135,49 @@ test.describe('radio-group', () => {
     await tony.assertToBeDisabled()
   })
 
+  test('should keep a radio disabled that is disabled on its own', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label">
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark" disabled>Tony Stark</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    const changeSpy = await group.spyOnEvent('dsChange')
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+    const tony = new DsRadio(page.locator('ds-radio[value="tony-stark"]'))
+
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+
+    await tony.el.dispatchEvent('click')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await tony.assertToBeUnchecked()
+  })
+
+  test('should restore the own disabled state of each radio when the group is enabled again', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label">
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark" disabled>Tony Stark</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+    const tony = new DsRadio(page.locator('ds-radio[value="tony-stark"]'))
+
+    await group.evaluate((el: HTMLDsRadioGroupElement) => (el.disabled = true))
+    await page.waitForChanges()
+    await steve.assertToBeDisabled()
+    await tony.assertToBeDisabled()
+
+    await group.evaluate((el: HTMLDsRadioGroupElement) => (el.disabled = false))
+    await page.waitForChanges()
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+  })
+
   test('should navigate with arrow keys', async ({ page }) => {
     await page.mount(GROUP)
     const group = page.locator('ds-radio-group')

@@ -22,8 +22,8 @@ import {
   isDescendant,
   stopEventBubbling,
   areArraysEqual,
-  hasValue,
   OneOf,
+  passDownBooleanProp,
   shallowReady,
   Type,
   watchInvalidTextSlot,
@@ -418,12 +418,8 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     const isInvalid = this.invalid || this.hasInvalidTextSlotContent
     this.getCheckboxes().forEach(checkbox => {
       if (this.control) {
-        if (hasValue(this.disabled)) {
-          checkbox.disabled = this.disabled
-        }
-        if (hasValue(this.readonly)) {
-          checkbox.readonly = this.readonly
-        }
+        passDownBooleanProp(checkbox, 'disabled', this.disabled)
+        passDownBooleanProp(checkbox, 'readonly', this.readonly)
         checkbox.invalid = isInvalid
       }
 

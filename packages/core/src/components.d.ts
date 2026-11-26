@@ -148,6 +148,11 @@ export namespace Components {
         "buttonWide": boolean;
         "configChanged": (state: DsConfigState) => Promise<void>;
         /**
+          * If `true`, the user cannot open or close the accordion.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * The name of the group the accordion belongs to. Accordions with the same group name will automatically close when another accordion in the same group is opened.
           * @default ''
          */
@@ -5279,6 +5284,11 @@ declare namespace LocalJSX {
          */
         "buttonWide"?: boolean;
         /**
+          * If `true`, the user cannot open or close the accordion.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * The name of the group the accordion belongs to. Accordions with the same group name will automatically close when another accordion in the same group is opened.
           * @default ''
          */
@@ -9255,6 +9265,7 @@ declare namespace LocalJSX {
 
     interface DsAccordionAttributes {
         "open": boolean;
+        "disabled": boolean;
         "group": string;
         "summaryLevel": AccordionSummaryLevel;
         "summaryVisualLevel": AccordionSummaryLevel;
