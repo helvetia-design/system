@@ -5,6 +5,9 @@ sets: # filled in by Phase 3
   - name: Accordion
     figmaComponentKey: d13c3342aa7aa7f21d6d6f94b317d22abe5c020e
     figmaMasterNodeId: '6304:4823'
+  - name: AccordionSummaryBrandIconItem # Figma-only slot content (user decision 25.11.2026) — no code component, see figmaOnly: and docs/CODE_TO_FIGMA_TODOS.md
+    figmaComponentKey: 8e373dfbb8bd8d5a9cee25dd8077b64de9c75268
+    figmaMasterNodeId: '6892:41' # 4 variants (state), own stack `6887:11` after Accordion in Sets
 figmaPage: Core / Structure
 figmaDocFrameNodeId: '6302:1291'
 
@@ -95,7 +98,7 @@ slots:
     part: summary
     position: first child of #summary, before marker (after it for marker position=left)
     content: open # any content (Stack Accordion: brand icon + title + text + toggle — sub-components later)
-    preferred: []
+    preferred: [AccordionSummaryBrandIconItem] # set key, 25.11.2026
     defaultFill: 'the former `label` text node "Summary" (typography per summary visual level, color per state — bindings unchanged)'
     shownWhen: always # no show boolean
     figmaPropertyKey: 'summary#6875:0'
@@ -110,6 +113,26 @@ slots:
     figmaPropertyKey: 'content#6875:337' # recreated 25.11.2026 so summary comes first
 
 variations: [] # no show booleans — placeholder deleted
+
+figmaOnly: # Figma components with no code counterpart (open items: docs/CODE_TO_FIGMA_TODOS.md)
+  - name: AccordionSummaryBrandIconItem
+    reason: 'summary slot content, look of the Stack Accordion story / webstyleguide content-component-cluster; code composes it from ds-brand-icon + ds-stack + text'
+    structure: 'horizontal, centred, 480 wide · brand-icon (BrandIcon instance, base 80, exposed nested instance: icon / size / color set on it) · text (vertical: title, description)'
+    props:
+      - { figmaProperty: state, type: variant, options: [default, hover, focus, active] } # mirrors Accordion state; set it to match the Accordion
+      - { figmaProperty: title, type: text, default: Label Heading }
+      - { figmaProperty: show description, type: boolean, default: false }
+      - { figmaProperty: description, type: text, default: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.' }
+    tokens:
+      - { node: root itemSpacing, figmaVariable: 🧩 Component/Stack/Gap/Base } # .ds-stack gap
+      - { node: text itemSpacing, figmaVariable: 🧩 Component/Content/Gap } # .ds-stack-content gap
+      - { node: title, figmaVariable: '🧩 Component/Accordion/Summary/Level/5/{FontSize,FontWeight,FontFamily}, …/Summary/Color/{Base,Hover,Base,Active} per state' } # = summary visual level h5; story: h5.ds-title
+      - { node: description, figmaVariable: '🧩 Component/Text/Typo/Small/{FontSize,FontWeight,FontFamily}, 🔗 Alias/🔤 Text/Color/Primary' } # story: .ds-text.is-sm
+      # line heights literal (130 % / 150 %), STRING variables — same as Accordion summary
+    limits: 'slot content takes no state from the Accordion — the designer sets AccordionSummaryBrandIconItem state to match'
+    grid: 'state columns, cell 512 × 112 (480 × 80 + 16), labeled set cloned from CarouselArrow, no row labels'
+    notValidated: 'no visual snapshot (no story renders it exactly), no Phase 4 run'
+    later: 'toggle (ds-toggle) and card wrapper once those are in Figma; tile once BrandIcon has it'
 
 tokens: # all checked in Foundation 19.11.2026
   - { cssVar: --ds-accordion-header-min-height, figmaVariable: 🧩 Component/Accordion/Header/MinHeight, resolved: true } # 40
