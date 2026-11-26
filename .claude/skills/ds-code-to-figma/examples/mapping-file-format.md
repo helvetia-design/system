@@ -111,14 +111,20 @@ props:
 - cssVar: --ds-alias-surface-sky
   figmaVariable: 🔗 Alias/🎨 Surface/Sky # token path joined with / — the Foundation variable name
   # (PHASE-1-ANALYZE.md step 5). Phase 3 imports it from Foundation by key and binds it.
+  variableId: "VariableID:<id>" # Base.tokens.json → com.figma.variableId (css-token-lookup.mjs)
+  libraryKey: "<key>" # search_design_system hit whose variableSetKey is in foundationVariableCollections
   resolved: true
 - cssVar: --ds-spinner-color-one-off
   figmaVariable: null
+  variableId: null
+  libraryKey: null
   resolved: false
   resolution: "<decision made with the user — pick a token or accept hardcoded>"
 - cssVar: [--ds-logo-size-base-mobile, --ds-logo-size-base-desktop]
   figmaVariable: 🧩 Component/Logo/Size/Base/Device # see device: above — responsive, not a
   # single static token
+  variableId: "VariableID:<id>" # the Device routing variable's: com.figma.variableId → device
+  libraryKey: "<key>" # the Device routing variable's
   resolved: true
   measurements: # confirmed measurements triage (PHASE-1-ANALYZE.md step 6), rendered by Phase 8. Rules:
   # conventions/measurements.md

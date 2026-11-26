@@ -11,8 +11,9 @@ the measurements triage (6) are presented **once for the whole family** (`conven
 - Component source: `packages/core/src/components/<category>/<name>/<name>.tsx`
 - Component styles: `<name>.host.scss`
 - Design tokens: `packages/tokens/tokens/Base.tokens.json`
-- Figma Variables: the Foundation library file (`figma.config.json` → `foundationLibraryFileKey`),
-  read once per run for the variable names (step 5)
+- Figma variable ids: in `Base.tokens.json` itself (`com.figma.variableId`, Foundation ids written
+  back by `scripts/figma-sync`), looked up with `node scripts/figma-sync/lib/css-token-lookup.mjs`;
+  library keys via `search_design_system`, Foundation hits only (step 5)
 - Any nested DS components' already-written `<child>.figma.md` files
 - The component's `*.visual.html` under `test/`, rendered by the dev server (step 6)
 
@@ -153,17 +154,17 @@ the measurements triage (6) are presented **once for the whole family** (`conven
      `{ path, cssVar, variableId, figmaScopes, type, description }`. The Figma variable name is
      `path` joined with `/` (`🔗 Alias/🔤 Text/Color/Primary`) — write it into `<name>.figma.md`'s
      `tokens:` list as `figmaVariable` (see [`examples/mapping-file-format.md`](examples/mapping-file-format.md)).
-     **Ignore `variableId`:** the ids in `Base.tokens.json` belong to the Core file's old local
-     token copy, not to Foundation. A responsive token has one variable per breakpoint, named
+     Record `variableId` too: the ids in `Base.tokens.json` are the Foundation file's own variable
+     ids, written back by `scripts/figma-sync` (ADR-0017). A responsive token has one variable per breakpoint, named
      `<path>/Mobile`, `<path>/Tablet`, `<path>/Desktop` (the bare var resolves to the
      `{ mobile, tablet, desktop[, device] }` object; see 5a).
-   - **Check the names exist in Foundation** — one read-only `use_figma` call on the Foundation
-     file per run: list its local variables' names (`figma.variables.getLocalVariablesAsync()`)
-     and look up every name this component needs. Don't search from the Core file: its library
-     listing (`teamLibrary.getVariablesInLibraryCollectionAsync`) and `search_design_system`
-     return no Foundation variables, although the variables are published and importable by key.
-     A name the repo has but Foundation doesn't is a **hard stop** (the token isn't synced yet):
-     list them and ask the user to run the token sync.
+   - **Get each library key from the component file** — `search_design_system` by exact
+     variable name (responsive: `<path>/Device`), only the names this component needs. Other
+     libraries carry the same names: accept a hit only if its `variableSetKey` is in
+     `figma.config.json` → `foundationVariableCollections`. Record the key next to the id (`libraryKey`, `variableId`). A CSS var with no
+     `variableId` is a **hard stop** (not synced yet → `ds-sync-figma-tokens`); a variable with an
+     id but no Foundation hit is synced but unpublished → ask the user to publish DS - Foundation
+     and accept the library update in the component file.
    - **This still requires `search_design_system`/`get_variable_defs`/live enumeration for
      exactly one case: a value with no CSS-var binding at all** (a hardcoded literal in the
      component's `.tsx`, or an inherited attribute the component's own code never sets — see step 3) that you need to find an _existing_ token for by browsing, since there's no `--ds-*` name

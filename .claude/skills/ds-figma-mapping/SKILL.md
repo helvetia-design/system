@@ -52,11 +52,16 @@ a token-engineer handoff (`ds-sync-figma-tokens`), never a guess and never a har
 **Then check the library, before measuring anything.** The ids above belong to the variable
 source file; this file sees library copies with different ids. Search DS - Foundation
 (`search_design_system`) by exact variable name — for a responsive token, `…/Device` — and record
-each variable's **library key** next to its id. Search only the names you need, never the whole
-collection. A variable in `Base.tokens.json` but not in the library is synced but unpublished:
+each variable's **library key** next to its id (`tokens:` → `libraryKey`, `variableId`). Search only the names you need, never the whole
+collection. Other libraries carry the same names: accept a hit only if its `variableSetKey` is
+in `figma.config.json` → `foundationVariableCollections`. A variable in `Base.tokens.json` but not in the library is synced but unpublished:
 stop and ask the human to publish DS - Foundation (main menu → Libraries → Publish) and accept the
 update in this file (Assets → Libraries → Update). The Figma API cannot publish. Recheck after they
 confirm. Stopping here costs nothing; stopping after the dev-server measurements wastes them.
+
+**Updating an existing mapping file:** keep a recorded `libraryKey` only while its `variableId`
+still equals the current id from `css-token-lookup.mjs`. A different id means the token sync
+recreated the variable — search for the key again and record both anew.
 
 ## Phase 3: Record the structure
 

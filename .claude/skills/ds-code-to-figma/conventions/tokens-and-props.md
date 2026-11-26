@@ -7,25 +7,21 @@ Relevant to Phase 1's analysis.
 - **Resolve a CSS var to its token name locally, from `Base.tokens.json`.**
   `scripts/figma-sync/lib/css-token-lookup.mjs` turns a `--ds-*` var into the token `path`; the
   path joined with `/` is the Figma variable name in Foundation (`PHASE-1-ANALYZE.md` step 5).
-  The `com.figma.variableId` values in `Base.tokens.json` belong to the component file's old
-  local token copy — don't bind by them.
+  The `com.figma.variableId` values in `Base.tokens.json` are Foundation's own variable ids
+  (written back by `scripts/figma-sync`); the component file sees library copies, so bind by
+  library key, not by that id.
 
 ## Binding Foundation variables
 
 Tokens live in the **Foundation** library (`figma.config.json` → `foundationLibraryFileKey`,
 collections in `foundationVariableCollections`); components bind to them, never to a local
-variable collection of the component file. Checked 17.11.2026:
+variable collection of the component file.
 
-- **From the component file, Foundation variables can't be listed or searched** —
-  `teamLibrary.getVariablesInLibraryCollectionAsync` returns 0 and `search_design_system` finds
-  none, although the variables are published and designers see them in the picker. **Importing
-  by key works:** `figma.variables.importVariableByKeyAsync(key)` returns the library variable
-  (`remote: true`, id `VariableID:<key>/<id>`), which binds like any variable.
-- **So read the name → key map from the Foundation file itself**, once per run, in a read-only
-  `use_figma` call on `foundationLibraryFileKey`:
-  `(await figma.variables.getLocalVariablesAsync()).map(v => [v.name, v.key])`. Keep only the
-  names the component needs. Phase 1 uses the same read to check every name exists; Phase 3
-  imports each by key and binds it.
+- **Get the library key with `search_design_system` from the component file**, by exact name,
+  only the names the component needs. Other libraries carry the same names: accept a hit only if
+  its `variableSetKey` is in `foundationVariableCollections`.
+- **Import by key, then bind:** `figma.variables.importVariableByKeyAsync(key)` returns the
+  library variable (`remote: true`, id `VariableID:<key>/<id>`), which binds like any variable.
 - Names follow the token path: `🔗 Alias/🔤 Text/Color/Primary`; a responsive token has one
   variable per breakpoint (`<path>/Mobile`, `/Tablet`, `/Desktop`) and, when the token sync
   created one, a routing variable `<path>/Device` in `Design Responsive Tokens`.

@@ -49,8 +49,8 @@ runs once, for the whole frame; step 7 writes back into every member's mapping f
    - The component's shape/layout.
    - Every styled value bound to its Foundation variable from Phase 1 (never a literal).
      **Import by key, then bind** — `figma.variables.importVariableByKeyAsync(key)` with the key
-     for the `figmaVariable` name, from the name → key map read once per run from the Foundation
-     file (`conventions/tokens-and-props.md` → "Binding Foundation variables"). Never bind to a
+     recorded for the `figmaVariable` name in Phase 1 (Foundation hits only,
+     `conventions/tokens-and-props.md` → "Binding Foundation variables"). Never bind to a
      variable of the component file's own local collections, and never by an id from
      `Base.tokens.json`.
    - **Create every bound paint from the variable's resolved value** —

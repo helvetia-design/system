@@ -40,8 +40,10 @@ Check, and hard-stop on any failure rather than working around it:
   inside `ds-button`) already has its own `<child>.figma.md` with a recorded component key. If
   not, stop: that family must be built first. Never recreate it, never substitute a plain shape.
 - Every binding in the mapping file has a recorded **library key** (`ds-figma-mapping` Phase 2
-  checked it is published). Import each with `importVariableByKeyAsync` — never look ids up again,
-  never a hardcoded value. A missing key is that skill's hard stop, not something to fix here.
+  checked it is published). Import each by its recorded `libraryKey` with
+  `importVariableByKeyAsync` — don't re-resolve tokens at build time, never a hardcoded value.
+  First compare each recorded `variableId` with the current id from `css-token-lookup.mjs`; a
+  mismatch means the key is stale — refresh it per `ds-figma-mapping` Phase 2 before building. A missing key is that skill's hard stop, not something to fix here.
 
 **Sub-components** of this family are the exception — this run builds them
 ([`conventions/families.md`](../ds-code-to-figma/conventions/families.md)).

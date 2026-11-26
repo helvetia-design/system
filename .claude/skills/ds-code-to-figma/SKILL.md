@@ -173,9 +173,8 @@ reusing existing components, since the same discipline applies here.
   `foundationLibraryFileKey` and `foundationVariableCollections`. Components bind to Foundation
   variables, imported by key (`conventions/tokens-and-props.md` → "Binding Foundation
   variables"). The Foundation library must be published and added to the component file. If
-  reading the Foundation file or importing a variable by key fails, stop and ask the user to
-  publish Foundation and add it to the component file. An empty library listing from the
-  component file alone is not a stop (known Figma quirk, `conventions/tokens-and-props.md`).
+  `search_design_system` finds no Foundation hit for a synced variable, or importing by key
+  fails, stop and ask the user to publish Foundation and add it to the component file.
 - The target component must already exist in code (`packages/core/src/components/<category>/<name>/`).
 - If the family uses a **nested component** (an independent DS component from another family, e.g.
   a button using an icon), the nested component's own `<child>.figma.md` must already exist and
