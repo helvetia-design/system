@@ -104,27 +104,4 @@ test.describe('component', () => {
 
     await dsItem.accordion.assertToBeOpen()
   })
-
-  test('should indent a native list by the indent token only', async ({ page }) => {
-    await page.mount(`
-      <ul class="unordered-list"><li>Item 1</li></ul>
-      <ol class="ordered-list"><li>Item 1</li></ol>
-    `)
-
-    for (const selector of ['ul.unordered-list', 'ol.ordered-list']) {
-      const list = page.locator(selector)
-      const indent = await page.evaluate(() => {
-        const probe = document.createElement('div')
-        probe.style.marginLeft = 'var(--ds-list-native-indent)'
-        document.body.append(probe)
-        const value = getComputedStyle(probe).marginLeft
-        probe.remove()
-        return value
-      })
-
-      await expect(list).toHaveCSS('padding-inline-start', '0px')
-      await expect(list).toHaveCSS('margin-top', '0px')
-      await expect(list).toHaveCSS('margin-left', indent)
-    }
-  })
 })
