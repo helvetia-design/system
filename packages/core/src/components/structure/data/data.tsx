@@ -43,10 +43,14 @@ export class Data implements DsComponentInterface {
   /**
    * Marks the direct ds-data-item children as stacked while horizontal.
    * `:host-context()` is not supported in Firefox/Safari, so the item cannot detect this itself.
+   * Iterates `children` instead of querying `:scope > ds-data-item`, because Stencil's SSR
+   * mock-doc does not support `:scope`.
    */
   private syncItems = () => {
-    this.el.querySelectorAll(':scope > ds-data-item').forEach(item => {
-      item.classList.toggle('is-stacked', this.horizontal)
+    Array.from(this.el.children).forEach(item => {
+      if (item.tagName.toLowerCase() === 'ds-data-item') {
+        item.classList.toggle('is-stacked', this.horizontal)
+      }
     })
   }
 
