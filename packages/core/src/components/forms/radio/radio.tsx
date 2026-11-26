@@ -78,6 +78,7 @@ export class Radio implements DsComponentInterface {
   @State() focused = false
   @State() wasFocused = false
   @State() buttonTabindex?: number
+  @State() private fieldsetDisabled = false
 
   private initialValue = false
 
@@ -132,6 +133,20 @@ export class Radio implements DsComponentInterface {
   @Prop({ reflect: true })
   @Type('boolean')
   readonly disabled: boolean = false
+
+  /**
+   * @internal
+   */
+  @Prop()
+  @Type('boolean')
+  readonly groupDisabled: boolean = false
+
+  /**
+   * @internal
+   */
+  @Prop()
+  @Type('boolean')
+  readonly groupReadonly: boolean = false
 
   /**
    * If `true` the component gets a invalid style.
@@ -258,6 +273,10 @@ export class Radio implements DsComponentInterface {
     this.el.removeEventListener('mousedown', this.handlePointerDown)
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -266,7 +285,7 @@ export class Radio implements DsComponentInterface {
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: UIEvent) {
     if (
-      (this.disabled || this.readonly) &&
+      (this.isDisabled || this.isReadonly) &&
       ev.target &&
       (ev.target === this.el || isDescendant(this.el, ev.target as HTMLElement))
     ) {
@@ -338,7 +357,7 @@ export class Radio implements DsComponentInterface {
   }
 
   private handleFocus = (ev: FocusEvent) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.isReadonly) return
 
     if (this.keyboardMode) {
       this.focused = true
@@ -349,13 +368,13 @@ export class Radio implements DsComponentInterface {
   }
 
   private handleBlur = (ev: FocusEvent) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.isReadonly) return
     this.focused = false
     this.dsBlur.emit(ev)
   }
 
   private handleClick = (ev: MouseEvent) => {
-    if (this.disabled) {
+    if (this.isDisabled) {
       return
     }
 
@@ -393,6 +412,14 @@ export class Radio implements DsComponentInterface {
     setFormValue(this.internals, !this.group && this.checked ? (this.value as string) : null)
   }
 
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled || this.groupDisabled
+  }
+
+  private get isReadonly(): boolean {
+    return this.readonly || this.groupReadonly
+  }
+
   private get group(): HTMLDsRadioGroupElement | null {
     return this.el.closest('ds-radio-group')
   }
@@ -428,11 +455,11 @@ export class Radio implements DsComponentInterface {
 
     return (
       <Host
-        aria-disabled={this.disabled ? 'true' : null}
+        aria-disabled={this.isDisabled ? 'true' : null}
         aria-checked={`${this.checked}`}
         aria-invalid={this.invalid ? 'true' : null}
         class={{
-          'is-disabled': this.disabled || this.readonly,
+          'is-disabled': this.isDisabled || this.isReadonly,
           'is-invalid': this.invalid,
           'is-checked': this.checked,
           'is-tile': this.tile,
@@ -455,7 +482,7 @@ export class Radio implements DsComponentInterface {
             value={value}
             tabindex={this.buttonTabindex}
             checked={this.checked}
-            disabled={this.disabled || this.readonly}
+            disabled={this.isDisabled || this.isReadonly}
             required={this.required}
             aria-invalid={this.invalid ? 'true' : null}
             onChange={ev => this.handleChange(ev)}

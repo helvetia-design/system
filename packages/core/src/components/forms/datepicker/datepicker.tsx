@@ -62,7 +62,7 @@ import { ClearButton } from '../input/clear-button.util'
 })
 export class DsDatepicker implements DsComponentInterface, FieldInterface, FormControlInterface<string | null> {
   private inheritedAttributes: { [k: string]: any } = {}
-  private control = new FormControl(this)
+  private control = new FormControl(this, () => this.isDisabled)
   private focusHandler = new FocusHandler()
   private popupHostEl: HTMLDivElement | undefined
   private triggerEl: HTMLButtonElement | undefined
@@ -100,6 +100,7 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
   // displayed text can change — see `initMask()`'s `onAccept`, `handleClearClick`, the picker's
   // `onSelect`, `listenToReset`, and the real-external-change branch of `valueChanged()`.
   @State() displayValue = ''
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -203,7 +204,7 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form.
    */
-  @Prop()
+  @Prop({ reflect: true })
   @Type('boolean')
   readonly disabled: boolean = false
 
@@ -453,6 +454,10 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
     this.disconnectInvalidTextSlotWatcher?.()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -565,7 +570,7 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
   }
 
   private handleTriggerClick = () => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     this.isOpen = !this.isOpen
   }
 
@@ -577,6 +582,10 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
 
   /**
    * Un-sets `value` and emits `dsChange`, like the clear button. `resetMask: false` skips re-syncing the
@@ -663,12 +672,12 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
     // disabled there's nothing safe to keep interactive inside it (nav buttons, day cells), so
     // instead of disabling every control piecemeal, fall back to the regular input+popup markup —
     // same as the non-inline disabled state, just with the popup unreachable (no trigger renders).
-    const showInlineCalendar = this.inline && !this.disabled
+    const showInlineCalendar = this.inline && !this.isDisabled
 
     return (
       <Field
         cssClasses={{ 'is-inline': showInlineCalendar }}
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={isInvalid}
         loading={this.loading}
@@ -698,7 +707,7 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
               ref={inputEl => (this.control.nativeEl = inputEl)}
               aria-describedby="description"
               aria-invalid={isInvalid ? 'true' : 'false'}
-              disabled={this.disabled}
+              disabled={this.isDisabled}
               autofocus={this.autofocus}
               autocomplete={this.autocomplete}
               placeholder={this.placeholder || ''}
@@ -713,12 +722,12 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
             />
             <ClearButton
               value={this.value}
-              disabled={this.disabled}
+              disabled={this.isDisabled}
               readonly={this.readonly}
               language={this.language}
               onClick={this.handleClearClick}
             />
-            {!this.freeSolo && !this.disabled && !this.readonly && (
+            {!this.freeSolo && !this.isDisabled && !this.readonly && (
               <button
                 id="trigger"
                 part="trigger"

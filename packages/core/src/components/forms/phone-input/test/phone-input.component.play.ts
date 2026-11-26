@@ -1,4 +1,4 @@
-import { DsPhoneInput, expect, test } from '@helvetia-design/playwright'
+import { DsPhoneInput, expect, getFormEntries, test } from '@helvetia-design/playwright'
 
 test.describe('value assigned after load', () => {
   test('should render a value that is assigned after the component has loaded', async ({ page }) => {
@@ -291,13 +291,12 @@ test.describe('disabled', () => {
       `<form><ds-phone-input name="phone" label="Phone number" initial-country="CH" value="+41791234567"></ds-phone-input></form>`,
     )
     const phone = new DsPhoneInput(page.locator('ds-phone-input'))
-    const form = page.locator('form')
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('phone'))).toBe(true)
+    expect(await getFormEntries(page)).toContainEqual(['phone', expect.anything()])
 
     await phone.el.evaluate((el: HTMLDsPhoneInputElement) => (el.disabled = true))
     await page.waitForChanges()
 
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('phone'))).toBe(false)
+    expect(await getFormEntries(page)).not.toContainEqual(['phone', expect.anything()])
   })
 
   test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
@@ -305,15 +304,14 @@ test.describe('disabled', () => {
       `<form><fieldset disabled><ds-phone-input name="phone" label="Phone number" initial-country="CH" value="+41791234567"></ds-phone-input></fieldset></form>`,
     )
     const phone = new DsPhoneInput(page.locator('ds-phone-input'))
-    const form = page.locator('form')
 
     await phone.assertToBeDisabled()
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('phone'))).toBe(false)
+    expect(await getFormEntries(page)).not.toContainEqual(['phone', expect.anything()])
 
     await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
     await page.waitForChanges()
 
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('phone'))).toBe(true)
+    expect(await getFormEntries(page)).toContainEqual(['phone', expect.anything()])
   })
 })
 

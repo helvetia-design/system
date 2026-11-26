@@ -100,7 +100,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
   @State() displayValue = ''
   @State() resolvedCountry: string | undefined = undefined
   @State() nationalNumber = ''
-  @State() private formDisabled = false
+  @State() private fieldsetDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -309,7 +309,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.formDisabled = disabled
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -539,7 +539,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
    */
 
   private get isDisabled(): boolean {
-    return this.disabled || this.formDisabled
+    return this.disabled || this.fieldsetDisabled
   }
 
   private initializeFromProps() {

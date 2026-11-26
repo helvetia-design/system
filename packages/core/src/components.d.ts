@@ -752,6 +752,14 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
+          * @default false
+         */
+        "groupDisabled": boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly": boolean;
+        /**
           * If `true` and `tile` is set, the checkbox box is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
          */
@@ -2432,6 +2440,14 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * @default false
+         */
+        "groupDisabled": boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly": boolean;
         /**
           * If `true` and `tile` is set, the radio circle is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
@@ -5928,6 +5944,14 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         /**
+          * @default false
+         */
+        "groupDisabled"?: boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly"?: boolean;
+        /**
           * If `true` and `tile` is set, the checkbox box is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
          */
@@ -7747,6 +7771,14 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         /**
+          * @default false
+         */
+        "groupDisabled"?: boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly"?: boolean;
+        /**
           * If `true` and `tile` is set, the radio circle is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
          */
@@ -9405,6 +9437,8 @@ declare namespace LocalJSX {
         "value": string;
         "checked": boolean;
         "disabled": boolean;
+        "groupDisabled": boolean;
+        "groupReadonly": boolean;
         "readonly": boolean;
         "required": boolean;
         "autoInvalidOff": boolean;
@@ -9737,6 +9771,8 @@ declare namespace LocalJSX {
         "colsMobile": RadioGroupColumns;
         "colsTablet": RadioGroupColumns;
         "disabled": boolean;
+        "groupDisabled": boolean;
+        "groupReadonly": boolean;
         "invalid": boolean;
         "label": string;
         "labelPosition": RadioLabelPosition;

@@ -76,7 +76,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() hasInvalidTextSlotContent = false
-  @State() private formDisabled = false
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -321,7 +321,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.formDisabled = disabled
+    this.fieldsetDisabled = disabled
     this.syncDisabledState()
   }
 
@@ -419,7 +419,7 @@ export class Slider implements DsComponentInterface, FieldInterface {
    */
 
   private get isDisabled(): boolean {
-    return this.disabled || this.formDisabled
+    return this.disabled || this.fieldsetDisabled
   }
 
   // Called from `componentDidLoad` on first load, and again from `connectedCallback` when reconnecting after a DOM move.

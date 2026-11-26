@@ -1,4 +1,4 @@
-import { DsCounter, expect, test } from '@helvetia-design/playwright'
+import { DsCounter, expect, getFormEntries, test } from '@helvetia-design/playwright'
 
 test.describe('events', () => {
   test('fires dsInput, dsChange, dsIncrease on increase click', async ({ page }) => {
@@ -127,13 +127,12 @@ test.describe('disabled', () => {
   test('should not submit its value when disabled is set as property', async ({ page }) => {
     await page.mount(`<form><ds-counter name="quantity" label="Quantity" value="3"></ds-counter></form>`)
     const counter = new DsCounter(page.locator('ds-counter'))
-    const form = page.locator('form')
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('quantity'))).toBe(true)
+    expect(await getFormEntries(page)).toContainEqual(['quantity', expect.anything()])
 
     await counter.el.evaluate((el: HTMLDsCounterElement) => (el.disabled = true))
     await page.waitForChanges()
 
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('quantity'))).toBe(false)
+    expect(await getFormEntries(page)).not.toContainEqual(['quantity', expect.anything()])
   })
 
   test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
@@ -141,15 +140,14 @@ test.describe('disabled', () => {
       `<form><fieldset disabled><ds-counter name="quantity" label="Quantity" value="3"></ds-counter></fieldset></form>`,
     )
     const counter = new DsCounter(page.locator('ds-counter'))
-    const form = page.locator('form')
 
     await counter.assertToBeDisabled()
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('quantity'))).toBe(false)
+    expect(await getFormEntries(page)).not.toContainEqual(['quantity', expect.anything()])
 
     await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
     await page.waitForChanges()
 
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('quantity'))).toBe(true)
+    expect(await getFormEntries(page)).toContainEqual(['quantity', expect.anything()])
   })
 })
 

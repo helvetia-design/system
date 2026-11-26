@@ -1,4 +1,4 @@
-import { DsSlider, expect, test } from '@helvetia-design/playwright'
+import { DsSlider, expect, getFormEntries, test } from '@helvetia-design/playwright'
 
 test.describe('value assigned after load', () => {
   test('should render a value that is assigned after the component has loaded', async ({ page }) => {
@@ -126,13 +126,12 @@ test.describe('disabled', () => {
   test('should not submit its value when disabled is set as property', async ({ page }) => {
     await page.mount(`<form><ds-slider name="volume" label="Volume" value="30"></ds-slider></form>`)
     const slider = new DsSlider(page.locator('ds-slider'))
-    const form = page.locator('form')
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('volume'))).toBe(true)
+    expect(await getFormEntries(page)).toContainEqual(['volume', expect.anything()])
 
     await slider.el.evaluate((el: HTMLDsSliderElement) => (el.disabled = true))
     await page.waitForChanges()
 
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('volume'))).toBe(false)
+    expect(await getFormEntries(page)).not.toContainEqual(['volume', expect.anything()])
   })
 
   test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
@@ -140,15 +139,14 @@ test.describe('disabled', () => {
       `<form><fieldset disabled><ds-slider name="volume" label="Volume" value="30"></ds-slider></fieldset></form>`,
     )
     const slider = new DsSlider(page.locator('ds-slider'))
-    const form = page.locator('form')
 
     await slider.assertToBeDisabled()
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('volume'))).toBe(false)
+    expect(await getFormEntries(page)).not.toContainEqual(['volume', expect.anything()])
 
     await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
     await page.waitForChanges()
 
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('volume'))).toBe(true)
+    expect(await getFormEntries(page)).toContainEqual(['volume', expect.anything()])
   })
 })
 

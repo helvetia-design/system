@@ -82,7 +82,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
 
   private disconnectInvalidTextSlotWatcher?: () => void
   @State() slottedOptionGroups: SelectOptionGroup[] = []
-  @State() private formDisabled = false
+  @State() private fieldsetDisabled = false
 
   @AttachInternals() internals!: ElementInternals
 
@@ -320,7 +320,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.formDisabled = disabled
+    this.fieldsetDisabled = disabled
     this.syncDisabledState()
   }
 
@@ -428,7 +428,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
    */
 
   private get isDisabled(): boolean {
-    return this.disabled || this.formDisabled
+    return this.disabled || this.fieldsetDisabled
   }
 
   // `slim-select` (the picker library) uses `MutationObserver` unconditionally during setup —

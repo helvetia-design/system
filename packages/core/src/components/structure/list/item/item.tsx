@@ -31,7 +31,7 @@ type Attributes = {
   'download'?: string
   'onClick'?: (event: MouseEvent) => void
   'aria-disabled'?: 'true'
-  'tabindex'?: number
+  'role'?: 'link'
 }
 
 /**
@@ -255,7 +255,7 @@ export class Item implements DsComponentInterface {
     if (this.variant === 'link') {
       if (this.disabled) {
         attributes['aria-disabled'] = 'true'
-        attributes.tabindex = -1
+        attributes.role = 'link'
       } else {
         if (this.href) {
           attributes.href = this.href

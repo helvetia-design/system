@@ -96,6 +96,46 @@ test.describe('component', () => {
     expect(submitSpy).toHaveReceivedEventTimes(0)
   })
 
+  test('should submit again once a disabled fieldset is enabled', async ({ page }) => {
+    await page.mount(`
+      <form>
+        <fieldset disabled>
+          <ds-button element-type="submit">Submit</ds-button>
+        </fieldset>
+      </form>
+    `)
+    const dsButton = new DsButton(page.locator('ds-button'))
+    const nativeButton = page.locator('ds-button button')
+    const spy = await dsButton.el.spyOnEvent('dsClick')
+    await page
+      .locator('form')
+      .evaluate((el: HTMLFormElement) => el.addEventListener('submit', ev => ev.preventDefault()))
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    await expect(nativeButton).toBeEnabled()
+    await nativeButton.click()
+
+    expect(spy).toHaveReceivedEventTimes(1)
+  })
+
+  test('should not submit the form while a submit button is loading', async ({ page }) => {
+    await page.mount(`
+      <form>
+        <ds-button element-type="submit" loading>Submit</ds-button>
+      </form>
+    `)
+    const nativeButton = page.locator('ds-button button')
+    const submitSpy = await page.locator('form').spyOnEvent('submit')
+
+    await nativeButton.focus()
+    await page.keyboard.press('Enter')
+    await nativeButton.dispatchEvent('click')
+
+    expect(submitSpy).toHaveReceivedEventTimes(0)
+  })
+
   test('should not emit or navigate when a loading link is activated with Enter', async ({ page }) => {
     await page.mount(`
       <ds-button href="#navigated" loading>Open</ds-button>

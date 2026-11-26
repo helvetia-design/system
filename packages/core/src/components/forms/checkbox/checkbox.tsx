@@ -70,7 +70,7 @@ export class Checkbox implements DsComponentInterface {
   @AttachInternals() internals!: ElementInternals
 
   @State() focused = false
-  @State() private formDisabled = false
+  @State() private fieldsetDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -127,6 +127,25 @@ export class Checkbox implements DsComponentInterface {
   @Prop({ reflect: true })
   @Type('boolean')
   readonly disabled: boolean = false
+
+  /**
+   * @internal
+   */
+  @Prop()
+  @Type('boolean')
+  readonly groupDisabled: boolean = false
+
+  @Watch('groupDisabled')
+  protected groupDisabledChanged() {
+    this.updateFormValue()
+  }
+
+  /**
+   * @internal
+   */
+  @Prop()
+  @Type('boolean')
+  readonly groupReadonly: boolean = false
 
   /**
    * If `true` the element can not mutated, meaning the user can not edit the control.
@@ -234,7 +253,7 @@ export class Checkbox implements DsComponentInterface {
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.formDisabled = disabled
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -261,7 +280,7 @@ export class Checkbox implements DsComponentInterface {
   }
 
   private handleClick = (ev: MouseEvent) => {
-    if (this.isDisabled || this.readonly) {
+    if (this.isDisabled || this.isReadonly) {
       return
     }
 
@@ -292,13 +311,13 @@ export class Checkbox implements DsComponentInterface {
   }
 
   private handleFocus = (ev: FocusEvent) => {
-    if (this.isDisabled || this.readonly) return
+    if (this.isDisabled || this.isReadonly) return
     this.focused = true
     this.dsFocus.emit(ev)
   }
 
   private handleBlur = (ev: FocusEvent) => {
-    if (this.isDisabled || this.readonly) return
+    if (this.isDisabled || this.isReadonly) return
     this.focused = false
     this.dsBlur.emit(ev)
   }
@@ -309,11 +328,15 @@ export class Checkbox implements DsComponentInterface {
    */
 
   private updateFormValue() {
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+    setFormValue(this.internals, this.checked && !this.groupDisabled ? (this.value as string) : null)
   }
 
   private get isDisabled(): boolean {
-    return this.disabled || this.formDisabled
+    return this.disabled || this.fieldsetDisabled || this.groupDisabled
+  }
+
+  private get isReadonly(): boolean {
+    return this.readonly || this.groupReadonly
   }
 
   private hasHint(): boolean {
@@ -332,7 +355,7 @@ export class Checkbox implements DsComponentInterface {
         aria-checked={`${this.checked}`}
         aria-invalid={this.invalid ? 'true' : null}
         class={{
-          'is-disabled': this.isDisabled || this.readonly,
+          'is-disabled': this.isDisabled || this.isReadonly,
           'is-invalid': this.invalid,
           'is-checked': this.checked,
           'is-tile': this.tile,
@@ -354,7 +377,7 @@ export class Checkbox implements DsComponentInterface {
             name={this.name}
             value={this.value}
             checked={this.checked}
-            disabled={this.isDisabled || this.readonly}
+            disabled={this.isDisabled || this.isReadonly}
             required={this.required}
             aria-invalid={this.invalid ? 'true' : null}
             onChange={ev => this.handleChange(ev)}

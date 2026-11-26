@@ -83,7 +83,7 @@ import {
 })
 export class Input implements DsComponentInterface, FieldInterface, FormControlInterface<string | null> {
   private inheritedAttributes: { [k: string]: any } = {}
-  private control = new FormControl(this)
+  private control = new FormControl(this, () => this.isDisabled)
   private maskUtil = new InputMaskUtil(this)
   inputId = `ds-input-${InputIds++}`
 
@@ -99,7 +99,7 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() hasInvalidTextSlotContent = false
-  @State() private formDisabled = false
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -415,7 +415,7 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
   }
 
   formDisabledCallback(disabled: boolean) {
-    this.formDisabled = disabled
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -516,7 +516,7 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
    */
 
   private get isDisabled(): boolean {
-    return this.disabled || this.formDisabled
+    return this.disabled || this.fieldsetDisabled
   }
 
   private getRawValue(): string {

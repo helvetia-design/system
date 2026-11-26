@@ -26731,7 +26731,7 @@
           },
           "mutable": false,
           "attr": "disabled",
-          "reflectToAttr": false,
+          "reflectToAttr": true,
           "docs": "If `true`, the element is not mutable, focusable, or even submitted with the form.",
           "docsTags": [
             {

@@ -81,13 +81,12 @@ test.describe('disabled', () => {
   test('should not submit its value when disabled is set as property', async ({ page }) => {
     await page.mount(`<form><ds-input name="hero" label="Hero" value="Steve Rogers"></ds-input></form>`)
     const input = new DsInput(page.locator('ds-input'))
-    const form = page.locator('form')
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('hero'))).toBe(true)
+    expect(await getFormEntries(page)).toContainEqual(['hero', expect.anything()])
 
     await input.el.evaluate((el: HTMLDsInputElement) => (el.disabled = true))
     await page.waitForChanges()
 
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('hero'))).toBe(false)
+    expect(await getFormEntries(page)).not.toContainEqual(['hero', expect.anything()])
   })
 
   test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
@@ -95,15 +94,14 @@ test.describe('disabled', () => {
       `<form><fieldset disabled><ds-input name="hero" label="Hero" value="Steve Rogers"></ds-input></fieldset></form>`,
     )
     const input = new DsInput(page.locator('ds-input'))
-    const form = page.locator('form')
 
     await input.assertToBeDisabled()
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('hero'))).toBe(false)
+    expect(await getFormEntries(page)).not.toContainEqual(['hero', expect.anything()])
 
     await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
     await page.waitForChanges()
 
-    expect(await form.evaluate((el: HTMLFormElement) => new FormData(el).has('hero'))).toBe(true)
+    expect(await getFormEntries(page)).toContainEqual(['hero', expect.anything()])
   })
 })
 

@@ -119,6 +119,8 @@ test.describe('component', () => {
     await expect(anchor).not.toHaveAttribute('href')
     await expect(anchor).not.toHaveAttribute('target')
     await expect(anchor).toHaveAttribute('aria-disabled', 'true')
+    await expect(anchor).toHaveAttribute('role', 'link')
+    await expect(anchor).not.toHaveAttribute('tabindex')
 
     await page.locator('#before').focus()
     await page.keyboard.press('Tab')

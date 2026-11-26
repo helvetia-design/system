@@ -46,7 +46,10 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
 
   nativeEl?: HTMLInputElement | HTMLTextAreaElement
 
-  constructor(private component: FormControlInterface<Value>) {}
+  constructor(
+    private component: FormControlInterface<Value>,
+    private isDisabled: () => boolean = () => component.disabled,
+  ) {}
 
   /**
    * LISTENERS
@@ -54,7 +57,7 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
    */
 
   listenOnClick = (ev: UIEvent): void => {
-    if ((this.component.disabled || this.component.readonly) && ev.target && ev.target === this.component.el) {
+    if ((this.isDisabled() || this.component.readonly) && ev.target && ev.target === this.component.el) {
       stopEventBubbling(ev)
     }
   }
@@ -95,7 +98,7 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
    */
 
   onClick = (ev: MouseEvent) => {
-    if (!this.component.disabled && !this.component.readonly) {
+    if (!this.isDisabled() && !this.component.readonly) {
       this.component?.dsClick.emit(ev)
     }
   }
@@ -103,14 +106,14 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
   onFocus = (ev: FocusEvent) => {
     this.component.focused = true
     this.inputValue = this.component.value
-    if (!this.component.disabled) {
+    if (!this.isDisabled()) {
       this.component?.dsFocus.emit(ev)
     }
   }
 
   onBlur = (ev: FocusEvent) => {
     this.component.focused = false
-    if (!this.component.disabled) {
+    if (!this.isDisabled()) {
       this.component?.dsBlur.emit(ev)
       this.setValue(this.inputValue)
     }
