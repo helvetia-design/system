@@ -1,3 +1,5 @@
+@use '../accordion/inverted' as accordion-inverted;
+
 /**
  * Variables
  * --------------------------------
@@ -22,7 +24,7 @@
 /**
   * Inverted
   * --------------------------------
-  * Cascades the inverted color scheme to descendant ds-item elements via inherited
+  * Cascades the inverted color scheme to descendant ds-item and ds-accordion[list] elements via inherited
   * CSS custom properties, so items don't each need their own `inverted` prop set.
   */
 :host(.is-inverted) {
@@ -36,15 +38,22 @@
   --mod-list-item-background-hover: var(--ds-list-item-inverted-background-hover);
   --mod-list-item-background-active: var(--ds-list-item-inverted-background-active);
   --mod-list-item-focus: var(--ds-alias-interaction-focus-color-inverted);
+
+  // Intentional cascade: ds-list inverts slotted ds-accordion[list] rows (ADR 0040).
+  @include accordion-inverted.inverted;
 }
 
 /**
   * Size
   * --------------------------------
-  * Cascades the size to descendant ds-item elements via inherited CSS custom
+  * Cascades the size to descendant ds-item and ds-accordion[list] elements via inherited CSS custom
   * properties, so items don't each need their own `size` prop set.
   */
 :host(.is-lg) {
   --mod-list-item-min-height: var(--ds-list-item-size-lg-min-height);
   --mod-list-item-py: var(--ds-list-item-size-lg-padding-y);
+
+  // Intentional cascade: ds-list sizes slotted ds-accordion[list] rows (ADR 0040).
+  --mod-accordion-list-size-min-height: var(--ds-accordion-list-size-lg-min-height);
+  --mod-accordion-list-size-padding-y: var(--ds-accordion-list-size-lg-padding-y);
 }

@@ -10,8 +10,8 @@ import { ITEM_SIZES, type ItemSize } from './item/item.interfaces'
  * @slot - The list items (li elements or content).
  * @part list - The native HTML list element (ol or ul).
  *
- * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item elements.
- * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item elements.
+ * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item and ds-accordion[list] elements.
+ * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item and ds-accordion[list] elements.
  */
 @Component({
   tag: 'ds-list',
@@ -35,7 +35,7 @@ export class List implements DsComponentInterface {
 
   /**
    * If `true`, the list uses an inverted color scheme for use on dark backgrounds such as the primary surface.
-   * Cascades to descendant `ds-item` elements.
+   * Cascades to descendant `ds-item` and `ds-accordion[list]` elements.
    */
   @Prop()
   @Type('boolean')
@@ -50,7 +50,7 @@ export class List implements DsComponentInterface {
 
   /**
    * The size of the list items. If not set, the default (base) size is used.
-   * Cascades to descendant `ds-item` elements.
+   * Cascades to descendant `ds-item` and `ds-accordion[list]` elements.
    */
   @Prop()
   @OneOf(ITEM_SIZES)

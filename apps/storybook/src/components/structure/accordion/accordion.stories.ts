@@ -120,3 +120,154 @@ export const AccordionButton = Story({
   },
 })
 AccordionButton.storyName = '🧩 Accordion Button'
+
+export const Inverted = Story({
+  args: {
+    inverted: true,
+  },
+  ...withRender(
+    ({ slotSummary, slotContent, ...args }) => `
+<div class="bg-primary p-base">
+  <ds-accordion ${props(args, 'ds-accordion')}>
+    <div slot="summary">${slotSummary}</div>
+    <div slot="content" class="py-base">${slotContent}</div>
+  </ds-accordion>
+</div>`,
+  ),
+})
+Inverted.storyName = '🧩 Inverted'
+
+export const ListAccordion = Story({
+  args: {
+    list: true,
+    group: 'faq',
+  },
+  ...withRender(
+    ({ slotContent, ...args }) => `
+<ds-list>
+  <li>
+    <ds-accordion ${props(args, 'ds-accordion')}>
+      <span slot="summary">How do I calculate the sum insured of my household contents?</span>
+      <p slot="content">${slotContent}</p>
+    </ds-accordion>
+  </li>
+  <li>
+    <ds-accordion ${props(args, 'ds-accordion')} marker="plus-minus">
+      <span slot="summary">Which belongings are covered?</span>
+      <p slot="content">${slotContent}</p>
+    </ds-accordion>
+  </li>
+  <li>
+    <ds-accordion ${props(args, 'ds-accordion')} marker-position="left">
+      <span slot="summary">What happens if I move?</span>
+      <p slot="content">${slotContent}</p>
+    </ds-accordion>
+  </li>
+</ds-list>`,
+  ),
+})
+ListAccordion.storyName = '🧩 List Accordion'
+
+export const ListAccordionNested = Story({
+  args: {
+    list: true,
+  },
+  ...withRender(
+    ({ slotContent, ...args }) => `
+<ds-list>
+  <li>
+    <ds-accordion ${props(args, 'ds-accordion')}>
+      <span slot="summary">Switzerland</span>
+      <section slot="content">
+        <ds-list>
+          <li>
+            <ds-accordion ${props(args, 'ds-accordion')} summary-level="h4">
+              <span slot="summary">Bern</span>
+              <p slot="content">${slotContent}</p>
+            </ds-accordion>
+          </li>
+          <li>
+            <ds-accordion ${props(args, 'ds-accordion')} summary-level="h4">
+              <span slot="summary">Zurich</span>
+              <p slot="content">${slotContent}</p>
+            </ds-accordion>
+          </li>
+        </ds-list>
+      </section>
+    </ds-accordion>
+  </li>
+  <li>
+    <ds-accordion ${props(args, 'ds-accordion')}>
+      <span slot="summary">Belgium</span>
+      <section slot="content">
+        <ds-list>
+          <li>
+            <ds-accordion ${props(args, 'ds-accordion')} summary-level="h4">
+              <span slot="summary">Brussels</span>
+              <p slot="content">${slotContent}</p>
+            </ds-accordion>
+          </li>
+          <li>
+            <ds-accordion ${props(args, 'ds-accordion')} summary-level="h4">
+              <span slot="summary">Antwerp</span>
+              <p slot="content">${slotContent}</p>
+            </ds-accordion>
+          </li>
+        </ds-list>
+      </section>
+    </ds-accordion>
+  </li>
+</ds-list>`,
+  ),
+})
+ListAccordionNested.storyName = '🧩 List Accordion Nested'
+
+export const ListAccordionLarge = Story({
+  args: {
+    list: true,
+  },
+  ...withRender(
+    ({ slotContent, ...args }) => `
+<ds-list size="lg">
+  <li>
+    <ds-accordion ${props(args, 'ds-accordion')}>
+      <span slot="summary">How do I calculate the sum insured of my household contents?</span>
+      <p slot="content">${slotContent}</p>
+    </ds-accordion>
+  </li>
+  <li>
+    <ds-accordion ${props(args, 'ds-accordion')}>
+      <span slot="summary">Which belongings are covered?</span>
+      <p slot="content">${slotContent}</p>
+    </ds-accordion>
+  </li>
+</ds-list>`,
+  ),
+})
+ListAccordionLarge.storyName = '🧩 List Accordion Large'
+
+export const ListAccordionInverted = Story({
+  args: {
+    list: true,
+  },
+  ...withRender(
+    ({ slotContent, ...args }) => `
+<div class="bg-primary p-base">
+  <ds-list inverted>
+    <li>
+      <ds-accordion ${props(args, 'ds-accordion')}>
+        <span slot="summary">How do I calculate the sum insured of my household contents?</span>
+        <p slot="content">${slotContent}</p>
+      </ds-accordion>
+    </li>
+    <li>
+      <ds-accordion ${props(args, 'ds-accordion')} open>
+        <span slot="summary">Which belongings are covered?</span>
+        <p slot="content">${slotContent}</p>
+      </ds-accordion>
+    </li>
+  </ds-list>
+</div>`,
+  ),
+})
+ListAccordionInverted.storyName = '🧩 List Accordion Inverted'

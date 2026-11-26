@@ -1,5 +1,5 @@
 import { expectScreenshot, screenshot, test } from '@helvetia-design/playwright'
-import { TAG, VARIANTS } from './accordion.variants'
+import { TAG, VARIANTS, VARIANTS_HOST } from './accordion.variants'
 
 const image = screenshot(TAG)
 
@@ -25,7 +25,7 @@ test.describe('host', () => {
     await page.setupVisualTest(`/components/structure/${TAG}/test/${TAG}.visual.html`)
   })
 
-  VARIANTS.forEach(variant => {
+  VARIANTS_HOST.forEach(variant => {
     test(variant, async ({ page }) => {
       const el = page.getByTestId(variant)
       await expectScreenshot(el, image(variant))

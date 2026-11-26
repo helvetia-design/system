@@ -27,7 +27,6 @@
  * @prop --list-item-background-base: Background of a clickable list item.
  * @prop --list-item-background-hover: Background of a clickable list item on hover.
  * @prop --list-item-background-active: Background of a clickable list item when active.
- * @prop --list-item-accordion-py: Vertical padding applied to slotted paragraph content inside the accordion variant.
  * @prop --list-item-action-icon-size: Size of the trailing action icon shown in link and button variants.
  * @prop --list-item-title-font-family: Font family of the label heading inside a list item.
  * @prop --list-item-title-font-size: Font size of the label heading inside a list item.
@@ -80,8 +79,6 @@
         )
     )
   );
-
-  @include vars.local(list-item-accordion-py, var(--ds-list-item-accordion-padding-y));
 
   @include vars.local(list-item-action-icon-size, var(--ds-list-item-action-icon-size));
 
@@ -283,8 +280,7 @@ $size-aliases: (
 }
 
 :host(.is-link:not(.is-disabled)),
-:host(.is-button:not(.is-disabled)),
-:host(.is-accordion:not(.is-disabled)) {
+:host(.is-button:not(.is-disabled)) {
   #item {
     @include hover {
       &:hover,
@@ -304,44 +300,6 @@ $size-aliases: (
   }
 }
 
-/**
-  * Accordion
-  */
-:host(.is-accordion) {
-  ::slotted(p) {
-    padding-block: var(--_list-item-accordion-py);
-  }
-
-  ds-accordion {
-    --accordion-summary-color-hover: var(--_list-item-color-hover);
-  }
-
-  ds-accordion::part(header) {
-    background: var(--_list-item-background-base);
-  }
-
-  ds-accordion::part(summary) {
-    padding-right: var(--_list-item-px);
-  }
-
-  ds-accordion::part(summary):hover {
-    background: var(--_list-item-background-hover);
-  }
-
-  ds-accordion::part(summary):active {
-    background: var(--_list-item-background-active);
-  }
-
-  #accordion-content {
-    //
-    // Border
-    &:after {
-      @include border();
-      height: var(--_list-item-border-width);
-      background: var(--_list-item-border-color-base);
-    }
-  }
-}
 /**
   * Disabled
   */

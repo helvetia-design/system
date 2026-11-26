@@ -243,6 +243,10 @@ _Avoid_: anchor, overlay, positioned slot, badge slot
 A component shown on a dark surface. It is a state of the surface, not a color: it combines with any color the component offers, and every color has its own inverted look (see [ADR-0038](../../docs/adr/0038-inverted-is-not-a-color.md)).
 _Avoid_: white, dark mode, inverted color
 
+**List row**:
+An expandable row in a list: `ds-accordion` with `list`, placed in `ds-list > li`. `ds-list` cascades its `size="lg"` and `inverted` into the rows through `--mod-accordion-list-*` and `--mod-accordion-*` custom properties (see [ADR-0040](../../docs/adr/0040-list-accordion-rows-live-on-ds-accordion.md)). `ds-item` has no accordion variant. Nest a list by wrapping the inner `ds-list` in `<section slot="content">` of the parent: with `slot="content"` on the `ds-list` itself, the HTML `li` start-tag rule (custom elements, `div`, `p`, `address` are transparent) lets the first nested `<li>` close the outer `<li>` in plain HTML, `innerHTML` and SSR. The wrapper adds no padding or margin.
+_Avoid_: accordion item, `ds-item variant="accordion"`
+
 ### Usage-Category Taxonomy
 
 Every component directory lives under a lowercase-plural **category** folder:

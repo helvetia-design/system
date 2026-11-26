@@ -1,0 +1,18 @@
+// Inverted color scheme of ds-accordion, defined once.
+// Used by the accordion's own `.is-inverted` and by `ds-list.is-inverted` (ADR 0040).
+@mixin inverted() {
+  // Inherited so slotted content stays readable on a dark surface.
+  color: var(--ds-accordion-summary-color-inverted-base);
+
+  --mod-accordion-summary-color: var(--ds-accordion-summary-color-inverted-base);
+  --mod-accordion-summary-color-hover: var(--ds-accordion-summary-color-inverted-hover);
+  --mod-accordion-summary-color-active: var(--ds-accordion-summary-color-inverted-active);
+  --mod-accordion-marker-color: var(--ds-accordion-marker-color-inverted-base);
+  --mod-accordion-list-color-border-base: var(--ds-accordion-list-color-border-inverted-base);
+  --mod-accordion-list-color-border-hover: var(--ds-accordion-list-color-border-inverted-hover);
+  --mod-accordion-list-color-border-active: var(--ds-accordion-list-color-border-inverted-active);
+  --mod-accordion-list-color-background-base: var(--ds-accordion-list-color-background-inverted-base);
+  --mod-accordion-list-color-background-hover: var(--ds-accordion-list-color-background-inverted-hover);
+  --mod-accordion-list-color-background-active: var(--ds-accordion-list-color-background-inverted-active);
+  --mod-accordion-focus: var(--ds-alias-interaction-focus-color-inverted);
+}

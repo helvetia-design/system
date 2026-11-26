@@ -28,6 +28,9 @@ import {
  * @part summary - The summary element that serves as the toggle button.
  * @part marker - The marker element that indicates the open/close state of the accordion.
  * @part content - The content element that contains the collapsible content of the accordion.
+ *
+ * @variant is-list - List row look with bottom border, row padding, hover and active backgrounds. Place in `ds-list > li`.
+ * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface.
  */
 @Component({
   tag: 'ds-accordion',
@@ -68,6 +71,22 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
   @Prop({ reflect: true })
   @Type('string')
   readonly group: string = ''
+
+  /**
+   * If `true`, the accordion renders as a list row: bottom border, row padding, hover and active backgrounds.
+   * Place it in `ds-list > li`. Incompatible with `button` and the `button*`, `summaryTitle` and
+   * `summaryVisualLevel` props: `list` wins when combined.
+   */
+  @Prop()
+  @Type('boolean')
+  readonly list: boolean = false
+
+  /**
+   * If `true`, the accordion uses an inverted color scheme for use on dark backgrounds such as the primary surface.
+   */
+  @Prop()
+  @Type('boolean')
+  readonly inverted: boolean = false
 
   /**
    * The heading level of the summary
@@ -252,6 +271,8 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
    */
 
   render() {
+    const isButton = this.button && !this.list
+    const hasButtonIcon = !this.list && (!!this.buttonIconOpen || !!this.buttonIconClose)
     const MarkerIcon = (
       <ds-icon
         id="marker"
@@ -269,9 +290,11 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
     return (
       <Host
         class={{
-          'is-button': !!this.buttonIconOpen || !!this.buttonIconClose,
-          'is-title': this.summaryTitle === true || hasValue(this.summaryVisualLevel),
-          [`is-${this.summaryVisualLevel}`]: !!this.summaryVisualLevel,
+          'is-button': hasButtonIcon,
+          'is-list': this.list,
+          'is-inverted': this.inverted,
+          'is-title': !this.list && (this.summaryTitle === true || hasValue(this.summaryVisualLevel)),
+          [`is-${this.summaryVisualLevel}`]: !this.list && !!this.summaryVisualLevel,
           'is-animated': !!this.animated,
           'is-animating': !!this.animated && this.isAnimating,
         }}
@@ -288,35 +311,36 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
             part="summary"
             onClick={ev => this.handleToggle(ev, !this.open)}
             class={{
-              'ds-button': this.button,
-              'is-wide': this.buttonWide,
-              [`is-${this.buttonColor}`]: !!this.buttonColor,
-              [`is-${this.buttonSize}`]: !!this.buttonSize,
+              'ds-button': isButton,
+              'is-wide': !this.list && this.buttonWide,
+              [`is-${this.buttonColor}`]: !this.list && !!this.buttonColor,
+              [`is-${this.buttonSize}`]: !this.list && !!this.buttonSize,
+              'is-inverted': isButton && this.inverted,
               'has-marker-left': this.markerPosition === 'left',
             }}
           >
             {/* ---------------------------------------- */}
             {/* Summary Button Icon                      */}
             {/* ---------------------------------------- */}
-            {this.buttonIconOpen || this.buttonIconClose ? (
+            {hasButtonIcon ? (
               <ds-icon
                 id="marker"
                 part="marker"
                 name={this.open ? this.buttonIconOpen : this.buttonIconClose}
               ></ds-icon>
             ) : (
-              this.button && MarkerIcon
+              isButton && MarkerIcon
             )}
             {/* ---------------------------------------- */}
             {/* Summary Label                            */}
             {/* ---------------------------------------- */}
-            <span id="label" class={{ 'is-button': this.button }}>
+            <span id="label" class={{ 'is-button': isButton }}>
               <slot name="summary">{this.open ? this.buttonLabelOpen : this.buttonLabelClose}</slot>
             </span>
             {/* ---------------------------------------- */}
             {/* Summary Marker                           */}
             {/* ---------------------------------------- */}
-            {!this.button && this.marker !== 'none' && !this.buttonIconOpen && MarkerIcon}
+            {!isButton && this.marker !== 'none' && !hasButtonIcon && MarkerIcon}
           </button>
         </this.summaryLevel>
         {/* ---------------------------------------- */}

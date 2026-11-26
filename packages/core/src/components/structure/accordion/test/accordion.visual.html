@@ -225,6 +225,140 @@
             <div slot="content" class="s-bg-1 s-height-4rem"></div>
           </ds-accordion>
         </section>
+
+        <!-- List -->
+        <section data-testid="list">
+          <span>List</span>
+          <ds-list>
+            <li>
+              <ds-accordion list group="faq">
+                <span slot="summary">How do I calculate the sum insured of my household contents?</span>
+                <p slot="content">Add up the replacement value of all your belongings.</p>
+              </ds-accordion>
+            </li>
+            <li>
+              <ds-accordion list group="faq" marker="plus-minus" open>
+                <span slot="summary">Plus-minus marker, open</span>
+                <p slot="content">Add up the replacement value of all your belongings.</p>
+              </ds-accordion>
+            </li>
+            <li>
+              <ds-accordion list group="faq" marker-position="left">
+                <span slot="summary">Marker on the left</span>
+                <p slot="content">Add up the replacement value of all your belongings.</p>
+              </ds-accordion>
+            </li>
+          </ds-list>
+        </section>
+
+        <!-- List Nested -->
+        <section data-testid="list-nested">
+          <span>List Nested</span>
+          <ds-list>
+            <li>
+              <ds-accordion list open>
+                <span slot="summary">Switzerland</span>
+                <section slot="content">
+                  <ds-list>
+                    <li>
+                      <ds-accordion list open>
+                        <span slot="summary">Bern</span>
+                        <p slot="content">Capital of Switzerland.</p>
+                      </ds-accordion>
+                    </li>
+                    <li>
+                      <ds-accordion list>
+                        <span slot="summary">Zurich</span>
+                        <p slot="content">Largest city of Switzerland.</p>
+                      </ds-accordion>
+                    </li>
+                  </ds-list>
+                </section>
+              </ds-accordion>
+            </li>
+            <li>
+              <ds-accordion list open>
+                <span slot="summary">Belgium</span>
+                <section slot="content">
+                  <ds-list>
+                    <li>
+                      <ds-accordion list>
+                        <span slot="summary">Brussels</span>
+                        <p slot="content">Capital of Belgium.</p>
+                      </ds-accordion>
+                    </li>
+                    <li>
+                      <ds-accordion list open>
+                        <span slot="summary">Antwerp</span>
+                        <p slot="content">Port city of Belgium.</p>
+                      </ds-accordion>
+                    </li>
+                  </ds-list>
+                </section>
+              </ds-accordion>
+            </li>
+          </ds-list>
+        </section>
+
+        <!-- List Large -->
+        <section data-testid="list-lg">
+          <span>List Large</span>
+          <ds-list size="lg">
+            <li>
+              <ds-accordion list>
+                <span slot="summary">Large row closed</span>
+                <p slot="content">Content.</p>
+              </ds-accordion>
+            </li>
+            <li>
+              <ds-accordion list open>
+                <span slot="summary">Large row open</span>
+                <p slot="content">Content.</p>
+              </ds-accordion>
+            </li>
+          </ds-list>
+        </section>
+
+        <!-- List Inverted -->
+        <section data-testid="list-inverted">
+          <span>List Inverted</span>
+          <div class="bg-primary p-base">
+            <ds-list inverted>
+              <li>
+                <ds-accordion list>
+                  <span slot="summary">Inverted row closed</span>
+                  <p slot="content">Content.</p>
+                </ds-accordion>
+              </li>
+              <li>
+                <ds-accordion list open>
+                  <span slot="summary">Inverted row open</span>
+                  <p slot="content">Content.</p>
+                </ds-accordion>
+              </li>
+            </ds-list>
+            <ds-accordion inverted>
+              <span slot="summary">Standalone inverted</span>
+              <p slot="content">Content.</p>
+            </ds-accordion>
+            <ds-accordion inverted button button-label-open="Close" button-label-close="Open">
+              <p slot="content">Content.</p>
+            </ds-accordion>
+          </div>
+        </section>
+
+        <!-- List Precedence -->
+        <section data-testid="list-precedence">
+          <span>List Precedence</span>
+          <ds-list>
+            <li>
+              <ds-accordion list button button-color="danger" summary-title summary-visual-level="h1">
+                <span slot="summary">Looks like a plain list row</span>
+                <p slot="content">Content.</p>
+              </ds-accordion>
+            </li>
+          </ds-list>
+        </section>
       </main>
     </ds-root>
   </body>

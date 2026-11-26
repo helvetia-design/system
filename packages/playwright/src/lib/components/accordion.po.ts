@@ -10,10 +10,11 @@ export class DsAccordion extends PageObject {
 
   constructor(el: E2ELocator) {
     super(el)
-    this.header = el.locator('[part="header"]')
-    this.summary = el.locator('[part="summary"]')
-    this.marker = el.locator('[part="marker"]')
-    this.content = el.locator('[part="content"]')
+    // `.first()`: a nested ds-accordion in the content slot also matches; the host's own shadow part comes first.
+    this.header = el.locator('[part="header"]').first()
+    this.summary = el.locator('[part="summary"]').first()
+    this.marker = el.locator('[part="marker"]').first()
+    this.content = el.locator('[part="content"]').first()
   }
 
   async clickSummary() {

@@ -105,6 +105,8 @@ export namespace Components {
     /**
      * Accordion displays collapsible content sections with open/close toggle buttons and optional animations.
      * Perfect for organizing large amounts of content into logical, expandable groups.
+     * @variant is-list - List row look with bottom border, row padding, hover and active backgrounds. Place in `ds-list > li`.
+     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface.
      */
     interface DsAccordion {
         /**
@@ -152,6 +154,16 @@ export namespace Components {
           * @default ''
          */
         "group": string;
+        /**
+          * If `true`, the accordion uses an inverted color scheme for use on dark backgrounds such as the primary surface.
+          * @default false
+         */
+        "inverted": boolean;
+        /**
+          * If `true`, the accordion renders as a list row: bottom border, row padding, hover and active backgrounds. Place it in `ds-list > li`. Incompatible with `button` and the `button*`, `summaryTitle` and `summaryVisualLevel` props: `list` wins when combined.
+          * @default false
+         */
+        "list": boolean;
         /**
           * The marker variant. Only applies if `button` is `false`. If `''` the default marker is used, if `plus` a plus icon is used and if `plus-minus` a plus icon for closed and a minus icon for open state is used.
          */
@@ -1749,27 +1761,9 @@ export namespace Components {
         "value": string | null;
     }
     /**
-     * Item displays a list entry that supports plain content, accordion, link, and button variants with optional icon, label, and description slots.
+     * Item displays a list entry that supports plain content, link, and button variants with optional icon, label, and description slots.
      */
     interface DsItem {
-        /**
-          * The name of the group the accordion belongs to. Accordions with the same group name will automatically close when another accordion in the same group is opened.
-          * @default ''
-         */
-        "accordionGroup": string;
-        /**
-          * The marker variant. Only applies if `variant` is set to `accordion`. If `''` the default marker is used, if `plus` a plus icon is used and if `plus-minus` a plus icon for closed and a minus icon for open state is used.
-         */
-        "accordionMarker"?: AccordionMarker;
-        /**
-          * The position of the marker. Only applies if `variant` is set to `accordion`.
-         */
-        "accordionMarkerPosition"?: AccordionMarkerPosition;
-        /**
-          * If `true` the accordion is open.
-          * @default false
-         */
-        "accordionOpen": boolean;
         /**
           * The action icon variant. Controls which icon is displayed for `link` and `button` variants.
          */
@@ -1877,12 +1871,12 @@ export namespace Components {
     }
     /**
      * List renders semantic HTML list elements (ordered or unordered) for grouping related items.
-     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item elements.
-     * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item elements.
+     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item and ds-accordion[list] elements.
+     * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item and ds-accordion[list] elements.
      */
     interface DsList {
         /**
-          * If `true`, the list uses an inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant `ds-item` elements.
+          * If `true`, the list uses an inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant `ds-item` and `ds-accordion[list]` elements.
           * @default false
          */
         "inverted": boolean;
@@ -1892,7 +1886,7 @@ export namespace Components {
          */
         "ordered": boolean;
         /**
-          * The size of the list items. If not set, the default (base) size is used. Cascades to descendant `ds-item` elements.
+          * The size of the list items. If not set, the default (base) size is used. Cascades to descendant `ds-item` and `ds-accordion[list]` elements.
          */
         "size"?: ItemSize;
     }
@@ -3947,6 +3941,8 @@ declare global {
     /**
      * Accordion displays collapsible content sections with open/close toggle buttons and optional animations.
      * Perfect for organizing large amounts of content into logical, expandable groups.
+     * @variant is-list - List row look with bottom border, row padding, hover and active backgrounds. Place in `ds-list > li`.
+     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface.
      */
     interface HTMLDsAccordionElement extends Components.DsAccordion, HTMLStencilElement {
         addEventListener<K extends keyof HTMLDsAccordionElementEventMap>(type: K, listener: (this: HTMLDsAccordionElement, ev: DsAccordionCustomEvent<HTMLDsAccordionElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4455,12 +4451,9 @@ declare global {
     };
     interface HTMLDsItemElementEventMap {
         "dsClick": ButtonClickDetail;
-        "dsAccordionToggle": AccordionToggleDetail;
-        "dsAccordionOpened": AccordionToggleDetail;
-        "dsAccordionClosed": AccordionToggleDetail;
     }
     /**
-     * Item displays a list entry that supports plain content, accordion, link, and button variants with optional icon, label, and description slots.
+     * Item displays a list entry that supports plain content, link, and button variants with optional icon, label, and description slots.
      */
     interface HTMLDsItemElement extends Components.DsItem, HTMLStencilElement {
         addEventListener<K extends keyof HTMLDsItemElementEventMap>(type: K, listener: (this: HTMLDsItemElement, ev: DsItemCustomEvent<HTMLDsItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4487,8 +4480,8 @@ declare global {
     };
     /**
      * List renders semantic HTML list elements (ordered or unordered) for grouping related items.
-     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item elements.
-     * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item elements.
+     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item and ds-accordion[list] elements.
+     * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item and ds-accordion[list] elements.
      */
     interface HTMLDsListElement extends Components.DsList, HTMLStencilElement {
     }
@@ -5237,6 +5230,8 @@ declare namespace LocalJSX {
     /**
      * Accordion displays collapsible content sections with open/close toggle buttons and optional animations.
      * Perfect for organizing large amounts of content into logical, expandable groups.
+     * @variant is-list - List row look with bottom border, row padding, hover and active backgrounds. Place in `ds-list > li`.
+     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface.
      */
     interface DsAccordion {
         /**
@@ -5283,6 +5278,16 @@ declare namespace LocalJSX {
           * @default ''
          */
         "group"?: string;
+        /**
+          * If `true`, the accordion uses an inverted color scheme for use on dark backgrounds such as the primary surface.
+          * @default false
+         */
+        "inverted"?: boolean;
+        /**
+          * If `true`, the accordion renders as a list row: bottom border, row padding, hover and active backgrounds. Place it in `ds-list > li`. Incompatible with `button` and the `button*`, `summaryTitle` and `summaryVisualLevel` props: `list` wins when combined.
+          * @default false
+         */
+        "list"?: boolean;
         /**
           * The marker variant. Only applies if `button` is `false`. If `''` the default marker is used, if `plus` a plus icon is used and if `plus-minus` a plus icon for closed and a minus icon for open state is used.
          */
@@ -7006,27 +7011,9 @@ declare namespace LocalJSX {
         "value"?: string | null;
     }
     /**
-     * Item displays a list entry that supports plain content, accordion, link, and button variants with optional icon, label, and description slots.
+     * Item displays a list entry that supports plain content, link, and button variants with optional icon, label, and description slots.
      */
     interface DsItem {
-        /**
-          * The name of the group the accordion belongs to. Accordions with the same group name will automatically close when another accordion in the same group is opened.
-          * @default ''
-         */
-        "accordionGroup"?: string;
-        /**
-          * The marker variant. Only applies if `variant` is set to `accordion`. If `''` the default marker is used, if `plus` a plus icon is used and if `plus-minus` a plus icon for closed and a minus icon for open state is used.
-         */
-        "accordionMarker"?: AccordionMarker;
-        /**
-          * The position of the marker. Only applies if `variant` is set to `accordion`.
-         */
-        "accordionMarkerPosition"?: AccordionMarkerPosition;
-        /**
-          * If `true` the accordion is open.
-          * @default false
-         */
-        "accordionOpen"?: boolean;
         /**
           * The action icon variant. Controls which icon is displayed for `link` and `button` variants.
          */
@@ -7068,18 +7055,6 @@ declare namespace LocalJSX {
           * The visual size of the label. Defaults to `labelLevel` if not set.
          */
         "labelSize"?: ItemLabelSize;
-        /**
-          * Emitted when the accordion is closed.
-         */
-        "onDsAccordionClosed"?: (event: DsItemCustomEvent<AccordionToggleDetail>) => void;
-        /**
-          * Emitted when the accordion is opened.
-         */
-        "onDsAccordionOpened"?: (event: DsItemCustomEvent<AccordionToggleDetail>) => void;
-        /**
-          * Emitted when the accordion is toggled.
-         */
-        "onDsAccordionToggle"?: (event: DsItemCustomEvent<AccordionToggleDetail>) => void;
         /**
           * Emitted when the link element has clicked.
          */
@@ -7149,12 +7124,12 @@ declare namespace LocalJSX {
     }
     /**
      * List renders semantic HTML list elements (ordered or unordered) for grouping related items.
-     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item elements.
-     * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item elements.
+     * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item and ds-accordion[list] elements.
+     * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item and ds-accordion[list] elements.
      */
     interface DsList {
         /**
-          * If `true`, the list uses an inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant `ds-item` elements.
+          * If `true`, the list uses an inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant `ds-item` and `ds-accordion[list]` elements.
           * @default false
          */
         "inverted"?: boolean;
@@ -7164,7 +7139,7 @@ declare namespace LocalJSX {
          */
         "ordered"?: boolean;
         /**
-          * The size of the list items. If not set, the default (base) size is used. Cascades to descendant `ds-item` elements.
+          * The size of the list items. If not set, the default (base) size is used. Cascades to descendant `ds-item` and `ds-accordion[list]` elements.
          */
         "size"?: ItemSize;
     }
@@ -9256,6 +9231,8 @@ declare namespace LocalJSX {
     interface DsAccordionAttributes {
         "open": boolean;
         "group": string;
+        "list": boolean;
+        "inverted": boolean;
         "summaryLevel": AccordionSummaryLevel;
         "summaryVisualLevel": AccordionSummaryLevel;
         "summaryTitle": boolean;
@@ -9594,10 +9571,6 @@ declare namespace LocalJSX {
         "autoInvalidOff": boolean;
     }
     interface DsItemAttributes {
-        "accordionGroup": string;
-        "accordionMarker": AccordionMarker;
-        "accordionMarkerPosition": AccordionMarkerPosition;
-        "accordionOpen": boolean;
         "actionIcon": ItemActionIcon;
         "description": string;
         "disabled": boolean;
@@ -10093,6 +10066,8 @@ declare module "@stencil/core" {
             /**
              * Accordion displays collapsible content sections with open/close toggle buttons and optional animations.
              * Perfect for organizing large amounts of content into logical, expandable groups.
+             * @variant is-list - List row look with bottom border, row padding, hover and active backgrounds. Place in `ds-list > li`.
+             * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface.
              */
             "ds-accordion": LocalJSX.IntrinsicElements["ds-accordion"] & JSXBase.HTMLAttributes<HTMLDsAccordionElement>;
             /**
@@ -10250,7 +10225,7 @@ declare module "@stencil/core" {
              */
             "ds-input": LocalJSX.IntrinsicElements["ds-input"] & JSXBase.HTMLAttributes<HTMLDsInputElement>;
             /**
-             * Item displays a list entry that supports plain content, accordion, link, and button variants with optional icon, label, and description slots.
+             * Item displays a list entry that supports plain content, link, and button variants with optional icon, label, and description slots.
              */
             "ds-item": LocalJSX.IntrinsicElements["ds-item"] & JSXBase.HTMLAttributes<HTMLDsItemElement>;
             /**
@@ -10259,8 +10234,8 @@ declare module "@stencil/core" {
             "ds-label": LocalJSX.IntrinsicElements["ds-label"] & JSXBase.HTMLAttributes<HTMLDsLabelElement>;
             /**
              * List renders semantic HTML list elements (ordered or unordered) for grouping related items.
-             * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item elements.
-             * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item elements.
+             * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface. Cascades to descendant ds-item and ds-accordion[list] elements.
+             * @variant is-lg - Large size, increasing the minimum row height of descendant ds-item and ds-accordion[list] elements.
              */
             "ds-list": LocalJSX.IntrinsicElements["ds-list"] & JSXBase.HTMLAttributes<HTMLDsListElement>;
             /**

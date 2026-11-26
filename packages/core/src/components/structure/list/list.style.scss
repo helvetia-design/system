@@ -15,9 +15,7 @@
  */
 
 ul.ds-list .ds-item,
-ol.ds-list .ds-item,
-ul.ds-list li details,
-ol.ds-list li details {
+ol.ds-list .ds-item {
   @include vars.focus(list-item);
 
   @include vars.local(list-item-grid-template-columns, 1fr);
@@ -37,8 +35,6 @@ ol.ds-list li details {
   @include vars.local(list-item-border-width, var(--ds-list-item-border-width));
   @include vars.local(list-item-border-radius, var(--ds-list-item-radius));
   @include vars.local(list-item-focus-radius, var(--ds-list-item-focus-radius));
-
-  @include vars.local(list-item-accordion-py, var(--ds-list-item-accordion-padding-y));
 
   @include vars.local(list-item-action-icon-size, var(--ds-list-item-action-icon-size));
 
@@ -234,49 +230,16 @@ ul.ds-list li button.ds-item:not(.is-disabled) {
 }
 
 /**
-  * Accordion inside list item
-  */
-
-ol.ds-list li details,
-ul.ds-list li details {
-  position: relative;
-  padding: 0;
-
-  &:after {
-    @include border();
-    height: var(--_list-item-border-width);
-    background: var(--_list-item-border-color);
-  }
-
-  &,
-  & summary {
-    min-height: calc(var(--ds-list-item-size-base-min-height) - 2 * var(--ds-list-item-size-base-padding-y));
-  }
-
-  summary {
-    padding: var(--_list-item-py) 0;
-    position: relative;
-    &:before {
-      @include border();
-      height: var(--_list-item-border-width);
-      background: var(--_list-item-border-color);
-    }
-  }
-}
-
-/**
   * Inverted
   * --------------------------------
   * Can be applied to the list container (ul.ds-list/ol.ds-list) to cascade to all items,
-  * or directly on an individual .ds-item/details element.
+  * or directly on an individual .ds-item element.
   */
 
 ul.ds-list.is-inverted,
 ol.ds-list.is-inverted,
 ul.ds-list .ds-item.is-inverted,
-ol.ds-list .ds-item.is-inverted,
-ul.ds-list li details.is-inverted,
-ol.ds-list li details.is-inverted {
+ol.ds-list .ds-item.is-inverted {
   --mod-list-item-color: var(--ds-list-item-inverted-color-text-base);
   --mod-list-item-color-hover: var(--ds-list-item-inverted-color-text-hover);
   --mod-list-item-color-active: var(--ds-list-item-inverted-color-text-active);
@@ -291,15 +254,13 @@ ol.ds-list li details.is-inverted {
   * Size
   * --------------------------------
   * Can be applied to the list container (ul.ds-list/ol.ds-list) to cascade to all items,
-  * or directly on an individual .ds-item/details element.
+  * or directly on an individual .ds-item element.
   */
 
 ul.ds-list.is-lg,
 ol.ds-list.is-lg,
 ul.ds-list .ds-item.is-lg,
-ol.ds-list .ds-item.is-lg,
-ul.ds-list li details.is-lg,
-ol.ds-list li details.is-lg {
+ol.ds-list .ds-item.is-lg {
   --mod-list-item-min-height: var(--ds-list-item-size-lg-min-height);
   --mod-list-item-py: var(--ds-list-item-size-lg-padding-y);
 }

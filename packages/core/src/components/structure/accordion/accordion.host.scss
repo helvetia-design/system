@@ -1,6 +1,7 @@
 @use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../vars' as vars;
 @use '../../../typography' as typo;
+@use 'inverted' as accordion-inverted;
 
 @forward '../../actions/button/button.style';
 
@@ -25,6 +26,28 @@
  * @prop --accordion-summary-color-hover: Summary text color on hover.
  * @prop --accordion-summary-color-active: Summary text color when pressed.
  * @prop --accordion-radius: Border radius used for the focus ring outline.
+ * @prop --accordion-marker-color: Color of the expand/collapse marker icon (non-button mode).
+ * @prop --accordion-list-size-min-height: Minimum height of a list row (`list`).
+ * @prop --accordion-list-size-padding-y: Vertical padding of a list row summary (`list`).
+ * @prop --accordion-list-padding-x: Horizontal padding of a list row summary (`list`).
+ * @prop --accordion-list-content-padding-y: Vertical padding of slotted paragraph content in a list row (`list`).
+ * @prop --accordion-list-border-width: Thickness of the list row bottom border (`list`).
+ * @prop --accordion-list-color-border-base: Color of the list row bottom border (`list`).
+ * @prop --accordion-list-color-border-hover: Color of the list row bottom border on hover (`list`).
+ * @prop --accordion-list-color-border-active: Color of the list row bottom border when pressed (`list`).
+ * @prop --accordion-list-color-background-base: Background of a list row (`list`).
+ * @prop --accordion-list-color-background-hover: Background of a list row summary on hover (`list`).
+ * @prop --accordion-list-color-background-active: Background of a list row summary when pressed (`list`).
+ * @prop --accordion-list-summary-font-family: Font family of the list row summary (`list`).
+ * @prop --accordion-list-summary-font-weight: Font weight of the list row summary (`list`).
+ * @prop --accordion-list-summary-font-size: Responsive font size of the list row summary (`list`).
+ * @prop --accordion-list-summary-line-height: Line height of the list row summary (`list`).
+ * @prop --accordion-list-summary-letter-spacing: Letter spacing of the list row summary (`list`).
+ * @prop --accordion-list-summary-text-decoration: Text decoration of the list row summary (`list`).
+ * @prop --accordion-list-summary-text-transform: Text transform of the list row summary (`list`).
+ *
+ * @variant is-list - List row look with bottom border, row padding, hover and active backgrounds.
+ * @variant is-inverted - Inverted color scheme for use on dark backgrounds such as the primary surface.
  */
 
 :host {
@@ -39,6 +62,20 @@
   @include vars.local(accordion-summary-color-hover, var(--ds-accordion-summary-color-hover));
   @include vars.local(accordion-summary-color-active, var(--ds-accordion-summary-color-active));
   @include vars.local(accordion-radius, var(--ds-accordion-radius));
+  @include vars.local(accordion-marker-color, var(--ds-accordion-marker-color-base));
+
+  @include vars.local(accordion-list-size-min-height, var(--ds-accordion-list-size-base-min-height));
+  @include vars.local(accordion-list-size-padding-y, var(--ds-accordion-list-size-base-padding-y));
+  @include vars.local(accordion-list-padding-x, var(--ds-accordion-list-padding-x));
+  @include vars.local(accordion-list-content-padding-y, var(--ds-accordion-list-content-padding-y));
+  @include vars.local(accordion-list-border-width, var(--ds-accordion-list-border-width));
+  @include vars.local(accordion-list-color-border-base, var(--ds-accordion-list-color-border-base));
+  @include vars.local(accordion-list-color-border-hover, var(--ds-accordion-list-color-border-hover));
+  @include vars.local(accordion-list-color-border-active, var(--ds-accordion-list-color-border-active));
+  @include vars.local(accordion-list-color-background-base, var(--ds-accordion-list-color-background-base));
+  @include vars.local(accordion-list-color-background-hover, var(--ds-accordion-list-color-background-hover));
+  @include vars.local(accordion-list-color-background-active, var(--ds-accordion-list-color-background-active));
+  @include typo.local(accordion-list-summary, 'accordion-list-summary-typo');
 }
 
 /**
@@ -170,6 +207,7 @@
   width: var(--_accordion-marker-width);
   height: var(--_accordion-marker-size);
   cursor: pointer;
+  --icon-color: var(--_accordion-marker-color);
 }
 
 :host(:not(.is-button)[open]:not([open=' false '])) {
@@ -182,6 +220,76 @@
     // ds-token-check: intentional — fixed marker geometry, not brand-themeable
     transform: rotate(45deg);
   }
+}
+
+//
+// List row (`list`)
+:host(.is-list) #header {
+  min-height: var(--_accordion-list-size-min-height);
+  align-items: stretch;
+  background: var(--_accordion-list-color-background-base);
+}
+
+:host(.is-list) #summary:not(.ds-button) {
+  min-height: var(--_accordion-list-size-min-height);
+  padding: var(--_accordion-list-size-padding-y) var(--_accordion-list-padding-x);
+  padding-bottom: calc(var(--_accordion-list-size-padding-y) + var(--_accordion-list-border-width));
+  @include typo.apply(accordion-list-summary);
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--_accordion-list-border-width);
+    background: var(--_accordion-list-color-border-base);
+    z-index: 1;
+  }
+
+  @include hover {
+    &:hover,
+    &.is-hovered {
+      background: var(--_accordion-list-color-background-hover);
+
+      &::after {
+        background: var(--_accordion-list-color-border-hover);
+      }
+    }
+  }
+
+  &:active,
+  &.is-pressed {
+    background: var(--_accordion-list-color-background-active);
+
+    &::after {
+      background: var(--_accordion-list-color-border-active);
+    }
+  }
+}
+
+:host(.is-list) #content {
+  position: relative;
+}
+
+:host(.is-list[open]:not([open=' false '])) #content::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--_accordion-list-border-width);
+  background: var(--_accordion-list-color-border-base);
+}
+
+:host(.is-list) ::slotted(p) {
+  padding-block: var(--_accordion-list-content-padding-y);
+}
+
+//
+// Inverted
+:host(.is-inverted) {
+  @include accordion-inverted.inverted;
 }
 
 /**

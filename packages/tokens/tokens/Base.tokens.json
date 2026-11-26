@@ -16146,18 +16146,6 @@
             }
           }
         },
-        "Accordion": {
-          "PaddingY": {
-            "$type": "dimension",
-            "$value": "{🔗 Alias.↔️ Space.Padding.Base}",
-            "$extensions": {
-              "com.figma.variableId": "VariableID:13:2153",
-              "com.figma.scopes": [
-                "ALL_SCOPES"
-              ]
-            }
-          }
-        },
         "Action": {
           "IconSize": {
             "$type": "dimension",
@@ -23065,6 +23053,36 @@
                 "ALL_SCOPES"
               ]
             }
+          },
+          "InvertedBase": {
+            "$type": "color",
+            "$value": "{🔗 Alias.🎨 Surface.OnPrimary}",
+            "$description": "Summary text color of an inverted accordion.",
+            "$extensions": {
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
+          "InvertedHover": {
+            "$type": "color",
+            "$value": "{🔗 Alias.🎬 Action.InvertedPrimary.Text.Hover}",
+            "$description": "Summary text color of an inverted accordion on hover.",
+            "$extensions": {
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
+          "InvertedActive": {
+            "$type": "color",
+            "$value": "{🔗 Alias.🎬 Action.InvertedPrimary.Text.Active}",
+            "$description": "Summary text color of an inverted accordion while pressed.",
+            "$extensions": {
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
           }
         },
         "Typo": {
@@ -23256,6 +23274,28 @@
               "ALL_SCOPES"
             ]
           }
+        },
+        "Color": {
+          "Base": {
+            "$type": "color",
+            "$value": "{🧩 Component.Icon.Color.Primary}",
+            "$description": "Color of the expand/collapse marker.",
+            "$extensions": {
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          },
+          "InvertedBase": {
+            "$type": "color",
+            "$value": "{🧩 Component.Icon.Color.Inverted}",
+            "$description": "Color of the expand/collapse marker of an inverted accordion.",
+            "$extensions": {
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
         }
       },
       "ButtonEnd": {
@@ -23277,6 +23317,234 @@
             "$description": "Space reserved for a bottom-positioned small button summary. Matches the small button height.",
             "$extensions": {
               "com.figma.variableId": "VariableID:13:2960",
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        }
+      },
+      "List": {
+        "Size": {
+          "Base": {
+            "MinHeight": {
+              "$type": "dimension",
+              "$value": "{🔗 Alias.📏 Size.Control.LG}",
+              "$description": "Minimum height of a list row (`list`).",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "PaddingY": {
+              "$type": "dimension",
+              "$value": "{🔗 Alias.↔️ Space.Padding.XS}",
+              "$description": "Vertical padding of a list row summary.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "LG": {
+            "MinHeight": {
+              "$type": "dimension",
+              "$value": "{🔗 Alias.📏 Size.Control.XL}",
+              "$description": "Minimum height of a list row inside a large list (`ds-list size=\"lg\"`).",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "PaddingY": {
+              "$type": "dimension",
+              "$value": "{🔗 Alias.↔️ Space.Padding.XS}",
+              "$description": "Vertical padding of a list row summary inside a large list.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "PaddingX": {
+          "$type": "dimension",
+          "$value": "{🔗 Alias.↔️ Space.Padding.2XS}",
+          "$description": "Inline padding of a list row summary.",
+          "$extensions": {
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "Content": {
+          "PaddingY": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.↔️ Space.Padding.Base}",
+            "$description": "Vertical padding of paragraph content inside an open list row.",
+            "$extensions": {
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "Border": {
+          "Width": {
+            "$type": "dimension",
+            "$value": "{🔗 Alias.▭ Border.Width.Base}",
+            "$description": "Width of the bottom line of a list row.",
+            "$extensions": {
+              "com.figma.scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "Color": {
+          "Border": {
+            "Base": {
+              "$type": "color",
+              "$value": "{🔗 Alias.▭ Border.Color.GreyLight}",
+              "$description": "Bottom line color of a list row.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "Hover": {
+              "$type": "color",
+              "$value": "{🔗 Alias.▭ Border.Color.PrimaryHover}",
+              "$description": "Bottom line color of a list row on hover.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "Active": {
+              "$type": "color",
+              "$value": "{🔗 Alias.▭ Border.Color.PrimaryActive}",
+              "$description": "Bottom line color of a list row while pressed.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "InvertedBase": {
+              "$type": "color",
+              "$value": "{🔗 Alias.▭ Border.Color.InvertedPrimary}",
+              "$description": "Bottom line color of an inverted list row.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "InvertedHover": {
+              "$type": "color",
+              "$value": "{🔗 Alias.▭ Border.Color.InvertedPrimaryHover}",
+              "$description": "Bottom line color of an inverted list row on hover.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "InvertedActive": {
+              "$type": "color",
+              "$value": "{🔗 Alias.▭ Border.Color.InvertedPrimaryActive}",
+              "$description": "Bottom line color of an inverted list row while pressed.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "Background": {
+            "Base": {
+              "$type": "color",
+              "$value": "{🔗 Alias.🎨 Surface.Transparent}",
+              "$description": "Background of a list row.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "Hover": {
+              "$type": "color",
+              "$value": "{🔗 Alias.🎨 Surface.PrimaryLighter}",
+              "$description": "Background of a list row on hover.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "Active": {
+              "$type": "color",
+              "$value": "{🔗 Alias.🎨 Surface.PrimaryLighter}",
+              "$description": "Background of a list row while pressed.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "InvertedBase": {
+              "$type": "color",
+              "$value": "{🔗 Alias.🎨 Surface.Transparent}",
+              "$description": "Background of an inverted list row.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "InvertedHover": {
+              "$type": "color",
+              "$value": "{🔗 Alias.🎨 Surface.Transparent}",
+              "$description": "Background of an inverted list row on hover.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            },
+            "InvertedActive": {
+              "$type": "color",
+              "$value": "{🔗 Alias.🎨 Surface.Transparent}",
+              "$description": "Background of an inverted list row while pressed.",
+              "$extensions": {
+                "com.figma.scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "Summary": {
+          "Typo": {
+            "$type": "typography",
+            "$value": {
+              "fontFamily": "{🔗 Alias.🔤 Text.Family.Heading}",
+              "fontSize": "{📱 Device.🔤 Text.Size.Base}",
+              "fontWeight": "{🔗 Alias.🔤 Text.Weight.Bold}",
+              "lineHeight": "{🔗 Alias.🔤 Text.LineHeight.Heading}",
+              "letterSpacing": "{🔗 Alias.🔤 Text.LetterSpacing.Text}",
+              "textDecoration": "{🔗 Alias.🔤 Text.TextDecoration.None}",
+              "textTransform": "{🔗 Alias.🔤 Text.TextTransform.None}"
+            },
+            "$description": "Typography of a list row summary (`list`). Overrides `summary-title` and `summary-visual-level`.",
+            "$extensions": {
               "com.figma.scopes": [
                 "ALL_SCOPES"
               ]

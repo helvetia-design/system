@@ -65,6 +65,46 @@ describe('scanBalList', () => {
     expect(result.files[0].findings).toContainEqual({ line: 11, snippet: '</bal-list-item-accordion-body>' })
   })
 
+  it('lists every tag of a mixed list with accordion rows and a nested accordion list', () => {
+    const root = createScratchDir()
+    write(
+      root,
+      'faq.html',
+      [
+        '<bal-list accordion-one-level id="faq">',
+        '  <bal-list-item clickable></bal-list-item>',
+        '  <bal-list-item accordion>',
+        '    <bal-list-item-accordion-head></bal-list-item-accordion-head>',
+        '    <bal-list-item-accordion-body></bal-list-item-accordion-body>',
+        '  </bal-list-item>',
+        '  <bal-list-item accordion>',
+        '    <bal-list-item-accordion-head icon="nav-go-down"></bal-list-item-accordion-head>',
+        '    <bal-list-item-accordion-body>',
+        '      <bal-list>',
+        '        <bal-list-item accordion>',
+        '          <bal-list-item-accordion-head></bal-list-item-accordion-head>',
+        '          <bal-list-item-accordion-body></bal-list-item-accordion-body>',
+        '        </bal-list-item>',
+        '      </bal-list>',
+        '    </bal-list-item-accordion-body>',
+        '  </bal-list-item>',
+        '</bal-list>',
+        '',
+      ].join('\n'),
+    )
+
+    const { files, total } = scanBalList(root)
+    const snippets = files[0].findings.map(finding => finding.snippet)
+
+    // 2 bal-list + 4 bal-list-item + 3 head + 3 body, open and close tags each
+    expect(total).toBe(files[0].findings.length)
+    expect(snippets.filter(snippet => snippet.startsWith('<bal-list-item-accordion-head'))).toHaveLength(3)
+    expect(snippets.filter(snippet => snippet === '</bal-list-item-accordion-head>')).toHaveLength(3)
+    expect(snippets.filter(snippet => snippet === '<bal-list-item-accordion-body>')).toHaveLength(3)
+    expect(snippets.filter(snippet => snippet === '</bal-list-item-accordion-body>')).toHaveLength(3)
+    expect(snippets).toContain('<bal-list accordion-one-level id="faq">')
+  })
+
   it('does not match sibling tags or longer names that merely start with BalList', () => {
     const root = createScratchDir()
     write(
@@ -395,16 +435,11 @@ describe('list migration.md', () => {
       'BalListBundle',
       'variant="link"',
       'variant="button"',
-      'variant="accordion"',
       'labelLevel',
       'labelSize',
       'description',
       'slot="icon"',
       'slot="content"',
-      'slot="accordion-content"',
-      'accordion-group',
-      'accordion-marker',
-      'accordion-open',
       'action-icon',
       'inverted',
       'ordered',
@@ -418,8 +453,16 @@ describe('list migration.md', () => {
       'balGroupStateChanged',
       'balWillAnimate',
       'dsClick',
-      'dsAccordionToggle',
-      'dsAccordionOpened',
+      '<li><ds-accordion list>',
+      'ds-accordion',
+      'DsAccordion',
+      'slot="summary"',
+      'group',
+      'marker="plus"',
+      'open = true',
+      'dsToggle',
+      'summary-level',
+      'components/accordion/migration.md',
       'present()',
       'dismiss(',
       'toggle()',
@@ -429,6 +472,9 @@ describe('list migration.md', () => {
       'git commit',
     ]) {
       expect(migration, phrase).toContain(phrase)
+    }
+    for (const removed of ['slot="accordion-content"', 'variant="accordion"', 'dsAccordion', 'accordion-marker']) {
+      expect(migration, removed).not.toContain(removed)
     }
   })
 })

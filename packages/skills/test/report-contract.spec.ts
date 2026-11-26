@@ -55,7 +55,7 @@ const expectedCounts: Record<string, { attention: number; coverage: number }> = 
   'input-stepper': { attention: 8, coverage: 2 },
   'input': { attention: 15, coverage: 3 },
   'label': { attention: 5, coverage: 2 },
-  'list': { attention: 26, coverage: 7 },
+  'list': { attention: 31, coverage: 8 },
   'logo': { attention: 5, coverage: 0 },
   'modal': { attention: 24, coverage: 7 },
   'nav': { attention: 8, coverage: 0 },
@@ -167,6 +167,12 @@ describe('Report items the issue requires by name', () => {
     const { attention } = bucketsOf('select')
 
     expect(attention.filter(item => item.text.includes('option with child elements'))).toHaveLength(1)
+  })
+
+  it('list checks mixed lists, the summary-level reminder, implicit markers and group naming on their own lines', () => {
+    const numbers = itemNumbers('list', ['mixed list', '`summary-level`', 'marker="plus"', '`accordionOneLevel`'])
+
+    expect(new Set(numbers).size).toBe(numbers.length)
   })
 
   it('accordion checks expanded, openIcon and closeIcon on their own lines', () => {

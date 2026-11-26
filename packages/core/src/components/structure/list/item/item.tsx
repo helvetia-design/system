@@ -1,13 +1,6 @@
 import { Component, Element, Event, EventEmitter, h, Host, Prop } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { Logger, type LogInstance, hasValue, OneOf, Type } from '@utils'
-import {
-  ACCORDION_MARKERS,
-  ACCORDION_MARKER_POSITIONS,
-  type AccordionMarker,
-  type AccordionMarkerPosition,
-  type AccordionToggleDetail,
-} from '../../accordion/accordion.interfaces'
 import { BUTTON_TARGETS, type ButtonTarget, type ButtonClickDetail } from '../../../actions/button/button.interfaces'
 import { DsComponentInterface } from '@global'
 import {
@@ -33,15 +26,12 @@ type Attributes = {
 }
 
 /**
- * Item displays a list entry that supports plain content, accordion, link, and button variants with optional icon, label, and description slots.
+ * Item displays a list entry that supports plain content, link, and button variants with optional icon, label, and description slots.
  *
  * @slot icon - An optional icon to display on the left side of the item.
  * @slot content - The main content of the item, displayed next to the label and description.
- * @slot accordion-content - The content of the accordion, only applicable if `variant` is set to `accordion`.
  *
  * @part item - The main container of the item.
- * @part accordion - The accordion element, only applicable if `variant` is set to `accordion`.
- * @part accordion-content - The container of the accordion content, only applicable if `variant` is set to `accordion`.
  * @part label - The label element, only applicable if the `label` prop is set.
  * @part description - The description element, only applicable if the `description` prop is set.
  * @part action-icon - The action icon, only applicable if `variant` is set to `link` or `button`.
@@ -65,37 +55,6 @@ export class Item implements DsComponentInterface {
    * PUBLIC PROPERTY API
    * ─────────────────────────────────────────────────────
    */
-
-  /**
-   * The name of the group the accordion belongs to. Accordions with the same group name will automatically
-   * close when another accordion in the same group is opened.
-   */
-  @Prop()
-  @Type('string')
-  readonly accordionGroup: string = ''
-
-  /**
-   * The marker variant. Only applies if `variant` is set to `accordion`.
-   * If `''` the default marker is used, if `plus` a plus icon is used and if `plus-minus`
-   * a plus icon for closed and a minus icon for open state is used.
-   */
-  @Prop()
-  @OneOf(ACCORDION_MARKERS)
-  readonly accordionMarker?: AccordionMarker
-
-  /**
-   * The position of the marker. Only applies if `variant` is set to `accordion`.
-   */
-  @Prop()
-  @OneOf(ACCORDION_MARKER_POSITIONS)
-  readonly accordionMarkerPosition?: AccordionMarkerPosition
-
-  /**
-   * If `true` the accordion is open.
-   */
-  @Prop({ reflect: true })
-  @Type('boolean')
-  readonly accordionOpen: boolean = false
 
   /**
    * The action icon variant. Controls which icon is displayed for `link` and `button` variants.
@@ -199,21 +158,6 @@ export class Item implements DsComponentInterface {
   @Event() dsClick!: EventEmitter<ButtonClickDetail>
 
   /**
-   * Emitted when the accordion is toggled.
-   */
-  @Event() dsAccordionToggle!: EventEmitter<AccordionToggleDetail>
-
-  /**
-   * Emitted when the accordion is opened.
-   */
-  @Event() dsAccordionOpened!: EventEmitter<AccordionToggleDetail>
-
-  /**
-   * Emitted when the accordion is closed.
-   */
-  @Event() dsAccordionClosed!: EventEmitter<AccordionToggleDetail>
-
-  /**
    * EVENT HANDLERS
    * ─────────────────────────────────────────────────────
    */
@@ -272,62 +216,6 @@ export class Item implements DsComponentInterface {
       } else {
         attributes.onClick = this.handleClick
       }
-    }
-
-    if (this.variant === 'accordion') {
-      return (
-        <Host
-          role="listitem"
-          class={{
-            'is-disabled': this.disabled,
-            'is-accordion': this.variant === 'accordion',
-            'is-inverted': this.inverted,
-            [`is-${this.size}`]: hasValue(this.size),
-            [`has-label-${labelSize}`]: !!labelSize,
-          }}
-        >
-          <ds-accordion
-            part="accordion"
-            {...attributes}
-            group={this.accordionGroup}
-            open={this.accordionOpen}
-            marker={this.accordionMarker}
-            marker-position={this.accordionMarkerPosition}
-            onDsOpened={ev => {
-              this.dsAccordionOpened.emit(ev.detail)
-            }}
-            onDsClosed={ev => {
-              this.dsAccordionClosed.emit(ev.detail)
-            }}
-            onDsToggle={ev => {
-              this.dsAccordionToggle.emit(ev.detail)
-            }}
-          >
-            <div slot="summary" id="item" part="item">
-              <slot name="icon"></slot>
-              <div id="content">
-                {this.label && (
-                  <LabelTag id="label" part="label">
-                    {this.label}
-                  </LabelTag>
-                )}
-                {this.description && (
-                  <p id="description" part="description">
-                    {this.description}
-                  </p>
-                )}
-                <slot name="content"></slot>
-                <slot></slot>
-              </div>
-            </div>
-            <div slot="content">
-              <div id="accordion-content" part="accordion-content">
-                <slot name="accordion-content"></slot>
-              </div>
-            </div>
-          </ds-accordion>
-        </Host>
-      )
     }
 
     return (

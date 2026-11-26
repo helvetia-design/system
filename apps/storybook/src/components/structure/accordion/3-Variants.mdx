@@ -52,8 +52,62 @@ Use the `group` prop to ensure only one accordion in a group can be open at a ti
 
 <StoryHeading of={AccordionStories.AccordionButton}></StoryHeading>
 
-Use the `button` prop to render the accordion summary as a native button element, improving accessibility and keyboard navigation support.
+Use the `button` prop to style the accordion summary as a design system button and replace the default marker.
 
 <CanvasWithCodePen of={AccordionStories.AccordionButton} />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={AccordionStories.Inverted}></StoryHeading>
+
+Use the `inverted` prop on dark backgrounds such as the primary surface. It follows the same boolean API as the other components and also applies to `button` accordions.
+
+<CanvasWithCodePen of={AccordionStories.Inverted} />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading>List</StoryHeading>
+
+Use the `list` prop to render an accordion as a list row: bottom border, row padding and hover and active backgrounds. It is the way to build an FAQ-style list of expandable rows.
+
+Compose the rows as `ds-list > li > ds-accordion[list]`. Put the row text in the `summary` slot and the body in the `content` slot. Combine rows with `group` so only one is open at a time. The `marker` and `marker-position` props keep working.
+
+> **Do not combine `list` with button props.** `list` is incompatible with `button` and the `button*`, `summaryTitle` and `summaryVisualLevel` props. If you combine them, `list` wins visually: the row looks like a plain list row. The component does not warn about the combination, so leave those props off.
+
+<CanvasWithCodePen of={AccordionStories.ListAccordion} />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={AccordionStories.ListAccordionNested}></StoryHeading>
+
+Put a `ds-list` of `ds-accordion[list]` rows in the `content` slot of a parent row. Nested rows do not double up borders, and no nesting prop is needed. Do not add padding or margin to the nested `ds-list`, or the borders no longer overlap.
+
+Nested rows keep the default `summary-level` of `h3`, the same as their parents, which flattens the heading outline. Set `summary-level` one level deeper on nested rows, for example `h4` below `h3` parents, as the example does.
+
+In static HTML, wrap the nested `ds-list` in an element such as `<section slot="content">`. Without it, the browser's HTML parser closes the outer `li` when it reaches the first nested `li`, and the nested rows end up beside the parent instead of inside it. This applies to any markup the browser parses, including server-rendered output.
+
+<CanvasWithCodePen of={AccordionStories.ListAccordionNested} />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={AccordionStories.ListAccordionLarge}></StoryHeading>
+
+Set `size="lg"` on the `ds-list` to enlarge the rows. It propagates to every `ds-accordion[list]` inside, including those in nested lists, so there is no size prop on `ds-accordion`.
+
+<CanvasWithCodePen of={AccordionStories.ListAccordionLarge} />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={AccordionStories.ListAccordionInverted}></StoryHeading>
+
+Set `inverted` on the `ds-list` to invert every row inside it at once. You can also set `inverted` on a single `ds-accordion[list]`.
+
+<CanvasWithCodePen of={AccordionStories.ListAccordionInverted} />
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading>Heading level</StoryHeading>
+
+The summary is rendered as a heading, `h3` by default. Set `summary-level` so the accordions fit the outline of your page, for example `summary-level="h2"` below an `h1`. See the [Accessibility](?path=/docs/components-structure-accordion-accessibility--accessibility) page.
 
 <Footer />
