@@ -657,10 +657,10 @@ export namespace Components {
          */
         "controls": CarouselControls;
         /**
-          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally.
+          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally. A string sets it per breakpoint with `ds-col` prefixes, e.g. `"1 tablet:2 desktop:3"`.
           * @default 'auto'
          */
-        "itemsPerView": number | 'auto';
+        "itemsPerView": number | 'auto' | string;
         /**
           * Accessible label for the carousel region.
           * @default ''
@@ -3152,7 +3152,7 @@ export namespace Components {
      */
     interface DsStack {
         /**
-          * Defines the text positioning like center, right or default to start.
+          * Defines the text positioning like center, right or default to start. `stretch` makes children fill the cross axis.
          */
         "align"?: StackAlignment;
         "alignment"?: StackAlignment;
@@ -5816,10 +5816,10 @@ declare namespace LocalJSX {
          */
         "controls"?: CarouselControls;
         /**
-          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally.
+          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally. A string sets it per breakpoint with `ds-col` prefixes, e.g. `"1 tablet:2 desktop:3"`.
           * @default 'auto'
          */
-        "itemsPerView"?: number | 'auto';
+        "itemsPerView"?: number | 'auto' | string;
         /**
           * Accessible label for the carousel region.
           * @default ''
@@ -8563,7 +8563,7 @@ declare namespace LocalJSX {
      */
     interface DsStack {
         /**
-          * Defines the text positioning like center, right or default to start.
+          * Defines the text positioning like center, right or default to start. `stretch` makes children fill the cross axis.
          */
         "align"?: StackAlignment;
         "alignment"?: StackAlignment;

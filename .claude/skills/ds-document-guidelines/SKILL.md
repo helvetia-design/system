@@ -55,6 +55,11 @@ index lives in `apps/storybook/.storybook/blocks/`.
   there is exactly one place a prop is described.
 - Respect the repo's ubiquitous language (`packages/tokens/CONTEXT.md`): **brand mode**, not
   theme or variant; component variants are a separate concept.
+- **The `Lead` goes inside the `Banner`** on every page: `<Banner …><Lead>…</Lead></Banner>`,
+  not as a sibling after it.
+- **Composition pages stay simple** (templates, sections, recipes from a magpie brief): Banner,
+  its Lead inside, the canvas with its code, and a short "When to use". No "How it is built" or
+  "Decisions" sections. The markup shows how, and the brief and ADRs hold the why.
 - Decisions have a home in `docs/adr/`. A guideline page may summarize and link an ADR; it
   does not replace or contradict one.
 

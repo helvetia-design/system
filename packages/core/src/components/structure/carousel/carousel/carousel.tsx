@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, h, Host, Listen, Method, Prop, State } from '@stencil/core'
+import { Component, Element, Event, EventEmitter, h, Host, Listen, Method, Prop, State, Watch } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { Logger, type LogInstance, stopEventBubbling, byTagName, directChildren, OneOf, Type, raf } from '@utils'
 import {
@@ -68,10 +68,15 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
   readonly variant: CarouselVariant = 'slide'
 
   /**
-   * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally.
+   * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally. A string sets it per breakpoint with `ds-col` prefixes, e.g. `"1 tablet:2 desktop:3"`.
    */
   @Prop()
-  readonly itemsPerView: number | 'auto' = 'auto'
+  readonly itemsPerView: number | 'auto' | string = 'auto'
+
+  @Watch('itemsPerView')
+  watchItemsPerView() {
+    this.setup()
+  }
 
   /**
    * Accessible label for the carousel region.
@@ -382,11 +387,20 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     const items = this.getItems()
     this.itemCount = items.length
 
+    // "1 tablet:2 desktop:3": bare token = base, `tablet:`/`desktop:` = from that breakpoint up
+    const widths: Record<string, string | undefined> = { '': undefined, '-tablet': undefined, '-desktop': undefined }
+    for (const token of String(this.itemsPerView).trim().split(/\s+/)) {
+      const [, bp = '', n] = token.match(/^(?:(tablet|desktop):)?(\d+(?:\.\d+)?)$/) ?? []
+      if (n) widths[bp && `-${bp}`] = n
+    }
+
     items.forEach((item, i) => {
       item.index = i + 1
       item.carouselVariant = this.variant
-      if (this.itemsPerView !== 'auto') {
-        item.style.setProperty('--carousel-item-width', `calc(100% / ${this.itemsPerView})`)
+      for (const [suffix, n] of Object.entries(widths)) {
+        const name = `--carousel-item-width${suffix}`
+        if (n) item.style.setProperty(name, `calc(100% / ${n})`)
+        else item.style.removeProperty(name)
       }
     })
 

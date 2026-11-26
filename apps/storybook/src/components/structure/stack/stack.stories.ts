@@ -284,3 +284,39 @@ export const PaddingHtml = Story({
   ),
 })
 PaddingHtml.storyName = '🌍 Padding'
+
+export const Stretch = Story({
+  ...withRender(
+    () => `
+<ds-stack space="lg">
+  <ds-stack align="stretch">
+    <ds-button>Column: fills the width</ds-button>
+    <ds-button color="secondary">Column: fills the width</ds-button>
+  </ds-stack>
+  <ds-stack direction="row" align="stretch">
+    <ds-card>Row: short</ds-card>
+    <ds-card>Row: longer content makes this card taller, and the other cards in the row match its height.<br/>Line two.<br/>Line three.</ds-card>
+    <ds-card>Row: short</ds-card>
+  </ds-stack>
+</ds-stack>`,
+  ),
+})
+Stretch.storyName = '🧩 Stretch'
+
+export const StretchHtml = Story({
+  ...withRender(
+    () => `
+<div class="ds-stack has-space-lg">
+  <div class="ds-stack align-stretch">
+    <button class="ds-button">Column: fills the width</button>
+    <button class="ds-button is-secondary">Column: fills the width</button>
+  </div>
+  <div class="ds-stack as-row align-stretch">
+    <ds-card>Row: short</ds-card>
+    <ds-card>Row: longer content makes this card taller, and the other cards in the row match its height.<br/>Line two.<br/>Line three.</ds-card>
+    <ds-card>Row: short</ds-card>
+  </div>
+</div>`,
+  ),
+})
+StretchHtml.storyName = '🌍 Stretch'

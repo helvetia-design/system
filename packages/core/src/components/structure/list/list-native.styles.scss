@@ -63,6 +63,8 @@ ul.unordered-list li {
 // Ordered List
 // --------------------------------
 ol.ordered-list {
+  padding-inline-start: 0;
+  margin-block: 0;
   margin-left: var(--ds-list-native-indent);
 
   &:not(:last-child) {
@@ -96,6 +98,8 @@ ol.ordered-list {
 // Unordered List
 // --------------------------------
 ul.unordered-list {
+  padding-inline-start: 0;
+  margin-block: 0;
   margin-left: var(--ds-list-native-indent);
 
   &:not(:last-child) {

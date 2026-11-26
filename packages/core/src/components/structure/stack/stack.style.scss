@@ -211,6 +211,11 @@ $stack-space: ('3xs', '2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl');
       justify-content: flex-end;
     }
   }
+
+  &.align-stretch {
+    justify-content: flex-start;
+    align-items: stretch;
+  }
 }
 
 /**

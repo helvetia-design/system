@@ -21,6 +21,7 @@ debug.js
 *.token-check.md
 docs/plans/components/
 docs/plans/github/
+docs/plans/magpie/
 tsconfig.tsbuildinfo
 *.tsbuildinfo
 

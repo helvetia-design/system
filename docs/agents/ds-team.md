@@ -32,6 +32,15 @@ The orchestrator routes. It does not investigate.
   dispatches 📣 issue-manager · `ds-issue-write` to draft one GitHub issue per finding, shows the
   drafts at the gate, re-dispatches it with `post` on the human's OK, and links the numbers in
   the brief.
+- **Continue an agent instead of starting a new one.** When the same agent comes back for the
+  next step (🧩 render check → modify → changeset, 📖 stories → recipe), `SendMessage` it.
+  A fresh dispatch re-reads every file the first one already read.
+- **Small jobs ride along.** The changeset goes in the last 🧩 dispatch's prompt, or a
+  SendMessage to it, never a dispatch of its own. The token audit rides with 🧬's tokens step
+  when there is one.
+- **Skip what can't apply, by rule.** Layout-only CSS (no color, no interaction, no
+  semantics) skips ♿️ a11y-test and a11y-audit. No `<name>.figma.md` skips the drift check.
+  No new or changed token skips 🧬's tokens step. Name the skip and the reason on the board.
 - **A known-broken environment is a documented fact, not a discovery.** Before an agent
   investigates a failing suite, check `packages/playwright/CONTEXT.md` (SSR hydration failure,
   missing visual baselines for a new component) and `packages/core/CONTEXT.md` "Testing
@@ -50,6 +59,7 @@ The orchestrator routes. It does not investigate.
 | 📖 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                                                             |           |
 | 🎨 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                                                     |           |
 | 📣 `issue-manager`          | sonnet | `docs/plans/github/**` drafts; GitHub issues, comments, labels and PR bodies — after a gate                                         |           |
+| 🐦‍⬛ `magpie`                 | opus   | `docs/plans/magpie/**`, `docs/plans/components/<name>-brief.md` — scouts a foreign element, never production code                   |           |
 
 Plus 🐙 the **orchestrator** — the main session, which dispatches but owns no files.
 
@@ -152,19 +162,20 @@ user-invoked only.
 Agents hand over **files, never prose**. This keeps the orchestrator's context small and makes
 a run resumable.
 
-| Artifact                                           | Written by         | Read by                                                      |
-| -------------------------------------------------- | ------------------ | ------------------------------------------------------------ |
-| `docs/plans/components/<component>-brief.md`       | orchestrator       | every agent, first — `## Gate decisions` overrides the plans |
-| `docs/plans/components/<component>-plan.md`        | architect¹         | component-engineer, test-engineer, docs                      |
-| `docs/plans/components/<component>-a11y-plan.md`   | a11y-expert¹       | component-engineer, test-engineer                            |
-| `docs/plans/components/<component>-figma-plan.md`  | architect¹         | ux-designer                                                  |
-| `test/<name>.visual.html`                          | component-engineer | **human review**, test-engineer                              |
-| `<family>.token-check.md`                          | token-engineer     | token-engineer, architect                                    |
-| a11y audit findings                                | a11y-expert        | component-engineer                                           |
-| `<name>.figma.md`                                  | ux-designer        | ux-designer, next family that nests it                       |
-| `<name>.figma-validation.md`                       | ux-designer        | ux-designer, component-engineer                              |
-| anatomy + do's/don'ts copy                         | ux-designer        | documentation-engineer                                       |
-| `docs/plans/github/*.md` (issue, reply, PR drafts) | issue-manager      | **human gate**, then issue-manager in `post` mode            |
+| Artifact                                                               | Written by                           | Read by                                                      |
+| ---------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------ |
+| `docs/plans/components/<component>-brief.md`                           | orchestrator, or magpie (Workflow G) | every agent, first — `## Gate decisions` overrides the plans |
+| `docs/plans/magpie/<name>/` (screenshots, `anatomy.png`, `scout.json`) | magpie                               | architect, a11y-expert, token-engineer, ux-designer          |
+| `docs/plans/components/<component>-plan.md`                            | architect¹                           | component-engineer, test-engineer, docs                      |
+| `docs/plans/components/<component>-a11y-plan.md`                       | a11y-expert¹                         | component-engineer, test-engineer                            |
+| `docs/plans/components/<component>-figma-plan.md`                      | architect¹                           | ux-designer                                                  |
+| `test/<name>.visual.html`                                              | component-engineer                   | **human review**, test-engineer                              |
+| `<family>.token-check.md`                                              | token-engineer                       | token-engineer, architect                                    |
+| a11y audit findings                                                    | a11y-expert                          | component-engineer                                           |
+| `<name>.figma.md`                                                      | ux-designer                          | ux-designer, next family that nests it                       |
+| `<name>.figma-validation.md`                                           | ux-designer                          | ux-designer, component-engineer                              |
+| anatomy + do's/don'ts copy                                             | ux-designer                          | documentation-engineer                                       |
+| `docs/plans/github/*.md` (issue, reply, PR drafts)                     | issue-manager                        | **human gate**, then issue-manager in `post` mode            |
 
 ¹ Each planner **writes its own plan file** — the architect's `Write` is scoped to
 `docs/plans/components/**` and nothing else — and returns only a summary: the path, the blocking
@@ -196,6 +207,7 @@ are in the root `AGENTS.md`.
 | C — Feature              | [workflows/c-feature.md](workflows/c-feature.md)                           |
 | D — Component into Figma | [workflows/d-component-into-figma.md](workflows/d-component-into-figma.md) |
 | E / E′ — Deprecation     | [workflows/e-deprecation.md](workflows/e-deprecation.md)                   |
+| G — Recreate from a site | [workflows/g-recreate.md](workflows/g-recreate.md)                         |
 
 ## GitHub — the closing step of A, B, C and E, and Workflow F
 
@@ -239,6 +251,25 @@ shadcn/ui answers _what to build_; Swiss Post and Ionic answer _how_ (mechanics 
 
 ## Rules that hold in every workflow
 
+- **Composition markup** (recipes, stories, `visual.html`, a magpie brief) uses no CSS utility
+  classes (`m-*`, `p-*`, `bg-*`, `flex`…). Columns are `ds-grid` / `ds-col` with its own
+  modifiers (`is-one-quarter`, `tablet:is-half`, `gap-md`). Spacing and alignment come from
+  `ds-stack` and `ds-content` props (`space`, `direction`, `align`, `p`/`px`/`py`). Only when
+  none of those fit is it a component or token gap — never a utility class.
+- **CSS version before web component.** Where a layout component has a CSS-class version (its
+  🌍 HTML story shows it), composition markup uses the class on a semantic element
+  (`<section class="ds-stack has-space-lg">`) instead of `<ds-stack>`. Use the web component
+  only when no class version exists or behaviour needs it.
+- **No local visual suites, no Docker.** `play:visual` runs in CI only. Locally, agents run
+  `play:components` / `play:a11y` and check the look in a browser with Playwright (MCP or a
+  scratch script) on the dev server. A visual diff is CI's to report; new baselines come from
+  `ds-update-screenshots`.
+- **Fresh builds before tests.** Run `pnpm styles` before Playwright when a CSS-only component
+  or any SCSS in `packages/styles` changed; a stale `packages/core/www` build fails tests falsely.
+- **Revert build drift.** `scripts/build-docs.mjs` rewrites the tracked
+  `apps/storybook/src/assets/data/components.json` and `brand-icons.json`. Revert both after a
+  docs build unless the change altered a component's public API. In that case, keep them and
+  say so in the report.
 - **No agent commits, pushes or merges.** Changes are left unstaged for human review.
 - **Visual baselines are approved by a human.** A failing visual test is reported as a diff;
   `ds-update-screenshots` is user-invoked only. Never `pnpm play:update`.

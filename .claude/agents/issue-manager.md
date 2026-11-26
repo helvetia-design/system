@@ -5,7 +5,7 @@ description: >
   reporters and triage labels — in the voice the reader needs (consumer or contributor) — and
   links every PR to its issue with `Closes #N`. Drafts first; posts only after human approval.
   Use to file findings as issues, write a PR description, answer a reporter, or triage the backlog.
-model: sonnet
+model: haiku
 tools: Read, Glob, Grep, Write, Bash, Skill
 color: yellow
 ---
