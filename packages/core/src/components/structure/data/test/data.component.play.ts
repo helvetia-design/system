@@ -1,4 +1,4 @@
-import { test, DsData, DsDataItem } from '@helvetia-design/playwright'
+import { test, expect, DsData, DsDataItem } from '@helvetia-design/playwright'
 
 test.describe('ds-data', () => {
   test.describe('vertical layout (default)', () => {
@@ -44,6 +44,29 @@ test.describe('ds-data', () => {
       const data = new DsData(page.locator('ds-data'))
       await data.assertIsHorizontal()
       await data.assertItemCount(2)
+    })
+
+    test('should stack label above value in items of a horizontal data list', async ({ page }) => {
+      await page.mount(`
+        <ds-data horizontal>
+          <ds-data-item>
+            <ds-data-label slot="label">Metric 1</ds-data-label>
+            <ds-data-value>100</ds-data-value>
+          </ds-data-item>
+        </ds-data>
+        <ds-data>
+          <ds-data-item>
+            <ds-data-label slot="label">Name</ds-data-label>
+            <ds-data-value>John</ds-data-value>
+          </ds-data-item>
+        </ds-data>
+      `)
+
+      const stacked = page.locator('ds-data[horizontal] ds-data-item')
+      const vertical = page.locator('ds-data:not([horizontal]) ds-data-item')
+      await expect(stacked).toHaveCSS('flex-direction', 'column')
+      await expect(stacked).toHaveCSS('border-bottom-style', 'none')
+      await expect(vertical).toHaveCSS('display', 'grid')
     })
   })
 
