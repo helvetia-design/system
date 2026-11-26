@@ -188,3 +188,46 @@ describe('pull.mjs pass 0 for a name-matched variable', () => {
     expect(readNewIds(runnerTemp)).toEqual([{ path: ['Label', 'A'], variableId: 'real-1' }])
   })
 })
+
+describe('pull.mjs dry run', () => {
+  async function runDryRun() {
+    delete process.env.DRY_RUN
+    await import('../pull.mjs')
+    const plannedLine = (prefix: string) =>
+      logSpy.mock.calls.map(([message]) => String(message)).find(m => m.startsWith(`  ${prefix}:`))
+    await vi.waitFor(() => {
+      if (!plannedLine('description update') && errorSpy.mock.calls.length === 0) {
+        throw new Error('pull.mjs still running')
+      }
+    })
+    expect(errorSpy).not.toHaveBeenCalled()
+    return plannedLine
+  }
+
+  it('plans deleting only the baseline variables whose token was removed', async () => {
+    setUpTokens({ A: stringToken('a', 'v1'), B: stringToken('b', 'v2') }, ['v1', 'v2', 'v3'])
+    const fetchMock = figmaFetchMock([
+      { id: 'v1', name: 'Label/A', resolvedType: 'STRING' },
+      { id: 'v2', name: 'Label/B', resolvedType: 'STRING' },
+      { id: 'v3', name: 'Label/C', resolvedType: 'STRING' },
+    ])
+    vi.stubGlobal('fetch', fetchMock)
+
+    const plannedLine = await runDryRun()
+
+    expect(plannedLine('delete')).toBe('  delete: 1: Label/C')
+    expect(postBodies(fetchMock)).toEqual([])
+  })
+
+  it('plans recreating a name-matched variable of another type', async () => {
+    setUpTokens({ A: stringToken('a') }, [])
+    const fetchMock = figmaFetchMock([{ id: 'v5', name: 'Label/A', resolvedType: 'FLOAT' }])
+    vi.stubGlobal('fetch', fetchMock)
+
+    const plannedLine = await runDryRun()
+
+    expect(plannedLine('recreate (type changed)')).toBe('  recreate (type changed): 1: Label/A')
+    expect(plannedLine('create')).toBe('  create: 1: Label/A')
+    expect(postBodies(fetchMock)).toEqual([])
+  })
+})

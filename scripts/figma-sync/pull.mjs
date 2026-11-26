@@ -153,13 +153,22 @@ function printPlannedWrites({ baseTokens, brandNames, brandTokensByName, referen
     inputs.responsiveCollectionName === null
       ? undefined
       : findResponsiveCollectionAndModes(localVariables, inputs.responsiveCollectionName).collectionId
-  const idByPath = assignVariableIds(
-    baseTokens,
-    buildNameIndex(localVariables, collectionId),
-    responsiveCollectionId ? buildNameIndex(localVariables, responsiveCollectionId) : new Map(),
-  )
-  const mismatches = findResolvedTypeMismatches(baseTokens, variables)
-  const removedIds = findRemovedVariableIds(loadSyncStateFile(inputs.syncStateFile), baseTokens)
+  const assignIds = () =>
+    assignVariableIds(
+      baseTokens,
+      buildNameIndex(localVariables, collectionId),
+      responsiveCollectionId ? buildNameIndex(localVariables, responsiveCollectionId) : new Map(),
+    )
+  let idByPath = assignIds()
+  const mismatches = findResolvedTypeMismatches(baseTokens, variables, idByPath)
+  // Same as writePull's pass 0: the mismatched variables are deleted before anything else, so their
+  // tokens get temp ids and count as creates below. Mutating is fine — the dry run ends here.
+  if (mismatches.length > 0) {
+    for (const id of mismatches.flatMap(({ ids }) => ids)) delete variables[id]
+    for (const { token } of mismatches) delete token.variableId
+    idByPath = assignIds()
+  }
+  const removedIds = findRemovedVariableIds(loadSyncStateFile(inputs.syncStateFile), idByPath)
   const deletable = removedIds.filter(id => variables[id])
   const creates = buildCreatePassPayload({
     baseTokens,
