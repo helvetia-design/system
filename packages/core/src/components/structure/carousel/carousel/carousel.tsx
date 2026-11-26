@@ -74,7 +74,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
   readonly itemsPerView: number | 'auto' | string = 'auto'
 
   @Watch('itemsPerView')
-  watchItemsPerView() {
+  itemsPerViewChanged() {
     this.setup()
   }
 

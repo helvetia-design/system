@@ -46,8 +46,8 @@ test.describe('semantics', () => {
       const section = page.locator(wrapper(id))
       const h2 = section.locator('h2')
       await expect(h2).toHaveCount(1)
+      await expect(section).toHaveAttribute('aria-labelledby', /.+/)
       const labelledby = await section.getAttribute('aria-labelledby')
-      expect(labelledby).toBeTruthy()
       // the referenced id resolves to the h2 inside this same section, unique in the document
       await expect(page.locator(`[id="${labelledby}"]`)).toHaveCount(1)
       await expect(h2).toHaveAttribute('id', labelledby!)
