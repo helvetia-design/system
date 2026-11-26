@@ -1,6 +1,7 @@
 import { Element, Component, Method, h, Host, Prop, Event, EventEmitter, State } from '@stencil/core'
 import { stopEventBubbling, raf, sanitizeSvg, Logger, type LogInstance, hasValue, OneOf, Required, Type } from '@utils'
 import { AlertComponent } from '../alert-container.interfaces'
+import { createAlertId } from '../alert-id'
 import { DsComponentInterface, DsConfigObserver, DsConfigState, ListenToConfig } from '@global'
 import {
   ToastActionClickDetail,
@@ -128,7 +129,7 @@ export class Toast implements DsComponentInterface, AlertComponent, DsConfigObse
    */
   @Prop()
   @Type('string')
-  readonly alertId: string = crypto.randomUUID() as string
+  readonly alertId: string = createAlertId()
 
   /**
    * @internal

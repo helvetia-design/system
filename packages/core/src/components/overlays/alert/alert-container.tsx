@@ -8,6 +8,7 @@ import {
   ALERT_TYPES,
   ALERT_CONTAINER_SIZES,
 } from './alert-container.interfaces'
+import { createAlertId } from './alert-id'
 import { DsComponentInterface } from '@global'
 import { HTMLStencilElement } from '@stencil/core/internal'
 
@@ -76,7 +77,7 @@ export class AlertContainer implements DsComponentInterface {
       return ''
     }
 
-    const alertId = crypto.randomUUID() as string
+    const alertId = createAlertId()
     const duration = this.getDuration(alert)
     const component: AlertComponent = {
       ...alert,
