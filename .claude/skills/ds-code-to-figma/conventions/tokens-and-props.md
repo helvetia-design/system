@@ -33,7 +33,7 @@ variable collection of the component file. Checked 17.11.2026:
   variable is a hard stop: list it and ask the user to add it through the repo and the token
   sync (stop and list, user decision 17.11.2026).
 - A remote alias resolves with `variable.resolveForConsumer(node)`; use it to read a value
-  (text `lineHeight` / `textDecoration`, paint colors).
+  (unbound text values, see `../PHASE-3-BUILD.md` → "Text property bindings"; paint colors).
 - **No visual attribute is ever assumed — every value on every Figma node needs an explicit,
   resolved design token, even if the component's own SCSS never sets that attribute at all.** An
   inherited attribute (e.g. `color`/`font-size` on a text part that relies on Shadow DOM

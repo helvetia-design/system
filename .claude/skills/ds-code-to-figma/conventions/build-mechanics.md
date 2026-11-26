@@ -5,6 +5,12 @@ phase or section.
 
 ## Platform limits
 
+- **Number style can't be set by script** (25.11.2026, `OrderedListItem`): code applies
+  `font-variant-numeric: tabular-nums` to every element
+  (`packages/styles/src/scss/normalize.scss`), and the plugin API only reads OpenType features
+  (`getRangeOpenTypeFeatures`; no setter). After building a set's text layers, ask the user to
+  select them and set Type settings → Details → number style `Monospace uppercase/lining`, then
+  check that every layer reports `TNUM` and `LNUM`. Instances inherit it.
 - **Slots** (checked 16.11.2026 on a scratch set). In a component set, add the property once on
   the set — `set.addComponentProperty('<name>', 'SLOT', '')` — and bind a frame in each variant
   with `frame.componentPropertyReferences = { slotContentId: key }`; the frame becomes a `SLOT`
@@ -197,8 +203,7 @@ proven on a real run: confirm each point on the first build and update this sect
 ## Focus states
 
 - **Focus is never built** (user decision 19.11.2026): no `focus` variant, no focus ring, no
-  focus measurement. The `Focus ring` set on `🧰 Utilities` → `Helper components` section (`6284:21`) is no longer used by
-  this skill.
+  focus measurement.
 
 ## Tooltip anchor
 
@@ -222,13 +227,3 @@ proven on a real run: confirm each point on the first build and update this sect
   instance returns no children.
 - The anchor never changes the parent's size; the tooltip overflows its bounds, so a clipping
   parent cuts it off (Variations entries: center the entry, or widen its gap).
-
-## Swapping a template example instance
-
-- **`swapComponent()` keeps the old instance's overrides** (seen on `ds-tooltip`, 19.11.2026):
-  the Measurements Behavior card's example `Component` carried 20px padding left and right
-  from the template's button example, so the swapped Tooltip rendered at 32px padding instead
-  of 12. After every `swapComponent()` on a cloned template instance (Anatomy, Measurements
-  drawing and Behavior), call `instance.resetOverrides()` first, then set only the properties
-  the step asks for (text property, size, sizing). Check `instance.overrides` afterwards: only
-  the fields you set may be listed.

@@ -42,7 +42,8 @@ value here. **Hard stop** if the `kind=anatomy` placeholder, `diagram-area`, `ma
 or the `Anatomy/Marker` or `Anatomy/Legend item` component is missing.
 
 1. **Component — whatever shows the parts best.** Every part in `anatomy:` must be visible on an
-   instance. Start from the default variant (`swapComponent` on the template instance); turn on
+   instance. Start from a fresh instance of the default variant in place of the template instance
+   (`conventions/build-mechanics.md` → "Variant sets and instances"); turn on
    `show <name>` booleans, pick another variant or state, or set props as needed so the parts show.
    When no single instance can show every part (mutually exclusive parts, e.g. `ds-button`'s
    `loading` spinner hides both icons), use more than one instance — as few as possible, side by

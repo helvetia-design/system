@@ -38,6 +38,9 @@ component renders with no props set — the same variant as the set's top-left c
 instance's `layoutSizingHorizontal = 'FILL'` so it spans the `Preview` like in code (user decision
 19.11.2026, `ds-accordion`). This is a layout setting, not a property override.
 
+Then delete the template's example instance (`Component`) from the slot, so the new instance is
+its only visible content.
+
 For a family, this is the **owner's** default variant only (its slots keep their default fill);
 sub-components get no Copy me (`conventions/families.md` §2).
 

@@ -33,11 +33,9 @@ const slot = previewInstance.findOne(n => n.type === 'SLOT')
 slot.appendChild(realContentNode)
 ```
 
-The master's slot used to hold a hidden `Placeholder`; it was removed on 24.11.2026 (tested: an
-empty slot keeps its size and takes content the same way). Frames built before that, and the
-template, still carry a hidden `Placeholder` in every slot. The plugin API can't see hidden slot
-content (`children`, `findOne` and `getNodeByIdAsync` all miss it; only `get_metadata` lists it),
-so it can't be deleted from a script. It renders nothing; leave it unless the user unhides it for
+A slot may carry a hidden `Placeholder`. The plugin API can't see hidden slot content
+(`children`, `findOne` and `getNodeByIdAsync` all miss it; only `get_metadata` lists it), so it
+can't be deleted from a script. It renders nothing; leave it unless the user unhides it for
 deletion.
 
 ## Sizing

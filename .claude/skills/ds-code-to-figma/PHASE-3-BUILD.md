@@ -77,15 +77,29 @@ runs once, for the whole frame; step 7 writes back into every member's mapping f
      | `letterSpacing`  | `Alias/Text/LetterSpacing/*` — FLOAT              | Yes, `setRangeBoundVariable`. Applies as `PIXELS`.        |
      | `lineHeight`     | `Alias/Text/LineHeight/*` — STRING (`"150%"`)     | No: "variable of resolved type 'STRING' cannot be bound". |
      | `textDecoration` | `Alias/Text/TextDecoration/*` — STRING (`"NONE"`) | No: not a bindable text field.                            |
+     | `letterSpacing`  | `…/Typo/LetterSpacing` — STRING (`"0%"`)          | No: STRING variable. Don't use it, see below.             |
+     | `textCase`       | `…/Typo/TextTransform` — STRING (`"ORIGINAL"`)    | No: not a bindable text field.                            |
 
-     For the two that cannot be bound: read the imported variable's value with
+     **`letterSpacing`: bind the Alias FLOAT the typography token references.** Every typography
+     token's `letterSpacing` in `Base.tokens.json` is a reference to `🔗 Alias/🔤 Text/LetterSpacing/Text`
+     or `…/Heading` — read which one, and bind that Figma variable with `setRangeBoundVariable`.
+     It's the same token the code uses, not a substitute. The STRING `…/Typo/LetterSpacing` is a
+     copy the token sync computes (rem → px ÷ the token's desktop font size), exact only at the
+     desktop size ([ADR-0035](../../../docs/adr/0035-typography-letter-spacing-text-decoration-text-transform.md)),
+     so never use it. The FLOAT is rem × 16 (`scripts/figma-sync/lib/figma-value.mjs`), and code's
+     `rem` letter-spacing doesn't scale with font size, so the `PIXELS` binding matches code at every
+     size and follows any token change on the next sync. Text with no typography token (inherited
+     in code) binds the system default `🔗 Alias/🔤 Text/LetterSpacing/Text` (`PHASE-1-ANALYZE.md`).
+     Record the Alias variable as the `figmaVariable` in `<name>.figma.md`'s tokens list. In
+     general, bind the variable the code's token actually resolves through — never a different
+     token that just happens to have the same value.
+
+     For every other property that cannot be bound: read the imported variable's value with
      `variable.resolveForConsumer(node).value`, then set it as a **literal, unbound** value —
-     `lineHeight = { unit: 'PERCENT', value: parseFloat("150%") }`, `textDecoration = "NONE"`.
-     Record each in `<name>.figma.md`'s tokens list with its `figmaVariable` and as an exception
-     (resolved but intentionally unbound, with the reason), not as a hard stop — the token exists
-     and its value is applied, it's just not a live binding. `letterSpacing` binds as `PIXELS`,
-     which is right for the current `0` tokens; for a non-zero token, compare the bound pixel
-     value against the code's rem value and hard stop if they differ.
+     `lineHeight = { unit: 'PERCENT', value: parseFloat("150%") }`, `textDecoration = "NONE"`,
+     `textCase = "ORIGINAL"`. Record each in `<name>.figma.md`'s tokens list with its
+     `figmaVariable` and as an exception (resolved but intentionally unbound, with the reason), not
+     as a hard stop — the token exists and its value is applied, it's just not a live binding.
 
    - **Binding `fontFamily`/`lineHeight` on an empty text node doesn't survive setting
      `characters` afterward** — text styling is per character-range, so writing new characters
@@ -454,8 +468,9 @@ re-set all three hyperlinks, unconditionally, even if they look correct. A human
 - The finished labeled component set(s) satisfy the hard rules above and were approved by the user
   in Figma before Phase 4.
 - Every styled value is bound to a Foundation library variable — never a literal, never a local
-  variable of the component file — except the documented `lineHeight`/`textDecoration`
-  exceptions (resolved value, intentionally unbound).
+  variable of the component file — except the documented `lineHeight` / `textDecoration` /
+  `textCase` exceptions (resolved value, intentionally unbound). `letterSpacing` is bound to its
+  `Alias/Text/LetterSpacing/*` FLOAT.
 - Every `device:` responsive binding is bound to its Foundation `<path>/Device` routing variable,
   never directly to one of the three per-breakpoint variables; no variable was created.
 - The category page and the component's documentation frame exist, cloned from

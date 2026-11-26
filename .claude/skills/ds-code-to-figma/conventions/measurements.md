@@ -140,7 +140,7 @@ Callouts stay the exception, never the default: a callout adds a line that measu
 it should also signal "this dimension is too small for its own pill".
 
 **Units**: drawing pills carry the unit (`24px`) — a pill is read on its own. Table cells don't
-(`Base/PaddingX = 24`); the footnote says `Values in px` once.
+(`24`); the footnote says `Values in px` once.
 
 **Fills**: only spacing gets a fill (padding tint, gap hatch) and an icon overlay its light box.
 Shape markers stay outlines — the radius circle gets no fill, because half of it lies outside the
@@ -194,8 +194,8 @@ The Measurements `Section` (`Flat`) holds up to three nested `Default` `Preview`
    (`../PHASE-3-BUILD.md` → "Text properties") is measured and marked on the node visible in
    the main instance.
 2. **Sizes table** — rows = properties, columns = the table-axis options with the code default
-   first, like the component set (`base · sm · md · lg`). Each cell shows the token's short name and px (`Gap/XS · 8`). A row whose
-   value is the same for every option shows it once, spanning the columns. Rows are grouped by kind
+   first, like the component set (`base · sm · md · lg`). Each cell shows the px value only;
+   a value shared by every option is repeated in each column. Rows are grouped by kind
    in the order `size → spacing → shape → type`, each row starting with its number bubble. Numbers
    run 1, 2, 3, … top to bottom. Context-dependent cells list one value per mode
    (`M 16 · T 16 · D 24`).

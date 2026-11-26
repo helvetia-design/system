@@ -32,6 +32,9 @@ Open items for the `ds-code-to-figma` skill. Bare file names (`PHASE-*.md`, `con
   - Related bug: `forms/input/field.util.tsx:78` passes `color={… 'inverted' : 'primary'}` to `ds-spinner`, which has no `color` prop (it uses `inverted: boolean`), so the attribute does nothing.
   - Fix: add `inverted: boolean`, remove `inverted` from the color enums (breaking change → changeset), then rebuild Divider/Logo in Figma with the rule-2 split. Until then the `PHASE-2-PROPOSE.md` row "`inverted` as one option of a color enum" applies.
 - [x] Merge the `🧰 Annotations` and `Core / Utilities` pages (24.11.2026): one page `🧰 Utilities` (`2046:5`) with the sections Documentation, Measurement markers and Helper components (`Focus ring`, `TooltipAnchor`; node ids and keys unchanged). `Core / Utilities` deleted; skill docs and `*.figma.md` references updated.
+- [ ] Text style for inherited text (26.11.2026): text that inherits its typography in code (no own font tokens, e.g. native list items) is bound to Foundation text styles in Figma. Decide which text style it should use instead (see "Foundation text styles on list item text" below).
+- [ ] Rebind letter spacing on built components (26.11.2026): the skill now binds `letterSpacing` to the `Alias/Text/LetterSpacing/*` FLOAT the typography token references (`PHASE-3-BUILD.md` → "Text property bindings"); built components (Accordion, Divider, Tooltip, Close, Spinner, native lists, …) still carry the old literal `0%` and fail Phase 4. Rebind them and update their `*.figma.md` tokens lists. Also make `scripts/figma-check-set.figma.js` check letter spacing (it skips it, comment still says STRING).
+- [ ] Removed margins on components (26.11.2026): margins dropped in the Figma builds, some of them maybe should stay. List them per component and decide which to keep.
 
 ## For team discussion
 
@@ -42,6 +45,11 @@ Lessons from the Divider rebuild (23.11.2026), not yet in the skill. Decide per 
 - [ ] **Props that are invisible in the set.** `space` is an outer margin: modeled as padding, it's transparent, so the 10 `space` columns look identical (Divider: 240 variants, 216 of them look like another one). Tried dropping it (24 variants) and restored it so the Figma props stay 1:1 with code. Question: rule for invisible props (outer margin, semantic-only props), keep as variant or exclude and document in Measurements only?
 - [ ] **Measurements for a per-option spacing prop.** Divider shows `space` as 10 instances between Lorem ipsum lines (Desktop mode) and 10 table rows (`Space · <x>`, numbers 3–12) instead of one `Space` row. Question: make this the pattern for spacing props without a table axis?
 - [ ] **Default `space=none` feels odd** (user feedback): the code default is `none`, so the top-left cell has no space. Question for code: is `none` the right default?
+
+From the native lists build (25.11.2026):
+
+- [ ] **Foundation text styles on list item text.** Gery: Foundation text styles shouldn't be used. The native lists are treated as a special case: their code sets no item typography (inherited from the page), so the Figma `li` text of the ordered / unordered item sets binds `🧩 Component/Text/Typo/Paragraph/*` (user decision 25.11.2026). Question: is this exception OK, and what should such inherited text use instead?
+- [ ] **Tabular numbers on components already built.** Code sets `font-variant-numeric: tabular-nums` on every element (`packages/styles/src/scss/normalize.scss`); the plugin API can't set it (`conventions/build-mechanics.md` → "Platform limits"). The ordered list item sets are set by hand (25.11.2026); other built components (e.g. `Item`) are unchecked. Check their text layers and set `Monospace uppercase/lining`.
 
 | Status | Component                                                                                                                                                                                                    | Category   | Nested                                | Gap | Figma |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ------------------------------------- | --- | ----- |

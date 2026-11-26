@@ -14,8 +14,7 @@ is the last phase of the skill.
 - "📐 Anatomy" (or "👉 Copy me", if the Anatomy placeholder was deleted), built and confirmed in
   [`PHASE-7-DOCUMENT-ANATOMY.md`](PHASE-7-DOCUMENT-ANATOMY.md).
 - `<name>.figma.md`'s `measurements:` (`drawnOption`, `options`, `behavior`, `rows`) — the confirmed
-  triage from Phase 1 step 6. **If `measurements:` still uses the old flat per-option list** (`base:` /
-  `sm:` lists of `{ kind, label, px, token }`), re-run Phase 1 step 6 for this component first.
+  triage from Phase 1 step 6.
 
 ## References
 
@@ -52,9 +51,7 @@ marker by hand instead.
 outline, solid number bubble first, value text in the kind color — colors in `conventions/measurements.md` →
 "Labels"), and `Spec/Dimension` puts it on the outer side of its line, 4px from the tick ends
 (above a `top` line, left of a `left` line, …), so it never covers the ticks. Dashed and solid lines are the same
-1px rectangle (dashed = one-side dashed stroke), so both sit centered between the end ticks. The old
-`Spec/Dimension` `kind=icon`, `Spec/Radius`, `Spec/Legend item` and `Spec/Callout` were deleted
-from the Utilities page (18.11.2026, unused).
+1px rectangle (dashed = one-side dashed stroke), so both sit centered between the end ticks.
 
 After changing an annotation component, instances already placed can keep a stale layout or
 even a stale render (seen on `ds-button`: the radius pill showed a leftover rectangle of its old
@@ -103,8 +100,8 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
    padding tints) in `stage`; keep `Component` (the template's
    example instance), the `caption` prototype (the `<caption>` text under the example) and `stage` itself (no auto-layout, so
    markers sit at calculated positions; `FILL` wide, fixed height).
-2. **Main instance.** `swapComponent` the cloned `Component` to the default set's `drawnOption`
-   variant in the `drawnColor` option (see `conventions/measurements.md` → "Border visibility"),
+2. **Main instance.** Replace the cloned `Component` with a fresh instance of the default set's
+   `drawnOption` variant in the `drawnColor` option (see `conventions/measurements.md` → "Border visibility"),
    in the `drawnState` if set (else default state; see "Shape visibility"), with the same content
    as Copy me, centered; rename it after the set. Set the card `title` to the option and color
    (`Drawing — base · secondary`).
@@ -112,12 +109,9 @@ table, prefix each sub-component row's property with its set name (`Tab · Paddi
    `min-content`: shortest realistic label, e.g. `OK`): clone the main instance and
    swap or set it, same `drawnColor`, side by side with 120px between them, centered under the
    main instance. Each gets a caption under it (`Min content`): clone the
-   `caption` prototype, set its text and name it `caption-<instance>`. The prototype is visible on
-   purpose: a hidden node in slot content drops out of the plugin API but stays in the file
-   (`conventions/build-mechanics.md` → "Platform limits"), so a hidden prototype can't be deleted by a
-   script — the template's two hidden `caption` prototypes survived every build this way. Never
-   hide it.
-   Delete the prototype afterwards — also when there are no extra instances.
+   `caption` prototype, set its text and name it `caption-<instance>`. Never hide the prototype
+   (`conventions/build-mechanics.md` → "Platform limits"). Delete it afterwards — also when there
+   are no extra instances.
 4. **`stage` height.** Leave enough room around each instance for its markers and resize the
    stage's height to fit everything (only the height — its width stays `FILL`), so nothing is
    clipped.
@@ -199,25 +193,18 @@ each text node's current fonts before setting `characters`.
 - **One row per `rows` entry with `show` `drawn` or `table`**, in `rows` order: clone `row-1` for
   every row and delete the template's other rows, then rename them `row-1`, `row-2`, … Per row:
   set `Spec/Marker`'s `kind` and `Number` (the number from Drawing step 5), the property text (and its
-  layer name), and one cell per option with the token's last two path segments, `=` and the px
-  (`Size/Base = 48` — not `·`, which reads as "times"). Clone or delete option cells so every row has as many as the header. The
-  full token name goes into the cell's layer name, so it's visible on selection without widening
-  the table.
-- **One token for every option** (`Button/Spinner/Size`, a color-only border width) → delete every option cell but the first; it is `FILL` and spans the option columns (the
-  template's `row-3`). **A token per option with the same px** (`Size/Base/Gap`, `Size/SM/Gap`, …)
-  keeps one cell per option (`Base/Gap = 8`, `SM/Gap = 8`, …) — no `*` shorthand, so a spanning
-  cell always means a single token.
-- **A row with no token** shows `no token` in place of the token (`no token = 2 + 3`).
-- `footnote`: line 1 is the unit and the spanning rule — `Values in px. A value spanning
-all columns applies to every size.` (drop the second sentence when
-  no row spans); line 2 is what the type cells abbreviate — `Text: <font family>, size / weight /
-line height.`
+  layer name), and one cell per option with the px value only (`48`). The full token name goes
+  into the cell's layer name (`no token = 2 + 3` when there is none). Clone or delete option cells
+  so every row has as many as the header.
+- **No spanning cells:** a value shared by every option is repeated in each option cell.
+- `footnote`: line 1 is the unit — `Values in px.`; line 2 is what the type cells abbreviate —
+  `Text: <font family>, size / weight / line height.`
 - **Context-dependent** cells list each mode: `M 16 · T 16 · D 24`.
-- **Type** rows show size, then weight and line-height: `Size/Base = 16 / 700 / 1.3`.
-- Column widths come from the content: the number column is fixed (20), the property column is
-  as wide as its longest entry + 12, and the option columns share the rest equally (`FILL`). Equal
-  option columns keep the values comparable; a cell only wraps when even that isn't enough —
-  then widen only the column that wraps.
+- **Type** rows show size, then weight and line-height: `16 / 700 / 1.3`.
+- Column widths: the number column is fixed (20); the property column and every option column
+  have the same width, so the columns are evenly spaced: `(table width − 20 − gaps) / (options +
+1)`. Set the property cells to that fixed width and the option cells to `FILL`. A cell that
+  doesn't fit wraps.
 
 ### 4. Behavior
 
@@ -225,7 +212,7 @@ Only when `measurements.behavior` exists; otherwise delete this card's `Preview`
 Edit the cloned `stretched` in `columns`: one **stretched** instance of the `drawnOption` variant
 with a label text under it (the min-content case lives in the drawing):
 
-- `swapComponent` the cloned `Component` to the `drawnOption` variant, 2–3× the default text. For
+- Replace the cloned `Component` with a fresh instance of the `drawnOption` variant, 2–3× the default text. For
   `width: fill`, set the instance to `FILL` inside a frame that is wider than its hug width. For
   `overflow: wrap`, set the instance's label text node to `textAutoResize = 'HEIGHT'` and
   `layoutSizingHorizontal = 'FILL'`, then resize the instance to a fixed width below its content
@@ -258,7 +245,7 @@ into `<name>.figma.md`'s `measurements:` (`show`, `reason`), so a re-run produce
   and was mentioned to the user.
 - Every nested `Preview` is `FILL` wide and `HUG` high; nothing is clipped.
 - Every card comes from the cloned template placeholder; none of the template's example content
-  is left (example markers, rows, option cells, the `Component` placeholder instance, the hidden
+  is left (example markers, rows, option cells, the `Component` placeholder instance, the
   `caption` prototype — `<caption>`).
 - Measurements shows the default set's instances only, never an `…Inverted` set.
 - The section has been iterated on and confirmed with the user in Figma.

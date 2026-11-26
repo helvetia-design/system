@@ -96,9 +96,11 @@ worst of all reports (`fail` > `blocked` > `pass`) and decides [Next Phase](#nex
    paint's stored colour and opacity equal the variable's resolved value for that node**
    (`variable.resolveForConsumer(node).value`, alpha included); a mismatch is a `fail` even when
    the binding itself is correct (see `conventions/build-mechanics.md` → "Color and paint").
-   **Exception:** `lineHeight` and `textDecoration` are literals by design (see
-   `PHASE-3-BUILD.md` → "Text property bindings"), not a `fail`. Check that the literal equals the
-   variable's resolved value and that the exception is recorded in `<name>.figma.md`.
+   **Exception:** `lineHeight`, `textDecoration` and `textCase` are literals by design (see
+   `PHASE-3-BUILD.md` → "Text property bindings"), not a `fail`. `letterSpacing` is no exception:
+   an unbound one, or one bound to anything but the `Alias/Text/LetterSpacing/*` its typography
+   token references, is a `fail`. Check that the literal equals the variable's resolved value and that the exception is
+   recorded in `<name>.figma.md`.
    b. Every nested instance except icon slots (see c) has a main component key matching the Phase 1 key for that DS component —
    no detached instance, no local copy. Sub-component instances match the key the
    sub-component's own mapping file recorded in Phase 3 (the `…Inverted` set inside an
