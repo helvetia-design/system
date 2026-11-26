@@ -30,6 +30,12 @@ wontfix: 🚫 wontfix
 
 If you want to change these label names in the future, update this file and the agent configuration will use the new names.
 
+## Category labels
+
+| Label      | Purpose                                                      | When Applied                                |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------- |
+| **`icon`** | A new UI icon; triage routes it to Workflow H (icon-manager) | Set by the "✏️ Icon Request" issue template |
+
 ## Agent Behavior
 
 The `issue-manager` will (drafts first; labels and comments post only after a human gate):

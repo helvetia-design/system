@@ -154,3 +154,7 @@ playwright.visual.config.ts
 docs/superpowers
 
 .husky/_
+
+# draw-icons raw build output (ds-draw-icons skill); sources in draw/source/** stay tracked.
+# The skill's scripts/node_modules are covered by the global node_modules rule above.
+packages/assets/src/icons/draw/*.svg

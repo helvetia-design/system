@@ -40,16 +40,17 @@ The orchestrator routes. It does not investigate.
 
 ## The agents
 
-| Agent                       | Model  | Writes                                                                                                                              | Read-only |
-| --------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- | :-------: |
-| 🏛️ `architect`              | opus   | `docs/plans/components/**` — plans only, never production code                                                                      |           |
-| 🧩 `component-engineer`     | sonnet | `packages/core/src/components/**`, `test/*.visual.html`, `test/*.style.html`, framework wrappers², ADRs, package `CONTEXT.md` files |           |
-| 🧪 `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts`, framework integration tests³        |           |
-| ♿️ `a11y-expert`            | opus   | `.a11y.play.ts` (axe + keyboard/focus/ARIA state), a11y reports                                                                     |           |
-| 🧬 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                                                                 |           |
-| 📖 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                                                             |           |
-| 🎨 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                                                     |           |
-| 📣 `issue-manager`          | sonnet | `docs/plans/github/**` drafts; GitHub issues, comments, labels and PR bodies — after a gate                                         |           |
+| Agent                       | Model  | Writes                                                                                                                                                                               | Read-only |
+| --------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :-------: |
+| 🏛️ `architect`              | opus   | `docs/plans/components/**` — plans only, never production code                                                                                                                       |           |
+| 🧩 `component-engineer`     | sonnet | `packages/core/src/components/**` (not `media/icon/`⁴), `test/*.visual.html`, `test/*.style.html`, framework wrappers², ADRs, package `CONTEXT.md` files                             |           |
+| 🧪 `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts`, framework integration tests³                                                         |           |
+| ♿️ `a11y-expert`            | opus   | `.a11y.play.ts` (axe + keyboard/focus/ARIA state), a11y reports                                                                                                                      |           |
+| 🧬 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                                                                                                                  |           |
+| 📖 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                                                                                                              |           |
+| 🎨 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                                                                                                      |           |
+| 📣 `issue-manager`          | sonnet | `docs/plans/github/**` drafts; GitHub issues, comments, labels and PR bodies — after a gate                                                                                          |           |
+| ✏️ `icon-manager`           | opus   | `packages/assets/icons.yaml`, `packages/assets/src/icons/draw/**`, `packages/assets/src/icons/svg/**` (UI icons), `.claude/skills/ds-draw-icons/**`, `media/icon/**` non-test files⁴ |           |
 
 Plus 🐙 the **orchestrator** — the main session, which dispatches but owns no files.
 
@@ -75,6 +76,11 @@ Model: `select-demo` + `e2e/select.spec.ts`, and the `ds-phone-input` test in th
 `app.spec.ts`. Run after `pnpm app:angular` / `pnpm app:react`'s build step has built core +
 the framework package: `pnpm --filter integration-angular play:run e2e/<name>.spec.ts`, and
 `pnpm --filter integration-react build && pnpm --filter integration-react play:run`.
+
+⁴ **`ds-icon` is the icon-manager's**, carved out of the component-engineer's
+`packages/core/src/components/**`: `packages/core/src/components/media/icon/**` except its test
+files, which stay the test-engineer's. Never the icon-manager's: the generated
+`svg.ts` / `svg.json` / `icons.json`, `brand-icons/**`, `ds-brand-icon`, Storybook and Figma.
 
 `packages/core/src/index.ts` exports `Components` plus a few shared interfaces — a new component
 needs no entry there unless the plan names a public interface type. Generated files
@@ -165,6 +171,7 @@ a run resumable.
 | `<name>.figma-validation.md`                       | ux-designer        | ux-designer, component-engineer                              |
 | anatomy + do's/don'ts copy                         | ux-designer        | documentation-engineer                                       |
 | `docs/plans/github/*.md` (issue, reply, PR drafts) | issue-manager      | **human gate**, then issue-manager in `post` mode            |
+| `docs/plans/icon-migration-plan.md` (tracked)      | icon-manager       | orchestrator, icon-manager — next phase or redraw family     |
 
 ¹ Each planner **writes its own plan file** — the architect's `Write` is scoped to
 `docs/plans/components/**` and nothing else — and returns only a summary: the path, the blocking
@@ -196,8 +203,9 @@ are in the root `AGENTS.md`.
 | C — Feature              | [workflows/c-feature.md](workflows/c-feature.md)                           |
 | D — Component into Figma | [workflows/d-component-into-figma.md](workflows/d-component-into-figma.md) |
 | E / E′ — Deprecation     | [workflows/e-deprecation.md](workflows/e-deprecation.md)                   |
+| H — New icon             | [workflows/h-new-icon.md](workflows/h-new-icon.md)                         |
 
-## GitHub — the closing step of A, B, C and E, and Workflow F
+## GitHub — the closing step of A, B, C, E and H, and Workflow F
 
 Everything the team writes on GitHub goes through 📣 issue-manager, in two dispatches:
 
@@ -211,7 +219,8 @@ Everything the team writes on GitHub goes through 📣 issue-manager, in two dis
 issue — only when the PR targets the default branch (`ds-pr-body` checks).
 
 **Workflow F — Triage** (standalone, no component): 📣 `ds-issue-triage` drafts a decision table
-plus replies → ⛔ gate → 📣 `post` applies labels and comments. Never closes issues.
+plus replies → ⛔ gate → 📣 `post` applies labels and comments. Never closes issues. An issue
+labelled `icon` (the "Icon request" template) routes to Workflow H.
 
 ## Figma drift check — the closing step of B, C and E
 

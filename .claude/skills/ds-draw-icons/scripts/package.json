@@ -1,0 +1,9 @@
+{
+  "name": "ds-draw-icons-scripts",
+  "private": true,
+  "type": "module",
+  "description": "DS wrapper scripts for draw-icons: flatten built icons to one fill path, overlap check against Streamline.",
+  "dependencies": {
+    "canvaskit-wasm": "0.42.0"
+  }
+}

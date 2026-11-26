@@ -1,0 +1,55 @@
+name: ✏️ Icon Request
+description: Request a new UI icon for ds-icon
+title: ':pencil2: feat(icon): name'
+labels: ['icon']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for requesting an icon! We draw UI icons only — brand and social logos are not drawn.
+  - type: textarea
+    id: concept
+    attributes:
+      label: Concept
+      description: What the icon stands for, in one or two sentences. One icon per request.
+    validations:
+      required: true
+  - type: textarea
+    id: where-used
+    attributes:
+      label: Where Used
+      description: The components and screens where the icon appears, e.g. inside a button, an input or a list.
+    validations:
+      required: true
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      description: The ds-icon sizes it is used at.
+      multiple: true
+      options:
+        - sm (14px)
+        - base (16px)
+        - md (24px)
+        - lg (32px)
+        - xl (40px)
+    validations:
+      required: true
+  - type: input
+    id: aliases
+    attributes:
+      label: Aliases
+      description: Other names people would search for, e.g. "bin, delete" for trash.
+  - type: textarea
+    id: metaphor
+    attributes:
+      label: Suggested Metaphor
+      description: What the icon could show. Links to examples are welcome; we use them as reference only and never copy them.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/helvetia-design/system?tab=coc-ov-file)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

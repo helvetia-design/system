@@ -79,6 +79,8 @@ call those too; run the scripts rather than checking their rules by eye.
   writing it. Only non-behavioural deviations (file layout, helper names) go in the report.
 - You own the framework wrappers, ADRs and package `CONTEXT.md` files the plan lists — see
   `docs/agents/ds-team.md` ownership note ².
+- **`ds-icon` is not yours.** `packages/core/src/components/media/icon/**` (except its test
+  files) belongs to ✏️ icon-manager. A defect you find there is reported, not fixed.
 
 # Completion
 

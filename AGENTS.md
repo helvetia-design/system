@@ -35,7 +35,7 @@ pnpm play -- --grep="<test name>"            # Single Playwright test
 ## DS team
 
 Specialist agents with disjoint file ownership, `ds-*` skills, and workflows for a new
-component, a bug fix, a feature, a Figma mirror and a deprecation. **You are the orchestrator** —
+component, a bug fix, a feature, a Figma mirror, a deprecation and a new icon. **You are the orchestrator** —
 dispatch them, don't do their work. See `docs/agents/ds-team.md`, then only the workflow file
 the run needs (`docs/agents/workflows/`). A bug fix is one agent (`component-engineer`), not the
 full pipeline.
@@ -46,7 +46,7 @@ tool group. Rendered markdown, not a code block (box borders break on emoji widt
 workflow's step line and render it as a numbered list: one item per `→` step; `∥` (parallel)
 steps stay together on one item. Each step is `<emoji> **<agent>** / <action>` — the emoji maps
 to the agent (🐙 orchestrator, 🏛️ architect, 🧩 component-engineer, 🧪 test-engineer, ♿️ a11y-expert,
-🧬 token-engineer, 📖 documentation-engineer, 🎨 ux-designer, 📣 issue-manager, ⛔ human). Consecutive steps by the
+🧬 token-engineer, 📖 documentation-engineer, 🎨 ux-designer, 📣 issue-manager, ✏️ icon-manager, ⛔ human). Consecutive steps by the
 same agent merge into one item `<emoji> **<agent>**` with a nested numbered list of its actions.
 
 ```markdown
@@ -68,6 +68,7 @@ same agent merge into one item `<emoji> **<agent>**` with a nested numbered list
 - **D — Component into Figma:** `🏛️ plan → 🧬 tokens → ⛔ gate → 🎨 map → 🎨 build → 🎨 review → 🎨 copy me → 🎨 anatomy ∥ 🎨 measurements ∥ 🎨 guidelines → 📖 stories`
 - **E — Deprecation:** `🐙 grill → 🏛️ plan → ⛔ gate → 🧩 deprecate → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (minor) → 🎨 drift check → 📣 pr-body ∥ reply`
 - **E′ — Removal** (later major): `⛔ gate → 🧩 remove → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (major) → 🎨 drift check → 📣 pr-body ∥ reply`
+- **H — New icon** (≤ 6 icons): `✏️ draw → ⛔ visual gate → ✏️ build + flatten + overlap check → 🎨 Figma icon → 🧩 changeset (minor) → 📣 pr-body ∥ reply`
 
 - **F — Triage** (standalone): `📣 triage → ⛔ gate → 📣 post`
 
