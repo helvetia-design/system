@@ -10,6 +10,7 @@ import {
   Method,
   Prop,
   State,
+  Watch,
 } from '@stencil/core'
 import {
   deserializeBooleanAttribute,
@@ -166,6 +167,10 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
    * The value of the segment group.
    */
   @Prop({ mutable: true, reflect: true }) value?: any | null
+  @Watch('value')
+  valueChanged() {
+    this.updateFormValue()
+  }
 
   /**
    * Displays the segment items vertically
@@ -210,7 +215,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
 
   connectedCallback() {
     this.initialValue = this.value
-    setFormValue(this.internals, this.value)
+    this.updateFormValue()
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver(() => {
         this.updateLayout()
@@ -312,7 +317,6 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
     if (this.disabled || this.readonly) return
     this.value = itemValue
     this.dsChange.emit(this.value)
-    setFormValue(this.internals, this.value)
   }
 
   // Native radio never fires "change" when clicking an already-checked item,
@@ -328,7 +332,6 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
       ev.preventDefault()
       this.value = undefined
       this.dsChange.emit(this.value)
-      setFormValue(this.internals, null)
     }
   }
 
@@ -340,6 +343,10 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private updateFormValue() {
+    setFormValue(this.internals, this.value ?? null)
+  }
 
   private readItemsFromSlot() {
     const slot = this.el.shadowRoot?.querySelector<HTMLSlotElement>('slot:not([name])')

@@ -11,6 +11,7 @@ import {
   Method,
   Prop,
   State,
+  Watch,
 } from '@stencil/core'
 import {
   deserializeBooleanAttribute,
@@ -98,6 +99,11 @@ export class Radio implements DsComponentInterface {
   @Prop({ mutable: true, reflect: true })
   @Type('boolean')
   checked: boolean = false
+
+  @Watch('checked')
+  protected checkedChanged() {
+    this.updateFormValue()
+  }
 
   /**
    * @internal
@@ -238,7 +244,7 @@ export class Radio implements DsComponentInterface {
   }
 
   componentWillLoad() {
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+    this.updateFormValue()
     this.inheritedAttributes = inheritAttributes(this.el, ['aria-label', 'tabindex', 'title'])
   }
 
@@ -329,7 +335,6 @@ export class Radio implements DsComponentInterface {
   private handleChange = (ev: Event): void => {
     this.checked = (ev.target as HTMLInputElement).checked
     this.dsChange.emit(this.checked)
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
   }
 
   private handleFocus = (ev: FocusEvent) => {
@@ -383,6 +388,10 @@ export class Radio implements DsComponentInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private updateFormValue() {
+    setFormValue(this.internals, !this.group && this.checked ? (this.value as string) : null)
+  }
 
   private get group(): HTMLDsRadioGroupElement | null {
     return this.el.closest('ds-radio-group')

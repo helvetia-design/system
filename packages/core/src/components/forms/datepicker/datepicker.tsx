@@ -131,6 +131,7 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
 
   @Watch('value', { immediate: true })
   protected valueChanged() {
+    this.control.valueChanged()
     // Skip when the incoming value already matches what the mask currently represents. This guards
     // against consumers that echo `dsInput` (emitted on every keystroke, `null`/`''` while the date is
     // incomplete) straight back into `[value]`: without this check, that round-trip would resync the

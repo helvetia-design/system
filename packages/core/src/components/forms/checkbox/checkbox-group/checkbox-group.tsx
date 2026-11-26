@@ -1,6 +1,5 @@
 import {
   AttrDeserialize,
-  AttachInternals,
   Component,
   Element,
   Event,
@@ -28,7 +27,6 @@ import {
   shallowReady,
   Type,
   watchInvalidTextSlot,
-  setFormValue,
 } from '@utils'
 import { INPUT_COLORS, InputColor } from '../../input/input.interfaces'
 import {
@@ -66,11 +64,11 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
   }
 
   @Element() el!: HTMLStencilElement
-  @AttachInternals() internals!: ElementInternals
 
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() private internalValue: any[] = []
+  private initialValue: any[] = []
   @State() hasInvalidTextSlotContent = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
@@ -269,7 +267,6 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
       this.hasInvalidTextSlotContent = hasContent
     })
     this.passDownAttributes()
-    setFormValue(this.internals, this.internalValue.join(','))
   }
 
   disconnectedCallback() {
@@ -285,6 +282,7 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     // resulting checked-state sync would otherwise be silently lost. `valueChanged()` always reads `this.value`
     // directly rather than relying on the watch having fired, so it self-heals regardless of that race.
     this.valueChanged()
+    this.initialValue = [...this.internalValue]
   }
 
   componentWillUpdate() {
@@ -336,7 +334,7 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     const formElement = ev.target as HTMLElement
     if (formElement?.contains(this.el)) {
       if (this.control) {
-        this.internalValue = []
+        this.internalValue = [...this.initialValue]
       }
       this.handleValueChange()
     }
@@ -451,7 +449,6 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     if (!areArraysEqual(this.internalValue, newValue)) {
       this.internalValue = [...newValue]
       this.dsChange.emit(this.internalValue)
-      setFormValue(this.internals, this.internalValue.join(','))
     }
   }
 
