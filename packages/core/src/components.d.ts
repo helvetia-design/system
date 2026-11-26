@@ -2348,6 +2348,11 @@ export namespace Components {
          */
         "open": boolean;
         /**
+          * ARIA role applied to the panel and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
+          * @default 'dialog'
+         */
+        "panelRole": PopupRole;
+        /**
           * Preferred placement of the popup relative to the trigger.
           * @default 'bottom'
          */
@@ -2356,11 +2361,6 @@ export namespace Components {
           * Opens the popup.
          */
         "present": () => Promise<void>;
-        /**
-          * ARIA role applied to the panel. Controls focus-trap behaviour and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
-          * @default 'dialog'
-         */
-        "role": PopupRole;
         /**
           * Toggles the popup open or closed.
          */
@@ -7662,15 +7662,15 @@ declare namespace LocalJSX {
          */
         "open"?: boolean;
         /**
+          * ARIA role applied to the panel and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
+          * @default 'dialog'
+         */
+        "panelRole"?: PopupRole;
+        /**
           * Preferred placement of the popup relative to the trigger.
           * @default 'bottom'
          */
         "placement"?: PopupPlacement;
-        /**
-          * ARIA role applied to the panel. Controls focus-trap behaviour and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
-          * @default 'dialog'
-         */
-        "role"?: PopupRole;
         /**
           * Override the automatic focus-trap behaviour. When undefined, trapping is enabled when `backdrop` is `true` and disabled otherwise.
           * @default undefined
@@ -9706,7 +9706,7 @@ declare namespace LocalJSX {
         "open": boolean;
         "placement": PopupPlacement;
         "offset": number;
-        "role": PopupRole;
+        "panelRole": PopupRole;
         "closable": boolean;
         "backdropDismiss": boolean;
         "backdrop": boolean;

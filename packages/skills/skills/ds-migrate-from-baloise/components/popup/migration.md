@@ -77,7 +77,7 @@ Copy as-is, in every form: `label`, `placement`, `arrow`, `backdrop`, `closable`
 | `variant` bound dynamically | _(not migrated)_ | The value is unknown at migration time and may be `drawer` or `fullscreen`. Leave the element as legacy and report it. |
 | `reference` | _(no equivalent)_ | Drop it in every form. `ds-popup` anchors to its trigger. Report each one. |
 | `contentWidth` | _(no equivalent)_ | Drop it in every form. Legacy set `--bal-popup-variant-popover-max-width` from it. Report each one. |
-| _(none)_ | `role`, `group`, `trapFocus` | New props. Nothing to migrate from. Leave them unset. |
+| _(none)_ | `panelRole`, `group`, `trapFocus` | New props. Nothing to migrate from. Leave them unset. |
 | `[placement]="x"`, `[attr.offset]="x"`, `closable={x}`, and the same for every other copied prop | same | Dynamic value. Do not guess the mapping. `active`, `reference` and `contentWidth` follow their own rows. Every other prop keeps its name. HTML: copy the binding unchanged and list the file and line in the report. React and Angular: copy it when the expression's type only admits values the `ds-popup` prop accepts. `placement` takes `top`, `right`, `bottom` or `left`, each alone or with `-start` or `-end`. `offset` takes a number and `label` a string. `arrow`, `backdrop`, `closable` and `backdropDismiss` take a boolean. Otherwise apply Unmapped props and handlers (`SKILL.md`). |
 
 ### Tags and imports
