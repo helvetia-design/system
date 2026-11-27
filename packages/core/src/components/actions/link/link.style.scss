@@ -32,7 +32,8 @@
  * @prop --link-focus - Focus ring color.
  */
 a.ds-link:not(.ds-button),
-a.is-link:not(.ds-button) {
+a.is-link:not(.ds-button),
+.ds-content > a:any-link:not(.ds-button) {
   @include vars.focus(link);
 
   @include vars.local(link-color, var(--ds-link-primary-base));

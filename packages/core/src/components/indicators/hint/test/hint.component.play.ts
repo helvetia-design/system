@@ -135,3 +135,47 @@ test.describe('component', () => {
     await expect(tooltip).toHaveAttribute('aria-hidden', 'false')
   })
 })
+
+test.describe('dialog accessible name', () => {
+  test('should use label as dialog name', async ({ page }) => {
+    await page.mount(`<ds-hint label="Label text">Body.</ds-hint>`)
+    const dsHint = new DsHint(page.locator('ds-hint'))
+    await dsHint.clickTrigger()
+
+    await expect(page.getByRole('dialog', { name: 'Label text' })).toBeVisible()
+  })
+
+  test('should use slotted title text as dialog name', async ({ page }) => {
+    await page.mount(`<ds-hint><span slot="title">Slotted title</span>Body.</ds-hint>`)
+    const dsHint = new DsHint(page.locator('ds-hint'))
+    await dsHint.clickTrigger()
+
+    await expect(page.getByRole('dialog', { name: 'Slotted title' })).toBeVisible()
+  })
+
+  test('should fall back to the trigger label as dialog name', async ({ page }) => {
+    await page.mount(`<ds-hint trigger-label="Learn more">Body.</ds-hint>`)
+    const dsHint = new DsHint(page.locator('ds-hint'))
+    await dsHint.clickTrigger()
+
+    await expect(page.getByRole('dialog', { name: 'Learn more' })).toBeVisible()
+  })
+
+  test('should fall back to the localised trigger label as dialog name', async ({ page }) => {
+    await page.mount(`<ds-hint>Body.</ds-hint>`)
+    const dsHint = new DsHint(page.locator('ds-hint'))
+    await dsHint.clickTrigger()
+
+    await expect(page.getByRole('dialog', { name: 'Weitere Informationen' })).toBeVisible()
+  })
+
+  test('should name the drawer dialog on touch devices', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 })
+    await page.mount(`<ds-hint label="Label text">Body.</ds-hint>`)
+    const dsHint = new DsHint(page.locator('ds-hint'))
+    await dsHint.clickTrigger()
+
+    await expect(page.locator('ds-hint ds-drawer')).toBeAttached()
+    await expect(page.getByRole('dialog', { name: 'Label text' })).toBeVisible()
+  })
+})

@@ -123,6 +123,32 @@ test.describe('disabled', () => {
     await input.assertToBeDisabled()
     expect(inputSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-number-input name="field" label="Label" value="42"></ds-number-input></form>`)
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+    expect(await getFormEntries(page)).toEqual([['field', '42']])
+
+    await input.el.evaluate((el: HTMLDsNumberInputElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-number-input name="field" label="Label" value="42"></ds-number-input></fieldset></form>`,
+    )
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+
+    await input.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '42']])
+  })
 })
 
 test.describe('form reset', () => {

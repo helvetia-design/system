@@ -135,7 +135,7 @@
   width: auto;
 }
 
-::part(label) {
+.label {
   @include typo.apply(spinner-label);
   color: var(--_spinner-label-color-text);
 }

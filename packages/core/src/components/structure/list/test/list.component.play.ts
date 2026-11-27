@@ -120,4 +120,47 @@ test.describe('component', () => {
 
     await dsItem.accordion.assertToBeOpen()
   })
+
+  test('should not render a focusable link on a disabled link item', async ({ page }) => {
+    await page.mount(`
+      <button id="before">Before</button>
+      <ds-list>
+        <ds-item variant="link" label="Open" href="/target" target="_blank" disabled></ds-item>
+      </ds-list>
+      <button id="after">After</button>
+    `)
+
+    const anchor = page.locator('ds-item a')
+
+    await expect(anchor).not.toHaveAttribute('href')
+    await expect(anchor).not.toHaveAttribute('target')
+    await expect(anchor).toHaveAttribute('aria-disabled', 'true')
+    await expect(anchor).toHaveAttribute('role', 'link')
+    await expect(anchor).not.toHaveAttribute('tabindex')
+
+    await page.locator('#before').focus()
+    await page.keyboard.press('Tab')
+
+    await expect(page.locator('#after')).toBeFocused()
+  })
+
+  test('should not open a disabled accordion item', async ({ page }) => {
+    await page.mount(`
+      <ds-list>
+        <ds-item variant="accordion" label="Item 1" disabled>
+          <span slot="accordion-content">Content</span>
+        </ds-item>
+      </ds-list>
+    `)
+
+    const dsItem = new DsItem(page.locator('ds-item'))
+    const spy = await dsItem.el.spyOnEvent('dsAccordionToggle')
+
+    await expect(dsItem.accordion.summary).toBeDisabled()
+
+    await dsItem.accordion.summary.dispatchEvent('click')
+
+    await dsItem.accordion.assertToBeClosed()
+    expect(spy).toHaveReceivedEventTimes(0)
+  })
 })

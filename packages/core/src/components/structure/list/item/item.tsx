@@ -24,12 +24,14 @@ import {
 } from './item.interfaces'
 
 type Attributes = {
-  disabled?: boolean
-  href?: string
-  target?: string
-  rel?: string
-  download?: string
-  onClick?: (event: MouseEvent) => void
+  'disabled'?: boolean
+  'href'?: string
+  'target'?: string
+  'rel'?: string
+  'download'?: string
+  'onClick'?: (event: MouseEvent) => void
+  'aria-disabled'?: 'true'
+  'role'?: 'link'
 }
 
 /**
@@ -252,20 +254,21 @@ export class Item implements DsComponentInterface {
     const attributes: Attributes = {}
     if (this.variant === 'link') {
       if (this.disabled) {
-        attributes.disabled = this.disabled
+        attributes['aria-disabled'] = 'true'
+        attributes.role = 'link'
       } else {
         attributes.onClick = this.handleClick
+        if (this.href) {
+          attributes.href = this.href
+        }
+        if (this.target) {
+          attributes.target = this.target
+        }
+        if (this.rel) {
+          attributes.rel = this.rel
+        }
+        attributes.download = this.download
       }
-      if (this.href) {
-        attributes.href = this.href
-      }
-      if (this.target) {
-        attributes.target = this.target
-      }
-      if (this.rel) {
-        attributes.rel = this.rel
-      }
-      attributes.download = this.download
     }
 
     if (this.variant === 'button') {
@@ -291,6 +294,7 @@ export class Item implements DsComponentInterface {
           <ds-accordion
             part="accordion"
             {...attributes}
+            disabled={this.disabled}
             group={this.accordionGroup}
             summary-level={LabelTag}
             open={this.accordionOpen}

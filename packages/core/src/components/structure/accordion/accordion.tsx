@@ -62,6 +62,13 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
   open: boolean = false
 
   /**
+   * If `true`, the user cannot open or close the accordion.
+   */
+  @Prop({ reflect: true })
+  @Type('boolean')
+  readonly disabled: boolean = false
+
+  /**
    * The name of the group the accordion belongs to. Accordions with the same group name will automatically
    * close when another accordion in the same group is opened.
    */
@@ -215,6 +222,8 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
    */
 
   private handleToggle(event: MouseEvent, open: boolean) {
+    if (this.disabled) return
+
     // check if target is link or button and ignore toggle if so,
     // to allow nested interactive elements in the summary
     const target = event.target as HTMLElement
@@ -274,6 +283,7 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
           [`is-${this.summaryVisualLevel}`]: !!this.summaryVisualLevel,
           'is-animated': !!this.animated,
           'is-animating': !!this.animated && this.isAnimating,
+          'is-disabled': this.disabled,
         }}
       >
         {/* ---------------------------------------- */}
@@ -286,6 +296,7 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
             aria-controls="content"
             id="summary"
             part="summary"
+            disabled={this.disabled}
             onClick={ev => this.handleToggle(ev, !this.open)}
             class={{
               'ds-button': this.button,

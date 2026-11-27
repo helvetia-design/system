@@ -66,6 +66,32 @@ test.describe('disabled', () => {
     expect(focusSpy).toHaveReceivedEventTimes(0)
     expect(blurSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-toggle name="field" value="yes" checked>Toggle</ds-toggle></form>`)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+
+    await toggle.el.evaluate((el: HTMLDsToggleElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-toggle name="field" value="yes" checked>Toggle</ds-toggle></fieldset></form>`,
+    )
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    await toggle.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+  })
 })
 
 test.describe('readonly', () => {
@@ -165,5 +191,29 @@ test.describe('native form', () => {
     await page.waitForChanges()
 
     expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+  })
+})
+
+test.describe('label prop', () => {
+  test('should render the label prop as accessible name', async ({ page }) => {
+    await page.mount(`<ds-toggle value="on" label="Notifications"></ds-toggle>`)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    await expect(toggle.nativeInput).toHaveAccessibleName('Notifications')
+  })
+
+  test('should render the label prop when the host only contains whitespace', async ({ page }) => {
+    await page.mount(`<ds-toggle value="on" label="Notifications">
+    </ds-toggle>`)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    await expect(toggle.nativeInput).toHaveAccessibleName('Notifications')
+  })
+
+  test('should prefer slotted content over the label prop', async ({ page }) => {
+    await page.mount(`<ds-toggle value="on" label="Notifications">Slotted</ds-toggle>`)
+    const toggle = new DsToggle(page.locator('ds-toggle'))
+
+    await expect(toggle.nativeInput).toHaveAccessibleName('Slotted')
   })
 })

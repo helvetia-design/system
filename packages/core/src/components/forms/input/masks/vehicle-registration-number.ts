@@ -36,6 +36,7 @@ export class VehicleRegistrationNumber implements InputMaskFormatterInterface {
 
   private formatValue(value: string): string {
     const digits = value.replace(/\D/g, '')
+    if (!digits) return ''
     const parts = [
       digits.substring(0, 3),
       digits.substring(3, 6),

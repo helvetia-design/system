@@ -185,3 +185,52 @@ test.describe('moved in the DOM', () => {
     await carousel.assertItemSelected('s2')
   })
 })
+
+const IMAGE = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+
+test.describe('image variant — alt text', () => {
+  let warnings: string[]
+
+  test.beforeEach(({ page }) => {
+    warnings = []
+    page.on('console', msg => {
+      if (msg.type() === 'warning' && msg.text().includes('[ds-carousel-item]')) warnings.push(msg.text())
+    })
+  })
+
+  test('renders the alt prop on the image without warning', async ({ page }) => {
+    await page.mount(
+      `<ds-carousel><ds-carousel-item name="s1" src="${IMAGE}" alt="A logo"></ds-carousel-item></ds-carousel>`,
+    )
+
+    await expect(page.locator('ds-carousel-item img')).toHaveAttribute('alt', 'A logo')
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+
+  test('does not warn for a decorative image with an empty alt', async ({ page }) => {
+    await page.mount(`<ds-carousel><ds-carousel-item name="s1" src="${IMAGE}" alt=""></ds-carousel-item></ds-carousel>`)
+
+    await expect(page.locator('ds-carousel-item img')).toHaveAttribute('alt', '')
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+
+  test('renders an empty alt and warns once when alt is not set', async ({ page }) => {
+    await page.mount(`<ds-carousel><ds-carousel-item name="s1" src="${IMAGE}"></ds-carousel-item></ds-carousel>`)
+
+    await expect(page.locator('ds-carousel-item img')).toHaveAttribute('alt', '')
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(1)
+  })
+
+  test('does not warn for tile items with src', async ({ page }) => {
+    await page.mount(
+      `<ds-carousel variant="tile"><ds-carousel-item name="t1" src="${IMAGE}">Tile</ds-carousel-item></ds-carousel>`,
+    )
+
+    await expect(page.locator('ds-carousel-item img')).toHaveCount(0)
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+})

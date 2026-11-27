@@ -1,4 +1,4 @@
-import { DsCounter, expect, test } from '@helvetia-design/playwright'
+import { DsCounter, expect, getFormEntries, test } from '@helvetia-design/playwright'
 
 test.describe('events', () => {
   test('fires dsInput, dsChange, dsIncrease on increase click', async ({ page }) => {
@@ -122,6 +122,32 @@ test.describe('disabled', () => {
 
     await counter.assertToBeDisabled()
     expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-counter name="quantity" label="Quantity" value="3"></ds-counter></form>`)
+    const counter = new DsCounter(page.locator('ds-counter'))
+    expect(await getFormEntries(page)).toContainEqual(['quantity', expect.anything()])
+
+    await counter.el.evaluate((el: HTMLDsCounterElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).not.toContainEqual(['quantity', expect.anything()])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-counter name="quantity" label="Quantity" value="3"></ds-counter></fieldset></form>`,
+    )
+    const counter = new DsCounter(page.locator('ds-counter'))
+
+    await counter.assertToBeDisabled()
+    expect(await getFormEntries(page)).not.toContainEqual(['quantity', expect.anything()])
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toContainEqual(['quantity', expect.anything()])
   })
 })
 
