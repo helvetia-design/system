@@ -290,6 +290,7 @@ export class Item implements DsComponentInterface {
             part="accordion"
             {...attributes}
             group={this.accordionGroup}
+            summary-level={LabelTag}
             open={this.accordionOpen}
             marker={this.accordionMarker}
             marker-position={this.accordionMarkerPosition}
@@ -306,10 +307,11 @@ export class Item implements DsComponentInterface {
             <div slot="summary" id="item" part="item">
               <slot name="icon"></slot>
               <div id="content">
+                {/* ds-accordion already wraps the summary in the heading, so the label must not be one too */}
                 {this.label && (
-                  <LabelTag id="label" part="label">
+                  <span id="label" part="label">
                     {this.label}
-                  </LabelTag>
+                  </span>
                 )}
                 {this.description && (
                   <p id="description" part="description">

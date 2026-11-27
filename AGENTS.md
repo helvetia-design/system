@@ -46,7 +46,7 @@ tool group. Rendered markdown, not a code block (box borders break on emoji widt
 workflow's step line and render it as a numbered list: one item per `→` step; `∥` (parallel)
 steps stay together on one item. Each step is `<emoji> **<agent>** / <action>` — the emoji maps
 to the agent (🐙 orchestrator, 🏛️ architect, 🧩 component-engineer, 🧪 test-engineer, ♿️ a11y-expert,
-🧬 token-engineer, 📖 documentation-engineer, 🎨 ux-designer, 📣 issue-manager, ⛔ human). Consecutive steps by the
+🧬 token-engineer, 📖 documentation-engineer, 🎨 ux-designer, 📣 issue-manager, 🐦‍⬛ magpie, ⛔ human). Consecutive steps by the
 same agent merge into one item `<emoji> **<agent>**` with a nested numbered list of its actions.
 
 ```markdown
@@ -70,6 +70,7 @@ same agent merge into one item `<emoji> **<agent>**` with a nested numbered list
 - **E′ — Removal** (later major): `⛔ gate → 🧩 remove → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (major) → 🎨 drift check → 📣 pr-body ∥ reply`
 
 - **F — Triage** (standalone): `📣 triage → ⛔ gate → 📣 post`
+- **G — Recreate from a site:** `🐦‍⬛ scout → ⛔ gate (name, rung) → route` — rung 1 `📖 recipe → 📖 validate`; rung 2/3 → C from `🏛️ plan`; rung 4 → A from `🏛️ plan ∥ ♿️ a11y-plan`
 
 `📣 pr-body ∥ reply` and Triage: see `ds-team.md` → GitHub.
 

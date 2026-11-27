@@ -89,3 +89,22 @@ export const Mobile = Story({
   ),
 })
 Mobile.storyName = 'Mobile'
+
+const rowGapCols = `
+  <div class="ds-col is-half"><ds-card>1</ds-card></div>
+  <div class="ds-col is-half"><ds-card>2</ds-card></div>
+  <div class="ds-col is-half"><ds-card>3</ds-card></div>
+  <div class="ds-col is-half"><ds-card>4</ds-card></div>`
+
+export const RowGap = Story({
+  ...withRender(
+    () => `
+<div class="ds-grid is-multiline gap-sm">${rowGapCols}
+</div>
+<ds-stack py="lg"><ds-text>With <code>row-gap-3xl</code></ds-text></ds-stack>
+<div class="ds-grid is-multiline gap-sm row-gap-3xl">${rowGapCols}
+</div>
+`,
+  ),
+})
+RowGap.storyName = 'Row Gap'

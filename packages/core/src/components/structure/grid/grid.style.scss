@@ -35,6 +35,18 @@
  * @variant gap-2xl - Sets the column gap to the 2xl spacing token.
  * @variant gap-3xl - Sets the column gap to the 3xl spacing token.
  * @variant gap-4xl - Sets the column gap to the 4xl spacing token.
+ * @variant row-gap-none - Sets the row gap to the none spacing token.
+ * @variant row-gap-3xs - Sets the row gap to the 3xs spacing token.
+ * @variant row-gap-2xs - Sets the row gap to the 2xs spacing token.
+ * @variant row-gap-xs - Sets the row gap to the xs spacing token.
+ * @variant row-gap-sm - Sets the row gap to the sm spacing token.
+ * @variant row-gap-base - Sets the row gap to the base spacing token.
+ * @variant row-gap-md - Sets the row gap to the md spacing token.
+ * @variant row-gap-lg - Sets the row gap to the lg spacing token.
+ * @variant row-gap-xl - Sets the row gap to the xl spacing token.
+ * @variant row-gap-2xl - Sets the row gap to the 2xl spacing token.
+ * @variant row-gap-3xl - Sets the row gap to the 3xl spacing token.
+ * @variant row-gap-4xl - Sets the row gap to the 4xl spacing token.
  */
 
 @use 'sass:math';
@@ -47,9 +59,11 @@
  * These variables can be used in the component styles below and later on be overridden in themes.
  *
  * @prop --ds-column-gap - Gap between grid columns, applied as padding on columns and negative margin on the grid.
+ * @prop --ds-row-gap - Gap between grid rows (stacked columns); falls back to --ds-column-gap when unset.
  */
 .ds-grid {
   --ds-column-gap: 1rem;
+  --ds-row-gap: initial; // reset so a nested grid does not inherit the parent's row gap
 }
 
 .ds-grid {
@@ -62,7 +76,7 @@
   flex-basis: 0;
   flex-grow: 1;
   flex-shrink: 1;
-  padding: var(--ds-column-gap);
+  padding: var(--ds-row-gap, var(--ds-column-gap)) var(--ds-column-gap);
   .ds-grid.is-mobile > &.is-narrow {
     flex: none;
     width: unset;
@@ -661,12 +675,12 @@
 .ds-grid {
   @include ltr-property('margin', (calc(var(--ds-column-gap) * -1)), false);
   @include ltr-property('margin', (calc(var(--ds-column-gap) * -1)));
-  margin-top: (calc(var(--ds-column-gap) * -1));
+  margin-top: (calc(var(--ds-row-gap, var(--ds-column-gap)) * -1));
   &:last-child {
-    margin-bottom: (calc(var(--ds-column-gap) * -1));
+    margin-bottom: (calc(var(--ds-row-gap, var(--ds-column-gap)) * -1));
   }
   &:not(:last-child) {
-    margin-bottom: calc(1.5rem - #{var(--ds-column-gap)});
+    margin-bottom: calc(1.5rem - #{var(--ds-row-gap, var(--ds-column-gap))});
   }
   &.is-centered {
     justify-content: center;
@@ -769,5 +783,20 @@
   &.gap-4xl {
     --ds-column-gap: calc(var(--ds-device-space-4xl) / 2);
     gap: 0 !important;
+  }
+}
+
+/**
+ * Row gap size utilities
+ * --------------------------------
+ * Override --ds-row-gap; `row-gap: 0 !important` cancels the shared `.row-gap-*` utility
+ * for the same reason as `gap-*` above.
+ */
+.ds-grid {
+  @each $size in ('none', '3xs', '2xs', 'xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl', '3xl', '4xl') {
+    &.row-gap-#{$size} {
+      --ds-row-gap: calc(var(--ds-device-space-#{$size}) / 2);
+      row-gap: 0 !important;
+    }
   }
 }

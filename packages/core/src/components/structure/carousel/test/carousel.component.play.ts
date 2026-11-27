@@ -65,6 +65,25 @@ test.describe('tile variant — initial state', () => {
   })
 })
 
+test.describe('tile variant — itemsPerView string', () => {
+  test('sets per-breakpoint item widths and updates on change', async ({ page }) => {
+    await page.mount(`
+      <ds-carousel variant="tile" items-per-view="1 tablet:2 desktop:3">
+        <ds-carousel-item name="p1">Item 1</ds-carousel-item>
+        <ds-carousel-item name="p2">Item 2</ds-carousel-item>
+      </ds-carousel>
+    `)
+    const item = page.locator('ds-carousel-item').first()
+    const vars = () =>
+      item.evaluate(el => ['', '-tablet', '-desktop'].map(s => el.style.getPropertyValue(`--carousel-item-width${s}`)))
+    expect(await vars()).toEqual(['calc(100% / 1)', 'calc(100% / 2)', 'calc(100% / 3)'])
+
+    await page.locator('ds-carousel').evaluate((el: HTMLDsCarouselElement) => (el.itemsPerView = 2))
+    await page.waitForChanges()
+    expect(await vars()).toEqual(['calc(100% / 2)', '', ''])
+  })
+})
+
 test.describe('image variant — below controls', () => {
   test('prev is disabled at start, next scrolls forward and becomes focusable', async ({ page }) => {
     await page.mount(`<ds-carousel controls="large-below" style="width:300px">${ITEMS}</ds-carousel>`)
