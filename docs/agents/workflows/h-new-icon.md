@@ -4,7 +4,7 @@
 
 Draw up to six UI icons we do not have yet, from an `icon` issue or a team request. Never a
 brand icon. Decisions: `docs/plans/components/icon-manager-brief.md` → `## Gate decisions`.
-Project state: `docs/plans/icon-migration-plan.md`.
+Existing Streamline icons are never redrawn, renamed or removed — only missing concepts.
 
 ```text
 icon request (≤ 6 icons)
@@ -27,7 +27,7 @@ next to their neighbors; three rounds without a clean sheet is a stop, reported 
 > the pick.
 
 **2 · Build** — draw-icons `build` into `src/icons/draw`, then flatten into one fill-only
-`<path>` (`viewBox="0 0 16 16"`) at `packages/assets/src/icons/svg/<name>.svg`. The overlap check
+`<path>` (`viewBox="0 0 14 14"`, the DNA v1 grid) at `packages/assets/src/icons/svg/<name>.svg`. The overlap check
 against every Streamline file must pass; a failure means redraw, never a looser threshold.
 
 **3 · Figma** — 🎨 adds a single-vector `Icon<Name>` to the Instance Swap library and tests a
@@ -44,18 +44,11 @@ included automatically. Its new baseline comes from `/update-screenshots`, run b
 
 ✏️ icon-manager only, no PR until the gate:
 
-1. Measure Core Solid from rendered PNGs — weight, corner radius, gaps, optical size.
-2. Write 2–3 candidate DNAs (`style: filled`, `grid: 16`, `sizes: [14, 16, 24, 32, 40]`).
-3. Draw the six calibration icons that exist in Streamline in each DNA: home, search, settings,
-   user, document, bell.
-4. Preview them side by side with the Streamline originals in real DS components.
+1. Start from DNA v1: `.claude/skills/ds-draw-icons/assets/core-solid-v1.yaml` plus the
+   aggregate metrics of `scripts/measure.mjs` (thickness, gaps, radii, fill, padding) — they
+   replace the brief's estimates.
+2. Write 2–3 candidate DNAs (`style: filled`, `grid: 14`, `sizes: [14, 16, 24, 32, 40]`).
+3. Draw six calibration concepts Streamline lacks in each DNA (proposal: lock, shield, heart,
+   car, banknote, calendar-check).
+4. Preview them side by side with existing Core Solid neighbours in real DS components.
 5. ⛔ **DNA gate** — the human picks one; ✏️ writes `packages/assets/icons.yaml`.
-
-## Phase 2 — redraw batches
-
-One family from `docs/plans/icon-migration-plan.md` per PR (~6–12 icons, above H's six), run
-like H with the same visual gate. Strict 1:1 names — a redraw never renames or merges. A
-duplicate pair is a Workflow E issue for 📣, not part of the batch. Minor changeset each
-(✏️ · `ds-changeset`); tick
-the family in the plan. The last batch removes the Streamline credit in
-`apps/storybook/src/foundation/Iconography.mdx` (📖).

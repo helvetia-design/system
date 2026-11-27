@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 // Flatten draw-icons build output (strokes, filled silhouettes, <mask> cut-outs) into ONE fill-only <path>
-// on a 16 viewBox, in the shape of packages/assets/src/icons/svg/*.svg.
+// on a 14 viewBox (the DNA grid, so sources are not rescaled), in the shape of packages/assets/src/icons/svg/*.svg.
 //
 //   node flatten.mjs [names…] [--in <dir>] [--out <dir>]   default in: packages/assets/src/icons/draw, out: …/icons/svg
-//   node flatten.mjs --social <file.svg> [--out <dir>]     normalize a third-party logo (e.g. Simple Icons) the same way
 import fs from 'node:fs'
 import path from 'node:path'
 import { SKILL, ck, parseSvg, toPath, normalize, toSvgD, listSvgs } from './lib.mjs'
 
 const ICONS = path.resolve(SKILL, '../../../packages/assets/src/icons')
-const SIZE = 16
+const SIZE = 14 // DNA v1 grid; ds-icon scales via CSS
 const CAP = { round: 'Round', butt: 'Butt', square: 'Square' }
 const JOIN = { round: 'Round', miter: 'Miter', bevel: 'Bevel' }
 
@@ -32,7 +31,7 @@ export function flattenSvg(text) {
               cap: ck.StrokeCap[CAP[a['stroke-linecap'] || 'butt']],
               join: ck.StrokeJoin[JOIN[a['stroke-linejoin'] || 'miter']],
               miter_limit: Number(a['stroke-miterlimit'] ?? 4),
-              precision: 16, // stroker tolerance is in user units; a 16-unit icon needs it much finer than the default
+              precision: 16, // stroker tolerance is in user units; a 14-unit icon needs it much finer than the default
             })
             ?.makeAsWinding()
         : null
@@ -60,17 +59,14 @@ function main(argv) {
     return i === -1 ? undefined : argv.splice(i, 2)[1]
   }
   const out = path.resolve(opt('--out') || path.join(ICONS, 'svg'))
-  const social = opt('--social')
   const inDir = path.resolve(opt('--in') || path.join(ICONS, 'draw'))
   const names = argv.flatMap(a => a.split(',')).filter(Boolean)
-  const files = social
-    ? [path.resolve(social)]
-    : listSvgs(inDir)
-        .filter(f => !names.length || names.some(n => f === `${n}.svg` || f.startsWith(`${n}@`)))
-        .map(f => path.join(inDir, f))
+  const files = listSvgs(inDir)
+    .filter(f => !names.length || names.some(n => f === `${n}.svg` || f.startsWith(`${n}@`)))
+    .map(f => path.join(inDir, f))
   if (!files.length) {
     console.error(
-      `No SVGs to flatten${social ? '' : ` in ${inDir}`}${names.length ? ` matching ${names.join(', ')}` : ''}. Run draw-icons build first.`,
+      `No SVGs to flatten in ${inDir}${names.length ? ` matching ${names.join(', ')}` : ''}. Run draw-icons build first.`,
     )
     process.exit(1)
   }

@@ -1,0 +1,26 @@
+# Phase-0 starting candidate: DNA v1 "Helvetia Core Solid" in draw-icons' icons.yaml schema.
+# Source: docs/plans/components/icon-manager-brief.md → "## DNA v1". Values marked "estimate" are replaced in phase 0
+# by measure.mjs output; prose rules (forbidden, review, generation) live in ../SKILL.md → "DS DNA".
+# Copy to packages/assets/icons.yaml only at the DNA gate.
+product: Helvetia Design System — UI icons for Helvetia's insurance web apps, next to Streamline Core Solid
+personality: [neutral, rational, professional, timeless, functional, minimal] # DNA v1: personality
+sizes: [14, 16, 24, 32, 40] # ds-icon sm/base/md/lg/xl
+dir: src/icons/draw # never src/icons/svg: build deletes the top-level SVGs of dir
+avoid: [gradients, shadows, textures, decorative outlines, multiple colours, non-essential detail, exaggerated rounding] # DNA v1: forbidden
+
+dna:
+  style: filled # DNA v1: solid silhouettes, monochrome; flatten turns them into one fill path
+  stroke: 1.5 # DNA v1: preferred shape thickness 1.5 (min 1); also the width of every cut-out detail (min cut-out 1)
+  grid: 14 # DNA v1: Core Solid's native grid; flatten keeps viewBox 0 0 14 14
+  padding: 0 # DNA v1 sets none; Core Solid fills the box edge to edge (measure.mjs: bbox padding median 0)
+  # centreline sizes; + stroke 1.5 = ink. circle ink 14 = full box, square ink 12.5 (optical balance), estimate
+  keylines: { circle: 12.5, square: 11, portrait: [9.5, 12.5], landscape: [12.5, 9.5] }
+  # radii are centreline; the 1.5 stroke adds 0.75 outside: ink small 0.75 (DNA v1 default), large 1 (DNA v1 large).
+  # DNA v1 small 0.5 has no centreline value at stroke 1.5 — use it only on filled-only shapes, or drop it in phase 0.
+  corners: { family: circular, radius: { large: 0.25, small: 0 }, largeThreshold: 5 } # threshold: estimate (8/24 scaled)
+  caps: round # DNA v1: no sharp ends next to rounded corners; estimate, check against Core Solid renders
+  joins: round # DNA v1: a sharp centreline corner gets the 0.75 default ink radius from the join
+  angles: [0, 45, 90, 135] # DNA v1
+  detail: low # DNA v1: low complexity, silhouette reads alone at 14 px
+  minGap: 1 # DNA v1: min gap 1 → centrelines ≥ 2.5 apart
+  badge: { position: bottom-right, size: 6, gap: 1 } # estimate: 8/24 scaled to 14 and rounded up; gap = minGap

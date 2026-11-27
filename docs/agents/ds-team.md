@@ -171,7 +171,6 @@ a run resumable.
 | `<name>.figma-validation.md`                       | ux-designer        | ux-designer, component-engineer                              |
 | anatomy + do's/don'ts copy                         | ux-designer        | documentation-engineer                                       |
 | `docs/plans/github/*.md` (issue, reply, PR drafts) | issue-manager      | **human gate**, then issue-manager in `post` mode            |
-| `docs/plans/icon-migration-plan.md` (tracked)      | icon-manager       | orchestrator, icon-manager — next phase or redraw family     |
 
 ¹ Each planner **writes its own plan file** — the architect's `Write` is scoped to
 `docs/plans/components/**` and nothing else — and returns only a summary: the path, the blocking

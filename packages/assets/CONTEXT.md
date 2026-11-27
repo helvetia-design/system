@@ -28,7 +28,7 @@ Fonts are served from the distributed package and referenced via `@font-face` in
 
 - **SVG icons** — All icons are vector-based SVG for crispness at any size
 - **Naming convention** — Icons follow a consistent naming scheme (e.g., `icon-check`, `icon-arrow-right`)
-- **Sizes** — Icons are drawn on a 16px grid and rendered by `ds-icon` at 14px (`sm`), 16px
+- **Sizes** — New icons are drawn on a 14 grid (Streamline ships on 16 and 14) and rendered by `ds-icon` at 14px (`sm`), 16px
   (default), 24px (`md`), 32px (`lg`) and 40px (`xl`)
 - **Icon library** — Icons can be consumed as:
   - SVG files directly
@@ -38,13 +38,14 @@ Fonts are served from the distributed package and referenced via `@font-face` in
 ### Icon Authoring
 
 - **Owner** — ✏️ icon-manager, with the `ds-draw-icons` skill; new icons go through Workflow H
-  (`docs/agents/workflows/h-new-icon.md`), the Streamline replacement through
-  `docs/plans/icon-migration-plan.md`.
-- **Style** — `icons.yaml` holds the icon DNA (`style`, `grid: 16`, `sizes`).
+  (`docs/agents/workflows/h-new-icon.md`). Only concepts Streamline lacks are drawn; existing
+  Streamline icons are never redrawn.
+- **Style** — `icons.yaml` holds the icon DNA (DNA v1 "Helvetia Core Solid": `style: filled`,
+  `grid: 14`, `sizes`); its prose rules are in the `ds-draw-icons` skill.
 - **Sources** — `src/icons/draw/source/` and `source/parts/` are committed; the raw draw-icons
   build output in `src/icons/draw/` is not. `dir` is never `src/icons/svg`: draw-icons `build`
   deletes the top-level SVGs of `dir`.
-- **Output** — a flatten step writes one fill-only `<path>` with `viewBox="0 0 16 16"` to
+- **Output** — a flatten step writes one fill-only `<path>` with `viewBox="0 0 14 14"` to
   `src/icons/svg/<name>.svg`, the same shape as every existing icon.
 - **No tracing** — Streamline icons are a style reference, viewed as renders only; an overlap
   check fails any source that shares geometry with a Streamline file.
