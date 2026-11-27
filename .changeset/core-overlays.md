@@ -4,7 +4,7 @@
 
 **modal**: Now styled through its own design tokens; `modal-width` no longer defaults to 640px, so a custom width now actually applies.
 **modal**: Closes only when both press and release happen on the backdrop, not when starting on the dialog padding.
-**popup**: Breaking: `role` prop is renamed to `panelRole` (attribute `panel-role`) so the role only applies to the panel — update any `ds-popup` usage of `role`.
+**popup**: `role` prop is renamed to `panelRole` (attribute `panel-role`) so the role only applies to the panel — update any `ds-popup` usage of `role`.
 **popup**: Moves focus in on open, Escape closes only the topmost popup, backdrop clicks work with a focus trap, `aria-modal` only set when focus is trapped, trigger keeps ARIA after DOM moves.
 **alert**: No longer throws when created without a close/action handler.
 **alert-container**: Alerts added while `removeAll` is in progress are no longer dropped.

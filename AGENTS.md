@@ -71,6 +71,10 @@ same agent merge into one item `<emoji> **<agent>**` with a nested numbered list
 
 - **F — Triage** (standalone): `📣 triage → ⛔ gate → 📣 post`
 - **G — Recreate from a site:** `🐦‍⬛ scout → ⛔ gate (name, rung) → route` — rung 1 `📖 recipe → 📖 validate`; rung 2/3 → C from `🏛️ plan`; rung 4 → A from `🏛️ plan ∥ ♿️ a11y-plan`
+- **H — PR review** (read-only): `🐙 classify → 🧩 validate ∥ ♿️ a11y-audit ∥ 🧬 token-audit ∥ 📖 docs-validate → 🐙 code-review → 📣 review draft → ⛔ gate → 📣 post`
+- **I — PR rescue:** `🧩 merge + resolve → 🧩 validate → ⛔ human commits`
+- **J — CI triage:** `🧩 classify → ⛔ gate → 🧩 fix ∥ 🧪 test-fix → 🧩 validate → ⛔ screenshots`
+- **K — Audit sweep:** `🐙 scope → ♿️ a11y-audit ∥ 🧬 token-audit ∥ 🧩 lint ∥ 📖 docs-validate → 🐙 merge → ⛔ gate → 📣 issues → ⛔ gate → 📣 post`
 
 `📣 pr-body ∥ reply` and Triage: see `ds-team.md` → GitHub.
 

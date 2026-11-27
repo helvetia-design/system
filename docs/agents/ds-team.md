@@ -208,6 +208,10 @@ are in the root `AGENTS.md`.
 | D — Component into Figma | [workflows/d-component-into-figma.md](workflows/d-component-into-figma.md) |
 | E / E′ — Deprecation     | [workflows/e-deprecation.md](workflows/e-deprecation.md)                   |
 | G — Recreate from a site | [workflows/g-recreate.md](workflows/g-recreate.md)                         |
+| H — PR review            | [workflows/h-pr-review.md](workflows/h-pr-review.md)                       |
+| I — PR rescue            | [workflows/i-pr-rescue.md](workflows/i-pr-rescue.md)                       |
+| J — CI failure triage    | [workflows/j-ci-triage.md](workflows/j-ci-triage.md)                       |
+| K — Audit sweep          | [workflows/k-audit-sweep.md](workflows/k-audit-sweep.md)                   |
 
 ## GitHub — the closing step of A, B, C and E, and Workflow F
 
