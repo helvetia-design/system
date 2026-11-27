@@ -75,6 +75,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
   private skipValueWatch = false
   private shouldFocusFilter = false
   private initialValue: string | null = null
+  private committedValue: string | null = null
   private initialResolvedCountry: string | undefined = undefined
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -120,6 +121,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
       return
     }
     this.applyExternalValue(newVal)
+    this.committedValue = this.value
   }
 
   /**
@@ -516,6 +518,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
 
   private handleFocus = (ev: FocusEvent) => {
     this.focused = true
+    this.committedValue = this.value
     if (this.pickerOpen) {
       this.closePicker()
     }
@@ -528,7 +531,10 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
     this.focused = false
     this.applyFormattedValue(this.displayValue, true)
     if (!this.isDisabled) {
-      this.dsChange.emit(this.eventDetail())
+      if (this.value !== this.committedValue) {
+        this.committedValue = this.value
+        this.dsChange.emit(this.eventDetail())
+      }
       this.dsBlur.emit(ev)
     }
   }
@@ -647,6 +653,7 @@ export class PhoneInput implements DsComponentInterface, FieldInterface {
       // too, not only from `handleBlur`. Guarded on an actual change so picking a country before typing
       // anything (`value` staying `null`) doesn't emit a no-op "changed to the same value" event.
       if (this.value !== previousValue) {
+        this.committedValue = this.value
         this.dsChange.emit(this.eventDetail())
       }
     }

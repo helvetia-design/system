@@ -43,6 +43,38 @@ test.describe('component', () => {
     expect(inputSpy).toHaveReceivedEventDetail(42)
   })
 
+  test('should not fire dsInput on mount', async ({ page }) => {
+    await page.mount(`<div id="host"></div>`)
+
+    await page.evaluate(() => {
+      const w = window as unknown as { dsInputCount: number }
+      w.dsInputCount = 0
+      const el = document.createElement('ds-slider')
+      el.setAttribute('label', 'Label')
+      el.setAttribute('value', '30')
+      el.addEventListener('dsInput', () => w.dsInputCount++)
+      document.getElementById('host')?.appendChild(el)
+    })
+    const slider = new DsSlider(page.locator('ds-slider'))
+    await expect(slider.handle).toHaveAttribute('aria-valuenow', '30.0')
+
+    expect(await page.evaluate(() => (window as unknown as { dsInputCount: number }).dsInputCount)).toBe(0)
+  })
+
+  test('should not fire dsInput when moved in the DOM', async ({ page }) => {
+    await page.mount(`<div id="a"><ds-slider label="Label" value="30"></ds-slider></div><div id="b"></div>`)
+    const slider = new DsSlider(page.locator('ds-slider'))
+    const inputSpy = await slider.el.spyOnEvent('dsInput')
+
+    await page.evaluate(() => document.getElementById('b')?.appendChild(document.querySelector('ds-slider')!))
+    await page.waitForChanges()
+    await expect(slider.handle).toHaveAttribute('aria-valuenow', '30.0')
+    expect(inputSpy).toHaveReceivedEventTimes(0)
+
+    await slider.fill('42')
+    expect(inputSpy).toHaveReceivedEventTimes(1)
+  })
+
   test('should fire dsChange with numeric value on fill', async ({ page }) => {
     await page.mount(`<ds-slider label="Label"></ds-slider>`)
     const slider = new DsSlider(page.locator('ds-slider'))

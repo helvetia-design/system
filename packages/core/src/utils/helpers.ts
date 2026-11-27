@@ -116,6 +116,12 @@ export const isDescendant = (
   return false
 }
 
+/**
+ * Whether a focus event's `relatedTarget` lies outside `host`, i.e. focus enters or leaves `host` rather than moving within it.
+ */
+export const isOutside = (host: HTMLElement | HTMLStencilElement, relatedTarget: EventTarget | null | undefined) =>
+  !relatedTarget || !isDescendant(host, relatedTarget)
+
 const ROOT_SELECTORS = ['ds-root', 'ds-app'] as const
 
 export const getRootElement = (doc: Document) => {

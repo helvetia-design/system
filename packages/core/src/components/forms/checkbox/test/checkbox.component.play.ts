@@ -1,4 +1,4 @@
-import { DsCheckbox, DsPage, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
+import { DsCheckbox, DsInput, DsPage, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 const GROUP = `
   <ds-checkbox-group control name="heroes" label="Label">
@@ -299,6 +299,56 @@ test.describe('checkbox-group', () => {
 
     await steve.assertToBeUnchecked()
     await tony.assertToBeChecked()
+  })
+
+  test('should fire dsFocus and dsBlur only when focus enters or leaves the group', async ({ page }) => {
+    await page.mount(`<button data-testid="before">Before</button>${GROUP}<button data-testid="after">After</button>`)
+    const group = page.locator('ds-checkbox-group')
+    const focusSpy = await group.spyOnEvent('dsFocus')
+    const blurSpy = await group.spyOnEvent('dsBlur')
+    const tony = new DsCheckbox(page.locator('ds-checkbox[value="tony-stark"]'))
+    const widow = new DsCheckbox(page.locator('ds-checkbox[value="black-widow"]'))
+
+    await page.getByTestId('before').focus()
+    await page.keyboard.press('Tab')
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+
+    await page.keyboard.press('Tab')
+    await expect(tony.nativeInput).toBeFocused()
+    await page.keyboard.press('Tab')
+    await expect(widow.nativeInput).toBeFocused()
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+    expect(blurSpy).toHaveReceivedEventTimes(0)
+
+    await page.keyboard.press('Tab')
+    await expect(page.getByTestId('after')).toBeFocused()
+    expect(blurSpy).toHaveReceivedEventTimes(1)
+
+    await page.keyboard.press('Shift+Tab')
+    await expect(widow.nativeInput).toBeFocused()
+    expect(focusSpy).toHaveReceivedEventTimes(2)
+  })
+
+  test('should not swallow dsChange of a nested non-checkbox control', async ({ page }) => {
+    await page.mount(`
+      <ds-checkbox-group control name="heroes" label="Label">
+        <ds-checkbox value="steve-rogers">Steve Rogers</ds-checkbox>
+        <ds-input label="Other"></ds-input>
+      </ds-checkbox-group>
+    `)
+    const changeSpy = await page.spyOnEvent('dsChange')
+    const input = new DsInput(page.locator('ds-input'))
+    const steve = new DsCheckbox(page.locator('ds-checkbox[value="steve-rogers"]'))
+
+    await input.fill('Peter')
+    await input.blur()
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('Peter')
+    await expect(page.locator('ds-checkbox-group')).toHaveJSProperty('value', [])
+
+    await steve.check()
+    expect(changeSpy).toHaveReceivedEventTimes(2)
+    expect(changeSpy).toHaveReceivedEventDetail(['steve-rogers'])
   })
 })
 

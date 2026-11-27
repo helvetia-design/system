@@ -72,6 +72,56 @@ describe('dsDate', () => {
 
       expect(completed).toEqual([])
     })
+
+    describe('onComplete', () => {
+      let completed: string[]
+
+      function setupWithInitialValue(initialValue: string | null) {
+        completed = []
+        inputEl = document.createElement('input')
+        document.body.appendChild(inputEl)
+        mask = createDatepickerMask({
+          inputEl,
+          format: 'dd.MM.yyyy',
+          initialValue,
+          onAccept: () => {},
+          onComplete: iso => completed.push(iso),
+        })
+      }
+
+      test('does not fire for an initial value', () => {
+        setupWithInitialValue('2024-01-01')
+        expect(inputEl.value).toBe('01.01.2024')
+        expect(completed).toEqual([])
+      })
+
+      test('does not fire for syncFromISO', () => {
+        setupWithInitialValue(null)
+        mask.syncFromISO('2024-01-01')
+        expect(inputEl.value).toBe('01.01.2024')
+        expect(completed).toEqual([])
+      })
+
+      test('does not fire for a format change', () => {
+        setupWithInitialValue('2024-01-01')
+        mask.updateFormat('dd/MM/yyyy')
+        expect(inputEl.value).toBe('01/01/2024')
+        expect(completed).toEqual([])
+      })
+
+      test('fires once for a typed complete date', () => {
+        setupWithInitialValue(null)
+        ;(mask as any).mask.value = '01.01.2024'
+        expect(completed).toEqual(['2024-01-01'])
+      })
+
+      test('fires once when a short date is expanded', () => {
+        setupWithInitialValue(null)
+        ;(mask as any).mask.value = '01.01.24'
+        expect(mask.expandShortInput()).toBe(true)
+        expect(completed).toEqual(['2024-01-01'])
+      })
+    })
   })
 
   describe('short year shorthand', () => {

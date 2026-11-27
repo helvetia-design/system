@@ -222,7 +222,7 @@ export class Pagination implements DsComponentInterface, DsBreakpointObserver {
    */
 
   private selectPage(pageNumber: number) {
-    if (this.disabled) return
+    if (this.disabled || pageNumber === this.value) return
     this.value = pageNumber
     this.dsChangeEventEmitter.emit(this.value)
   }

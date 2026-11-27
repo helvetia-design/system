@@ -54,8 +54,6 @@ export interface SelectPickerConfig {
   clearable: boolean
   data: (Partial<Option> | Partial<Optgroup>)[]
   onChange: (selected: Option[]) => void
-  onOpen: () => void
-  onClose: () => void
 }
 
 const TYPEAHEAD_TIMEOUT_MS = 500
@@ -68,6 +66,7 @@ export class SelectPickerController {
   private lastPointerX: number | undefined
   private lastPointerY: number | undefined
   private lastDocumentClick: MouseEvent | undefined
+  private silent = false
 
   constructor(config: SelectPickerConfig) {
     this.config = config
@@ -95,12 +94,18 @@ export class SelectPickerController {
     this.trigger?.blur()
   }
 
+  // Replacing the options re-derives the selection; that is not a user change, so it must not emit dsChange.
   setData(data: (Partial<Option> | Partial<Optgroup>)[]) {
-    this.slimSelect?.setData(data)
+    this.silent = true
+    try {
+      this.slimSelect?.setData(data)
+    } finally {
+      this.silent = false
+    }
   }
 
   setSelected(value: string | string[]) {
-    this.slimSelect?.setSelected(value)
+    this.slimSelect?.setSelected(value, false)
   }
 
   setDisabled(disabled: boolean) {
@@ -157,15 +162,11 @@ export class SelectPickerController {
       data,
       events: {
         afterChange: (newVal: Option[]) => {
-          this.config.onChange(newVal)
+          if (!this.silent) this.config.onChange(newVal)
           this.fixValueDeleteFocus()
         },
-        afterOpen: () => {
-          this.highlightOnOpen()
-          this.config.onOpen()
-        },
+        afterOpen: () => this.highlightOnOpen(),
         beforeClose: (info: CloseInfo) => this.allowClose(info),
-        afterClose: () => this.config.onClose(),
       },
     })
 

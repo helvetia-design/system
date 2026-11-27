@@ -112,6 +112,57 @@ test.describe('component', () => {
     await phone.blur()
     expect(blurSpy).toHaveReceivedEventTimes(1)
   })
+
+  test('should not fire dsChange on blur without a change', async ({ page }) => {
+    await page.mount(`<ds-phone-input label="Phone number" initial-country="CH" value="+41791234567"></ds-phone-input>`)
+    const phone = new DsPhoneInput(page.locator('ds-phone-input'))
+    const changeSpy = await phone.el.spyOnEvent('dsChange')
+
+    await phone.nativeInput.focus()
+    await phone.blur()
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not fire dsChange on blur of a readonly input', async ({ page }) => {
+    await page.mount(`<ds-phone-input label="Phone number" initial-country="CH" readonly></ds-phone-input>`)
+    const phone = new DsPhoneInput(page.locator('ds-phone-input'))
+    const changeSpy = await phone.el.spyOnEvent('dsChange')
+
+    await phone.nativeInput.focus()
+    await phone.blur()
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not fire dsChange on blur after a programmatic value set while focused', async ({ page }) => {
+    await page.mount(`<ds-phone-input label="Phone number" initial-country="CH"></ds-phone-input>`)
+    const phone = new DsPhoneInput(page.locator('ds-phone-input'))
+    const changeSpy = await phone.el.spyOnEvent('dsChange')
+
+    await phone.nativeInput.focus()
+    await phone.el.evaluate((el: HTMLDsPhoneInputElement) => {
+      el.value = '+41791234567'
+    })
+    await page.waitForChanges()
+    await phone.blur()
+
+    await phone.assertNationalNumber('79 123 45 67')
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should fire dsChange once on blur after typing', async ({ page }) => {
+    await page.mount(`<ds-phone-input label="Phone number" initial-country="CH"></ds-phone-input>`)
+    const phone = new DsPhoneInput(page.locator('ds-phone-input'))
+    const changeSpy = await phone.el.spyOnEvent('dsChange')
+
+    await phone.fill('791234567')
+    await phone.blur()
+    await phone.nativeInput.focus()
+    await phone.blur()
+
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+  })
 })
 
 test.describe('country picker', () => {
@@ -135,6 +186,25 @@ test.describe('country picker', () => {
     await phone.selectCountry('DE')
 
     await phone.assertNationalNumber('791 234567')
+  })
+
+  test('should fire dsChange once for a country switch that changes the value, and not again on the next blur', async ({
+    page,
+  }) => {
+    await page.mount(`<ds-phone-input label="Phone number" countries="CH,DE" initial-country="CH"></ds-phone-input>`)
+    const phone = new DsPhoneInput(page.locator('ds-phone-input'))
+
+    await phone.fill('791234567')
+    await phone.blur()
+    const changeSpy = await phone.el.spyOnEvent('dsChange')
+
+    await phone.selectCountry('DE')
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail({ value: '+49791234567', country: 'DE', nationalNumber: '791234567' })
+
+    await phone.nativeInput.focus()
+    await phone.blur()
+    expect(changeSpy).toHaveReceivedEventTimes(1)
   })
 
   test('should restrict picker options to the countries allow-list', async ({ page }) => {

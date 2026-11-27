@@ -19,6 +19,7 @@ import {
   stopEventBubbling,
   hasTagName,
   isDescendant,
+  isOutside,
   OneOf,
   Type,
   watchInvalidTextSlot,
@@ -291,7 +292,8 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
 
   @Listen('dsChange', { capture: true, target: 'document' })
   listenToDsChange(ev: UIEvent) {
-    if (isDescendant(this.el, ev.target as HTMLElement)) {
+    const target = ev.target as HTMLElement
+    if (isDescendant(this.el, target) && hasTagName(target, 'ds-radio')) {
       stopEventBubbling(ev)
     }
   }
@@ -322,9 +324,15 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
    */
   @Listen('focusout')
   listenToFocusOut(ev: FocusEvent) {
-    const relatedTarget = ev.relatedTarget as HTMLElement | null
-    if (!relatedTarget || !isDescendant(this.el, relatedTarget)) {
+    if (isOutside(this.el, ev.relatedTarget)) {
       this.dsBlur.emit(ev)
+    }
+  }
+
+  @Listen('focusin')
+  listenToFocusIn(ev: FocusEvent) {
+    if (isOutside(this.el, ev.relatedTarget)) {
+      this.dsFocus.emit(ev)
     }
   }
 

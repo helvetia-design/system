@@ -118,6 +118,7 @@ export function createDatepickerMask(config: DatepickerMaskConfig): DatepickerMa
 export class DatepickerMask {
   private mask: any
   private format: DateDisplayFormat
+  private syncing = false
 
   constructor(
     private inputEl: HTMLInputElement,
@@ -192,7 +193,9 @@ export class DatepickerMask {
       this.onAccept(this.getISO(), event)
     })
 
+    // IMask fires `complete` synchronously when `syncFromISO` sets the value; that is not a user commit.
     this.mask.on('complete', () => {
+      if (this.syncing) return
       const iso = this.getISO()
       if (iso) this.onComplete(iso)
     })
@@ -233,8 +236,12 @@ export class DatepickerMask {
       return
     }
     const date = isoToNativeDate(isoValue)
-    if (date) {
+    if (!date) return
+    this.syncing = true
+    try {
       this.mask.typedValue = date
+    } finally {
+      this.syncing = false
     }
   }
 

@@ -144,6 +144,11 @@ export class DsDatepicker implements DsComponentInterface, FieldInterface, FormC
       this.dateMask?.syncFromISO(this.value)
       this.datePicker?.syncFromValue(this.value)
       this.displayValue = isoToDisplay(this.value, getDisplayFormat(this.region))
+      this.control.inputValue = this.value || null
+      // Only while not focused: a focused change is exactly what onBlur's dsChange must still catch.
+      if (!this.focused) {
+        this.control.committedValue = this.value || null
+      }
     }
   }
 

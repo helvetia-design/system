@@ -169,6 +169,29 @@ test.describe('dsBlur', () => {
   })
 })
 
+test.describe('dsFocus', () => {
+  test('should fire dsFocus once when focus enters the segment', async ({ page }) => {
+    await page.mount(
+      `<button data-testid="before">Before</button><ds-segment name="fruits" label="Fruits" value="apple">${ITEMS}</ds-segment><button data-testid="after">After</button>`,
+    )
+    const segment = new DsSegment(page.locator('ds-segment'))
+    const focusSpy = await segment.el.spyOnEvent('dsFocus')
+
+    await page.getByTestId('before').focus()
+    await page.keyboard.press('Tab')
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+
+    await page.keyboard.press('ArrowRight')
+    await page.keyboard.press('ArrowRight')
+    await expect(segment.itemInput('banana')).toBeFocused()
+    expect(focusSpy).toHaveReceivedEventTimes(1)
+
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Shift+Tab')
+    expect(focusSpy).toHaveReceivedEventTimes(2)
+  })
+})
+
 test.describe('form reset', () => {
   test('should reset to initial value', async ({ page }) => {
     await page.mount(`

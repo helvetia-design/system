@@ -29,6 +29,70 @@ test.describe('value assigned after load', () => {
 
     await date.assertValue('13.07.2026')
   })
+
+  test('should not emit dsChange when the value is set programmatically', async ({ page }) => {
+    await page.mount(`<ds-datepicker label="Date of birth"></ds-datepicker>`)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+    const changeSpy = await date.el.spyOnEvent('dsChange')
+
+    await date.el.evaluate((el: HTMLDsDatepickerElement) => {
+      el.value = '2026-07-13'
+    })
+    await page.waitForChanges()
+
+    await date.assertValue('13.07.2026')
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not emit dsChange for an initial value on mount', async ({ page }) => {
+    await page.mount(`<div id="host"></div>`)
+
+    await page.evaluate(() => {
+      const w = window as unknown as { dsChangeCount: number }
+      w.dsChangeCount = 0
+      const el = document.createElement('ds-datepicker')
+      el.setAttribute('label', 'Date of birth')
+      el.setAttribute('value', '2026-07-13')
+      el.addEventListener('dsChange', () => w.dsChangeCount++)
+      document.getElementById('host')?.appendChild(el)
+    })
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+    await date.assertValue('13.07.2026')
+
+    expect(await page.evaluate(() => (window as unknown as { dsChangeCount: number }).dsChangeCount)).toBe(0)
+  })
+
+  test('should not emit dsChange on focus and blur after the value is set programmatically', async ({ page }) => {
+    await page.mount(`<ds-datepicker label="Date of birth"></ds-datepicker>`)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+    const changeSpy = await date.el.spyOnEvent('dsChange')
+
+    await date.el.evaluate((el: HTMLDsDatepickerElement) => {
+      el.value = '2026-07-13'
+    })
+    await page.waitForChanges()
+    await date.nativeInput.focus()
+    await date.blur()
+    await page.waitForChanges()
+
+    await date.assertValue('13.07.2026')
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should display an out-of-range value that is set programmatically', async ({ page }) => {
+    await page.mount(`<ds-datepicker label="Label" max="2026-07-20"></ds-datepicker>`)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+    const changeSpy = await date.el.spyOnEvent('dsChange')
+
+    await date.el.evaluate((el: HTMLDsDatepickerElement) => {
+      el.value = '2026-07-25'
+    })
+    await page.waitForChanges()
+
+    await date.assertValue('25.07.2026')
+    await expect(date.el).toHaveJSProperty('value', '2026-07-25')
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
 })
 
 test.describe('type', () => {
@@ -40,6 +104,33 @@ test.describe('type', () => {
     await date.blur()
     await page.waitForChanges()
 
+    await date.assertValue('13.07.2026')
+  })
+
+  test('should emit dsChange once when typing a full date', async ({ page }) => {
+    await page.mount(`<ds-datepicker label="Date of birth"></ds-datepicker>`)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+    const changeSpy = await date.el.spyOnEvent('dsChange')
+
+    await date.type('13.07.2026')
+    await date.blur()
+    await page.waitForChanges()
+
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('2026-07-13')
+  })
+
+  test('should emit dsChange when a short date is expanded on blur', async ({ page }) => {
+    await page.mount(`<ds-datepicker label="Date of birth"></ds-datepicker>`)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+    const changeSpy = await date.el.spyOnEvent('dsChange')
+
+    await date.type('13.07.26')
+    await date.blur()
+    await page.waitForChanges()
+
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    expect(changeSpy).toHaveReceivedEventDetail('2026-07-13')
     await date.assertValue('13.07.2026')
   })
 

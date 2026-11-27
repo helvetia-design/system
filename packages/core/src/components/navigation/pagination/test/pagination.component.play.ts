@@ -11,6 +11,17 @@ test.describe('dsChange — page click', () => {
     expect(changeSpy).toHaveReceivedEventTimes(1)
     expect(changeSpy).toHaveReceivedEventDetail(12)
   })
+
+  test('should not fire dsChange when clicking the active page', async ({ page }) => {
+    await page.mount(`<ds-pagination page-range="2" total-pages="20" value="10"></ds-pagination>`)
+    const pagination = new DsPagination(page.locator('ds-pagination'))
+    const changeSpy = await pagination.el.spyOnEvent('dsChange')
+
+    await pagination.clickPage(10)
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await pagination.assertCurrentPage(10)
+  })
 })
 
 test.describe('dsChange — next button', () => {
