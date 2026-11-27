@@ -11,7 +11,8 @@ the measurements triage (6) are presented **once for the whole family** (`conven
 - Component source: `packages/core/src/components/<category>/<name>/<name>.tsx`
 - Component styles: `<name>.host.scss`
 - Design tokens: `packages/tokens/tokens/Base.tokens.json`
-- Figma Variables: `.claude/skills/ds-code-to-figma/references/figma-tokens/Base.tokens.json`
+- Figma variable ids: in `Base.tokens.json` itself (`com.figma.variableId`), looked up with
+  `node scripts/figma-sync/lib/css-token-lookup.mjs <css-var>`
 - Any nested DS components' already-written `<child>.figma.md` files
 - The component's `*.visual.html` under `test/`, rendered by the dev server (step 6)
 

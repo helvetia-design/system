@@ -1,4 +1,4 @@
-import { DsSegment, expect, test } from '@helvetia-design/playwright'
+import { DsPage, DsSegment, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 const ITEMS = `
   <ds-segment-item value="apple" label="Apple"></ds-segment-item>
@@ -87,6 +87,32 @@ test.describe('disabled', () => {
     const segment = new DsSegment(page.locator('ds-segment'))
 
     await segment.assertToBeDisabled()
+  })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-segment name="fruits" label="Fruits" value="apple">${ITEMS}</ds-segment></form>`)
+    const segment = new DsSegment(page.locator('ds-segment'))
+    expect(await getFormEntries(page)).toEqual([['fruits', 'apple']])
+
+    await segment.el.evaluate((el: HTMLDsSegmentElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-segment name="fruits" label="Fruits" value="apple">${ITEMS}</ds-segment></fieldset></form>`,
+    )
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await segment.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('form > fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['fruits', 'apple']])
   })
 })
 
@@ -202,5 +228,65 @@ test.describe('required attribute', () => {
     const segment = new DsSegment(page.locator('ds-segment'))
 
     await expect(segment.el).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mount = (page: DsPage, attributes = '') =>
+    page.mount(
+      `<form><ds-segment ${attributes} name="fruits" label="Fruits" value="apple">${ITEMS}</ds-segment></form>`,
+    )
+
+  test('should submit the selected value after user input', async ({ page }) => {
+    await mount(page)
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await segment.select('strawberry')
+
+    expect(await getFormEntries(page)).toEqual([['fruits', 'strawberry']])
+  })
+
+  test('should submit after a programmatic value change', async ({ page }) => {
+    await mount(page)
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await segment.el.evaluate((el: HTMLDsSegmentElement) => {
+      el.value = 'banana'
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['fruits', 'banana']])
+  })
+
+  test('should submit no entry after deselecting with allowEmptySelection', async ({ page }) => {
+    await mount(page, 'allow-empty-selection')
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await segment.select('apple')
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should submit no entry after a programmatic value = undefined', async ({ page }) => {
+    await mount(page)
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await segment.el.evaluate((el: HTMLDsSegmentElement) => {
+      el.value = undefined
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should submit the initial value after form.reset()', async ({ page }) => {
+    await mount(page)
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await segment.select('strawberry')
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['fruits', 'apple']])
   })
 })

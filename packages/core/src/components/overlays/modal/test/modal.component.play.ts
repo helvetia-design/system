@@ -131,6 +131,46 @@ test.describe('component', () => {
     await dsModal.assertToBeClosed()
   })
 
+  test('should not close on click inside the dialog padding', async ({ page }) => {
+    await page.mount(`
+      <ds-modal id="modal" open>
+        <ds-modal-header>Title</ds-modal-header>
+        <ds-modal-body>Body</ds-modal-body>
+      </ds-modal>
+    `)
+    const dsModal = new DsModal(page.locator('ds-modal'))
+    await dsModal.assertToBeOpen()
+    const padding = await dsModal.dialog.evaluate(el => {
+      const style = getComputedStyle(el)
+      return { left: parseFloat(style.paddingLeft), top: parseFloat(style.paddingTop) }
+    })
+    expect(padding.left).toBeGreaterThan(4)
+
+    await dsModal.dialog.click({ position: { x: padding.left / 2, y: padding.top / 2 } })
+    await page.waitForChanges()
+
+    await expect(dsModal.el).toHaveAttribute('open')
+  })
+
+  test('should not close when a drag starts inside and ends on the backdrop', async ({ page }) => {
+    await page.mount(`
+      <ds-modal id="modal" open>
+        <ds-modal-header>Title</ds-modal-header>
+        <ds-modal-body>Body</ds-modal-body>
+      </ds-modal>
+    `)
+    const dsModal = new DsModal(page.locator('ds-modal'))
+    await dsModal.assertToBeOpen()
+
+    await dsModal.body.hover()
+    await page.mouse.down()
+    await page.mouse.move(5, 5)
+    await page.mouse.up()
+    await page.waitForChanges()
+
+    await expect(dsModal.el).toHaveAttribute('open')
+  })
+
   test('should not close on Escape when closable=false', async ({ page }) => {
     await page.mount(`
       <ds-modal id="modal" open closable="false">

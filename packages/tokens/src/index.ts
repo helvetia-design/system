@@ -35,7 +35,7 @@ if (typographyViolations.length > 0) {
 
 // Base build
 const StyleDictionaryBase = new StyleDictionary(ConfigBase)
-StyleDictionaryBase.buildAllPlatforms()
+await StyleDictionaryBase.buildAllPlatforms()
 
 // Brand builds — add new brand names here (must match tokens/<Name>.tokens.json)
 const brands = ['OrangeVacations']
@@ -55,13 +55,11 @@ const sourceDir = resolve(projectRoot, 'dist', 'css')
 const targetDir = resolve(projectRoot, '..', 'core', 'www', 'assets', 'tokens')
 const storybookTargetDir = resolve(projectRoot, '..', '..', 'apps', 'storybook', 'public', 'assets', 'css')
 
-;(async () => {
-  await ensureDir(targetDir)
-  await ensureDir(storybookTargetDir)
-  if (await pathExists(sourceDir)) {
-    await copy(sourceDir, targetDir, { overwrite: true })
-    await copy(sourceDir, storybookTargetDir, { overwrite: true })
-  } else {
-    console.warn(`Tokens CSS directory not found at: ${sourceDir}`)
-  }
-})()
+await ensureDir(targetDir)
+await ensureDir(storybookTargetDir)
+if (await pathExists(sourceDir)) {
+  await copy(sourceDir, targetDir, { overwrite: true })
+  await copy(sourceDir, storybookTargetDir, { overwrite: true })
+} else {
+  console.warn(`Tokens CSS directory not found at: ${sourceDir}`)
+}

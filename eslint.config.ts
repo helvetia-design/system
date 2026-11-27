@@ -16,6 +16,7 @@ export default tseslint.config(
       'test/**',
       '**/playwright-report/**',
       'CLAUDE.md',
+      'AGENTS.md',
       'docs/superpowers/**',
     ],
   },

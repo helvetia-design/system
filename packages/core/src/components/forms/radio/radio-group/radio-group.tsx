@@ -66,6 +66,7 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() hasInvalidTextSlotContent = false
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -223,6 +224,7 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
   @Prop({ mutable: true, reflect: true }) value?: any | null
   @Watch('value')
   valueChanged() {
+    this.updateFormValue()
     this.handleValueChange()
   }
 
@@ -255,7 +257,7 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
 
   connectedCallback() {
     this.initialValue = this.value
-    setFormValue(this.internals, this.value)
+    this.updateFormValue()
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })
@@ -276,6 +278,10 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
 
   componentDidLoad() {
     this.handleSlotChange()
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -337,8 +343,8 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
     }
 
     // Get all radios inside of the radio group and then
-    // filter out disabled radios since we need to skip those
-    const radios = this.getRadios().filter(radio => !radio.disabled)
+    // filter out disabled and readonly radios since we need to skip those
+    const radios = this.getRadios().filter(radio => !isRadioDisabled(radio) && !isRadioReadonly(radio))
     const targetRadio = ev.target.closest('ds-radio')
 
     // Only move the radio if the current focus is in the radio group
@@ -368,7 +374,6 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
         if (!this.readonly) {
           this.value = next.value
           this.dsChange.emit(this.value)
-          setFormValue(this.internals, this.value)
         }
       }
 
@@ -380,7 +385,6 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
         if (!this.readonly) {
           this.value = this.allowEmptySelection && this.value === current.value ? undefined : current.value
           this.dsChange.emit(this.value)
-          setFormValue(this.internals, this.value)
         }
       }
     }
@@ -431,7 +435,7 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
     ev.preventDefault()
 
     const selectedRadio = ev.target && (ev.target as HTMLElement).closest('ds-radio')
-    if (selectedRadio && !selectedRadio.disabled && !selectedRadio.readonly) {
+    if (selectedRadio && !isRadioDisabled(selectedRadio) && !isRadioReadonly(selectedRadio)) {
       const currentValue = this.value
       const newValue = selectedRadio.value
       if (newValue !== currentValue) {
@@ -440,7 +444,6 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
         this.value = undefined
       }
       this.dsChange.emit(this.value)
-      setFormValue(this.internals, this.value)
     }
   }
 
@@ -449,15 +452,15 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
    * ─────────────────────────────────────────────────────
    */
 
+  private updateFormValue() {
+    setFormValue(this.internals, this.value ?? null)
+  }
+
   private passDownAttributes() {
     const isInvalid = this.invalid || this.hasInvalidTextSlotContent
     this.getRadios().forEach(radio => {
-      if (this.disabled !== undefined) {
-        radio.disabled = this.disabled
-      }
-      if (this.readonly !== undefined) {
-        radio.readonly = this.readonly
-      }
+      radio.groupDisabled = this.isDisabled
+      radio.groupReadonly = this.readonly
       radio.invalid = isInvalid
       radio.labelPosition = this.labelPosition
       radio.tile = this.tile
@@ -481,8 +484,8 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
     const radios = this.getRadios()
 
     // Get the first radio that is not disabled and the checked one
-    const first = radios.find(radio => !radio.disabled)
-    const checked = radios.find(radio => radio.value === value && !radio.disabled)
+    const first = radios.find(radio => !isRadioDisabled(radio))
+    const checked = radios.find(radio => radio.value === value && !isRadioDisabled(radio))
 
     if (!first && !checked) {
       return
@@ -498,6 +501,10 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
     }
   }
 
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
   private getRadios(): HTMLDsRadioElement[] {
     return Array.from(this.el.querySelectorAll('ds-radio'))
   }
@@ -511,7 +518,7 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
     return (
       <Field
         role="fieldset"
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={this.invalid || this.hasInvalidTextSlotContent}
         loading={this.loading}
@@ -531,5 +538,9 @@ export class RadioGroup implements DsComponentInterface, FieldInterface {
     )
   }
 }
+
+const isRadioDisabled = (radio: HTMLDsRadioElement): boolean => radio.disabled || radio.groupDisabled
+
+const isRadioReadonly = (radio: HTMLDsRadioElement): boolean => radio.readonly || radio.groupReadonly
 
 let radioGroupIds = 0

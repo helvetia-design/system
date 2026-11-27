@@ -132,6 +132,25 @@ test.describe('tile variant — keyboard selection', () => {
   })
 })
 
+test.describe('tile variant — itemsPerView string', () => {
+  test('sets per-breakpoint item widths and updates on change', async ({ page }) => {
+    await page.mount(`
+      <ds-carousel variant="tile" items-per-view="1 tablet:2 desktop:3">
+        <ds-carousel-item name="p1">Item 1</ds-carousel-item>
+        <ds-carousel-item name="p2">Item 2</ds-carousel-item>
+      </ds-carousel>
+    `)
+    const item = page.locator('ds-carousel-item').first()
+    const vars = () =>
+      item.evaluate(el => ['', '-tablet', '-desktop'].map(s => el.style.getPropertyValue(`--carousel-item-width${s}`)))
+    expect(await vars()).toEqual(['calc(100% / 1)', 'calc(100% / 2)', 'calc(100% / 3)'])
+
+    await page.locator('ds-carousel').evaluate((el: HTMLDsCarouselElement) => (el.itemsPerView = 2))
+    await page.waitForChanges()
+    expect(await vars()).toEqual(['calc(100% / 2)', '', ''])
+  })
+})
+
 test.describe('image variant — below controls', () => {
   test('prev is disabled at start, next scrolls forward and becomes focusable', async ({ page }) => {
     await page.mount(`<ds-carousel controls="large-below" style="width:300px">${ITEMS}</ds-carousel>`)
@@ -181,5 +200,54 @@ test.describe('moved in the DOM', () => {
     await carousel.el.locator('[part="track"]').evaluate(el => el.scrollTo({ left: el.clientWidth }))
 
     await carousel.assertItemSelected('s2')
+  })
+})
+
+const IMAGE = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+
+test.describe('image variant — alt text', () => {
+  let warnings: string[]
+
+  test.beforeEach(({ page }) => {
+    warnings = []
+    page.on('console', msg => {
+      if (msg.type() === 'warning' && msg.text().includes('[ds-carousel-item]')) warnings.push(msg.text())
+    })
+  })
+
+  test('renders the alt prop on the image without warning', async ({ page }) => {
+    await page.mount(
+      `<ds-carousel><ds-carousel-item name="s1" src="${IMAGE}" alt="A logo"></ds-carousel-item></ds-carousel>`,
+    )
+
+    await expect(page.locator('ds-carousel-item img')).toHaveAttribute('alt', 'A logo')
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+
+  test('does not warn for a decorative image with an empty alt', async ({ page }) => {
+    await page.mount(`<ds-carousel><ds-carousel-item name="s1" src="${IMAGE}" alt=""></ds-carousel-item></ds-carousel>`)
+
+    await expect(page.locator('ds-carousel-item img')).toHaveAttribute('alt', '')
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+
+  test('renders an empty alt and warns once when alt is not set', async ({ page }) => {
+    await page.mount(`<ds-carousel><ds-carousel-item name="s1" src="${IMAGE}"></ds-carousel-item></ds-carousel>`)
+
+    await expect(page.locator('ds-carousel-item img')).toHaveAttribute('alt', '')
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(1)
+  })
+
+  test('does not warn for tile items with src', async ({ page }) => {
+    await page.mount(
+      `<ds-carousel variant="tile"><ds-carousel-item name="t1" src="${IMAGE}">Tile</ds-carousel-item></ds-carousel>`,
+    )
+
+    await expect(page.locator('ds-carousel-item img')).toHaveCount(0)
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
   })
 })

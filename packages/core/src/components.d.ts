@@ -148,6 +148,11 @@ export namespace Components {
         "buttonWide": boolean;
         "configChanged": (state: DsConfigState) => Promise<void>;
         /**
+          * If `true`, the user cannot open or close the accordion.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * The name of the group the accordion belongs to. Accordions with the same group name will automatically close when another accordion in the same group is opened.
           * @default ''
          */
@@ -377,7 +382,7 @@ export namespace Components {
          */
         "brandIcon": string;
         /**
-          * Size of the brand icon.
+          * Size of the brand icon. Unset renders the base size.
          */
         "brandSize": ButtonBrandSize;
         /**
@@ -385,6 +390,7 @@ export namespace Components {
           * @default 'primary'
          */
         "color": ButtonColor;
+        "configChanged": (state: DsConfigState) => Promise<void>;
         /**
           * If `true`, the user cannot interact with the button.
           * @default false
@@ -455,7 +461,7 @@ export namespace Components {
          */
         "shadow": boolean;
         /**
-          * Size of the button
+          * Size of the button. Ignored when `brandIcon` is set — use `brandSize` instead.
          */
         "size"?: ButtonSize;
         /**
@@ -657,10 +663,10 @@ export namespace Components {
          */
         "controls": CarouselControls;
         /**
-          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally.
+          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally. A string sets it per breakpoint with `ds-col` prefixes, e.g. `"1 tablet:2 desktop:3"`.
           * @default 'auto'
          */
-        "itemsPerView": number | 'auto';
+        "itemsPerView": number | 'auto' | string;
         /**
           * Accessible label for the carousel region.
           * @default ''
@@ -685,6 +691,10 @@ export namespace Components {
      * Carousel Item is a single slide or product tile inside a ds-carousel.
      */
     interface DsCarouselItem {
+        /**
+          * Alternative text of the image in image-variant slides. Leave empty for decorative images.
+         */
+        "alt"?: string;
         /**
           * Set by ds-carousel. The carousel variant this item is part of.
           * @default 'slide'
@@ -746,6 +756,14 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * @default false
+         */
+        "groupDisabled": boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly": boolean;
         /**
           * If `true` and `tile` is set, the checkbox box is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
@@ -1343,6 +1361,9 @@ export namespace Components {
           * @default 'primary'
          */
         "color": InputColor;
+        /**
+          * LISTENERS ------------------------------------------------------
+         */
         "configChanged": (state: { language: DsLanguage; region: DsRegion; }) => Promise<void>;
         /**
           * The description of the file upload, displayed below the drop zone.
@@ -1901,6 +1922,10 @@ export namespace Components {
      */
     interface DsLogo {
         /**
+          * Accessible label for the logo. Defaults to an `aria-label` set on the host, then to the brand name.
+         */
+        "a11yLabel"?: string;
+        /**
           * Defines if the animation should be active
           * @default false
          */
@@ -2347,6 +2372,11 @@ export namespace Components {
          */
         "open": boolean;
         /**
+          * ARIA role applied to the panel and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
+          * @default 'dialog'
+         */
+        "panelRole": PopupRole;
+        /**
           * Preferred placement of the popup relative to the trigger.
           * @default 'bottom'
          */
@@ -2355,11 +2385,6 @@ export namespace Components {
           * Opens the popup.
          */
         "present": () => Promise<void>;
-        /**
-          * ARIA role applied to the panel. Controls focus-trap behaviour and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
-          * @default 'dialog'
-         */
-        "role": PopupRole;
         /**
           * Toggles the popup open or closed.
          */
@@ -2427,6 +2452,14 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * @default false
+         */
+        "groupDisabled": boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly": boolean;
         /**
           * If `true` and `tile` is set, the radio circle is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
@@ -3067,7 +3100,7 @@ export namespace Components {
          */
         "actionTarget": ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId": string;
         /**
@@ -3087,6 +3120,7 @@ export namespace Components {
           * Defines the color of the element Color type primary is deprecated, please use info instead.
          */
         "color"?: SnackbarColor;
+        "configChanged": (state: DsConfigState) => Promise<void>;
         /**
           * Defines the heading of the notification.
           * @default ''
@@ -3152,7 +3186,7 @@ export namespace Components {
      */
     interface DsStack {
         /**
-          * Defines the text positioning like center, right or default to start.
+          * Defines the text positioning like center, right or default to start. `stretch` makes children fill the cross axis.
          */
         "align"?: StackAlignment;
         "alignment"?: StackAlignment;
@@ -3629,7 +3663,7 @@ export namespace Components {
          */
         "actionTarget": ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId": string;
         /**
@@ -3747,7 +3781,7 @@ export namespace Components {
      */
     interface DsTooltip {
         /**
-          * Defines the maximum width of the tooltip content in pixels.
+          * Defines the maximum width of the tooltip content in pixels. Defaults to the `--ds-tooltip-max-width` token; always capped to the viewport.
           * @default undefined
          */
         "contentWidth": number | undefined;
@@ -5279,6 +5313,11 @@ declare namespace LocalJSX {
          */
         "buttonWide"?: boolean;
         /**
+          * If `true`, the user cannot open or close the accordion.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * The name of the group the accordion belongs to. Accordions with the same group name will automatically close when another accordion in the same group is opened.
           * @default ''
          */
@@ -5513,7 +5552,7 @@ declare namespace LocalJSX {
          */
         "brandIcon"?: string;
         /**
-          * Size of the brand icon.
+          * Size of the brand icon. Unset renders the base size.
          */
         "brandSize"?: ButtonBrandSize;
         /**
@@ -5615,7 +5654,7 @@ declare namespace LocalJSX {
          */
         "shadow"?: boolean;
         /**
-          * Size of the button
+          * Size of the button. Ignored when `brandIcon` is set — use `brandSize` instead.
          */
         "size"?: ButtonSize;
         /**
@@ -5816,10 +5855,10 @@ declare namespace LocalJSX {
          */
         "controls"?: CarouselControls;
         /**
-          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally.
+          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally. A string sets it per breakpoint with `ds-col` prefixes, e.g. `"1 tablet:2 desktop:3"`.
           * @default 'auto'
          */
-        "itemsPerView"?: number | 'auto';
+        "itemsPerView"?: number | 'auto' | string;
         /**
           * Accessible label for the carousel region.
           * @default ''
@@ -5848,6 +5887,10 @@ declare namespace LocalJSX {
      * Carousel Item is a single slide or product tile inside a ds-carousel.
      */
     interface DsCarouselItem {
+        /**
+          * Alternative text of the image in image-variant slides. Leave empty for decorative images.
+         */
+        "alt"?: string;
         /**
           * Set by ds-carousel. The carousel variant this item is part of.
           * @default 'slide'
@@ -5917,6 +5960,14 @@ declare namespace LocalJSX {
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
+        /**
+          * @default false
+         */
+        "groupDisabled"?: boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly"?: boolean;
         /**
           * If `true` and `tile` is set, the checkbox box is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
@@ -6592,6 +6643,10 @@ declare namespace LocalJSX {
          */
         "dropZoneLabel"?: string;
         /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
           * If `true` below the drop-zone area it generates a file list.
           * @default true
          */
@@ -7173,6 +7228,10 @@ declare namespace LocalJSX {
      */
     interface DsLogo {
         /**
+          * Accessible label for the logo. Defaults to an `aria-label` set on the host, then to the brand name.
+         */
+        "a11yLabel"?: string;
+        /**
           * Defines if the animation should be active
           * @default false
          */
@@ -7661,15 +7720,15 @@ declare namespace LocalJSX {
          */
         "open"?: boolean;
         /**
+          * ARIA role applied to the panel and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
+          * @default 'dialog'
+         */
+        "panelRole"?: PopupRole;
+        /**
           * Preferred placement of the popup relative to the trigger.
           * @default 'bottom'
          */
         "placement"?: PopupPlacement;
-        /**
-          * ARIA role applied to the panel. Controls focus-trap behaviour and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
-          * @default 'dialog'
-         */
-        "role"?: PopupRole;
         /**
           * Override the automatic focus-trap behaviour. When undefined, trapping is enabled when `backdrop` is `true` and disabled otherwise.
           * @default undefined
@@ -7736,6 +7795,14 @@ declare namespace LocalJSX {
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
+        /**
+          * @default false
+         */
+        "groupDisabled"?: boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly"?: boolean;
         /**
           * If `true` and `tile` is set, the radio circle is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
@@ -8474,7 +8541,7 @@ declare namespace LocalJSX {
          */
         "actionTarget"?: ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId"?: string;
         /**
@@ -8563,7 +8630,7 @@ declare namespace LocalJSX {
      */
     interface DsStack {
         /**
-          * Defines the text positioning like center, right or default to start.
+          * Defines the text positioning like center, right or default to start. `stretch` makes children fill the cross axis.
          */
         "align"?: StackAlignment;
         "alignment"?: StackAlignment;
@@ -9074,7 +9141,7 @@ declare namespace LocalJSX {
          */
         "actionTarget"?: ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId"?: string;
         /**
@@ -9214,7 +9281,7 @@ declare namespace LocalJSX {
      */
     interface DsTooltip {
         /**
-          * Defines the maximum width of the tooltip content in pixels.
+          * Defines the maximum width of the tooltip content in pixels. Defaults to the `--ds-tooltip-max-width` token; always capped to the viewport.
           * @default undefined
          */
         "contentWidth"?: number | undefined;
@@ -9255,6 +9322,7 @@ declare namespace LocalJSX {
 
     interface DsAccordionAttributes {
         "open": boolean;
+        "disabled": boolean;
         "group": string;
         "summaryLevel": AccordionSummaryLevel;
         "summaryVisualLevel": AccordionSummaryLevel;
@@ -9386,6 +9454,7 @@ declare namespace LocalJSX {
         "name": string;
         "selected": boolean;
         "src": string;
+        "alt": string;
     }
     interface DsCheckboxAttributes {
         "name": string;
@@ -9394,6 +9463,8 @@ declare namespace LocalJSX {
         "value": string;
         "checked": boolean;
         "disabled": boolean;
+        "groupDisabled": boolean;
+        "groupReadonly": boolean;
         "readonly": boolean;
         "required": boolean;
         "autoInvalidOff": boolean;
@@ -9632,6 +9703,7 @@ declare namespace LocalJSX {
         "brand": LogoBrand;
         "inverted": boolean;
         "size": LogoSize;
+        "a11yLabel": string;
     }
     interface DsModalAttributes {
         "open": boolean;
@@ -9705,7 +9777,7 @@ declare namespace LocalJSX {
         "open": boolean;
         "placement": PopupPlacement;
         "offset": number;
-        "role": PopupRole;
+        "panelRole": PopupRole;
         "closable": boolean;
         "backdropDismiss": boolean;
         "backdrop": boolean;
@@ -9726,6 +9798,8 @@ declare namespace LocalJSX {
         "colsMobile": RadioGroupColumns;
         "colsTablet": RadioGroupColumns;
         "disabled": boolean;
+        "groupDisabled": boolean;
+        "groupReadonly": boolean;
         "invalid": boolean;
         "label": string;
         "labelPosition": RadioLabelPosition;

@@ -46,7 +46,10 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
 
   nativeEl?: HTMLInputElement | HTMLTextAreaElement
 
-  constructor(private component: FormControlInterface<Value>) {}
+  constructor(
+    private component: FormControlInterface<Value>,
+    private isDisabled: () => boolean = () => component.disabled,
+  ) {}
 
   /**
    * LISTENERS
@@ -54,7 +57,7 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
    */
 
   listenOnClick = (ev: UIEvent): void => {
-    if ((this.component.disabled || this.component.readonly) && ev.target && ev.target === this.component.el) {
+    if ((this.isDisabled() || this.component.readonly) && ev.target && ev.target === this.component.el) {
       stopEventBubbling(ev)
     }
   }
@@ -86,7 +89,7 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
   componentDidLoad() {
     this.inputValue = this.component.value
     this.committedValue = this.component.value
-    setFormValue(this.component.internals, this.inputValue as ControlValue)
+    setFormValue(this.component.internals, toControlValue(this.inputValue))
   }
 
   /**
@@ -95,7 +98,7 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
    */
 
   onClick = (ev: MouseEvent) => {
-    if (!this.component.disabled && !this.component.readonly) {
+    if (!this.isDisabled() && !this.component.readonly) {
       this.component?.dsClick.emit(ev)
     }
   }
@@ -103,14 +106,14 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
   onFocus = (ev: FocusEvent) => {
     this.component.focused = true
     this.inputValue = this.component.value
-    if (!this.component.disabled) {
+    if (!this.isDisabled()) {
       this.component?.dsFocus.emit(ev)
     }
   }
 
   onBlur = (ev: FocusEvent) => {
     this.component.focused = false
-    if (!this.component.disabled) {
+    if (!this.isDisabled()) {
       this.component?.dsBlur.emit(ev)
       this.setValue(this.inputValue)
     }
@@ -131,9 +134,17 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
       this.component.value = newValue
       this.inputValue = newValue
       this.committedValue = newValue
-      setFormValue(this.component.internals, this.inputValue as ControlValue)
       this.component.dsChange.emit(this.component.value)
     }
+  }
+
+  valueChanged = () => {
+    this.inputValue = this.component.value
+    // Only while not focused: a focused change is exactly what onBlur's dsChange must still catch.
+    if (!this.component.focused) {
+      this.committedValue = this.component.value
+    }
+    setFormValue(this.component.internals, toControlValue(this.component.value))
   }
 
   setBlur = async (): Promise<void> => {
@@ -150,6 +161,9 @@ export class FormControl<Value extends NonNullable<unknown> | null = string | nu
  * HELPER FUNCTIONS
  * ------------------------------------------------------
  */
+
+const toControlValue = (value: unknown): ControlValue =>
+  typeof value === 'number' && isNaN(value) ? null : (value as ControlValue)
 
 export const getControlTarget = (ev: Event): HTMLInputElement | null => {
   return ev.target as HTMLInputElement | null

@@ -1,15 +1,16 @@
 ---
 name: ds-test-component
-description: Auto-generate all test files for DS components including visual, a11y, component, page object, and unit tests. Use when creating new components or setting up comprehensive test coverage.
+description: Generate a component's unit, interaction and visual tests plus its Page Object (not `.a11y.play.ts`). Use for new components or missing test coverage.
 ---
 
 # Test Component
 
-Auto-generates all test files for a Helvetia Design System component in one command.
+Auto-generates a component's unit, interaction and visual test files plus its Playwright Page
+Object. It reads the component-engineer's visual fixture; it never writes one.
 
 ## Quick Start
 
-Generate all tests for a component:
+Generate tests for a component:
 
 ```bash
 ds-test-component button
@@ -18,117 +19,68 @@ ds-test-component button
 Process:
 
 1. Parse component props, events, slots, parts, states
-2. Show checklists for visual props and slots
-3. Generate 6 file types (or fewer if not applicable)
-4. Report summary with test counts
+2. Read the visual fixture's `data-testid` sections
+3. Show checklists for visual props and slots
+4. Generate the test files (or fewer if not applicable)
+5. Report summary with test counts
 
 Output files:
 
-- `button.visual.html` — Visual test fixture with variant sections
 - `button.visual.play.ts` — Playwright visual regression tests
-- `button.a11y.play.ts` — Comprehensive accessibility tests
 - `button.component.play.ts` — Event and behavior tests
-- `button.variants.ts` — Variant list shared by the visual and SSR tests
-- `button.ssr.play.ts` — SSR screenshots before and after hydration (not for client-only components)
+- `button.variants.ts` — `TAG` + `HOST_VARIANTS`, derived from the fixture, shared by the
+  visual and SSR tests
+- `button.ssr.play.ts` — SSR screenshots before and after hydration (only when the component has a `.host.scss`)
 - `button.po.ts` — Page object in `packages/playwright/src/lib/components/`
 - `button.util.spec.ts` — Unit tests (if `.util.ts` exists)
+
+**Not written here:**
+
+| File                                 | Owner                                         |
+| ------------------------------------ | --------------------------------------------- |
+| `button.visual.html` / `.style.html` | component-engineer (`ds-implement-component`) |
+| `button.a11y.play.ts`                | a11y-expert (`ds-a11y-test`)                  |
+
+The **visual fixture is an input, not an output.** The component-engineer builds it so a human
+can review the component before any test exists; this skill reads its
+`<section data-testid="…">` values to decide what to screenshot. If the fixture is missing the
+skill stops with an error — ask for it rather than authoring one, or the screenshot baseline
+gets taken over a component nobody has looked at.
+
+A variant with no section gets no screenshot, so an incomplete fixture silently means
+incomplete visual coverage. Report the sections you found.
+
+The chain:
+
+```
+test/<name>.visual.html        ← component-engineer, human-approved
+  └─ test/<name>.variants.ts   → TAG + HOST_VARIANTS
+       ├─ .visual.play.ts      (host suite)
+       └─ .ssr.play.ts         (same variants, same baselines)
+```
+
+`.ssr.play.ts` uses `visualBaseline(TAG)`, so it reuses the **visual test's** snapshots rather
+than keeping its own. Both suites must therefore iterate the same `HOST_VARIANTS` — which is
+why the list lives in one file. Adding a variant to one suite only yields a missing-baseline
+error, not a diff.
+
+**SSR is skipped for CSS-only components.** No `.host.scss` means no shadow root to hydrate,
+so there is nothing to assert — `form`, `link`, `table`, `grid`, `picture` and `time-input`
+have no SSR test for this reason.
 
 ## What Gets Generated
 
 ### 1. Visual Tests
 
-**visual.html** — Test fixture with sections:
-
-- **Basic** — Minimal component demo with auto-detected common props
-- **Enum variants** — All color/size values in one section per enum
-- **State variants** — Separate section per state (disabled, loading, invalid, etc.)
-- **Slot demos** — One section per slot, auto-detected from `render()` JSX
-
-**visual.play.ts** — Playwright tests:
+**visual.play.ts** — Playwright tests, with `VARIANTS` read from the engineer's fixture:
 
 - "style" suite: screenshots from `button.style.html`
 - "host" suite: screenshots from `button.visual.html`
 - One test per variant
 
-#### Data-Driven Test Pattern (VARIANTS constant)
+Loop a `VARIANTS` string array (each value is both test name and `data-testid`) — see [examples.md](examples.md#data-driven-visual-tests).
 
-Use a simple string array `VARIANTS` constant to avoid repetitive test code:
-
-**Define VARIANTS with testid strings:**
-
-```ts
-const TAG = 'data'
-
-const VARIANTS = ['basic', 'border', 'horizontal', 'multiline', 'required', 'disabled', 'custom-form'] as const
-
-const image = screenshot(TAG)
-```
-
-**Loop through variants in forEach:**
-
-```ts
-test.describe('host', () => {
-  test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(`/components/${TAG}/test/${TAG}.visual.html`)
-  })
-
-  VARIANTS.forEach(variant => {
-    test(variant, async ({ page }) => {
-      const el = page.getByTestId(variant)
-      await expectScreenshot(el, image(variant))
-    })
-  })
-})
-```
-
-**If component has both style.html and visual.html:**
-
-```ts
-test.describe('style', () => {
-  test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(`/components/${TAG}/test/${TAG}.style.html`)
-  })
-
-  VARIANTS.forEach(variant => {
-    test(variant, async ({ page }) => {
-      const el = page.getByTestId(variant)
-      await expectScreenshot(el, image(`style-${variant}`))
-    })
-  })
-})
-
-test.describe('host', () => {
-  test.beforeEach('Setup', async ({ page }) => {
-    await page.setupVisualTest(`/components/${TAG}/test/${TAG}.visual.html`)
-  })
-
-  VARIANTS.forEach(variant => {
-    test(variant, async ({ page }) => {
-      const el = page.getByTestId(variant)
-      await expectScreenshot(el, image(variant))
-    })
-  })
-})
-```
-
-**Benefits:**
-
-- **Simple** — just a string array, no complex objects
-- **DRY** — one forEach covers all variants
-- **Maintainable** — testid is both the test name and selector
-- **Scalable** — works for any number of variants
-- **Consistent** — matches the tag component pattern
-
-### 2. Accessibility Tests
-
-**a11y.play.ts** — Comprehensive a11y coverage:
-
-- Axe-core checks (auto-detected violations)
-- Semantic checks (ARIA labels, roles, heading hierarchy)
-- Contrast checks (WCAG AA compliance)
-- Tests all variants (colors, sizes, states)
-
-### 3. Component Tests
+### 2. Component Tests
 
 **component.play.ts** — Behavior tests:
 
@@ -140,7 +92,7 @@ test.describe('host', () => {
 - **Slot tests** — Verify each slot renders correctly
 - **Value tests** — If component has `value` prop, test `hasValue()` assertion
 
-### 4. Page Object
+### 3. Page Object
 
 **button.po.ts** — Page object for testing:
 
@@ -153,7 +105,7 @@ test.describe('host', () => {
 
 Located in: `packages/playwright/src/lib/components/button.po.ts`
 
-### 5. Unit Tests (if applicable)
+### 4. Unit Tests (if applicable)
 
 **button.util.spec.ts** — Tests for utility functions:
 
@@ -164,7 +116,7 @@ Located in: `packages/playwright/src/lib/components/button.po.ts`
   - Type variations (if function accepts multiple types)
 - Ready to run with `pnpm test`
 
-### 6. SSR Tests
+### 5. SSR Tests
 
 **variants.ts** — Holds the variant list. Playwright does not allow a test file to import another test file, so the visual and SSR tests both import this file:
 
@@ -176,48 +128,49 @@ export const VARIANTS = ['basic', 'variants', 'disabled'] as const
 
 The visual test imports `TAG` and `VARIANTS` from it instead of declaring them.
 
-**ssr.play.ts** — Renders `visual.html` with `renderToString`, takes one screenshot before and one after hydration, and compares both against the desktop baseline of the visual test:
-
-```ts
-import { renderToString } from '@helvetia-design/core/hydrate'
-import { expectScreenshot, setupSsrVisualTest, test, visualBaseline } from '@helvetia-design/playwright'
-import { TAG, VARIANTS } from './button.variants'
-
-const baseline = visualBaseline(TAG)
-const PAGE_URL = `/components/actions/${TAG}/test/${TAG}.visual.html`
-
-test.describe('ssr', () => {
-  VARIANTS.forEach(variant => {
-    test(variant, async ({ page }) => {
-      const ssr = await setupSsrVisualTest(page, PAGE_URL, renderToString)
-      const el = page.getByTestId(variant)
-
-      await expectScreenshot(el, baseline(variant))
-      await ssr.hydrate()
-      await expectScreenshot(el, baseline(variant))
-    })
-  })
-})
-```
+**ssr.play.ts** — Renders `visual.html` with `renderToString`, takes one screenshot before and one after hydration, and compares both against the desktop baseline of the visual test (code: [examples.md](examples.md#ssr-test)).
 
 Rules:
 
 - Desktop only. No new baseline files unless the component renders in the browser only (below).
 - Components that finish rendering in the browser need their own first screenshot: `visualBaseline(TAG, `${TAG}.ssr.play.ts`)(`${variant}-ssr-static`)`. Update these baselines locally in the Playwright Linux image on amd64, filtered with `-g` to these tests. The `/update-screenshots` bot does not run the SSR project.
 - A component that shifts on hydration is a bug. Fix it or mark the test with `test.fixme` and the issue number.
-- Client-only components (`ds-modal`, `ds-toast`, `ds-snackbar`, see ADR 0031) keep the `mountSsr()` form with an inline snippet:
+- Client-only components (`ds-modal`, `ds-toast`, `ds-snackbar`, see ADR 0031) keep the `mountSsr()` form with an inline snippet — see [examples.md](examples.md#client-only-ssr-test).
 
-```ts
-import { renderToString } from '@helvetia-design/core/hydrate'
-import { DsModal, mountSsr, test } from '@helvetia-design/playwright'
+## Framework integration tests (form components)
 
-test.describe('ssr', () => {
-  test('renders and hydrates', async ({ page }, testInfo) => {
-    await mountSsr(page, '<ds-modal id="modal"></ds-modal>', renderToString, testInfo)
-    await new DsModal(page.locator('ds-modal')).assertToBeClosed()
-  })
-})
+**Every form component** — and any component whose events or framework wrapper change — also
+gets a test in the Angular and React integration apps. Core suites can't prove a wrapper works;
+these run the real `@helvetia-design/angular` / `@helvetia-design/react` package in a real app.
+Skip a framework only if the component has no wrapper there, and say so in the report.
+
+**Angular** — `apps/integration-angular`, modelled on `select-demo/` + `e2e/select.spec.ts`:
+
+- `src/app/<name>-demo/<name>-demo.ts` + `.html`: one `[(ngModel)]` instance and one reactive
+  `FormControl` instance, each with a `data-testid` value readout, plus buttons to `setValue`
+  and toggle disabled.
+- Register the demo in `src/app/app.ts` (import) and `src/app/app.html` (`<app-<name>-demo />`).
+- `e2e/<name>.spec.ts` asserts: initial value shown, a user change updates the model, `setValue`
+  updates the component, disabled toggles both ways, and touched + invalid after blur on a
+  required control.
+
+**React** — `apps/integration-react`, modelled on the `ds-phone-input` test:
+
+- Add the component to `src/Root.tsx` with a `data-testid` and a state readout.
+- Add tests to `e2e/app.spec.ts`: it renders (the existing no-console-errors test then covers
+  it), and its change event updates React state.
+
+**Run** — build core + the framework package first (the build half of `pnpm app:angular` /
+`pnpm app:react`), then only your tests:
+
+```bash
+pnpm --filter integration-angular play:run e2e/<name>.spec.ts
+pnpm --filter integration-react build && pnpm --filter integration-react play:run -g "<name>"
 ```
+
+The wrapper itself (`packages/angular/src/forms/ds-<name>.ts`) is the component-engineer's. If
+`ngModel` or `formControlName` does nothing, the wrapper or its value accessor is missing:
+report it, don't add it.
 
 ## Workflow
 
@@ -227,123 +180,31 @@ test.describe('ssr', () => {
 ds-test-component button
 ```
 
-### Step 2: Confirm Visual Props
+### Step 2: Confirm visual props and slots
 
-```
-Detected props: color, size, disabled, loading, icon, label
+Show the detected props and slots as checklists; the user deselects what to skip.
 
-Which are visual props? (deselect unwanted)
-  ✓ color (enum)
-  ✓ size (enum)
-  ✓ disabled (state)
-  ✓ loading (state)
-  ✓ icon (prop)
-  ✗ label (skip)
-```
+### Step 3: Report
 
-### Step 3: Confirm Slots
+List the files generated with test counts. Prompts, output and a full Button example: [examples.md](examples.md#workflow-prompts).
 
-```
-Detected slots: icon, label, badge
+## Assertions come from the plan, not the implementation
 
-Which to demo? (deselect unwanted)
-  ✓ icon
-  ✓ label
-  ✓ badge
-```
+When a plan exists (`docs/plans/components/<name>-plan.md`,
+`docs/plans/components/<name>-a11y-plan.md`), **structural
+assertions — roles, ARIA wiring, live regions, focus targets, announced text — are read from the
+plan.** Read the implementation to find _selectors_, never to decide what is _correct_.
 
-### Step 4: Files Generated
+A test written by reading the implementation can only ever confirm the implementation.
 
-```
-✓ button.visual.html (8 variant sections)
-✓ button.visual.play.ts (16 visual tests)
-✓ button.a11y.play.ts (12 a11y tests)
-✓ button.component.play.ts (8 event + 4 state tests)
-✓ button.po.ts (5 parts + 4 assertions)
-✓ button.util.spec.ts (4 utils, 18 test cases)
+> Real case: the a11y plan required the no-results message to live in a `role="status"` region and
+> explicitly forbade a bare `div` inside the listbox. The component shipped the forbidden version,
+> this skill asserted `listbox .no-results` was visible, and the test then **defended** a WCAG
+> 1.3.1 violation (`aria-required-children`) until axe caught it — costing a repair dispatch and a
+> test rewrite on top of the original fix.
 
-Next: Review files, run tests: pnpm play, pnpm test
-```
-
-## Example: Button Component
-
-### Generated visual.html sections:
-
-```html
-<!-- Basic -->
-<section data-testid="basic">
-  <span>Basic</span>
-  <ds-button icon="plus">Button</ds-button>
-</section>
-
-<!-- Colors (enum) -->
-<section data-testid="colors">
-  <span>Colors</span>
-  <ds-button color="primary">Primary</ds-button>
-  <ds-button color="secondary">Secondary</ds-button>
-  ...
-</section>
-
-<!-- Disabled (state) -->
-<section data-testid="disabled">
-  <span>Disabled</span>
-  <ds-button disabled>Disabled</ds-button>
-</section>
-
-<!-- Icon slot demo -->
-<section data-testid="slot-icon">
-  <span>Slot: Icon</span>
-  <ds-button><ds-icon name="plus"></ds-icon>Button</ds-button>
-</section>
-```
-
-### Generated component test:
-
-```ts
-test('should fire dsClick event', async ({ page }) => {
-  await page.mount(`<ds-button>Click me</ds-button>`)
-  const dsButton = new DsButton(page.locator('ds-button'))
-  const spy = await dsButton.el.spyOnEvent('dsClick')
-
-  await dsButton.click()
-  expect(spy).toHaveReceivedEventTimes(1)
-})
-
-test('should not fire dsClick when disabled', async ({ page }) => {
-  await page.mount(`<ds-button disabled>Disabled</ds-button>`)
-  const dsButton = new DsButton(page.locator('ds-button'))
-  const spy = await dsButton.el.spyOnEvent('dsClick')
-
-  await dsButton.assertToBeDisabled()
-  expect(spy).toHaveReceivedEventTimes(0)
-})
-```
-
-### Generated page object:
-
-```ts
-export class DsButton extends PageObject {
-  readonly native = this.el.locator('[part="native"]')
-  readonly spinner = this.el.locator('[part="spinner"]')
-  readonly icon = this.el.locator('[part="icon"]')
-
-  async click() {
-    await this.native.click()
-  }
-
-  async assertToBeDisabled() {
-    await expect(this.el).toHaveAttribute('disabled')
-  }
-
-  async assertToBeLoading() {
-    await expect(this.el).toHaveAttribute('loading')
-  }
-
-  async hasValue(value: string) {
-    await expect(this.el).toHaveValue(value)
-  }
-}
-```
+**If the implementation disagrees with the plan, that is a finding, not a test target.** Report it
+with `file:line` and assert the plan's behaviour.
 
 ## Key Behaviors
 
@@ -359,3 +220,4 @@ export class DsButton extends PageObject {
 ## Related
 
 See [REFERENCE.md](REFERENCE.md) for detailed generation rules for each test type.
+Copy-ready code for each test type and a full Button example: [examples.md](examples.md).

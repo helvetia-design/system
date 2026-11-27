@@ -81,7 +81,7 @@ function summarizeBrand(brandName, tokens) {
 }
 
 async function dryRun(
-  { baseTokens, brandTokensByName, referenceTokens, referenceTokensFile },
+  { baseTokens, brandNames, brandTokensByName, referenceTokens, referenceTokensFile },
   inputs,
   figmaToken,
   figmaFileKey,
@@ -102,20 +102,18 @@ async function dryRun(
 
   const localVariables = await getLocalVariables(figmaFileKey, figmaToken)
   const { variables } = localVariables
-  const figmaVariableIds = new Set(Object.values(variables).map(v => v.id))
-  const tokenVariableIds = new Set(baseTokens.filter(t => t.variableId).map(t => t.variableId))
+  const tokenVariableIds = new Set(committedVariableIds(baseTokens))
   const sourceCollectionIds = findCollectionIdsByName(localVariables, [
     inputs.collectionName,
     inputs.responsiveCollectionName,
   ])
 
-  const missingInFigma = [...tokenVariableIds].filter(id => !figmaVariableIds.has(id))
+  const missingInFigma = [...tokenVariableIds].filter(id => !variables[id])
   const missingInTokens = Object.values(variables)
     .filter(v => sourceCollectionIds.has(v.variableCollectionId))
-    .map(v => v.id)
-    .filter(id => !tokenVariableIds.has(id))
+    .filter(v => !tokenVariableIds.has(v.id))
 
-  console.log(`\nFigma file has ${figmaVariableIds.size} variables.`)
+  console.log(`\nFigma file has ${Object.keys(variables).length} variables.`)
   if (missingInFigma.length > 0) {
     console.log(
       `  ${missingInFigma.length} token variableId(s) not found in Figma (will be recreated and backfilled; the run fails if most are missing): ${missingInFigma.slice(0, 10).join(', ')}${missingInFigma.length > 10 ? ', …' : ''}`,
@@ -123,9 +121,67 @@ async function dryRun(
   }
   if (missingInTokens.length > 0) {
     console.log(
-      `  ${missingInTokens.length} Figma variable(s) with no matching token (orphaned or not yet round-tripped).`,
+      `  ${missingInTokens.length} Figma variable(s) with no matching token (orphaned or not yet round-tripped; never deleted by Pull).`,
     )
   }
+
+  const collectionExists = name => Object.values(localVariables.variableCollections).some(c => c.name === name)
+  if (
+    !collectionExists(inputs.collectionName) ||
+    (inputs.responsiveCollectionName !== null && !collectionExists(inputs.responsiveCollectionName))
+  ) {
+    console.log('  A collection is missing — a real run would bootstrap it first; planned writes not computed.')
+    return
+  }
+  printPlannedWrites({ baseTokens, brandNames, brandTokensByName, referenceTokens }, inputs, localVariables)
+}
+
+/**
+ * What a real run would write — the same payload builders as writePull, without posting. Composite
+ * tokens (responsive, shadow, border, typography) that only gain a sub-variable, e.g. a `device` id,
+ * show up here; they don't in the per-brand "to create" counts above.
+ */
+function printPlannedWrites({ baseTokens, brandNames, brandTokensByName, referenceTokens }, inputs, localVariables) {
+  const { variables } = localVariables
+  const { collectionId, modeIdByBrand } = findCollectionAndModes(
+    localVariables,
+    brandNames,
+    inputs.collectionName,
+    inputs.modeNames,
+  )
+  const responsiveCollectionId =
+    inputs.responsiveCollectionName === null
+      ? undefined
+      : findResponsiveCollectionAndModes(localVariables, inputs.responsiveCollectionName).collectionId
+  const idByPath = assignVariableIds(
+    baseTokens,
+    buildNameIndex(localVariables, collectionId),
+    responsiveCollectionId ? buildNameIndex(localVariables, responsiveCollectionId) : new Map(),
+  )
+  const mismatches = findResolvedTypeMismatches(baseTokens, variables)
+  const removedIds = findRemovedVariableIds(loadSyncStateFile(inputs.syncStateFile), baseTokens)
+  const deletable = removedIds.filter(id => variables[id])
+  const creates = buildCreatePassPayload({
+    baseTokens,
+    brandTokensByName,
+    idByPath,
+    collectionId,
+    modeIdByBrand,
+    responsiveCollectionId,
+    referenceTokens,
+  }).variables
+  const descriptions = buildDescriptionUpdatePayload({ baseTokens, idByPath, remoteVariablesById: variables }).variables
+  const renames = buildNameUpdatePayload({ baseTokens, idByPath, remoteVariablesById: variables }).variables
+
+  const list = items => (items.length ? `: ${items.slice(0, 20).join(', ')}${items.length > 20 ? ', …' : ''}` : '')
+  console.log('\nPlanned writes (a real run with DRY_RUN=false):')
+  console.log(`  recreate (type changed): ${mismatches.length}${list(mismatches.map(m => m.token.path.join('/')))}`)
+  console.log(`  create: ${creates.length}${list(creates.map(v => v.name))}`)
+  console.log(`  delete: ${deletable.length}${list(deletable.map(id => variables[id].name))}`)
+  console.log(`  rename: ${renames.length}${list(renames.map(v => `${variables[v.id]?.name} -> ${v.name}`))}`)
+  console.log(
+    `  description update: ${descriptions.length}${list(descriptions.map(v => variables[v.id]?.name ?? v.id))}`,
+  )
 }
 
 /**

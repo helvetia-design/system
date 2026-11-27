@@ -61,6 +61,120 @@ test.describe('component', () => {
     expect(spy).toHaveReceivedEventTimes(0)
   })
 
+  test('should not fire dsClick when a disabled button is clicked', async ({ page }) => {
+    await page.mount(`
+      <ds-button disabled>Disabled</ds-button>
+    `)
+    const dsButton = new DsButton(page.locator('ds-button'))
+    const spy = await dsButton.el.spyOnEvent('dsClick')
+
+    await dsButton.el.dispatchEvent('click')
+    await page.locator('ds-button button').dispatchEvent('click')
+
+    expect(spy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not submit the form inside a disabled fieldset', async ({ page }) => {
+    await page.mount(`
+      <form>
+        <fieldset disabled>
+          <ds-button element-type="submit">Submit</ds-button>
+        </fieldset>
+      </form>
+    `)
+    const dsButton = new DsButton(page.locator('ds-button'))
+    const spy = await dsButton.el.spyOnEvent('dsClick')
+    const submitSpy = await page.locator('form').spyOnEvent('submit')
+
+    await expect(page.locator('ds-button button')).toBeDisabled()
+    await expect(dsButton.el).toHaveClass(/is-disabled/)
+
+    await dsButton.el.dispatchEvent('click')
+    await page.locator('ds-button button').dispatchEvent('click')
+
+    expect(spy).toHaveReceivedEventTimes(0)
+    expect(submitSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should submit again once a disabled fieldset is enabled', async ({ page }) => {
+    await page.mount(`
+      <form>
+        <fieldset disabled>
+          <ds-button element-type="submit">Submit</ds-button>
+        </fieldset>
+      </form>
+    `)
+    const dsButton = new DsButton(page.locator('ds-button'))
+    const nativeButton = page.locator('ds-button button')
+    const spy = await dsButton.el.spyOnEvent('dsClick')
+    await page
+      .locator('form')
+      .evaluate((el: HTMLFormElement) => el.addEventListener('submit', ev => ev.preventDefault()))
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    await expect(nativeButton).toBeEnabled()
+    await nativeButton.click()
+
+    expect(spy).toHaveReceivedEventTimes(1)
+  })
+
+  test('should not submit the form while a submit button is loading', async ({ page }) => {
+    await page.mount(`
+      <form>
+        <ds-button element-type="submit" loading>Submit</ds-button>
+      </form>
+    `)
+    const nativeButton = page.locator('ds-button button')
+    const submitSpy = await page.locator('form').spyOnEvent('submit')
+
+    await nativeButton.focus()
+    await page.keyboard.press('Enter')
+    await nativeButton.dispatchEvent('click')
+
+    expect(submitSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not emit or navigate when a loading link is activated with Enter', async ({ page }) => {
+    await page.mount(`
+      <ds-button href="#navigated" loading>Open</ds-button>
+    `)
+    const dsButton = new DsButton(page.locator('ds-button'))
+    const clickSpy = await dsButton.el.spyOnEvent('dsClick')
+    const navigateSpy = await dsButton.el.spyOnEvent('dsNavigate')
+    const url = page.url()
+
+    await page.locator('ds-button a').focus()
+    await page.keyboard.press('Enter')
+
+    expect(clickSpy).toHaveReceivedEventTimes(0)
+    expect(navigateSpy).toHaveReceivedEventTimes(0)
+    expect(page.url()).toBe(url)
+  })
+
+  test('should keep focus and block activation when a focused button is set to loading', async ({ page }) => {
+    await page.mount(`
+      <ds-button>Save</ds-button>
+    `)
+    const dsButton = new DsButton(page.locator('ds-button'))
+    const nativeButton = page.locator('ds-button button')
+    const spy = await dsButton.el.spyOnEvent('dsClick')
+
+    await nativeButton.focus()
+    await dsButton.el.evaluate((el: HTMLDsButtonElement) => (el.loading = true))
+    await page.waitForChanges()
+
+    await expect(nativeButton).toBeFocused()
+    await expect(nativeButton).not.toHaveAttribute('disabled')
+    await expect(nativeButton).toHaveAttribute('aria-disabled', 'true')
+
+    await page.keyboard.press('Enter')
+    await dsButton.el.dispatchEvent('click')
+
+    expect(spy).toHaveReceivedEventTimes(0)
+  })
+
   test('should forward a11yCurrent as aria-current to the native button', async ({ page }) => {
     await page.mount(`
       <ds-button a-1-1y-current="page">Home</ds-button>
@@ -150,6 +264,37 @@ test.describe('component', () => {
     await expect(tooltip).toHaveAttribute('aria-hidden', 'false')
   })
 
+  test('should not derive aria-label from a11yTitle when the button has text', async ({ page }) => {
+    await page.mount(`
+      <ds-button a-1-1y-title="Extra hint">Save</ds-button>
+    `)
+
+    const nativeButton = page.locator('ds-button button')
+
+    await expect(nativeButton).not.toHaveAttribute('aria-label')
+    await expect(nativeButton).toHaveAccessibleName('Save')
+  })
+
+  test('should not derive aria-label from the native title when the button has text', async ({ page }) => {
+    await page.mount(`
+      <ds-button title="Extra hint">Save</ds-button>
+    `)
+
+    const nativeButton = page.locator('ds-button button')
+
+    await expect(nativeButton).not.toHaveAttribute('aria-label')
+    await expect(nativeButton).toHaveAttribute('title', 'Extra hint')
+    await expect(nativeButton).toHaveAccessibleName('Save')
+  })
+
+  test('should let a11yLabel win over the text', async ({ page }) => {
+    await page.mount(`
+      <ds-button a-1-1y-label="Save document" a-1-1y-title="Extra hint">Save</ds-button>
+    `)
+
+    await expect(page.locator('ds-button button')).toHaveAccessibleName('Save document')
+  })
+
   test('should forward tooltipPlacement to the tooltip', async ({ page }) => {
     await page.mount(`
       <ds-button icon="edit" square a-1-1y-title="Edit" tooltip-placement="top"></ds-button>
@@ -164,5 +309,88 @@ test.describe('component', () => {
     `)
 
     await expect(page.locator('ds-button ds-tooltip')).toHaveCount(0)
+  })
+
+  test('should disable the nested brand icon when disabled', async ({ page }) => {
+    await page.mount(`
+      <ds-button brand-icon="/assets/images/brand-icons/car-tangerine.svg" disabled>Label</ds-button>
+    `)
+
+    await expect(page.locator('ds-button ds-brand-icon')).toHaveClass(/is-disabled/)
+  })
+
+  test('should not disable the nested brand icon when enabled', async ({ page }) => {
+    await page.mount(`
+      <ds-button brand-icon="/assets/images/brand-icons/car-tangerine.svg">Label</ds-button>
+    `)
+
+    await expect(page.locator('ds-button ds-brand-icon')).not.toHaveClass(/is-disabled/)
+  })
+
+  test('should show spinner instead of the brand icon when loading', async ({ page }) => {
+    await page.mount(`
+      <ds-button brand-icon="/assets/images/brand-icons/car-tangerine.svg" loading>Label</ds-button>
+    `)
+
+    await expect(page.locator('ds-button ds-spinner')).toBeVisible()
+    await expect(page.locator('ds-button ds-brand-icon')).toBeHidden()
+    await expect(page.locator('ds-button')).toContainText('Label')
+    await expect(page.locator('ds-button button')).not.toHaveAttribute('disabled')
+    await expect(page.locator('ds-button button')).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  test('should keep focus when loading starts', async ({ page }) => {
+    await page.mount(`<ds-button>Label</ds-button>`)
+    const button = page.locator('ds-button button')
+    await button.focus()
+    await page.locator('ds-button').evaluate((el: HTMLDsButtonElement) => (el.loading = true))
+
+    await expect(button).toBeFocused()
+  })
+
+  test('should announce loading in a live region outside the native button', async ({ page }) => {
+    await page.mount(`<ds-button>Label</ds-button>`)
+    const region = page.locator('ds-button [role="status"]')
+    await expect(region).toBeEmpty()
+
+    await page.locator('ds-button').evaluate((el: HTMLDsButtonElement) => (el.loading = true))
+
+    await expect(region).toHaveText(/^Label, \S+$/)
+    await expect(page.locator('ds-button button [role="status"]')).toHaveCount(0)
+  })
+
+  test('should skip aria-hidden text and collapse whitespace in the loading announcement', async ({ page }) => {
+    await page.mount(`<ds-button loading>Save <span aria-hidden="true">★</span>\n  now</ds-button>`)
+
+    await expect(page.locator('ds-button [role="status"]')).toHaveText(/^Save now, \S+$/)
+  })
+
+  test('should announce the text instead of a11yTitle when loading', async ({ page }) => {
+    await page.mount(`<ds-button a-1-1y-title="Extra hint" loading>Save</ds-button>`)
+
+    await expect(page.locator('ds-button .live-region')).toHaveText(/^Save, \S+$/)
+  })
+
+  test('should not emit dsClick or submit the form when loading', async ({ page }) => {
+    await page.mount(`<form><ds-button type="submit" loading>Save</ds-button></form>`)
+    const dsButton = new DsButton(page.locator('ds-button'))
+    const clickSpy = await dsButton.el.spyOnEvent('dsClick')
+    const submitSpy = await page.locator('form').spyOnEvent('submit')
+
+    await page.locator('ds-button button').click({ force: true })
+
+    expect(clickSpy).toHaveReceivedEventTimes(0)
+    expect(submitSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not navigate or emit dsNavigate when loading with an href', async ({ page }) => {
+    await page.mount(`<ds-button href="#target" loading>Open</ds-button>`)
+    const dsButton = new DsButton(page.locator('ds-button'))
+    const navigateSpy = await dsButton.el.spyOnEvent('dsNavigate')
+
+    await page.locator('ds-button a').click({ force: true })
+
+    expect(navigateSpy).toHaveReceivedEventTimes(0)
+    expect(new URL(page.url()).hash).toBe('')
   })
 })

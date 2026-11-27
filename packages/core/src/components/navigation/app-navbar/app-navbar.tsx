@@ -12,6 +12,7 @@ import {
   type ResizeObserver,
   OneOf,
   Type,
+  ariaBooleanToString,
 } from '@utils'
 import {
   DsComponentInterface,
@@ -50,6 +51,7 @@ export class AppNavbar implements DsComponentInterface, DsBreakpointObserver, Ds
   private containerEl: HTMLDivElement | null = null
 
   private scrollHandler = new ScrollHandler()
+  private isSidebarLocked = false
   private focusHandler = new FocusHandler()
   private burgerModeThresholdWidth: number | null = null
 
@@ -285,6 +287,9 @@ export class AppNavbar implements DsComponentInterface, DsBreakpointObserver, Ds
       if (clientWidth > this.burgerModeThresholdWidth + hysteresisMargin) {
         this.isOverflowing = false
         this.burgerModeThresholdWidth = null
+        if (!this.isTouch && this.isSidebarOpen) {
+          this.setIsSidebarOpen(false)
+        }
       }
     }
   }
@@ -292,27 +297,27 @@ export class AppNavbar implements DsComponentInterface, DsBreakpointObserver, Ds
   private async setIsSidebarOpen(value: boolean): Promise<void> {
     if (value === this.isSidebarOpen) return
 
-    const isSidebarMode = this.isTouch || this.isOverflowing
-
     if (value) {
       this.dsMenuOpenStart.emit()
       this.isSidebarOpen = true
-      if (isSidebarMode) {
+      if (this.isTouch || this.isOverflowing) {
         this.attachKeyboardListener()
         this.attachSidebarClickListener()
         this.focusHandler.enable({ target: this.navEl, restoreElement: this.burgerButton })
         this.burgerButton?.focus()
         this.scrollHandler.disable()
+        this.isSidebarLocked = true
       }
       this.dsMenuOpenEnd.emit()
     } else {
       this.dsMenuCloseStart.emit()
-      if (isSidebarMode) {
+      if (this.isSidebarLocked) {
         this.detachKeyboardListener()
         this.detachSidebarClickListener()
         this.focusHandler.disable()
         this.focusHandler.restoreFocus()
         this.scrollHandler.enable()
+        this.isSidebarLocked = false
       }
       this.isSidebarOpen = false
       this.dsMenuCloseEnd.emit()
@@ -386,7 +391,7 @@ export class AppNavbar implements DsComponentInterface, DsBreakpointObserver, Ds
                     type="button"
                     title={isMenuOpen ? i18n.closeMenu : i18n.openMenu}
                     aria-label={isMenuOpen ? i18n.closeMenu : i18n.openMenu}
-                    aria-expanded={isMenuOpen}
+                    aria-expanded={ariaBooleanToString(isMenuOpen)}
                     aria-controls="sidebar"
                     onClick={() => this.handleHamburgerClick()}
                   >

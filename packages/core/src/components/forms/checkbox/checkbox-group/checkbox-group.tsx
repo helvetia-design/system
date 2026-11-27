@@ -1,6 +1,5 @@
 import {
   AttrDeserialize,
-  AttachInternals,
   Component,
   Element,
   Event,
@@ -23,12 +22,10 @@ import {
   isDescendant,
   stopEventBubbling,
   areArraysEqual,
-  hasValue,
   OneOf,
   shallowReady,
   Type,
   watchInvalidTextSlot,
-  setFormValue,
 } from '@utils'
 import { INPUT_COLORS, InputColor } from '../../input/input.interfaces'
 import {
@@ -66,12 +63,13 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
   }
 
   @Element() el!: HTMLStencilElement
-  @AttachInternals() internals!: ElementInternals
 
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() private internalValue: any[] = []
+  private initialValue: any[] = []
   @State() hasInvalidTextSlotContent = false
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -269,7 +267,6 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
       this.hasInvalidTextSlotContent = hasContent
     })
     this.passDownAttributes()
-    setFormValue(this.internals, this.internalValue.join(','))
   }
 
   disconnectedCallback() {
@@ -285,6 +282,7 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     // resulting checked-state sync would otherwise be silently lost. `valueChanged()` always reads `this.value`
     // directly rather than relying on the watch having fired, so it self-heals regardless of that race.
     this.valueChanged()
+    this.initialValue = [...this.internalValue]
   }
 
   componentWillUpdate() {
@@ -293,6 +291,10 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
 
   componentDidLoad() {
     this.handleSlotChange()
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -336,7 +338,7 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     const formElement = ev.target as HTMLElement
     if (formElement?.contains(this.el)) {
       if (this.control) {
-        this.internalValue = []
+        this.internalValue = [...this.initialValue]
       }
       this.handleValueChange()
     }
@@ -412,6 +414,10 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     }
   }
 
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
   private getCheckboxes(): HTMLDsCheckboxElement[] {
     return Array.from(this.el.querySelectorAll('ds-checkbox'))
   }
@@ -419,13 +425,9 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
   private passDownAttributes() {
     const isInvalid = this.invalid || this.hasInvalidTextSlotContent
     this.getCheckboxes().forEach(checkbox => {
+      checkbox.groupDisabled = this.control && this.isDisabled
+      checkbox.groupReadonly = this.control && this.readonly
       if (this.control) {
-        if (hasValue(this.disabled)) {
-          checkbox.disabled = this.disabled
-        }
-        if (hasValue(this.readonly)) {
-          checkbox.readonly = this.readonly
-        }
         checkbox.invalid = isInvalid
       }
 
@@ -451,7 +453,6 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     if (!areArraysEqual(this.internalValue, newValue)) {
       this.internalValue = [...newValue]
       this.dsChange.emit(this.internalValue)
-      setFormValue(this.internals, this.internalValue.join(','))
     }
   }
 
@@ -464,7 +465,7 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     return (
       <Field
         role="fieldset"
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={this.invalid || this.hasInvalidTextSlotContent}
         loading={this.loading}

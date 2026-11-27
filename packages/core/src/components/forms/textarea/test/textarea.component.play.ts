@@ -1,4 +1,4 @@
-import { DsTextarea, expect, test } from '@helvetia-design/playwright'
+import { DsTextarea, DsPage, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 test.describe('component', () => {
   test('should fire dsInput on fill', async ({ page }) => {
@@ -77,6 +77,32 @@ test.describe('disabled', () => {
     await textarea.assertToBeDisabled()
     expect(inputSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-textarea name="field" label="Label" value="initial"></ds-textarea></form>`)
+    const textarea = new DsTextarea(page.locator('ds-textarea'))
+    expect(await getFormEntries(page)).toEqual([['field', 'initial']])
+
+    await textarea.el.evaluate((el: HTMLDsTextareaElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-textarea name="field" label="Label" value="initial"></ds-textarea></fieldset></form>`,
+    )
+    const textarea = new DsTextarea(page.locator('ds-textarea'))
+
+    await textarea.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'initial']])
+  })
 })
 
 test.describe('form reset', () => {
@@ -107,5 +133,44 @@ test.describe('required attribute', () => {
 
     await expect(textarea.el).toHaveJSProperty('required', false)
     await expect(textarea.nativeTextarea).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mount = (page: DsPage) =>
+    page.mount(`<form><ds-textarea name="field" label="Label" value="initial"></ds-textarea></form>`)
+
+  test('should submit the typed value', async ({ page }) => {
+    await mount(page)
+    const control = new DsTextarea(page.locator('ds-textarea'))
+
+    await control.fill('typed')
+    await control.blur()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'typed']])
+  })
+
+  test('should submit a programmatic value', async ({ page }) => {
+    await mount(page)
+    const control = new DsTextarea(page.locator('ds-textarea'))
+
+    await control.el.evaluate((el: HTMLElement & { value: string }) => {
+      el.value = 'programmatic'
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'programmatic']])
+  })
+
+  test('should submit the initial value after form.reset()', async ({ page }) => {
+    await mount(page)
+    const control = new DsTextarea(page.locator('ds-textarea'))
+
+    await control.fill('typed')
+    await control.blur()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'initial']])
   })
 })

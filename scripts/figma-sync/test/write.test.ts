@@ -4,11 +4,13 @@ import { buildNameIndex, findCollectionAndModes, findResponsiveCollectionAndMode
 import {
   figmaBorderSubEntriesFor,
   figmaLineHeightPercentFor,
+  figmaLiteralValueFor,
   figmaResponsiveDimensionSubEntriesFor,
   figmaShadowSubValuesFor,
   figmaTypographySubEntriesFor,
   figmaValueFor,
   flattenVariableId,
+  isDeviceEligibleResponsiveDimensionToken,
   isLineHeightNumberToken,
   resolvedTypeFor,
   resolvedTypeForToken,
@@ -149,6 +151,20 @@ describe('isLineHeightNumberToken / figmaLineHeightPercentFor', () => {
 
   it('throws on a non-number value', () => {
     expect(() => figmaLineHeightPercentFor('1.3')).toThrow(/Unsupported LineHeight value/)
+  })
+})
+
+describe('figmaLiteralValueFor — Opacity', () => {
+  it("scales an Opacity number token to Figma's 0-100, float noise dropped", () => {
+    expect(figmaLiteralValueFor({ type: 'number', path: ['🌐 Global', '🗂️ Elevation', 'Opacity', '30'] }, 0.3)).toBe(30)
+    expect(figmaLiteralValueFor({ type: 'number', path: ['🔗 Alias', '🌫️ Opacity', 'Full'] }, 1)).toBe(100)
+    expect(
+      figmaLiteralValueFor({ type: 'number', path: ['🧩 Component', 'Steps', 'Step', 'Opacity', 'Disabled'] }, 0.4),
+    ).toBe(40)
+  })
+
+  it('leaves other number tokens untouched', () => {
+    expect(figmaLiteralValueFor({ type: 'number', path: ['🌐 Global', 'ZIndex', '1'] }, 0.5)).toBe(0.5)
   })
 })
 
@@ -439,7 +455,7 @@ describe('LineHeight number token push (two-pass write payload)', () => {
   }
   const tokens = [lineHeightToken, opacityToken]
 
-  it("writes a LineHeight number token's mode-value as a percentage string, but leaves a same-type Opacity token unscaled", () => {
+  it("writes a LineHeight number token's mode-value as a percentage string, and an Opacity token scaled to Figma's 0-100", () => {
     const idByPath = assignVariableIds(tokens)
     const { variableModeValues } = buildCreatePassPayload({
       baseTokens: tokens,
@@ -450,7 +466,7 @@ describe('LineHeight number token push (two-pass write payload)', () => {
     })
     const byId = Object.fromEntries(variableModeValues.map(v => [v.variableId, v.value]))
     expect(byId[idByPath.get('🌐 Global.🔤 Font.LineHeight.2')]).toBe('130%')
-    expect(byId[idByPath.get('🔗 Alias.🌫️ Opacity.Half')]).toBe(0.5)
+    expect(byId[idByPath.get('🔗 Alias.🌫️ Opacity.Half')]).toBe(50)
   })
 })
 
@@ -1197,6 +1213,11 @@ describe('Device variable (responsive collection) push — MVP scope', () => {
   }
   const deviceBaseTokens = [space16Primitive, space40Primitive, deviceEligibleToken, componentRefToken]
 
+  it('isDeviceEligibleResponsiveDimensionToken matches Component/Logo/Size but not Component/Spinner/Logo', () => {
+    expect(isDeviceEligibleResponsiveDimensionToken({ path: ['🧩 Component', 'Logo', 'Size', 'Base'] })).toBe(true)
+    expect(isDeviceEligibleResponsiveDimensionToken({ path: ['🧩 Component', 'Spinner', 'Logo', 'Size'] })).toBe(false)
+  })
+
   it('assignVariableIds assigns a 4th temp "device" id, alongside the 3 breakpoint sub-ids, for an in-scope token', () => {
     const idByPath = assignVariableIds(deviceBaseTokens)
     expect(idByPath.get('📱 Device.↔️ Space.Lg')).toEqual({
@@ -1205,6 +1226,16 @@ describe('Device variable (responsive collection) push — MVP scope', () => {
       desktop: 'temp-📱 Device.↔️ Space.Lg-desktop',
       device: 'temp-📱 Device.↔️ Space.Lg-device',
     })
+  })
+
+  it('collectNewlyCreatedIds backfills a token whose 3 breakpoint ids exist and that only gained a device id', () => {
+    const synced = { ...deviceEligibleToken, variableId: { mobile: 'r-m', tablet: 'r-t', desktop: 'r-d' } }
+    const idByPath = assignVariableIds([synced])
+    resolveTempIds(idByPath, { 'temp-📱 Device.↔️ Space.Lg-device': 'r-dev' })
+    const complete = { mobile: 'r-m', tablet: 'r-t', desktop: 'r-d', device: 'r-dev' }
+
+    expect(collectNewlyCreatedIds([synced], idByPath)).toEqual([{ path: synced.path, variableId: complete }])
+    expect(collectNewlyCreatedIds([{ ...synced, variableId: complete }], idByPath)).toEqual([])
   })
 
   it('pass 1 creates the Device variable in the responsive collection, FLOAT, named with a /Device suffix', () => {
@@ -1573,6 +1604,25 @@ describe('description push', () => {
     })
 
     expect(variables).toEqual([{ action: 'UPDATE', id: 'VariableID:1:1', description: 'Pure white.' }])
+  })
+
+  it('skips a description Figma returns HTML-encoded but that matches once decoded', () => {
+    const baseTokens = [
+      {
+        path: ['Global', 'White'],
+        type: 'color',
+        value: { kind: 'literal', value: { components: [1, 1, 1], alpha: 1 } },
+        variableId: 'VariableID:1:1',
+        description: `A toggle's "x" <pill> & co.`,
+      },
+    ]
+    const { variables } = buildDescriptionUpdatePayload({
+      baseTokens,
+      idByPath: assignVariableIds(baseTokens),
+      remoteVariablesById: { 'VariableID:1:1': { description: 'A toggle&#39;s &quot;x&quot; &lt;pill&gt; &amp; co.' } },
+    })
+
+    expect(variables).toHaveLength(0)
   })
 
   it('skips an already-synced variable whose description already matches Figma', () => {

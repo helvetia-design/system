@@ -6,6 +6,7 @@ const VARIANTS = [
   'col-sizes',
   'numeric-sizes',
   'multiline',
+  'row-gap',
   'gapless',
   'centered',
   'vcentered',

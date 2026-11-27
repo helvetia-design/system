@@ -1,4 +1,4 @@
-import { DsNumberInput, expect, test } from '@helvetia-design/playwright'
+import { DsNumberInput, DsPage, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 test.describe('component', () => {
   test('should fire dsInput with numeric value on fill', async ({ page }) => {
@@ -123,6 +123,32 @@ test.describe('disabled', () => {
     await input.assertToBeDisabled()
     expect(inputSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-number-input name="field" label="Label" value="42"></ds-number-input></form>`)
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+    expect(await getFormEntries(page)).toEqual([['field', '42']])
+
+    await input.el.evaluate((el: HTMLDsNumberInputElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-number-input name="field" label="Label" value="42"></ds-number-input></fieldset></form>`,
+    )
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+
+    await input.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '42']])
+  })
 })
 
 test.describe('form reset', () => {
@@ -156,5 +182,74 @@ test.describe('required attribute', () => {
 
     await expect(numberInput.el).toHaveJSProperty('required', false)
     await expect(numberInput.nativeInput).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mount = (page: DsPage) =>
+    page.mount(`<form><ds-number-input name="field" label="Label" value="42"></ds-number-input></form>`)
+
+  test('should submit the typed value', async ({ page }) => {
+    await mount(page)
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+
+    await input.fill('100')
+    await input.blur()
+
+    expect(await getFormEntries(page)).toEqual([['field', '100']])
+  })
+
+  test('should submit a programmatic value', async ({ page }) => {
+    await mount(page)
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+
+    await input.el.evaluate((el: HTMLDsNumberInputElement) => {
+      el.value = 7
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '7']])
+  })
+
+  test('should not fire dsChange on focus and blur after a programmatic value', async ({ page }) => {
+    await mount(page)
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+    const changeSpy = await input.el.spyOnEvent('dsChange')
+
+    await input.el.evaluate((el: HTMLDsNumberInputElement) => {
+      el.value = 7
+    })
+    await page.waitForChanges()
+    await input.nativeInput.focus()
+    await input.blur()
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should submit the initial value after form.reset()', async ({ page }) => {
+    await mount(page)
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+
+    await input.fill('100')
+    await input.blur()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '42']])
+  })
+
+  test('should restore the initial value on form.reset() after a programmatic value', async ({ page }) => {
+    await mount(page)
+    const input = new DsNumberInput(page.locator('ds-number-input'))
+
+    await input.el.evaluate((el: HTMLDsNumberInputElement) => {
+      el.value = 7
+    })
+    await page.waitForChanges()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '42']])
+    await expect(input.el).toHaveJSProperty('value', 42)
   })
 })

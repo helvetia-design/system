@@ -101,20 +101,9 @@ Use `pnpm <script>` or `turbo run <task>` to invoke tasks. Turborepo caches task
 
 ## Component File Structure
 
-Each component lives in `packages/core/src/components/<component>/`:
-
-```
-button/
-  button.tsx              # Stencil component (props, events, render)
-  button.interfaces.ts    # TypeScript types and enums
-  button.host.scss        # Shadow DOM styles (scoped to :host)
-  button.style.scss       # Shared CSS (web component + global)
-  test/
-    button.spec.ts              # Unit tests (Vitest)
-    button.component.play.ts    # Interaction tests (Playwright)
-    button.visual.play.ts       # Visual regression tests
-    button.a11y.play.ts         # Accessibility tests
-```
+See [packages/core/CONTEXT.md](../packages/core/CONTEXT.md) for the category taxonomy
+(`components/<category>/<name>/`) and [packages/playwright/CONTEXT.md](../packages/playwright/CONTEXT.md)
+for the full test file set.
 
 ## Component Class Organization
 
@@ -133,16 +122,9 @@ export class Button implements ComponentInterface, Loggable {
 }
 ```
 
-Methods must be organized by section with dividers:
-
-1. PUBLIC PROPERTY API
-2. LIFECYCLE
-3. PROPERTY VALIDATION
-4. PUBLIC LISTENERS
-5. PUBLIC METHODS
-6. EVENT HANDLERS
-7. PRIVATE METHODS
-8. RENDER
+Methods must be organized by section with dividers — see
+[STYLE_GUIDE.md](STYLE_GUIDE.md#section-dividers) for the order and what each section
+contains. `ds-lint-component` enforces it.
 
 ### Naming Conventions
 
@@ -246,41 +228,9 @@ The same naming pattern applies to private (`--_`) and modifier (`--mod-`) varia
 
 ## Design Token Naming
 
-Design tokens are organized in three layers, each with distinct naming patterns. All tokens use the `--ds-` prefix.
-
-### Global Layer
-
-Raw color scales with numbered intensity levels (1–5+). Used as base values for other layers:
-
-- Pattern: `--ds-global-[category]-[name]-[number]`
-- Examples:
-  - `--ds-global-color-primary-1` through `--ds-global-color-primary-5` (lightest to darkest)
-  - `--ds-global-color-danger-1` through `--ds-global-color-danger-4`
-  - `--ds-global-color-grey-1` through `--ds-global-color-grey-5`
-
-Global tokens are rarely used directly by components. Use Alias or Component tokens instead.
-
-### Alias Layer
-
-Semantic abstractions for consumers (colors, spacing, typography, etc.). Primary layer for component/app use:
-
-- Pattern: `--ds-alias-[category]-[subcategory]-[name]`
-- Examples:
-  - `--ds-alias-background-color-sky` (semantic name, resolves to global value)
-  - `--ds-alias-background-color-info`
-  - `--ds-alias-space-lg` → `1.5rem`
-  - `--ds-alias-text-size-base` → `1rem`
-  - `--ds-alias-radius-base` → `0.25rem`
-
-### Component Layer
-
-Per-component token overrides for specific design decisions. Used when styling a particular DS component:
-
-- Pattern: `--ds-[component]-[property]-[modifier]-[state]`
-- Examples:
-  - `--ds-button-color-primary-base-text` (button primary variant text color)
-  - `--ds-button-label-font-family` (button label typography)
-  - `--ds-modal-header-border-color` (modal header styling)
+See [packages/tokens/CONTEXT.md](../packages/tokens/CONTEXT.md) for the token architecture —
+four layers (Global → Alias → Device → Component), naming patterns per layer, and the naming
+anatomy for Component-layer tokens.
 
 ## Hybrid Component Model
 
@@ -419,19 +369,11 @@ Use this checklist when creating a component from scratch:
 
 ## Changesets & Release Process
 
-All changes affecting end users must be documented in a changeset:
+All changes affecting end users must be documented in a changeset. Use the `ds-changeset`
+skill to create one — it drives the repo's `scripts/create-changeset.mjs` CLI non-interactively
+and leaves the result unstaged for review.
 
-```bash
-pnpm changeset
-```
-
-This creates a `.md` file in `.changeset/` describing the changes. Choose version bump:
-
-- **`patch`** — bug fixes, non-breaking style tweaks
-- **`minor`** — new features, new components
-- **`major`** — breaking changes (prop renames, removed elements, behavior changes)
-
-**Why changesets matter:** When PRs are merged into `next`, the `prepare-release.yml` workflow scans all changesets and opens a "Changeset Release PR" that aggregates all changes into a single version bump. This PR is reviewed by the core team, then merged to trigger the actual npm publication via `release.yml`.
+**Why changesets matter:** When PRs are merged into `main`, the `prepare-release.yml` workflow scans all changesets and opens a "Changeset Release PR" that aggregates all changes into a single version bump. This PR is reviewed by the core team, then merged to trigger the actual npm publication via `release.yml`.
 
 See [Changesets documentation](https://github.com/changesets/changesets) for format and best practices.
 
@@ -455,7 +397,7 @@ Post this comment in the PR to trigger `snapshot.yml`. The resulting version fol
 ### Release Flow
 
 ```
-1. Changes merged to next
+1. Changes merged to main
    ↓
 2. prepare-release.yml reads all .changeset/*.md files
    ↓
@@ -463,18 +405,16 @@ Post this comment in the PR to trigger `snapshot.yml`. The resulting version fol
    ↓
 4. Core team reviews and approves Release PR
    ↓
-5. Release PR merged to next
+5. Release PR merged to main
    ↓
 6. release.yml publishes all packages to npm with GitHub provenance
    ↓
 7. Docs automatically redeploy to helvetia-design.vercel.app
 ```
 
-For LTS (`main` branch), follow the same process with `lts-prepare-release.yml` and `lts-release.yml`.
-
 ### Branch and PR Workflow
 
-- Open PRs against the `next` branch
+- Open PRs against the `main` branch
 - Feature branches should use prefixes: `feat/`, `fix/`, `chore/`, `docs/`
 - All checks must pass before merge
 - Include a changeset unless your PR is documentation-only or infrastructure
@@ -563,7 +503,6 @@ This gives consumers 2+ release cycles to migrate before the feature is removed.
 
 - **Latest major version**: Receives patches and minor updates
 - **Older major versions**: No longer receive updates (see [SECURITY.md](../SECURITY.md#supported-versions))
-- **LTS branch** (`main`): Parallel releases with same versioning scheme
 - **Prerelease versions**: Snapshot versions (e.g., `1.2.3-snapshot.456.abc1234`) for testing before merge
 
 ## CI/CD Workflows
@@ -572,12 +511,10 @@ All workflows live in `.github/workflows/`. Here is what runs automatically:
 
 | Workflow                  | Trigger                                          | Purpose                                                                                                              |
 | ------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `continuous.yml`          | Every push to `next` + all PRs                   | Lint, test, and build. Cancels superseded runs.                                                                      |
-| `prepare-release.yml`     | Every push to `next`                             | Opens or updates a **Changeset Release PR** via the changesets bot.                                                  |
+| `continuous.yml`          | Every push to `main` + all PRs                   | Lint, test, and build. Cancels superseded runs.                                                                      |
+| `prepare-release.yml`     | Every push to `main`                             | Opens or updates a **Changeset Release PR** via the changesets bot.                                                  |
 | `release.yml`             | Changeset Release PR merged (or manual dispatch) | Publishes all packages to npm with provenance.                                                                       |
-| `lts-prepare-release.yml` | Every push to `main`                             | Same as prepare-release but for the LTS (`main`) branch.                                                             |
-| `lts-release.yml`         | LTS Release PR merged                            | Publishes LTS packages to npm.                                                                                       |
-| `security.yml`            | Push to `next` + all PRs + weekly schedule       | CodeQL static analysis. Results appear in the GitHub Security tab. Required for EU Cyber Resilience Act obligations. |
+| `security.yml`            | Push to `main` + all PRs + weekly schedule       | CodeQL static analysis. Results appear in the GitHub Security tab. Required for EU Cyber Resilience Act obligations. |
 | `screenshots.yml`         | PR comment `/update-screenshots`                 | Regenerates visual regression snapshots for the PR branch and commits them.                                          |
 | `snapshot.yml`            | PR comment `/snapshot`                           | Publishes a snapshot npm version from the PR branch for manual testing.                                              |
 | `create-issue-branch.yml` | Issue comment                                    | Auto-creates a branch from an issue using the `robvanderleek/create-issue-branch` action.                            |
@@ -598,19 +535,17 @@ The design system documentation site is automatically deployed to **Vercel** whe
 
 ### Deployment Domains
 
-| Domain                                                                         | Branch                  | Purpose                                                                     |
-| ------------------------------------------------------------------------------ | ----------------------- | --------------------------------------------------------------------------- |
-| [helvetia-design.vercel.app](https://helvetia-design.vercel.app)               | `next` (latest release) | Production domain serving the latest published version                      |
-| [baloise-design-preview.vercel.app](https://baloise-design-preview.vercel.app) | `main`                  | LTS version of Baloise                                                      |
-| `design-system-*.vercel.app`                                                   | Every PR                | Each pull request gets a unique preview URL (linked in Vercel's PR comment) |
+| Domain                                                           | Branch                  | Purpose                                                                     |
+| ---------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------- |
+| [helvetia-design.vercel.app](https://helvetia-design.vercel.app) | `main` (latest release) | Production domain serving the latest published version                      |
+| `design-system-*.vercel.app`                                     | Every PR                | Each pull request gets a unique preview URL (linked in Vercel's PR comment) |
 
 ### How It Works
 
 Vercel watches the repository for changes and automatically rebuilds and deploys when:
 
-- Changes are pushed to `next` → rebuilds production docs at `helvetia-design.vercel.app`
-- Changes are pushed to `main` → rebuilds lts at `baloise-design-lts.vercel.app`
-- A pull request is opened or updated → builds a lts at a unique Vercel URL and comments with the link
+- Changes are pushed to `main` → rebuilds production docs at `helvetia-design.vercel.app`
+- A pull request is opened or updated → builds a preview at a unique Vercel URL and comments with the link
 
 This allows reviewers to see documentation changes live before merging.
 

@@ -45,6 +45,7 @@ describe('buildCssVarIndex / resolveCssVars', () => {
       mobile: mobile.variableId,
       tablet: expect.any(String),
       desktop: desktop.variableId,
+      device: expect.any(String), // Logo/Size is Device-eligible
     })
   })
 

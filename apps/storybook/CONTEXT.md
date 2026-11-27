@@ -122,8 +122,9 @@ dynamic title` error, so the category can't be derived at runtime from the file'
 Instead, the literal string is kept in sync with the folder by convention: when moving a
 component to a different category, update its `title`/`<Meta title>` strings (and any
 `storyId`/`pageTitle` cross-references in `.doc-config.ts` files, `.storybook/story-paths.json`,
-and `LinkCard`/`GridCard` navigation targets in other MDX files) to match. `/ds-create-component`
-scaffolds new components with the correct category folder from the start.
+and `LinkCard`/`GridCard` navigation targets in other MDX files) to match.
+`ds-implement-component` scaffolds new components with the correct category folder from the
+start.
 
 ## Notable Patterns
 

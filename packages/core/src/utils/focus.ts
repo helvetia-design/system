@@ -1,4 +1,4 @@
-import { createFocusTrap, type FocusTrap } from 'focus-trap'
+import { createFocusTrap, type FocusTrap, type Options as FocusTrapOptions } from 'focus-trap'
 import { dsBrowser } from './browser'
 
 export class FocusHandler {
@@ -7,6 +7,7 @@ export class FocusHandler {
   private disabled = false
   private previousFocusedElement: HTMLElement | null = null
   private restoreElement: HTMLElement | null = null
+  private allowOutsideClick: FocusTrapOptions['allowOutsideClick'] = false
 
   connect(): void {}
 
@@ -24,7 +25,12 @@ export class FocusHandler {
     return this.disabled
   }
 
-  enable(options?: { target?: HTMLElement | null; restoreElement?: HTMLElement | null }): void {
+  enable(options?: {
+    target?: HTMLElement | null
+    restoreElement?: HTMLElement | null
+    allowOutsideClick?: FocusTrapOptions['allowOutsideClick']
+  }): void {
+    this.allowOutsideClick = options?.allowOutsideClick ?? false
     if (options?.target) {
       this.target = options.target
     }
@@ -38,9 +44,9 @@ export class FocusHandler {
     }
   }
 
-  disable(): void {
+  disable(options?: { returnFocus?: boolean }): void {
     if (!this.disabled && this.target) {
-      this.deactivateFocusTrap()
+      this.deactivateFocusTrap(options?.returnFocus)
       this.disabled = true
     }
   }
@@ -55,6 +61,7 @@ export class FocusHandler {
     this.focusTrap = createFocusTrap(this.target, {
       escapeDeactivates: false,
       initialFocus: false,
+      allowOutsideClick: this.allowOutsideClick,
       fallbackFocus: this.target,
       tabbableOptions: {
         getShadowRoot: true,
@@ -63,9 +70,9 @@ export class FocusHandler {
     this.focusTrap.activate()
   }
 
-  private deactivateFocusTrap(): void {
+  private deactivateFocusTrap(returnFocus?: boolean): void {
     if (this.focusTrap) {
-      this.focusTrap.deactivate()
+      this.focusTrap.deactivate({ returnFocus })
       this.focusTrap = null
     }
   }

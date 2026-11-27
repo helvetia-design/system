@@ -1,4 +1,4 @@
-import { DsSlider, expect, test } from '@helvetia-design/playwright'
+import { DsSlider, expect, getFormEntries, test } from '@helvetia-design/playwright'
 
 test.describe('value assigned after load', () => {
   test('should render a value that is assigned after the component has loaded', async ({ page }) => {
@@ -121,6 +121,32 @@ test.describe('disabled', () => {
 
     await slider.assertToBeDisabled()
     expect(inputSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-slider name="volume" label="Volume" value="30"></ds-slider></form>`)
+    const slider = new DsSlider(page.locator('ds-slider'))
+    expect(await getFormEntries(page)).toContainEqual(['volume', expect.anything()])
+
+    await slider.el.evaluate((el: HTMLDsSliderElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).not.toContainEqual(['volume', expect.anything()])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-slider name="volume" label="Volume" value="30"></ds-slider></fieldset></form>`,
+    )
+    const slider = new DsSlider(page.locator('ds-slider'))
+
+    await slider.assertToBeDisabled()
+    expect(await getFormEntries(page)).not.toContainEqual(['volume', expect.anything()])
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toContainEqual(['volume', expect.anything()])
   })
 })
 

@@ -16,9 +16,13 @@ Use the GitHub web interface to create issues. When opening a new issue:
 4. **Assignees**: Assign to team members if known
 5. **Project**: Add to the design system project board if applicable
 
+Agents never create issues directly — 📣 `issue-manager` drafts them with `ds-issue-write` and posts after a human gate.
+
+Auditing a rewritten `ds-*` component against its LTS `bal-*` equivalent: create the issue from [component-audit.md](component-audit.md).
+
 ## Labels & Triage
 
-The `triage` agent uses labels to move issues through a state machine. See `docs/agents/triage-labels.md` for the canonical label vocabulary and how agents interact with them.
+The 📣 `issue-manager` agent uses labels to move issues through a state machine. See `docs/agents/triage-labels.md` for the canonical label vocabulary and how agents interact with them.
 
 ## Accessing Issues
 
@@ -37,7 +41,7 @@ gh issue close <issue-number>           # Close an issue
 
 ## Pull Requests
 
-PRs are opened against the `next` branch and require:
+PRs are opened against the `main` branch and require:
 
 - All CI checks passing (lint, test, build)
 - At least one approval

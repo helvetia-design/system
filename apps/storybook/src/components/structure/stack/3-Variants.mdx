@@ -39,6 +39,14 @@ import { STACK_DOC_CONFIG, getStackTabs } from './stack.doc-config'
 
 {/* ------------------------------------------------------ */}
 
+<StoryHeading of={StackStories.Stretch}></StoryHeading>
+
+`align="stretch"` makes children fill the cross axis: in a column they take the full width, in a row they take equal height. Combined with `fitContent`, every child becomes as wide as the widest one.
+
+<CanvasTabs htmlOf={StackStories.StretchHtml} of={StackStories.Stretch} />
+
+{/* ------------------------------------------------------ */}
+
 <StoryHeading of={StackStories.Space}></StoryHeading>
 
 <CanvasTabs htmlOf={StackStories.SpaceHtml} of={StackStories.Space} />

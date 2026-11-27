@@ -22,3 +22,19 @@ test.describe('component', () => {
     expect(resumeSpy).toHaveReceivedEventTimes(1)
   })
 })
+
+test.describe('component with actionHref', () => {
+  test('Should navigate when clicking the action', async ({ page }) => {
+    await page.mount(
+      `<ds-toast heading="My Toast" action="Open" action-href="#details">This is a Toast content!</ds-toast>`,
+    )
+    const component = new DsToast(page.locator('ds-toast'))
+
+    const popupPromise = page.waitForEvent('popup')
+
+    await component.clickAction()
+
+    const popup = await popupPromise
+    await expect(popup).toHaveURL(/#details$/)
+  })
+})
