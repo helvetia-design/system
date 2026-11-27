@@ -107,11 +107,12 @@ export class AlertContainer implements DsComponentInterface {
    */
   @Method()
   async removeAll() {
-    Object.keys(this.alertTimers).forEach(id => this.clearTimer(id))
-    this.alerts = this.alerts.map(n => ({ ...n, visible: false }))
+    const ids = new Set(this.alerts.map(n => n.alertId))
+    ids.forEach(id => this.clearTimer(id))
+    this.alerts = this.alerts.map(n => (ids.has(n.alertId) ? { ...n, visible: false } : n))
 
     await wait(this.animationDurationMs)
-    this.alerts = []
+    this.alerts = this.alerts.filter(n => !ids.has(n.alertId))
   }
 
   /**
