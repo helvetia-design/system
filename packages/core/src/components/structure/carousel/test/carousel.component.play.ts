@@ -65,6 +65,73 @@ test.describe('tile variant — initial state', () => {
   })
 })
 
+test.describe('tile variant — keyboard selection', () => {
+  const TILES = `
+    <ds-carousel variant="tile" controls="large">
+      <ds-carousel-item name="p1">Item 1</ds-carousel-item>
+      <ds-carousel-item name="p2">Item 2</ds-carousel-item>
+    </ds-carousel>
+    <div style="height:3000px"></div>
+  `
+
+  for (const key of ['Enter', 'Space']) {
+    test(`${key} selects the focused tile`, async ({ page }) => {
+      await page.mount(TILES)
+      const carousel = new DsCarousel(page.locator('ds-carousel'))
+      const changeSpy = await carousel.el.spyOnEvent('dsChange')
+      const itemSpy = await page.locator('ds-carousel-item[name="p2"]').spyOnEvent('dsCarouselItemSelect')
+
+      await carousel.item('p2').focus()
+      await page.keyboard.press(key)
+
+      expect(changeSpy).toHaveReceivedEventTimes(1)
+      expect(changeSpy).toHaveReceivedEventDetail({ value: 'p2' })
+      expect(itemSpy).toHaveReceivedEventDetail({ name: 'p2' })
+      await carousel.assertItemSelected('p2')
+    })
+  }
+
+  test('Space does not scroll the page', async ({ page }) => {
+    await page.mount(TILES)
+    const carousel = new DsCarousel(page.locator('ds-carousel'))
+
+    await carousel.item('p2').focus()
+    await page.keyboard.press('Space')
+
+    expect(await page.evaluate(() => window.scrollY)).toBe(0)
+  })
+
+  test('other keys do not select the tile', async ({ page }) => {
+    await page.mount(TILES)
+    const carousel = new DsCarousel(page.locator('ds-carousel'))
+    const changeSpy = await carousel.el.spyOnEvent('dsChange')
+
+    await carousel.item('p2').focus()
+    await page.keyboard.press('a')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await carousel.assertItemNotSelected('p2')
+  })
+
+  test('Enter on a slotted button activates the button and selects the tile', async ({ page }) => {
+    await page.mount(`
+      <ds-carousel variant="tile" controls="large">
+        <ds-carousel-item name="p1">Item 1</ds-carousel-item>
+        <ds-carousel-item name="p2"><button type="button" onclick="window.innerClicks = (window.innerClicks || 0) + 1">Item 2</button></ds-carousel-item>
+      </ds-carousel>
+    `)
+    const carousel = new DsCarousel(page.locator('ds-carousel'))
+    const changeSpy = await carousel.el.spyOnEvent('dsChange')
+
+    await carousel.item('p2').locator('button').focus()
+    await page.keyboard.press('Enter')
+
+    expect(await page.evaluate(() => (window as any).innerClicks)).toBe(1)
+    expect(changeSpy).toHaveReceivedEventTimes(1)
+    await carousel.assertItemSelected('p2')
+  })
+})
+
 test.describe('tile variant — itemsPerView string', () => {
   test('sets per-breakpoint item widths and updates on change', async ({ page }) => {
     await page.mount(`

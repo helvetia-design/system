@@ -5911,7 +5911,7 @@ declare namespace LocalJSX {
          */
         "navigation"?: boolean;
         /**
-          * Emitted when the user clicks this item (product variant).
+          * Emitted when the user clicks or presses Enter or Space on a tile item.
          */
         "onDsCarouselItemSelect"?: (event: DsCarouselItemCustomEvent<{ name: string }>) => void;
         /**
