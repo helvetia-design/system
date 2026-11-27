@@ -62,11 +62,53 @@ test.describe('ds-data', () => {
         </ds-data>
       `)
 
-      const stacked = page.locator('ds-data[horizontal] ds-data-item')
-      const vertical = page.locator('ds-data:not([horizontal]) ds-data-item')
-      await expect(stacked).toHaveCSS('flex-direction', 'column')
-      await expect(stacked).toHaveCSS('border-bottom-style', 'none')
-      await expect(vertical).toHaveCSS('display', 'grid')
+      const stacked = new DsDataItem(page.locator('ds-data[horizontal] ds-data-item'))
+      const vertical = new DsDataItem(page.locator('ds-data:not([horizontal]) ds-data-item'))
+      await stacked.assertIsStacked()
+      await vertical.assertIsNotStacked()
+      await expect(stacked.el).toHaveCSS('flex-direction', 'column')
+      await expect(stacked.el).toHaveCSS('border-bottom-style', 'none')
+      await expect(vertical.el).toHaveCSS('display', 'grid')
+    })
+
+    test('should update stacked items when horizontal is toggled at runtime', async ({ page }) => {
+      await page.mount(`
+        <ds-data>
+          <ds-data-item>
+            <ds-data-label slot="label">Name</ds-data-label>
+            <ds-data-value>John</ds-data-value>
+          </ds-data-item>
+        </ds-data>
+      `)
+
+      const dataEl = page.locator('ds-data')
+      const item = new DsDataItem(page.locator('ds-data-item'))
+      await item.assertIsNotStacked()
+
+      await dataEl.evaluate((el: HTMLDsDataElement) => (el.horizontal = true))
+      await item.assertIsStacked()
+
+      await dataEl.evaluate((el: HTMLDsDataElement) => (el.horizontal = false))
+      await item.assertIsNotStacked()
+    })
+
+    test('should stack items appended after load in a horizontal data list', async ({ page }) => {
+      await page.mount(`
+        <ds-data horizontal>
+          <ds-data-item>
+            <ds-data-label slot="label">Metric 1</ds-data-label>
+            <ds-data-value>100</ds-data-value>
+          </ds-data-item>
+        </ds-data>
+      `)
+
+      await page.locator('ds-data').evaluate(el => {
+        const item = document.createElement('ds-data-item')
+        item.innerHTML = '<ds-data-label slot="label">Metric 2</ds-data-label><ds-data-value>200</ds-data-value>'
+        el.appendChild(item)
+      })
+
+      await new DsDataItem(page.locator('ds-data-item').nth(1)).assertIsStacked()
     })
   })
 

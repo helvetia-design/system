@@ -1,7 +1,7 @@
 import { Component, Element, h, Host, Prop, Watch } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { DsComponentInterface } from '@global'
-import { Logger, type LogInstance, Type } from '@utils'
+import { byTagName, directChildren, Logger, type LogInstance, Type } from '@utils'
 
 /**
  * Data displays a list of label-value pairs in a organized, accessible format.
@@ -43,16 +43,16 @@ export class Data implements DsComponentInterface {
   /**
    * Marks the direct ds-data-item children as stacked while horizontal.
    * `:host-context()` is not supported in Firefox/Safari, so the item cannot detect this itself.
-   * Iterates `children` instead of querying `:scope > ds-data-item`, because Stencil's SSR
+   * Uses `directChildren` instead of `:scope > ds-data-item`, because Stencil's SSR
    * mock-doc does not support `:scope`.
    */
   private syncItems = () => {
-    Array.from(this.el.children).forEach(item => {
-      if (item.tagName.toLowerCase() === 'ds-data-item') {
-        item.classList.toggle('is-stacked', this.horizontal)
-      }
+    directChildren(this.el, byTagName('DS-DATA-ITEM')).forEach(item => {
+      item.classList.toggle('is-stacked', this.horizontal)
     })
   }
+
+  private handleSlotChange = () => this.syncItems()
 
   render() {
     return (
@@ -62,7 +62,7 @@ export class Data implements DsComponentInterface {
         }}
       >
         <div class="data-container">
-          <slot onSlotchange={this.syncItems}></slot>
+          <slot onSlotchange={this.handleSlotChange}></slot>
         </div>
       </Host>
     )

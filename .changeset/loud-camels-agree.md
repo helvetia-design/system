@@ -2,4 +2,4 @@
 '@helvetia-design/core': patch
 ---
 
-**brand-icon**: Recolor direct-child and uppercase-hex SVG fills when setting color, also for ds-button brand colors
+**core/brand-icon**: Recolor direct-child and uppercase-hex SVG fills when setting color, also for ds-button brand colors
