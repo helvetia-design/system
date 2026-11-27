@@ -201,12 +201,12 @@ export class AlertContainer implements DsComponentInterface {
               color={alert.color as any}
               duration={alert.duration}
               closable={alert.closable}
-              closeHandler={() => alert.closeHandler(alert.alertId)}
+              closeHandler={() => alert.closeHandler?.(alert.alertId)}
               action={alert.action}
               actionIcon={alert.actionIcon}
               actionTarget={alert.actionTarget}
               actionHref={alert.actionHref}
-              actionHandler={() => alert.actionHandler(alert.alertId)}
+              actionHandler={() => alert.actionHandler?.(alert.alertId)}
               onDsCloseClick={() => this.removeAlert(alert.alertId)}
               onDsDidLoad={() => this.present(alert)}
               onDsDidPause={() => {
