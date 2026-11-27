@@ -284,7 +284,11 @@ export class Spinner implements DsComponentInterface, DsConfigObserver {
         <div>
           <div id="inner" part="inner" ref={el => (this.innerEl = el)}></div>
         </div>
-        {hasValue(this.label) && <span part="label">{this.label}</span>}
+        {hasValue(this.label) && (
+          <span class="label" part="label">
+            {this.label}
+          </span>
+        )}
       </Host>
     )
   }

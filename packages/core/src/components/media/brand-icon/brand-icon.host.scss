@@ -70,21 +70,21 @@
       vertical-align: top;
       fill: var(--_brand-icon-color-level-1);
 
-      * [fill='#000d6e'] {
+      [fill='#000d6e' i] {
         fill: var(--_brand-icon-color-level-1);
       }
 
-      * [fill='#fa9319'],
-      * [fill='#d9304c'],
-      * [fill='#1b5951'],
-      * [fill='#6c2273'] {
+      [fill='#fa9319' i],
+      [fill='#d9304c' i],
+      [fill='#1b5951' i],
+      [fill='#6c2273' i] {
         fill: var(--_brand-icon-color-level-2);
       }
 
-      * [fill='#fae052'],
-      * [fill='#ffaca6'],
-      * [fill='#b8b2ff'],
-      * [fill='#94e3d4'] {
+      [fill='#fae052' i],
+      [fill='#ffaca6' i],
+      [fill='#b8b2ff' i],
+      [fill='#94e3d4' i] {
         fill: var(--_brand-icon-color-level-3);
       }
     }
