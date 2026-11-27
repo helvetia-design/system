@@ -1,6 +1,6 @@
 # Triage Labels
 
-This file documents the canonical label vocabulary used by the 📣 `issue-manager` agent (`ds-issue-triage` skill) to move issues through their lifecycle.
+This file documents the canonical label vocabulary used by the 🗺️ `issue-manager` agent (`ds-issue-triage` skill) to move issues through their lifecycle.
 
 ## Canonical Labels
 

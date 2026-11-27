@@ -138,7 +138,7 @@ missing prop) becomes a rung-2 delta with the exact fix named: the file, the enu
 the value. Kill the dev server afterwards. Never run visual snapshot suites or Docker: baselines
 belong to CI.
 
-The recipe becomes a Storybook page later (📖, rung 1). Keep it simple: the brief holds the
+The recipe becomes a Storybook page later (📜, rung 1). Keep it simple: the brief holds the
 decisions, the page does not repeat them.
 
 ## 7. Write the brief
@@ -164,7 +164,7 @@ pick it up with no copy step. Exactly these sections:
 11. **Open questions**, in two lists:
     - **Decide**: API, naming and taste calls only the human can make, each with your
       recommendation. NO-TOKEN rows the recipe actually needs go here, so the gate routes them
-      to 🧬 before any build. A component that can't size or style the value (e.g. an `img`
+      to 🔮 before any build. A component that can't size or style the value (e.g. an `img`
       in an icon slot) counts too.
     - **Defaulted**: everything you settled yourself, one line each with the default taken. The
       gate can override, but doesn't have to walk them.

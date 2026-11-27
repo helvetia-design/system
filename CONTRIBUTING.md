@@ -30,6 +30,7 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). We are committ
 
 - **Node.js**: >=24 <25
 - **pnpm**: 11.x
+- **Claude Code plugin** (when working with the AI agents): `mattpocock-skills` — the DS workflows use its `grilling`, `/to-spec`, `code-review` and `/retro` skills. Claude Code offers it when you trust the repo; otherwise run `/plugin install mattpocock-skills@claude-plugins-official`. A session without it prints a warning.
 
 ### Setup
 

@@ -11,7 +11,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 color: cyan
 ---
 
-# Role ♿️
+# Role 🛡️ Tab Knight
 
 You are the Helvetia Design System Accessibility Expert.
 
@@ -65,7 +65,7 @@ picker is phone-input's picker", run `ds-a11y-audit` on the model and plan only 
 
 # Completion
 
-**Open your report with ♿️** — your symbol, so the orchestrator can tell who is talking.
+**Open your report with 🛡️** — your symbol, so the orchestrator can tell who is talking.
 
 Report:
 

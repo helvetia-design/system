@@ -1,4 +1,9 @@
-# DS Team — agents, skills and workflows
+# DS Team — The Fellowship of the Brick 🧱
+
+> _One Brick to rule them all,_\
+> _One Brick to find them,_\
+> _One Brick to bring them all,_\
+> _And in the tokens bind them._
 
 How the design system agents work together. The **orchestrator is the main session**, not an
 agent — it dispatches the agents below and holds no component context of its own.
@@ -29,18 +34,18 @@ The orchestrator routes. It does not investigate.
 - **Out-of-scope findings become issues at the plan gate, not just a plan line.** Plans are
   gitignored and overwritten by the next run, so a defect that lives only there is lost. Every
   planner returns an "Out-of-scope findings" list next to its blocking decisions; the orchestrator
-  dispatches 📣 issue-manager · `ds-issue-write` to draft one GitHub issue per finding, shows the
+  dispatches 🗺️ issue-manager · `ds-issue-write` to draft one GitHub issue per finding, shows the
   drafts at the gate, re-dispatches it with `post` on the human's OK, and links the numbers in
   the brief.
 - **Continue an agent instead of starting a new one.** When the same agent comes back for the
-  next step (🧩 render check → modify → changeset, 📖 stories → recipe), `SendMessage` it.
+  next step (🧙 render check → modify → changeset, 📜 stories → recipe), `SendMessage` it.
   A fresh dispatch re-reads every file the first one already read.
-- **Small jobs ride along.** The changeset goes in the last 🧩 dispatch's prompt, or a
-  SendMessage to it, never a dispatch of its own. The token audit rides with 🧬's tokens step
+- **Small jobs ride along.** The changeset goes in the last 🧙 dispatch's prompt, or a
+  SendMessage to it, never a dispatch of its own. The token audit rides with 🔮's tokens step
   when there is one.
 - **Skip what can't apply, by rule.** Layout-only CSS (no color, no interaction, no
-  semantics) skips ♿️ a11y-test and a11y-audit. No `<name>.figma.md` skips the drift check.
-  No new or changed token skips 🧬's tokens step. Name the skip and the reason on the board.
+  semantics) skips 🛡️ a11y-test and a11y-audit. No `<name>.figma.md` skips the drift check.
+  No new or changed token skips 🔮's tokens step. Name the skip and the reason on the board.
 - **A known-broken environment is a documented fact, not a discovery.** Before an agent
   investigates a failing suite, check `packages/playwright/CONTEXT.md` (SSR hydration failure,
   missing visual baselines for a new component) and `packages/core/CONTEXT.md` "Testing
@@ -51,17 +56,21 @@ The orchestrator routes. It does not investigate.
 
 | Agent                       | Model  | Writes                                                                                                                              | Read-only |
 | --------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- | :-------: |
-| 🏛️ `architect`              | opus   | `docs/plans/components/**` — plans only, never production code                                                                      |           |
-| 🧩 `component-engineer`     | sonnet | `packages/core/src/components/**`, `test/*.visual.html`, `test/*.style.html`, framework wrappers², ADRs, package `CONTEXT.md` files |           |
+| 🏰 `architect`              | opus   | `docs/plans/components/**` — plans only, never production code                                                                      |           |
+| 🧙 `component-engineer`     | sonnet | `packages/core/src/components/**`, `test/*.visual.html`, `test/*.style.html`, framework wrappers², ADRs, package `CONTEXT.md` files |           |
 | 🧪 `test-engineer`          | sonnet | `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, `*.po.ts`, framework integration tests³        |           |
-| ♿️ `a11y-expert`            | opus   | `.a11y.play.ts` (axe + keyboard/focus/ARIA state), a11y reports                                                                     |           |
-| 🧬 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                                                                 |           |
-| 📖 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                                                             |           |
-| 🎨 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                                                     |           |
-| 📣 `issue-manager`          | sonnet | `docs/plans/github/**` drafts; GitHub issues, comments, labels and PR bodies — after a gate                                         |           |
+| 🛡️ `a11y-expert`            | opus   | `.a11y.play.ts` (axe + keyboard/focus/ARIA state), a11y reports                                                                     |           |
+| 🔮 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                                                                 |           |
+| 📜 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                                                             |           |
+| 🧚 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                                                     |           |
+| 🗺️ `issue-manager`          | sonnet | `docs/plans/github/**` drafts; GitHub issues, comments, labels and PR bodies — after a gate                                         |           |
 | 🐦‍⬛ `magpie`                 | opus   | `docs/plans/magpie/**`, `docs/plans/components/<name>-brief.md` — scouts a foreign element, never production code                   |           |
 
-Plus 🐙 the **orchestrator** — the main session, which dispatches but owns no files.
+Plus 👑 the **orchestrator** — the main session, which dispatches but owns no files.
+
+**Display names — The Fellowship of the Brick 🧱** (every component is a building block) (labels in the banner, board and reports; dispatch still uses the agent's `name`):
+👑 Guild Master · 🏰 Castle Keeper · 🧙 Brick Wizard · 🧪 Potion Taster · 🛡️ Tab Knight ·
+🔮 Rune Master · 📜 Scroll Keeper · 🧚 Pixel Fairy · 🗺️ Quest Master · 🐦‍⬛ Loot Raven
 
 ² **Framework wrappers and the other cross-package files** are the component-engineer's, because
 they change in lockstep with the component's public API:
@@ -92,7 +101,7 @@ needs no entry there unless the plan names a public interface type. Generated fi
 `scripts/build-docs.mjs`) are never hand-edited and never assigned.
 
 Each agent's symbol is its label in a run: it prefixes every dispatch, status line, completion
-report and the Agent tool's `description` (`🏛️ Plan ds-x for Figma`). The agent's identity is
+report and the Agent tool's `description` (`🏰 Plan ds-x for Figma`). The agent's identity is
 still its `name`.
 
 The kickoff banner (format and step lines in the root `AGENTS.md`) comes first, once per run;
@@ -115,13 +124,13 @@ before it. Agents not in the workflow are left out.
 
 ```text
 DS team · ds-country-select · Workflow A step 4
-🏛️ architect               ✅ plan → docs/plans/components/ds-country-select-plan.md
-🧬 token-engineer          ✅ 3 Component tokens added
-🧩 component-engineer      🔄 implementing ds-country-select.tsx
-🧪 test-engineer           ⏳ waits on 🧩
-♿️ a11y-expert             ⏳ waits on 🧩
-📖 documentation-engineer  ⬜
-🐙 orchestrator            🙋 —
+🏰 architect               ✅ plan → docs/plans/components/ds-country-select-plan.md
+🔮 token-engineer          ✅ 3 Component tokens added
+🧙 component-engineer      🔄 implementing ds-country-select.tsx
+🧪 test-engineer           ⏳ waits on 🧙
+🛡️ a11y-expert             ⏳ waits on 🧙
+📜 documentation-engineer  ⬜
+👑 orchestrator            🙋 —
 ```
 
 The "what" column is one line: the file or step the agent is on, the artifact it handed over,
@@ -212,10 +221,11 @@ are in the root `AGENTS.md`.
 | I — PR rescue            | [workflows/i-pr-rescue.md](workflows/i-pr-rescue.md)                       |
 | J — CI failure triage    | [workflows/j-ci-triage.md](workflows/j-ci-triage.md)                       |
 | K — Audit sweep          | [workflows/k-audit-sweep.md](workflows/k-audit-sweep.md)                   |
+| L — Spec only            | [workflows/l-spec.md](workflows/l-spec.md)                                 |
 
 ## GitHub — the closing step of A, B, C and E, and Workflow F
 
-Everything the team writes on GitHub goes through 📣 issue-manager, in two dispatches:
+Everything the team writes on GitHub goes through 🗺️ issue-manager, in two dispatches:
 
 1. **Draft** — `ds-pr-body` always; `ds-issue-reply` (`in-progress`) too when the run started
    from an issue. Drafts land in `docs/plans/github/` (gitignored).
@@ -226,8 +236,8 @@ Everything the team writes on GitHub goes through 📣 issue-manager, in two dis
 `Closes #N` is the PR body's first line, so the PR and issue cross-link and merging closes the
 issue — only when the PR targets the default branch (`ds-pr-body` checks).
 
-**Workflow F — Triage** (standalone, no component): 📣 `ds-issue-triage` drafts a decision table
-plus replies → ⛔ gate → 📣 `post` applies labels and comments. Never closes issues.
+**Workflow F — Triage** (standalone, no component): 🗺️ `ds-issue-triage` drafts a decision table
+plus replies → ⛔ gate → 🗺️ `post` applies labels and comments. Never closes issues.
 
 ## Figma drift check — the closing step of B, C and E
 
@@ -239,10 +249,10 @@ The orchestrator runs it after the changeset, **only when both hold**:
 
 A behavior-only fix — events, keyboard, logic, a11y attributes — skips it.
 
-**Dispatch:** one fresh 🎨 ux-designer · `ds-figma-review`, pointed at `<name>.figma.md` and
+**Dispatch:** one fresh 🧚 ux-designer · `ds-figma-review`, pointed at `<name>.figma.md` and
 the changed files. It repairs Figma and updates `<name>.figma.md`; a code-side defect it finds
 is a finding for the owner, not a Figma workaround. A new token with no Figma variable goes
-first to 🧬 token-engineer · `ds-sync-figma-tokens`, as in Workflow D step 2.
+first to 🔮 token-engineer · `ds-sync-figma-tokens`, as in Workflow D step 2.
 
 **Figma MCP not authorized** → do not skip silently. The final report names the drift as open
 ("`ds-<name>`: Figma out of date — `<what changed>`") so the human can run it later.

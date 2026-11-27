@@ -11,8 +11,8 @@ deprecation first (Workflow E).
 2 implement                 →  3 tokens  (only if step 2 reported gaps)
                                ⛔ GATE: human opens test/<name>.visual.html
 4 test ∥ a11y-test ∥ docs      (parallel, disjoint files)
-5 token-audit ∥ a11y-audit  →  6 repair, routed by owner
-7 a11y-verify ∥ validate    →  8 changeset (minor)  →  9 📣 pr-body ∥ reply → ⛔ GATE → post  →  human reviews and commits
+5 token-audit ∥ a11y-audit ∥ code-review  →  6 repair, routed by owner
+7 a11y-verify ∥ validate    →  8 changeset (minor)  →  9 🗺️ pr-body ∥ reply → ⛔ GATE → post  →  human reviews and commits
 
 step 7 failures loop back to step 6
 ```
@@ -59,6 +59,12 @@ stops a planner designing for the complete domain.
 
 Skip it only for a change whose shape is already settled — a prop added to a shipped component,
 a plan being re-run after a rejected gate. A new component is never that.
+
+**Starting from a spec (`spec #N`, from Workflow L).** The spec is the settled shape: read it
+(`gh issue view N`) instead of re-grilling, and write the brief from it — Implementation
+Decisions and Testing Decisions as decisions, Out of Scope as the out-of-scope list. Grill only
+what the spec leaves open, including the always-ask checklist rows it does not answer. The
+plan's first line is `Spec: #N`; the PR closes it (`ds-pr-body`).
 
 **1 · Plan** — `ds-plan-component` ∥ `ds-a11y-plan`, both pointed at the brief. Each writes its own file under
 `docs/plans/components/`, nothing else — no shared writes. The keyboard map does not depend on the prop
@@ -136,9 +142,10 @@ test to assert (`form`, `link`, `table`, `grid`, `picture`, `time-input` have no
 It writes neither the fixture nor `.a11y.play.ts`, and it errors out if the fixture is missing,
 which keeps the gate above from being skipped.
 
-**5 · Review — parallel, read-only.** `ds-audit-tokens` ∥ `ds-a11y-audit`. Both produce
-findings files and converge on one repair round. (A `code-reviewer` agent joins here once
-`ds-review-component` exists.)
+**5 · Review — parallel, read-only.** `ds-audit-tokens` ∥ `ds-a11y-audit` ∥ the `code-review`
+skill (mattpocock-skills), run by the orchestrator on the diff: Standards against
+`docs/STYLE_GUIDE.md` and `docs/ARCHITECTURE.md`, Spec against the brief and plan (or spec #N).
+The audits produce findings files; `code-review` reports inline. All converge on one repair round.
 
 **6 · Repair** — route findings by owner: source → component-engineer (`ds-repair-component`),
 tokens → token-engineer (`ds-manage-tokens`). Both verify each finding before acting; an
@@ -149,3 +156,5 @@ the suites. Report axe-clean and WCAG 2.2 AA conformance as separate claims.
 
 **8 · Ship** — `ds-changeset`, minor. **The run's only changeset**, covering every package the
 run touched (core, tokens, angular, react); no earlier step writes one.
+
+**Optional · Retro** — the orchestrator's last line is "Type `/retro` to review how this run went." `retro` is user-invoked only (mattpocock-skills); no agent runs it.

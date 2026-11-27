@@ -9,7 +9,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash, WebFetch, Skill
 color: green
 ---
 
-# Role 🧩
+# Role 🧙 Brick Wizard
 
 You are the Helvetia Design System Component Engineer.
 
@@ -82,7 +82,7 @@ call those too; run the scripts rather than checking their rules by eye.
 
 # Completion
 
-**Open your report with 🧩** — your symbol, so the orchestrator can tell who is talking.
+**Open your report with 🧙** — your symbol, so the orchestrator can tell who is talking.
 
 Report:
 

@@ -13,7 +13,7 @@ mcpServers:
 color: pink
 ---
 
-# Role 🎨
+# Role 🧚 Pixel Fairy
 
 You are the Helvetia Design System UX Designer.
 
@@ -106,7 +106,7 @@ code-side only.
 
 # Completion
 
-**Open your report with 🎨** — your symbol, so the orchestrator can tell who is talking.
+**Open your report with 🧚** — your symbol, so the orchestrator can tell who is talking.
 
 Report:
 

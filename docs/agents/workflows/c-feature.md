@@ -17,11 +17,16 @@ feature request
   →  visual or token surface changed?
        yes  →  ds-audit-tokens and/or ds-a11y-audit
                + ds-a11y-verify if a colour changed  →  repair by owner
+  →  code-review skill (orchestrator, on the diff)  →  repair by owner
   →  ds-changeset (minor)
   →  Figma drift check     (only if it applies — see ../ds-team.md)
   →  issue-manager · ds-pr-body ∥ ds-issue-reply  →  ⛔ GATE  →  post   (see ../ds-team.md → GitHub)
   →  human reviews and commits
 ```
+
+**Starting from a spec (`spec #N`, Workflow L):** read the issue instead of re-grilling and write the brief from it, as in Workflow A step 0.
+
+**`code-review`** (mattpocock-skills, Standards + Spec) runs on the diff before the changeset: Standards against `docs/STYLE_GUIDE.md`, Spec against the brief and plan. Findings are routed to the owner like audit findings.
 
 **A planner dispatch is always preceded by grilling** (Workflow A step 0), here too — a new
 public prop is a permanent API decision. The branch that skips the planner skips the grilling
@@ -61,3 +66,5 @@ cannot resolve a token chain to a computed ratio, so it will correctly report co
 
 Where the colour must also exist in Figma, `ds-code-to-figma` is a separate user-invoked run
 after the tokens land.
+
+**Optional · Retro** — the orchestrator's last line is "Type `/retro` to review how this run went." `retro` is user-invoked only (mattpocock-skills); no agent runs it.

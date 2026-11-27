@@ -29,3 +29,5 @@ PR / branch
 
 Escalate to the orchestrator when a conflict touches an ownership line (e.g. tokens + component);
 the owning agent resolves its own files.
+
+**Retro** — these runs usually expose environment friction (stale servers, conflicts, flaky checks). The orchestrator ends with "Type `/retro` — it finds navigation and check gaps." User-invoked only.

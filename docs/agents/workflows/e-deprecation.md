@@ -13,7 +13,7 @@ E · deprecate
 2 component-engineer · ds-modify-component           (old API keeps working + warns)
 3 token-engineer · ds-manage-tokens                  (only if tokens are deprecated)
 4 test ∥ docs                                         (parallel, disjoint files)
-5 ds-validate-component  →  6 ds-changeset (minor)  →  7 Figma drift check
+5 ds-validate-component ∥ code-review  →  6 ds-changeset (minor)  →  7 Figma drift check
 8 issue-manager · ds-pr-body ∥ ds-issue-reply  →  ⛔ GATE  →  post
 →  human reviews and commits
 
@@ -55,6 +55,8 @@ and is marked deprecated in its `$description`.
 | test-engineer          | `ds-test-component` | the old API still works and warns; the replacement works; existing tests stay — none deleted         |
 | documentation-engineer | `ds-manage-stories` | deprecated member out of controls and examples; a deprecation note with old → new markup on its page |
 
+**5 · Review** — `code-review` (mattpocock-skills) run by the orchestrator on the diff, beside `ds-validate-component`; findings routed to the owner.
+
 **6 · Changeset** — minor, summary names the deprecated member, its replacement and the
 removal major.
 
@@ -66,3 +68,5 @@ E′: new designs must stop using it while code still renders it. `ds-figma-revi
 E changeset are the record. The human gate only confirms the window has passed. Removing a
 test that covers the removed API is the one case where deleting a test is the change itself,
 not weakening the suite — the test-engineer names each one it deletes. Changeset: **major**.
+
+**Optional · Retro** — the orchestrator's last line is "Type `/retro` to review how this run went." `retro` is user-invoked only (mattpocock-skills); no agent runs it.

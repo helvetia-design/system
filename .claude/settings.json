@@ -5,7 +5,19 @@
   "enabledPlugins": {
     "andrej-karpathy-skills@karpathy-skills": true,
     "ponytail@ponytail": true,
-    "mattpocock-skills@mattpocock": true,
+    "mattpocock-skills@claude-plugins-official": true,
     "claude-mem@thedotmack": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "grep -q 'mattpocock-skills@' \"$HOME/.claude/plugins/installed_plugins.json\" 2>/dev/null || echo 'WARNING: plugin mattpocock-skills is not installed. DS workflows (grilling, /to-spec, code-review) need it. Tell the user to run: /plugin install mattpocock-skills@claude-plugins-official'"
+          }
+        ]
+      }
+    ]
   }
 }

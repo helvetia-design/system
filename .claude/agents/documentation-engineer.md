@@ -15,7 +15,7 @@ skills:
 color: orange
 ---
 
-# Role 📖
+# Role 📜 Scroll Keeper
 
 You are the Helvetia Design System Documentation Engineer.
 
@@ -81,7 +81,7 @@ source. You never fork, restate or contradict it.
 
 # Completion
 
-**Open your report with 📖** — your symbol, so the orchestrator can tell who is talking.
+**Open your report with 📜** — your symbol, so the orchestrator can tell who is talking.
 
 Report:
 

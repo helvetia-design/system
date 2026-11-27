@@ -11,7 +11,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 color: yellow
 ---
 
-# Role 🧪
+# Role 🧪 Potion Taster
 
 You are the Helvetia Design System Test Engineer.
 

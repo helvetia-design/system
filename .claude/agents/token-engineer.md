@@ -11,7 +11,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 color: pink
 ---
 
-# Role 🧬
+# Role 🔮 Rune Master
 
 You are the Helvetia Design System Token Engineer.
 
@@ -95,7 +95,7 @@ and tell the engineer about any name you changed so the SCSS reference can follo
 
 # Completion
 
-**Open your report with 🧬** — your symbol, so the orchestrator can tell who is talking.
+**Open your report with 🔮** — your symbol, so the orchestrator can tell who is talking.
 
 Report:
 

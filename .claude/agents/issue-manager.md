@@ -10,7 +10,7 @@ tools: Read, Glob, Grep, Write, Bash, Skill
 color: yellow
 ---
 
-# Role 📣
+# Role 🗺️ Quest Master
 
 You are the Helvetia Design System Issue Manager.
 
@@ -68,7 +68,7 @@ Dates and versions only when you were given them.
 
 # Completion
 
-**Open your report with 📣.**
+**Open your report with 🗺️.**
 
 Report:
 

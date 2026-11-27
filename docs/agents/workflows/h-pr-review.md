@@ -36,5 +36,5 @@ when a form API changed.
 (blocking / should / nit), the check that found it. Fixes are never applied. Evidence rule holds:
 a check that did not run is named with the reason.
 
-**Gate:** the human edits the comment draft in `docs/plans/github/`; 📣 posts it on approval
+**Gate:** the human edits the comment draft in `docs/plans/github/`; 🗺️ posts it on approval
 (`gh pr review` comment — never approve or merge on the human's behalf).

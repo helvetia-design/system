@@ -12,7 +12,7 @@ tools: Read, Glob, Grep, Write, Bash, Skill, mcp__plugin_playwright_playwright__
 color: pink
 ---
 
-# Role 🐦‍⬛
+# Role 🐦‍⬛ Loot Raven
 
 You are the Helvetia Design System magpie.
 

@@ -35,5 +35,7 @@ the diff plainly explains it. Record that evidence per row:
 - Never weaken, skip or delete a test to go green. Never `pnpm play:update`.
 - Visual diffs are reported, not fixed locally (no local visual suites). New or changed baselines
   come from the human via `ds-update-screenshots`.
-- An unrelated failure is filed via 📣 `ds-issue-write` draft (gate) — not fixed in this PR.
+- An unrelated failure is filed via 🗺️ `ds-issue-write` draft (gate) — not fixed in this PR.
 - Report: table above, what was fixed, suite output tail, what was not run and why.
+
+**Retro** — these runs usually expose environment friction (stale servers, conflicts, flaky checks). The orchestrator ends with "Type `/retro` — it finds navigation and check gaps." User-invoked only.

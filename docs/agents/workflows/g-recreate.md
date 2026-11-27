@@ -22,29 +22,29 @@ The answers are appended as `## Gate decisions`.
 
 **NO-TOKEN at the gate, not mid-build.** Every NO-TOKEN row the recipe needs, and every value a
 component can't size or style yet (e.g. a 48px `img` in an icon slot), is decided at the gate:
-🧬 token gap, a rung-2 delta, or accepted as a workaround on purpose. Finding it later costs a
+🔮 token gap, a rung-2 delta, or accepted as a workaround on purpose. Finding it later costs a
 blocked agent run.
 
 ## Route by rung
 
 | Rung (gate decision) | Route                                                                                                                                                                                                                                                                                                 |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 Composition        | 📖 documentation-engineer · `ds-document-guidelines` — the brief's recipe as a simple page/story: Banner with its Lead inside, canvas, "When to use", no "How it is built" or "Decisions" (no utility classes — `ds-team.md` → Rules) → `ds-validate-documentation`. No code, no changeset, no Figma. |
-| 2 Variant            | Workflow C. A new enum value or class the brief names exactly (file + value) goes straight to 🧩 component-engineer; a new prop, event or slot enters at 🏛️ architect · `ds-plan-component` (grill skipped)                                                                                           |
-| 3 HTML+CSS pattern   | Workflow C, entering at 🏛️ architect; target `packages/styles` (🧩 component-engineer owns it)                                                                                                                                                                                                        |
-| 4 New web component  | Workflow A, entering at step 1 🏛️ plan ∥ ♿️ a11y-plan (grill skipped)                                                                                                                                                                                                                                 |
+| 1 Composition        | 📜 documentation-engineer · `ds-document-guidelines` — the brief's recipe as a simple page/story: Banner with its Lead inside, canvas, "When to use", no "How it is built" or "Decisions" (no utility classes — `ds-team.md` → Rules) → `ds-validate-documentation`. No code, no changeset, no Figma. |
+| 2 Variant            | Workflow C. A new enum value or class the brief names exactly (file + value) goes straight to 🧙 component-engineer; a new prop, event or slot enters at 🏰 architect · `ds-plan-component` (grill skipped)                                                                                           |
+| 3 HTML+CSS pattern   | Workflow C, entering at 🏰 architect; target `packages/styles` (🧙 component-engineer owns it)                                                                                                                                                                                                        |
+| 4 New web component  | Workflow A, entering at step 1 🏰 plan ∥ 🛡️ a11y-plan (grill skipped)                                                                                                                                                                                                                                 |
 
 **A composite runs its delta first.** Rung 1 + a rung-2 delta (a card + list composition that
 needs a new list variant) goes through C for the variant, then the composition recipe — the
 recipe can only use the variant once it exists.
 
-**One 📖 dispatch for a composite.** The delta's docs (Variants page, stories) and the rung-1
+**One 📜 dispatch for a composite.** The delta's docs (Variants page, stories) and the rung-1
 recipe page go to the same documentation-engineer run, or a SendMessage to it. Two dispatches
 read the same sources twice.
 
-**NO-TOKEN rows go to 🧬 token-engineer inside the routed workflow**, at its tokens step. The
+**NO-TOKEN rows go to 🔮 token-engineer inside the routed workflow**, at its tokens step. The
 brief lists them; magpie never proposes a hardcoded value.
 
 **Brand-color axis.** When the brief says one Brand* surface was detected, the gate decides
-whether all four ship. Its contrast table is magpie's measurement, not a sign-off — ♿️
+whether all four ship. Its contrast table is magpie's measurement, not a sign-off — 🛡️
 a11y-expert still verifies in the routed workflow.
