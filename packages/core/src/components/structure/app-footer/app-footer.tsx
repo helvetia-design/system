@@ -55,7 +55,7 @@ export class AppFooter implements DsComponentInterface, DsConfigObserver {
   @State() region: DsRegion = defaultConfig.region
   @State() allowedLanguages: DsLanguage[] = defaultConfig.allowedLanguages
   @State() legalLinksConfig: { [key in DsLanguage]?: AppFooterLink[] } | undefined
-  @State() legalTextConfig: string | undefined
+  @State() legalTextConfig: { [key in DsLanguage]?: string } | undefined
   @State() socialLinksConfig: AppFooterSocialLink[] | undefined
 
   /**
@@ -118,7 +118,7 @@ export class AppFooter implements DsComponentInterface, DsConfigObserver {
     this.region = state.region
     this.allowedLanguages = state.allowedLanguages
     this.legalLinksConfig = state.legalLinks?.[state.region]
-    this.legalTextConfig = state.legalText?.[state.region]?.[state.language]
+    this.legalTextConfig = state.legalText?.[state.region]
     this.socialLinksConfig = state.socialLinks?.[state.region]
   }
 
@@ -194,7 +194,7 @@ export class AppFooter implements DsComponentInterface, DsConfigObserver {
     const hasSocialSlot = this.hasNamedSlot('social-links')
     const configLinks = !this.disableDefaultLinks && this.legalLinksConfig?.[this.language]
     const configSocial = !this.disableDefaultSocialLinks && this.socialLinksConfig
-    const textToDisplay = this.legalText || this.legalTextConfig
+    const textToDisplay = this.legalText || this.legalTextConfig?.[this.language]
 
     const showLinks = hasLinksSlot || (configLinks && configLinks.length > 0)
     const showSocial = hasSocialSlot || (configSocial && configSocial.length > 0)

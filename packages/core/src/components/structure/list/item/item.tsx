@@ -253,6 +253,8 @@ export class Item implements DsComponentInterface {
     if (this.variant === 'link') {
       if (this.disabled) {
         attributes.disabled = this.disabled
+      } else {
+        attributes.onClick = this.handleClick
       }
       if (this.href) {
         attributes.href = this.href

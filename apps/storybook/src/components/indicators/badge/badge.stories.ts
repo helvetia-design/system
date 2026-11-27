@@ -102,7 +102,7 @@ export const ListBadges = Story({
   ...withRender(
     () => `
 <ds-list>
-  <ds-item variant="link" href="www.helvetia.com" target="_blank">
+  <ds-item variant="link" href="https://www.helvetia-baloise.com/" target="_blank">
     <ds-badge color="success" size="lg" slot="icon">
       <ds-icon name="check"></ds-icon>
     </ds-badge>

@@ -29,6 +29,38 @@ test.describe('dsLanguageChange', () => {
   })
 })
 
+test.describe('language selection', () => {
+  test('switches legal text and links together when another language is selected', async ({ page }) => {
+    await page.mount(`<ds-app-footer></ds-app-footer>`)
+
+    await page.evaluate(async () => {
+      const footer = document.querySelector('ds-app-footer') as any
+
+      await footer.configChanged({
+        language: 'de',
+        region: 'ch',
+        allowedLanguages: ['de', 'fr'],
+        legalText: { ch: { de: 'Rechtstext DE', fr: 'Texte legal FR' } },
+        legalLinks: {
+          ch: {
+            de: [{ label: 'Impressum DE', href: '/de' }],
+            fr: [{ label: 'Mentions FR', href: '/fr' }],
+          },
+        },
+      })
+    })
+
+    const footer = new DsAppFooter(page.locator('ds-app-footer'))
+    await expect(page.locator('ds-app-footer .legal')).toHaveText('Rechtstext DE')
+    await expect(page.locator('ds-app-footer a[href="/de"]')).toBeVisible()
+
+    await footer.selectLanguage('fr')
+
+    await expect(page.locator('ds-app-footer .legal')).toHaveText('Texte legal FR')
+    await expect(page.locator('ds-app-footer a[href="/fr"]')).toBeVisible()
+  })
+})
+
 test.describe('props', () => {
   test('renders language select by default', async ({ page }) => {
     await page.mount(`<ds-app-footer></ds-app-footer>`)

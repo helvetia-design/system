@@ -1,10 +1,17 @@
 import { DsCarousel, expect, test } from '@helvetia-design/playwright'
+import type { Page } from '@playwright/test'
 
 const ITEMS = `
   <ds-carousel-item name="s1"><div style="height:150px">Slide 1</div></ds-carousel-item>
   <ds-carousel-item name="s2"><div style="height:150px">Slide 2</div></ds-carousel-item>
   <ds-carousel-item name="s3"><div style="height:150px">Slide 3</div></ds-carousel-item>
 `
+
+// let the IntersectionObserver's initial fire and any follow-up render pass
+const settle = (page: Page) =>
+  page.evaluate(
+    () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 100)))),
+  )
 
 test.describe('image variant — initial state', () => {
   test('selects the first item by default', async ({ page }) => {
@@ -22,6 +29,22 @@ test.describe('image variant — initial state', () => {
     await carousel.assertItemSelected('s2')
     await carousel.assertItemNotSelected('s1')
   })
+
+  test('scrolls the track to a preset value', async ({ page }) => {
+    await page.mount(`<ds-carousel style="width:300px" value="s3">${ITEMS}</ds-carousel>`)
+    const track = page.locator('ds-carousel .carousel-track')
+
+    await expect.poll(() => track.evaluate(el => el.scrollLeft)).toBeGreaterThan(0)
+  })
+
+  test('scrolls the track when value is set later', async ({ page }) => {
+    await page.mount(`<ds-carousel style="width:300px">${ITEMS}</ds-carousel>`)
+    await page.locator('ds-carousel').evaluate((el: HTMLDsCarouselElement) => (el.value = 's3'))
+
+    const track = page.locator('ds-carousel .carousel-track')
+
+    await expect.poll(() => track.evaluate(el => el.scrollLeft)).toBeGreaterThan(0)
+  })
 })
 
 test.describe('image variant — dsChange event', () => {
@@ -33,6 +56,33 @@ test.describe('image variant — dsChange event', () => {
     await carousel.clickDot(1)
 
     expect(spy).toHaveReceivedEventTimes(1)
+  })
+})
+
+test.describe('slide variant — swipe', () => {
+  test('emits dsChange once when the track is scrolled to another slide', async ({ page }) => {
+    await page.mount(`<ds-carousel style="width:300px">${ITEMS}</ds-carousel>`)
+    const carousel = new DsCarousel(page.locator('ds-carousel'))
+    const spy = await carousel.el.spyOnEvent('dsChange')
+    // let the initial observer fire settle
+    await settle(page)
+
+    await page
+      .locator('ds-carousel .carousel-track')
+      .evaluate(el => el.scrollTo({ left: el.scrollWidth, behavior: 'instant' }))
+
+    await expect.poll(() => carousel.el.evaluate((el: HTMLDsCarouselElement) => el.value)).toBe('s3')
+    expect(spy).toHaveReceivedEventTimes(1)
+    expect(spy).toHaveReceivedEventDetail({ value: 's3' })
+  })
+
+  test('does not emit dsChange on initial setup', async ({ page }) => {
+    await page.mount(`<ds-carousel style="width:300px">${ITEMS}</ds-carousel>`)
+    const carousel = new DsCarousel(page.locator('ds-carousel'))
+    const spy = await carousel.el.spyOnEvent('dsChange')
+    await settle(page)
+
+    expect(spy).toHaveReceivedEventTimes(0)
   })
 })
 
