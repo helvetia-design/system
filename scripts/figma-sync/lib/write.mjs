@@ -519,7 +519,8 @@ export function buildCreatePassPayload({
 
       // A standalone LineHeight `number` token (Global.Font.LineHeight.*, Alias.Text.LineHeight.*,
       // Component.*.LineHeight) is sent as a percentage string ("150%") for Figma's line-height
-      // convention, same as typography's own lineHeight sub-value above — see figmaLiteralValueFor.
+      // convention, same as typography's own lineHeight sub-value above; an Opacity `number` token is
+      // scaled to Figma's 0-100 — see figmaLiteralValueFor.
       variableModeValues.push({
         variableId: idByPath.get(pathKey(token.path)),
         modeId,

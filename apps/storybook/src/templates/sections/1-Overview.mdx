@@ -1,0 +1,63 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Banner, CanvasWithCodePen, Footer, Lead, StoryHeading, WarningQuote } from '../../../.storybook/blocks'
+import * as SectionStories from './sections.stories'
+
+<Meta title="Templates/Sections/Overview" name="Overview" />
+
+<StoryHeading of={SectionStories.AccordionSection} hidden></StoryHeading>
+
+<Banner section={'Templates/Sections'} label={'Overview'}>
+  <Lead>
+    Page sections that pair a title on the left with content on the right. Below the desktop breakpoint the title stacks
+    above the content. Copy the markup of the section you need and replace the content.
+  </Lead>
+</Banner>
+
+<WarningQuote>
+  **Work in progress.** The sections are still being built. Their markup and the components they use may change.
+</WarningQuote>
+
+{/* STORIES */}
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={SectionStories.AccordionSection}></StoryHeading>
+
+A title on the left and an introduction plus a list of accordion items on the right.
+
+<CanvasWithCodePen of={SectionStories.AccordionSection} sourceState="hidden" />
+
+## When to use
+
+Use it for a group of short, parallel topics where readers typically open one or two (FAQs, hazards, coverage details).
+For a single block of content use `ds-accordion`; for a standalone list of links or actions use `ds-list` on its own.
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={SectionStories.SummarySection}></StoryHeading>
+
+A title on the left and a colored box on the right that summarizes an article in a checkmark list.
+
+<CanvasWithCodePen of={SectionStories.SummarySection} sourceState="hidden" />
+
+## When to use
+
+Use it at the top of the content of a blog article or long page to give readers the key points before they read on.
+Pick the box color with the color control, matching the color of the stage. For a list of interactive rows use
+`ds-list`; for content readers open on demand use `ds-accordion`.
+
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={SectionStories.TeaserCarouselSection}></StoryHeading>
+
+A title on the left and a carousel of teasers on the right. Each teaser has an image, a heading, a short text and one
+link. The carousel shows one teaser on mobile, two from the tablet and three from the desktop breakpoint.
+
+<CanvasWithCodePen of={SectionStories.TeaserCarouselSection} sourceState="hidden" />
+
+## When to use
+
+Use it to promote a handful of related pages, each with an image and a short text, where a row would not fit them all.
+Keep the text short (about 200 characters) and give every teaser exactly one link. For a strip of icon tiles that are
+links themselves use `ds-carousel` with `navigation` items; for a single highlighted block use `ds-card`.
+
+<Footer />

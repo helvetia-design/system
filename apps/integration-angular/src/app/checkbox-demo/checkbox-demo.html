@@ -1,3 +1,26 @@
 <h2>Checkbox demo</h2>
 <p data-testid="checked">Checked: {{ checked() }}</p>
 <ds-checkbox data-testid="checkbox" [checked]="checked()" (dsChange)="onChange($event)">Accept</ds-checkbox>
+
+<form [formGroup]="reactiveForm">
+  <ds-checkbox data-testid="reactive-checkbox" name="reactive-checkbox" formControlName="accepted">
+    Accept terms and conditions
+  </ds-checkbox>
+</form>
+<p data-testid="reactive-checkbox-value">Reactive value: {{ reactiveForm.controls.accepted.value }}</p>
+<p data-testid="reactive-checkbox-is-boolean">Is boolean: {{ isBoolean(reactiveForm.controls.accepted.value) }}</p>
+<button data-testid="toggle-reactive-checkbox-disabled" type="button" (click)="toggleReactiveFormDisabled()">
+  Toggle disabled
+</button>
+<button data-testid="set-reactive-checkbox-value" type="button" (click)="setReactiveFormValue()">Set to true</button>
+
+<form [formGroup]="autoInvalidOffForm">
+  <ds-checkbox
+    data-testid="auto-invalid-off-checkbox"
+    name="auto-invalid-off-checkbox"
+    autoInvalidOff
+    formControlName="accepted"
+  >
+    Accept terms and conditions
+  </ds-checkbox>
+</form>

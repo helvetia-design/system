@@ -1,4 +1,4 @@
-import { DsCheckbox, DsInput, expect, test } from '@helvetia-design/playwright'
+import { DsCheckbox, DsInput, DsPage, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 const GROUP = `
   <ds-checkbox-group control name="heroes" label="Label">
@@ -73,6 +73,32 @@ test.describe('disabled', () => {
 
     expect(focusSpy).toHaveReceivedEventTimes(0)
     expect(blurSpy).toHaveReceivedEventTimes(0)
+  })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-checkbox name="terms" value="accepted" checked>Accept terms</ds-checkbox></form>`)
+    const checkbox = new DsCheckbox(page.locator('ds-checkbox'))
+    expect(await getFormEntries(page)).toContainEqual(['terms', expect.anything()])
+
+    await checkbox.el.evaluate((el: HTMLDsCheckboxElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).not.toContainEqual(['terms', expect.anything()])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-checkbox name="terms" value="accepted" checked>Accept terms</ds-checkbox></fieldset></form>`,
+    )
+    const checkbox = new DsCheckbox(page.locator('ds-checkbox'))
+
+    await checkbox.assertToBeDisabled()
+    expect(await getFormEntries(page)).not.toContainEqual(['terms', expect.anything()])
+
+    await page.locator('form > fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toContainEqual(['terms', expect.anything()])
   })
 })
 
@@ -177,6 +203,90 @@ test.describe('checkbox-group', () => {
     await tony.assertToBeDisabled()
   })
 
+  test('should keep a checkbox disabled that is disabled on its own', async ({ page }) => {
+    await page.mount(`
+      <ds-checkbox-group control name="heroes" label="Label">
+        <ds-checkbox value="steve-rogers">Steve Rogers</ds-checkbox>
+        <ds-checkbox value="tony-stark" disabled>Tony Stark</ds-checkbox>
+      </ds-checkbox-group>
+    `)
+    const group = page.locator('ds-checkbox-group')
+    const changeSpy = await group.spyOnEvent('dsChange')
+    const steve = new DsCheckbox(page.locator('ds-checkbox[value="steve-rogers"]'))
+    const tony = new DsCheckbox(page.locator('ds-checkbox[value="tony-stark"]'))
+
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+
+    await tony.el.dispatchEvent('click')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await tony.assertToBeUnchecked()
+  })
+
+  test('should restore the own disabled state of each checkbox when the group is enabled again', async ({ page }) => {
+    await page.mount(`
+      <ds-checkbox-group control name="heroes" label="Label">
+        <ds-checkbox value="steve-rogers">Steve Rogers</ds-checkbox>
+        <ds-checkbox value="tony-stark" disabled>Tony Stark</ds-checkbox>
+      </ds-checkbox-group>
+    `)
+    const group = page.locator('ds-checkbox-group')
+    const steve = new DsCheckbox(page.locator('ds-checkbox[value="steve-rogers"]'))
+    const tony = new DsCheckbox(page.locator('ds-checkbox[value="tony-stark"]'))
+
+    await group.evaluate((el: HTMLDsCheckboxGroupElement) => (el.disabled = true))
+    await page.waitForChanges()
+    await steve.assertToBeDisabled()
+    await tony.assertToBeDisabled()
+
+    await group.evaluate((el: HTMLDsCheckboxGroupElement) => (el.disabled = false))
+    await page.waitForChanges()
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+  })
+
+  test('should keep a checkbox readonly that is readonly on its own', async ({ page }) => {
+    await page.mount(`
+      <ds-checkbox-group control name="heroes" label="Label">
+        <ds-checkbox value="steve-rogers">Steve Rogers</ds-checkbox>
+        <ds-checkbox value="tony-stark" readonly>Tony Stark</ds-checkbox>
+      </ds-checkbox-group>
+    `)
+    const group = page.locator('ds-checkbox-group')
+    const changeSpy = await group.spyOnEvent('dsChange')
+    const steve = new DsCheckbox(page.locator('ds-checkbox[value="steve-rogers"]'))
+    const tony = new DsCheckbox(page.locator('ds-checkbox[value="tony-stark"]'))
+
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+
+    await tony.el.dispatchEvent('click')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await tony.assertToBeUnchecked()
+  })
+
+  test('should restore the own readonly state of each checkbox when the group is editable again', async ({ page }) => {
+    await page.mount(`
+      <ds-checkbox-group control readonly name="heroes" label="Label">
+        <ds-checkbox value="steve-rogers">Steve Rogers</ds-checkbox>
+        <ds-checkbox value="tony-stark" readonly>Tony Stark</ds-checkbox>
+      </ds-checkbox-group>
+    `)
+    const group = page.locator('ds-checkbox-group')
+    const steve = new DsCheckbox(page.locator('ds-checkbox[value="steve-rogers"]'))
+    const tony = new DsCheckbox(page.locator('ds-checkbox[value="tony-stark"]'))
+
+    await steve.assertToBeDisabled()
+    await tony.assertToBeDisabled()
+
+    await group.evaluate((el: HTMLDsCheckboxGroupElement) => (el.readonly = false))
+    await page.waitForChanges()
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+  })
+
   test('should pre-select checkboxes matching value prop', async ({ page }) => {
     await page.mount(`
       <ds-checkbox-group control name="heroes" label="Label" value="tony-stark">
@@ -265,5 +375,196 @@ test.describe('required attribute', () => {
     )
 
     await expect(page.locator('ds-checkbox-group')).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mountCheckbox = (page: DsPage) =>
+    page.mount(`<form><ds-checkbox name="field" value="yes" checked>Checkbox</ds-checkbox></form>`)
+
+  const mountGroup = (page: DsPage, attributes: string) =>
+    page.mount(`
+      <form>
+        <ds-checkbox-group ${attributes} name="heroes" label="Label">
+          <ds-checkbox value="steve-rogers">Steve Rogers</ds-checkbox>
+          <ds-checkbox value="tony-stark">Tony Stark</ds-checkbox>
+          <ds-checkbox value="black-widow">Black Widow</ds-checkbox>
+        </ds-checkbox-group>
+      </form>
+    `)
+
+  test('checkbox should submit its value only while checked', async ({ page }) => {
+    await mountCheckbox(page)
+    const checkbox = new DsCheckbox(page.locator('ds-checkbox'))
+
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+    await checkbox.uncheck()
+    expect(await getFormEntries(page)).toEqual([])
+    await checkbox.check()
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+  })
+
+  test('checkbox should submit after a programmatic checked change', async ({ page }) => {
+    await mountCheckbox(page)
+    const checkbox = new DsCheckbox(page.locator('ds-checkbox'))
+
+    await checkbox.el.evaluate((el: HTMLDsCheckboxElement) => {
+      el.checked = false
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('checkbox should submit after a programmatic checked = true', async ({ page }) => {
+    await page.mount(`<form><ds-checkbox name="field" value="yes">Checkbox</ds-checkbox></form>`)
+
+    expect(await getFormEntries(page)).toEqual([])
+    await page.locator('ds-checkbox').evaluate((el: HTMLDsCheckboxElement) => {
+      el.checked = true
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+  })
+
+  test('checkbox should submit its initial state after form.reset()', async ({ page }) => {
+    await mountCheckbox(page)
+    const checkbox = new DsCheckbox(page.locator('ds-checkbox'))
+
+    await checkbox.uncheck()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'yes']])
+  })
+
+  test('checkbox-group should submit one entry per checked option with control', async ({ page }) => {
+    await mountGroup(page, 'control value="steve-rogers,tony-stark"')
+
+    expect(await getFormEntries(page)).toEqual([
+      ['heroes', 'steve-rogers'],
+      ['heroes', 'tony-stark'],
+    ])
+  })
+
+  test('checkbox-group should not submit checked options while disabled with control', async ({ page }) => {
+    await mountGroup(page, 'control value="steve-rogers,tony-stark"')
+    const group = page.locator('ds-checkbox-group')
+
+    await group.evaluate((el: HTMLDsCheckboxGroupElement) => (el.disabled = true))
+    await page.waitForChanges()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await group.evaluate((el: HTMLDsCheckboxGroupElement) => (el.disabled = false))
+    await page.waitForChanges()
+    expect(await getFormEntries(page)).toEqual([
+      ['heroes', 'steve-rogers'],
+      ['heroes', 'tony-stark'],
+    ])
+  })
+
+  test('checkbox-group should not submit checked options inside a disabled fieldset', async ({ page }) => {
+    await page.mount(`
+      <form>
+        <fieldset disabled>
+          <ds-checkbox-group control name="heroes" label="Label" value="steve-rogers">
+            <ds-checkbox value="steve-rogers">Steve Rogers</ds-checkbox>
+            <ds-checkbox value="tony-stark">Tony Stark</ds-checkbox>
+          </ds-checkbox-group>
+        </fieldset>
+      </form>
+    `)
+    const steve = new DsCheckbox(page.locator('ds-checkbox[value="steve-rogers"]'))
+
+    await steve.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('form > fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    await expect(steve.nativeInput).toBeEnabled()
+    expect(await getFormEntries(page)).toEqual([['heroes', 'steve-rogers']])
+  })
+
+  test('checkbox-group should submit one entry per checked option without control', async ({ page }) => {
+    await mountGroup(page, '')
+    await page.locator('ds-checkbox >> nth=0').evaluate((el: HTMLDsCheckboxElement) => (el.checked = true))
+    await page.locator('ds-checkbox >> nth=1').evaluate((el: HTMLDsCheckboxElement) => (el.checked = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([
+      ['heroes', 'steve-rogers'],
+      ['heroes', 'tony-stark'],
+    ])
+  })
+
+  test('checkbox-group should submit one entry per checked option after user input without control', async ({
+    page,
+  }) => {
+    await mountGroup(page, '')
+
+    await new DsCheckbox(page.locator('ds-checkbox >> nth=0')).check()
+    await new DsCheckbox(page.locator('ds-checkbox >> nth=2')).check()
+
+    expect(await getFormEntries(page)).toEqual([
+      ['heroes', 'steve-rogers'],
+      ['heroes', 'black-widow'],
+    ])
+  })
+
+  test('checkbox-group should restore initially checked options after form.reset() without control', async ({
+    page,
+  }) => {
+    await page.mount(`
+      <form>
+        <ds-checkbox-group name="heroes" label="Label">
+          <ds-checkbox value="steve-rogers" checked>Steve Rogers</ds-checkbox>
+          <ds-checkbox value="tony-stark">Tony Stark</ds-checkbox>
+        </ds-checkbox-group>
+      </form>
+    `)
+
+    await new DsCheckbox(page.locator('ds-checkbox >> nth=0')).uncheck()
+    await new DsCheckbox(page.locator('ds-checkbox >> nth=1')).check()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'steve-rogers']])
+  })
+
+  test('checkbox-group should submit after user input', async ({ page }) => {
+    await mountGroup(page, 'control value="steve-rogers"')
+
+    await new DsCheckbox(page.locator('ds-checkbox >> nth=2')).check()
+
+    expect(await getFormEntries(page)).toEqual([
+      ['heroes', 'steve-rogers'],
+      ['heroes', 'black-widow'],
+    ])
+  })
+
+  test('checkbox-group should submit after a programmatic value change', async ({ page }) => {
+    await mountGroup(page, 'control value="steve-rogers"')
+
+    await page.locator('ds-checkbox-group').evaluate((el: HTMLDsCheckboxGroupElement) => {
+      el.value = ['tony-stark', 'black-widow']
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([
+      ['heroes', 'tony-stark'],
+      ['heroes', 'black-widow'],
+    ])
+  })
+
+  test('checkbox-group should submit its initial value after form.reset()', async ({ page }) => {
+    await mountGroup(page, 'control value="steve-rogers"')
+
+    await new DsCheckbox(page.locator('ds-checkbox >> nth=2')).check()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'steve-rogers']])
   })
 })

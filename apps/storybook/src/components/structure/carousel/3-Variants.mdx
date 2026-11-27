@@ -55,4 +55,14 @@ product tiles with brand icons. Use `steps` to control how many items scroll per
 
 <CanvasTabs htmlOf={CarouselStories.ProductBrandIconsHtml} of={CarouselStories.ProductBrandIcons} />
 
+{/* ------------------------------------------------------ */}
+
+<StoryHeading of={CarouselStories.ItemsPerView}></StoryHeading>
+
+In the `tile` variant, `items-per-view` divides the width equally. A number applies at every width. A string sets it per
+breakpoint with the same prefixes as `ds-col`: `"1 tablet:2 desktop:3"` shows one item, two from the tablet and three
+from the desktop breakpoint. Resize the window to see it change.
+
+<CanvasTabs htmlOf={CarouselStories.ItemsPerViewHtml} of={CarouselStories.ItemsPerView} />
+
 <Footer />

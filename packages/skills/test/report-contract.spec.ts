@@ -37,7 +37,7 @@ const expectedCounts: Record<string, { attention: number; coverage: number }> = 
   'button': { attention: 13, coverage: 4 },
   'card': { attention: 9, coverage: 3 },
   'carousel': { attention: 22, coverage: 7 },
-  'checkbox': { attention: 17, coverage: 2 },
+  'checkbox': { attention: 18, coverage: 2 },
   'close': { attention: 2, coverage: 1 },
   'content': { attention: 4, coverage: 2 },
   'data': { attention: 6, coverage: 1 },
@@ -285,8 +285,9 @@ describe('Report items the issue requires by name', () => {
     expect(colorRow).toContain('Never write the `tileColor` property')
     expect(colSizeRow).toContain('Drop from the child')
     expect(colSizeRow).toContain('`[attr.col-size*]`')
-    expect(lineOf('| `"tile"`')).toContain('`tile` on `ds-checkbox-group`')
-    expect(lineOf('| `"button"`')).toContain('`tile` + `hideTrigger` on `ds-checkbox-group`')
+    expect(lineOf('| `"tile"`')).toContain('`tile` + `hideTrigger` on `ds-checkbox-group`')
+    expect(lineOf('| `"button"`')).toContain('`tile` on `ds-checkbox-group`')
+    expect(lineOf('| `"button"`')).not.toContain('hideTrigger')
     expect(lineOf('| `interface`')).toContain('Set on the group only')
     expect(lineOf('| _(none — new prop)_ | `tileColor`')).toContain('`tile-color` attribute')
     expect(lineOf('| `columns`')).toContain('Set on the group only')
@@ -295,7 +296,6 @@ describe('Report items the issue requires by name', () => {
     expect(overwriteRule).toContain('moves to the group when every non-switch child carries the same value')
     expect(overwriteRule).toContain('A standalone `bal-checkbox` outside any group keeps `tile` and `hideTrigger`')
     expect(overwriteRule).toContain("gets the checkbox's `name`, `tile` and `hideTrigger`")
-    expect(migration).toContain('add `tile` and `hideTrigger` to the group only')
     expect(migration).toContain('Its `name` moves to the wrapper.')
     expect(migration).toContain('`tile` and `hideTrigger` go on the wrapper, not on the checkbox')
     expect(migration).not.toContain('becomes `tileColor`')
@@ -306,9 +306,40 @@ describe('Report items the issue requires by name', () => {
       'its `name`, `tile` and `hideTrigger` move to that wrapper',
     )
 
+    const buttonPairedWithHideTrigger =
+      /`tile`\s*(\+|and|plus)\s*`hideTrigger`[^.]*`(interface=)?"button"`|`(interface=)?"button"`[^.|]*`tile`\s*(\+|and|plus)\s*`hideTrigger`/
+
+    expect(migration).not.toMatch(buttonPairedWithHideTrigger)
+    expect(field).not.toMatch(buttonPairedWithHideTrigger)
+    expect(read('../../CONTEXT.md')).not.toMatch(buttonPairedWithHideTrigger)
+
+    const buttonShape = section(migration, '### Shape: `interface="button"` becomes `tile`')
+
+    expect(buttonShape).toContain('add `tile` to the group only')
+    expect(buttonShape).toContain('Do not add `hideTrigger`')
+    expect(buttonShape).toContain('slight design deviation')
+    expect(buttonShape).not.toMatch(/`tile`\s*(\+|and|plus)\s*`hideTrigger`/)
+
+    const tileShape = section(migration, '### Shape: `interface="tile"` becomes `tile` + `hideTrigger`')
+
+    expect(tileShape).toContain('Never add `hideTrigger` for `"button"`.')
+    expect(tileShape).toContain("A `bal-check` left in the tile body stays, and it is the tile's one indicator.")
+    expect(migration.indexOf('### Shape: `interface="tile"`')).toBeLessThan(
+      migration.indexOf('### Shape: `interface="button"`'),
+    )
+    expect(section(migration, '### Legacy indicators: `bal-check` and `bal-switch`')).toContain('hideTrigger')
+
     const numbers = itemNumbers('checkbox', ['differs from its siblings or from the group', 'no group `columns*`'])
 
     expect(new Set(numbers).size).toBe(1)
+
+    const [buttonItem, tileItem] = itemNumbers('checkbox', [
+      'Every `interface="button"` rewritten to `tile`, with its "slight design deviation" note.',
+      'got `hideTrigger`',
+    ])
+
+    expect(numbers).not.toContain(tileItem)
+    expect(buttonItem).not.toBe(tileItem)
   })
 
   it('button checks each of the four colour collisions on its own line', () => {

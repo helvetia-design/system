@@ -132,13 +132,13 @@ BackdropOverlay.storyName = '🧩 Backdrop Overlay'
 
 export const RoleListbox = Story({
   args: {
-    role: 'listbox',
+    panelRole: 'listbox',
     backdropDismiss: true,
   },
   ...withRender(
-    ({ role, ...args }) => `
+    ({ ...args }) => `
 <ds-button id="trigger-listbox">Choose option</ds-button>
-<ds-popup id="popup-listbox" role="${role}" ${props(args, tag)}>
+<ds-popup id="popup-listbox" ${props(args, tag)}>
   <ul role="group" style="list-style: none; margin: 0; padding: 0.5rem 0; min-width: 10rem">
     <li role="option" tabindex="0" style="padding: 0.5rem 1rem; cursor: pointer">Option A</li>
     <li role="option" tabindex="0" style="padding: 0.5rem 1rem; cursor: pointer">Option B</li>
@@ -208,6 +208,7 @@ export const FocusTrap = Story({
   args: {
     closable: true,
     backdropDismiss: true,
+    trapFocus: true,
   },
   ...withRender(
     ({ ...args }) => `

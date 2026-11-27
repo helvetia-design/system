@@ -10,6 +10,7 @@ import {
   Method,
   Prop,
   State,
+  Watch,
 } from '@stencil/core'
 import {
   deserializeBooleanAttribute,
@@ -59,6 +60,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   @State() items: SegmentItemInterface[] = []
   @State() autoVertical = false
   @State() hasInvalidTextSlotContent = false
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
   private initialValue?: any | null
@@ -167,6 +169,10 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
    * The value of the segment group.
    */
   @Prop({ mutable: true, reflect: true }) value?: any | null
+  @Watch('value')
+  valueChanged() {
+    this.updateFormValue()
+  }
 
   /**
    * Displays the segment items vertically
@@ -211,7 +217,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
 
   connectedCallback() {
     this.initialValue = this.value
-    setFormValue(this.internals, this.value)
+    this.updateFormValue()
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver(() => {
         this.updateLayout()
@@ -235,6 +241,10 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
 
   componentDidRender() {
     this.updatePill()
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -316,10 +326,9 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
    */
 
   private handleInputChange = (itemValue: any) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     this.value = itemValue
     this.dsChange.emit(this.value)
-    setFormValue(this.internals, this.value)
   }
 
   // Native radio never fires "change" when clicking an already-checked item,
@@ -330,12 +339,11 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
       ev.preventDefault()
       return
     }
-    if (!this.allowEmptySelection || this.disabled) return
+    if (!this.allowEmptySelection || this.isDisabled) return
     if (this.value === itemValue) {
       ev.preventDefault()
       this.value = undefined
       this.dsChange.emit(this.value)
-      setFormValue(this.internals, null)
     }
   }
 
@@ -347,6 +355,14 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
+  private updateFormValue() {
+    setFormValue(this.internals, this.value ?? null)
+  }
 
   private readItemsFromSlot() {
     const slot = this.el.shadowRoot?.querySelector<HTMLSlotElement>('slot:not([name])')
@@ -425,7 +441,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
     return (
       <Field
         role="fieldset"
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={'primary'}
         invalid={isInvalid}
         loading={this.loading}
@@ -451,7 +467,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
                 'is-selected': item.value === this.value,
               }}
               aria-invalid={isInvalid ? 'true' : null}
-              aria-disabled={this.disabled ? 'true' : null}
+              aria-disabled={this.isDisabled ? 'true' : null}
               {...(this.iconOnly
                 ? {
                     'aria-label': `${item.label}${item.description ? `- ${item.description}` : ''}`,
@@ -462,7 +478,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
               <input
                 type="radio"
                 name={this.name}
-                disabled={this.disabled}
+                disabled={this.isDisabled}
                 readOnly={this.readonly}
                 value={item.value}
                 checked={item.value === this.value}

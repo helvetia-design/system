@@ -82,6 +82,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
 
   private disconnectInvalidTextSlotWatcher?: () => void
   @State() slottedOptionGroups: SelectOptionGroup[] = []
+  @State() private fieldsetDisabled = false
 
   @AttachInternals() internals!: ElementInternals
 
@@ -168,7 +169,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
   /**
    * If `true`, the select is non-interactive and excluded from form submission.
    */
-  @Prop()
+  @Prop({ reflect: true })
   @Type('boolean')
   readonly disabled: boolean = false
 
@@ -318,6 +319,11 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
     this.disconnectInvalidTextSlotWatcher?.()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+    this.syncDisabledState()
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -326,7 +332,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: MouseEvent) {
     this.picker?.rememberDocumentClick(ev)
-    if ((this.disabled || this.readonly) && ev.target === this.el) {
+    if ((this.isDisabled || this.readonly) && ev.target === this.el) {
       stopEventBubbling(ev)
     }
   }
@@ -437,6 +443,10 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
    * ─────────────────────────────────────────────────────
    */
 
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
   // `slim-select` (the picker library) uses `MutationObserver` unconditionally during setup —
   // unavailable in Node's SSR mock-doc (`@helvetia-design/core/hydrate`). The picker only matters for
   // user interaction, which SSR output can't have, so skip it there. Called from `componentDidLoad`
@@ -453,7 +463,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
       language: this.language,
       placeholder: this.placeholder,
       searchable: this.searchable,
-      disabled: this.disabled,
+      disabled: this.isDisabled,
       readonly: this.readonly,
       multiple: this.multiple,
       clearable: this.clearable,
@@ -528,7 +538,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
   }
 
   private syncDisabledState() {
-    this.picker?.setDisabled(this.disabled || this.readonly)
+    this.picker?.setDisabled(this.isDisabled || this.readonly)
   }
 
   /**
@@ -539,7 +549,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
   render() {
     return (
       <Field
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={this.invalid || this.hasInvalidTextSlotContent}
         label={this.label}
@@ -555,7 +565,7 @@ export class DsSelect implements DsComponentInterface, FieldInterface {
           name={this.name}
           multiple={this.multiple}
           required={this.required}
-          disabled={this.disabled}
+          disabled={this.isDisabled}
           aria-hidden="true"
           tabindex={-1}
           ref={el => (this.selectEl = el as HTMLSelectElement)}

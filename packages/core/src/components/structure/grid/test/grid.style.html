@@ -77,6 +77,34 @@
         </div>
       </section>
 
+      <!-- Row gap -->
+      <section data-testid="row-gap">
+        <span>Row gap</span>
+        <div class="ds-grid row-gap-3xl">
+          <div class="ds-col">stacked 1</div>
+          <div class="ds-col">stacked 2</div>
+        </div>
+        <div class="ds-grid is-multiline row-gap-xl">
+          <div class="ds-col is-half">multiline 1</div>
+          <div class="ds-col is-half">multiline 2</div>
+          <div class="ds-col is-half">multiline 3</div>
+          <div class="ds-col is-half">multiline 4</div>
+        </div>
+        <div class="ds-grid gap-sm row-gap-3xl">
+          <div class="ds-col">gap-sm + row-gap-3xl 1</div>
+          <div class="ds-col">gap-sm + row-gap-3xl 2</div>
+        </div>
+        <div class="ds-grid row-gap-3xl">
+          <div class="ds-col">
+            outer
+            <div class="ds-grid">
+              <div class="ds-col">nested default 1</div>
+              <div class="ds-col">nested default 2</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Gapless -->
       <section data-testid="gapless">
         <span>Gapless</span>

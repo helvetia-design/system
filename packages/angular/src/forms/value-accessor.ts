@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs'
 interface DsFormElement {
   disabled: boolean
   invalid: boolean
-  invalidText: string
+  invalidText?: string
   autoInvalidOff: boolean
 }
 
@@ -27,7 +27,7 @@ interface DsFormElement {
  * from `NgControl` once the control is touched.
  *
  * `Element` is the concrete native element interface (e.g. `HTMLDsInputElement`) and `K` the key of its
- * value property (e.g. `'value'`, or `'checked'` for a future `ds-checkbox`) — tying `valueProp` to an
+ * value property (e.g. `'value'`, or `'checked'` for `ds-toggle`/`ds-checkbox`) — tying `valueProp` to an
  * actual key of `Element` means a typo or a mismatched property doesn't silently compile. Constrained to
  * `EventTarget` (not `HTMLElement`): the generated `HTMLDs*Element` interfaces don't structurally satisfy
  * `HTMLElement` (e.g. their spec-accurate `autocorrect: InputAutocorrect` collides with lib.dom's own,
@@ -100,8 +100,9 @@ export class DsValueAccessor<
     this.destroyed = false
 
     // Resolved lazily (not from the constructor) to avoid a circular dependency: NgControl depends on the
-    // NG_VALUE_ACCESSOR the wrapper component provides.
-    this.ngControl = this.injector.get(NgControl, null)
+    // NG_VALUE_ACCESSOR the wrapper component provides. `self` keeps a nested wrapper (a `ds-checkbox` inside a
+    // bound `ds-checkbox-group`) from picking up its parent's control.
+    this.ngControl = this.injector.get(NgControl, null, { self: true })
     this.cdr = this.injector.get(ChangeDetectorRef)
 
     this.element.addEventListener(this.config.changeEvent, this.handleChange)
@@ -197,7 +198,9 @@ export class DsValueAccessor<
     const isInvalid = !!control.touched && !!control.invalid
 
     element.invalid = isInvalid
-    element.invalidText = isInvalid ? this.firstErrorMessage(control.errors) : ''
+    if ('invalidText' in element) {
+      element.invalidText = isInvalid ? this.firstErrorMessage(control.errors) : ''
+    }
   }
 
   private firstErrorMessage(errors: ValidationErrors | null): string {

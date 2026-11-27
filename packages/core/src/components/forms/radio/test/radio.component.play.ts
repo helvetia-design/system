@@ -1,4 +1,4 @@
-import { DsInput, DsRadio, expect, test } from '@helvetia-design/playwright'
+import { DsInput, DsPage, DsRadio, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 const GROUP = `
   <ds-radio-group name="heroes" label="Label">
@@ -135,6 +135,49 @@ test.describe('radio-group', () => {
     await tony.assertToBeDisabled()
   })
 
+  test('should keep a radio disabled that is disabled on its own', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label">
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark" disabled>Tony Stark</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    const changeSpy = await group.spyOnEvent('dsChange')
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+    const tony = new DsRadio(page.locator('ds-radio[value="tony-stark"]'))
+
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+
+    await tony.el.dispatchEvent('click')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await tony.assertToBeUnchecked()
+  })
+
+  test('should restore the own disabled state of each radio when the group is enabled again', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label">
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark" disabled>Tony Stark</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+    const tony = new DsRadio(page.locator('ds-radio[value="tony-stark"]'))
+
+    await group.evaluate((el: HTMLDsRadioGroupElement) => (el.disabled = true))
+    await page.waitForChanges()
+    await steve.assertToBeDisabled()
+    await tony.assertToBeDisabled()
+
+    await group.evaluate((el: HTMLDsRadioGroupElement) => (el.disabled = false))
+    await page.waitForChanges()
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+  })
+
   test('should navigate with arrow keys', async ({ page }) => {
     await page.mount(GROUP)
     const group = page.locator('ds-radio-group')
@@ -146,6 +189,67 @@ test.describe('radio-group', () => {
 
     expect(changeSpy).toHaveReceivedEventTimes(1)
     expect(changeSpy).toHaveReceivedEventDetail('tony-stark')
+  })
+
+  test('should skip a readonly radio on arrow key navigation', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label">
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark" readonly>Tony Stark</ds-radio>
+        <ds-radio value="black-widow">Black Widow</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    const changeSpy = await group.spyOnEvent('dsChange')
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+    const tony = new DsRadio(page.locator('ds-radio[value="tony-stark"]'))
+
+    await steve.nativeInput.focus()
+    await page.keyboard.press('ArrowDown')
+
+    await tony.assertToBeUnchecked()
+    expect(changeSpy).toHaveReceivedEventDetail('black-widow')
+  })
+
+  test('should keep a radio readonly that is readonly on its own', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label">
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark" readonly>Tony Stark</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    const changeSpy = await group.spyOnEvent('dsChange')
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+    const tony = new DsRadio(page.locator('ds-radio[value="tony-stark"]'))
+
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
+
+    await tony.el.dispatchEvent('click')
+
+    expect(changeSpy).toHaveReceivedEventTimes(0)
+    await tony.assertToBeUnchecked()
+  })
+
+  test('should restore the own readonly state of each radio when the group is editable again', async ({ page }) => {
+    await page.mount(`
+      <ds-radio-group name="heroes" label="Label" readonly>
+        <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+        <ds-radio value="tony-stark" readonly>Tony Stark</ds-radio>
+      </ds-radio-group>
+    `)
+    const group = page.locator('ds-radio-group')
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+    const tony = new DsRadio(page.locator('ds-radio[value="tony-stark"]'))
+
+    await steve.assertToBeDisabled()
+    await tony.assertToBeDisabled()
+
+    await group.evaluate((el: HTMLDsRadioGroupElement) => (el.readonly = false))
+    await page.waitForChanges()
+    await expect(steve.nativeInput).toBeEnabled()
+    await tony.assertToBeDisabled()
   })
 
   test('should prevent page scrolling on arrow keys', async ({ page }) => {
@@ -314,5 +418,184 @@ test.describe('required attribute', () => {
     )
 
     await expect(page.locator('ds-radio-group')).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mount = (page: DsPage, attributes = '') =>
+    page.mount(`
+      <form>
+        <ds-radio-group ${attributes} name="heroes" label="Label" value="steve-rogers">
+          <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+          <ds-radio value="tony-stark">Tony Stark</ds-radio>
+          <ds-radio value="black-widow">Black Widow</ds-radio>
+        </ds-radio-group>
+      </form>
+    `)
+
+  test('should submit exactly one entry under the group name', async ({ page }) => {
+    await mount(page)
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'steve-rogers']])
+  })
+
+  test('should submit the selected radio after user input', async ({ page }) => {
+    await mount(page)
+
+    await new DsRadio(page.locator('ds-radio >> nth=1')).select()
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'tony-stark']])
+  })
+
+  test('should submit after a programmatic value change', async ({ page }) => {
+    await mount(page)
+
+    await page.locator('ds-radio-group').evaluate((el: HTMLDsRadioGroupElement) => {
+      el.value = 'black-widow'
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'black-widow']])
+  })
+
+  test('should submit no entry after deselecting with allowEmptySelection', async ({ page }) => {
+    await mount(page, 'allow-empty-selection')
+
+    await new DsRadio(page.locator('ds-radio >> nth=0')).select()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should submit no entry after a programmatic value = undefined', async ({ page }) => {
+    await mount(page)
+
+    await page.locator('ds-radio-group').evaluate((el: HTMLDsRadioGroupElement) => {
+      el.value = undefined
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should not submit its value when the group is disabled as property', async ({ page }) => {
+    await page.mount(`
+      <form>
+        <ds-radio-group name="heroes" label="Label" value="tony-stark">
+          <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+          <ds-radio value="tony-stark">Tony Stark</ds-radio>
+        </ds-radio-group>
+      </form>
+    `)
+    const group = page.locator('ds-radio-group')
+    expect(await getFormEntries(page)).toEqual([['heroes', 'tony-stark']])
+
+    await group.evaluate((el: HTMLDsRadioGroupElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(`
+      <form>
+        <fieldset disabled>
+          <ds-radio-group name="heroes" label="Label" value="tony-stark">
+            <ds-radio value="steve-rogers">Steve Rogers</ds-radio>
+            <ds-radio value="tony-stark">Tony Stark</ds-radio>
+          </ds-radio-group>
+        </fieldset>
+      </form>
+    `)
+    const steve = new DsRadio(page.locator('ds-radio[value="steve-rogers"]'))
+
+    await steve.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('form > fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    await expect(steve.nativeInput).toBeEnabled()
+    expect(await getFormEntries(page)).toEqual([['heroes', 'tony-stark']])
+  })
+
+  test('standalone radio should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-radio name="hero" value="steve-rogers" checked>Steve Rogers</ds-radio></form>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+    expect(await getFormEntries(page)).toEqual([['hero', 'steve-rogers']])
+
+    await radio.el.evaluate((el: HTMLDsRadioElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('standalone radio should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-radio name="hero" value="steve-rogers" checked>Steve Rogers</ds-radio></fieldset></form>`,
+    )
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await radio.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('form > fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['hero', 'steve-rogers']])
+  })
+
+  test('standalone radio should submit its value only while checked', async ({ page }) => {
+    await page.mount(`<form><ds-radio name="hero" value="steve-rogers">Steve Rogers</ds-radio></form>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    expect(await getFormEntries(page)).toEqual([])
+    await radio.select()
+    expect(await getFormEntries(page)).toEqual([['hero', 'steve-rogers']])
+  })
+
+  test('standalone radio should submit no entry after a programmatic checked = false', async ({ page }) => {
+    await page.mount(`<form><ds-radio name="hero" value="steve-rogers" checked>Steve Rogers</ds-radio></form>`)
+
+    expect(await getFormEntries(page)).toEqual([['hero', 'steve-rogers']])
+    await page.locator('ds-radio').evaluate((el: HTMLDsRadioElement) => {
+      el.checked = false
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should submit the initial value after form.reset()', async ({ page }) => {
+    await mount(page)
+
+    await new DsRadio(page.locator('ds-radio >> nth=1')).select()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['heroes', 'steve-rogers']])
+  })
+})
+
+test.describe('label prop', () => {
+  test('should render the label prop as accessible name', async ({ page }) => {
+    await page.mount(`<ds-radio value="a" label="Option A"></ds-radio>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await expect(radio.nativeInput).toHaveAccessibleName('Option A')
+  })
+
+  test('should render the label prop when the host only contains whitespace', async ({ page }) => {
+    await page.mount(`<ds-radio value="a" label="Option A">
+    </ds-radio>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await expect(radio.nativeInput).toHaveAccessibleName('Option A')
+  })
+
+  test('should prefer slotted content over the label prop', async ({ page }) => {
+    await page.mount(`<ds-radio value="a" label="Option A">Slotted</ds-radio>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await expect(radio.nativeInput).toHaveAccessibleName('Slotted')
   })
 })

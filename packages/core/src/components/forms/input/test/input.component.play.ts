@@ -1,4 +1,4 @@
-import { DsInput, expect, test } from '@helvetia-design/playwright'
+import { DsInput, DsPage, expect, getFormEntries, resetForm, test } from '@helvetia-design/playwright'
 
 test.describe('component', () => {
   test('should fire dsInput on fill', async ({ page }) => {
@@ -77,9 +77,35 @@ test.describe('disabled', () => {
     await input.assertToBeDisabled()
     expect(inputSpy).toHaveReceivedEventTimes(0)
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-input name="hero" label="Hero" value="Steve Rogers"></ds-input></form>`)
+    const input = new DsInput(page.locator('ds-input'))
+    expect(await getFormEntries(page)).toContainEqual(['hero', expect.anything()])
+
+    await input.el.evaluate((el: HTMLDsInputElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).not.toContainEqual(['hero', expect.anything()])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-input name="hero" label="Hero" value="Steve Rogers"></ds-input></fieldset></form>`,
+    )
+    const input = new DsInput(page.locator('ds-input'))
+
+    await input.assertToBeDisabled()
+    expect(await getFormEntries(page)).not.toContainEqual(['hero', expect.anything()])
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toContainEqual(['hero', expect.anything()])
+  })
 })
 
-test.describe.skip('form reset', () => {
+test.describe('form reset', () => {
   test('should reset to initial value', async ({ page }) => {
     await page.mount(`
       <form>
@@ -93,6 +119,7 @@ test.describe.skip('form reset', () => {
     await input.clear()
     await input.fill('Tony Stark')
     await input.blur()
+    await page.waitForChanges()
     expect(changeSpy).toHaveReceivedEventTimes(1)
     expect(changeSpy).toHaveReceivedEventDetail('Tony Stark')
 
@@ -196,5 +223,44 @@ test.describe('required attribute', () => {
     await page.waitForChanges()
     await expect(input.el).toHaveJSProperty('required', false)
     await expect(input.nativeInput).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('native form', () => {
+  const mount = (page: DsPage) =>
+    page.mount(`<form><ds-input name="field" label="Label" value="initial"></ds-input></form>`)
+
+  test('should submit the typed value', async ({ page }) => {
+    await mount(page)
+    const control = new DsInput(page.locator('ds-input'))
+
+    await control.fill('typed')
+    await control.blur()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'typed']])
+  })
+
+  test('should submit a programmatic value', async ({ page }) => {
+    await mount(page)
+    const control = new DsInput(page.locator('ds-input'))
+
+    await control.el.evaluate((el: HTMLElement & { value: string }) => {
+      el.value = 'programmatic'
+    })
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'programmatic']])
+  })
+
+  test('should submit the initial value after form.reset()', async ({ page }) => {
+    await mount(page)
+    const control = new DsInput(page.locator('ds-input'))
+
+    await control.fill('typed')
+    await control.blur()
+    await resetForm(page)
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', 'initial']])
   })
 })

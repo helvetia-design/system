@@ -5,9 +5,9 @@ import { props, StoryFactory, withComponentControls, withRender } from '../../..
 type Args = JSX.DsCarousel
 
 const SLIDE_ITEMS = `
-  <ds-carousel-item name="s1" src="/assets/images/landscape-coast.jpg"></ds-carousel-item>
-  <ds-carousel-item name="s2" src="/assets/images/landscape-rainforest.jpg"></ds-carousel-item>
-  <ds-carousel-item name="s3" src="/assets/images/landscape-mountain.jpg"></ds-carousel-item>`
+  <ds-carousel-item name="s1" src="/assets/images/landscape-coast.jpg" alt="Rocky coastline with waves breaking on the shore"></ds-carousel-item>
+  <ds-carousel-item name="s2" src="/assets/images/landscape-rainforest.jpg" alt="Dense green rainforest"></ds-carousel-item>
+  <ds-carousel-item name="s3" src="/assets/images/landscape-mountain.jpg" alt="Mountain range under a clear sky"></ds-carousel-item>`
 
 const slideStyle = (background: string) =>
   `display: flex; align-items: center; justify-content: center; height: 200px; border-radius: 0.5rem; font-size: 1.5rem; font-weight: 700; color: white; background: ${background};`
@@ -27,6 +27,15 @@ const PRODUCT_ITEMS = `
   <ds-carousel-item name="p4">Item 4</ds-carousel-item>
   <ds-carousel-item name="p5">Item 5</ds-carousel-item>
   <ds-carousel-item name="p6">Last item with a long content</ds-carousel-item>`
+
+const RESPONSIVE_ITEMS = [1, 2, 3, 4, 5, 6]
+  .map(
+    n => `
+  <ds-carousel-item name="r${n}">
+    <div style="${slideStyle('#4a5568')} width: 100%">Item ${n}</div>
+  </ds-carousel-item>`,
+  )
+  .join('')
 
 const BRAND_ICON_ITEMS = `
   <ds-carousel-item name="auto" color="green" navigation>
@@ -235,3 +244,34 @@ export const ProductBrandIconsHtml = Story({
   ),
 })
 ProductBrandIconsHtml.storyName = '🌍 Product Carousel (brand icons, navigation)'
+
+// Responsive items per view
+// ------------------------------------------------------
+
+export const ItemsPerView = Story({
+  args: {
+    variant: 'tile',
+    controls: 'large-below',
+    label: 'Responsive items',
+    itemsPerView: '1 tablet:2 desktop:3',
+  },
+  ...withRender(
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')}>${RESPONSIVE_ITEMS}
+</ds-carousel>`,
+  ),
+})
+ItemsPerView.storyName = '🧩 Items per View (responsive)'
+
+export const ItemsPerViewHtml = Story({
+  args: {
+    variant: 'tile',
+    controls: 'large-below',
+    label: 'Responsive items',
+    itemsPerView: '1 tablet:2 desktop:3',
+  },
+  ...withRender(
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')}>${RESPONSIVE_ITEMS}
+</ds-carousel>`,
+  ),
+})
+ItemsPerViewHtml.storyName = '🌍 Items per View (responsive)'

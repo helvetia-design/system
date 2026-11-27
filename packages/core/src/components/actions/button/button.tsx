@@ -1,6 +1,13 @@
-import { Component, Element, Event, EventEmitter, h, Host, Listen, Prop } from '@stencil/core'
+import { Component, Element, Event, EventEmitter, h, Host, Listen, Method, Prop, State, Watch } from '@stencil/core'
 import { AttachInternals, HTMLStencilElement } from '@stencil/core/internal'
-import { DsComponentInterface } from '@global'
+import {
+  defaultConfig,
+  DsComponentInterface,
+  DsConfigObserver,
+  DsConfigState,
+  DsLanguage,
+  ListenToConfig,
+} from '@global'
 import {
   ariaBooleanToString,
   inheritAttributes,
@@ -29,6 +36,7 @@ import {
   ButtonFocusDetail,
   ButtonNavigateDetail,
 } from './button.interfaces'
+import { i18nDsSpinner } from '../../indicators/spinner/spinner.i18n'
 import { type IconColor } from '../../media/brand-icon/brand-icon.interfaces'
 import { TOOLTIP_PLACEMENTS, type TooltipPlacement } from '../../overlays/tooltip/tooltip.interfaces'
 
@@ -49,7 +57,7 @@ import { TOOLTIP_PLACEMENTS, type TooltipPlacement } from '../../overlays/toolti
   shadow: true,
   formAssociated: true,
 })
-export class Button implements DsComponentInterface {
+export class Button implements DsComponentInterface, DsConfigObserver {
   log!: LogInstance
 
   @Logger('button')
@@ -61,6 +69,10 @@ export class Button implements DsComponentInterface {
   @AttachInternals() internals!: ElementInternals
 
   @Element() el!: HTMLStencilElement
+
+  @State() private fieldsetDisabled = false
+  @State() language: DsLanguage = defaultConfig.language
+  @State() announcement = ''
 
   /**
    * PUBLIC PROPERTY API
@@ -90,7 +102,7 @@ export class Button implements DsComponentInterface {
   readonly disabled: boolean = false
 
   /**
-   * Size of the button
+   * Size of the button. Ignored when `brandIcon` is set — use `brandSize` instead.
    */
   @Prop()
   @OneOf(BUTTON_SIZES)
@@ -171,6 +183,10 @@ export class Button implements DsComponentInterface {
   @Prop({ reflect: true })
   @Type('boolean')
   readonly loading: boolean = false
+  @Watch('loading')
+  loadingChanged() {
+    this.announcement = this.getAnnouncement()
+  }
 
   // /**
   //  * If `true` the button is a popup.
@@ -208,7 +224,7 @@ export class Button implements DsComponentInterface {
   readonly brandIcon: string = ''
 
   /**
-   * Size of the brand icon.
+   * Size of the brand icon. Unset renders the base size.
    */
   @Prop()
   @OneOf(BUTTON_BRAND_SIZES)
@@ -323,13 +339,25 @@ export class Button implements DsComponentInterface {
     }
     delete this.inheritAttributes['aria-current']
 
+    this.announcement = this.getAnnouncement()
+
     if (this.el.hasAttribute('ds-popup') && !this.a11yHaspopup) {
       this.a11yHaspopup = 'true'
     }
   }
 
+  @Method()
+  @ListenToConfig()
+  async configChanged(state: DsConfigState): Promise<void> {
+    this.language = state.language
+  }
+
   componentDidRender() {
     this.dsDidRender.emit()
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -339,7 +367,7 @@ export class Button implements DsComponentInterface {
 
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: UIEvent) {
-    if (this.disabled && ev.target && ev.target === this.el) {
+    if (this.isInert && ev.target && ev.target === this.el) {
       ev.preventDefault()
       ev.stopPropagation()
     }
@@ -349,6 +377,52 @@ export class Button implements DsComponentInterface {
    * EVENT HANDLERS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled() {
+    return this.disabled || this.fieldsetDisabled
+  }
+
+  /**
+   * PRIVATE METHODS
+   * ─────────────────────────────────────────────────────
+   */
+
+  // light-DOM text without aria-hidden/hidden subtrees; not a full accessible-name computation
+  private getSlottedText(node: Node): string {
+    return Array.from(node.childNodes)
+      .map(child => {
+        if (child.nodeType === Node.TEXT_NODE) return child.textContent ?? ''
+        const el = child as Element
+        if (
+          el.nodeType !== Node.ELEMENT_NODE ||
+          el.getAttribute('aria-hidden') === 'true' ||
+          el.hasAttribute('hidden')
+        ) {
+          return ''
+        }
+        return this.getSlottedText(el)
+      })
+      .join('')
+      .replace(/\s+/g, ' ')
+  }
+
+  // snapshot of "<accessible name>, <loading text>" taken when loading turns true; separator is language-neutral
+  private getAnnouncement() {
+    if (!this.loading) return ''
+    const text = this.getSlottedText(this.el).trim()
+    const name = (this.getAriaLabel(text) || text).trim()
+    const loading = i18nDsSpinner[this.language].loading
+    return name ? `${name}, ${loading}` : loading
+  }
+
+  // a11yTitle and title only name the button when it has no visible text
+  private getAriaLabel(text: string): string | undefined {
+    return (
+      this.a11yLabel ||
+      this.inheritAttributes['aria-label'] ||
+      (text ? undefined : this.a11yTitle || this.inheritAttributes['title'])
+    )
+  }
 
   private get isIconInverted() {
     return this.inverted
@@ -394,8 +468,13 @@ export class Button implements DsComponentInterface {
     return {}
   }
 
+  // loading keeps the native control focusable (WCAG 2.4.3), so activation is blocked here instead of via `disabled`
+  private get isInert() {
+    return this.isDisabled || this.loading
+  }
+
   private handleHostClick = (ev: MouseEvent) => {
-    if (this.disabled) {
+    if (this.isInert) {
       ev.preventDefault()
       ev.stopPropagation()
     }
@@ -410,7 +489,7 @@ export class Button implements DsComponentInterface {
   }
 
   private handleClick = (ev: MouseEvent) => {
-    if (!this.disabled) {
+    if (!this.isInert) {
       if (this.elementType === 'submit') {
         this.internals.form?.requestSubmit()
       }
@@ -433,7 +512,7 @@ export class Button implements DsComponentInterface {
 
   render() {
     const { elementType, download, href, rel, target, name, value } = this
-    const size = this.size || undefined
+    const size = this.hasBrandIcon ? undefined : this.size || undefined
     const TagType = !hasValue(this.href) ? 'button' : 'a'
     const attrs =
       TagType === 'button'
@@ -448,8 +527,7 @@ export class Button implements DsComponentInterface {
     const ariaAttributes = {
       // the internal tooltip replaces the native title tooltip when a11yTitle is set
       'title': this.a11yTitle ? undefined : this.inheritAttributes['title'],
-      'aria-label':
-        this.a11yLabel || this.inheritAttributes['aria-label'] || this.a11yTitle || this.inheritAttributes['title'],
+      'aria-label': this.getAriaLabel(this.getSlottedText(this.el).trim()),
       'aria-controls': this.a11yControls || this.inheritAttributes['aria-controls'],
       'aria-current': this.a11yCurrent || undefined,
       'aria-haspopup': this.a11yHaspopup || this.inheritAttributes['aria-haspopup'],
@@ -463,13 +541,14 @@ export class Button implements DsComponentInterface {
           [`is-${this.color || 'primary'}`]: true,
           [`is-${size}`]: hasValue(size),
           [`is-inverted`]: this.inverted,
-          [`is-disabled`]: this.disabled,
+          [`is-disabled`]: this.isDisabled,
           [`is-loading`]: this.loading,
           [`is-flat`]: this.flat,
           [`is-square`]: this.square,
           [`has-shadow`]: this.shadow,
           [`has-no-wrap`]: this.noWrap,
           [`has-brand-icon`]: this.hasBrandIcon,
+          [`has-brand-icon-lg`]: this.hasBrandIcon && this.brandSize === 'lg',
         }}
       >
         <TagType
@@ -478,22 +557,32 @@ export class Button implements DsComponentInterface {
           type={this.elementType}
           id="button"
           part="native"
-          disabled={this.disabled || this.loading}
+          disabled={this.isDisabled}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           onClick={this.handleClick}
           aria-busy={ariaBooleanToString(!!this.loading)}
-          aria-disabled={ariaBooleanToString(this.disabled || this.loading)}
+          aria-disabled={ariaBooleanToString(this.isInert)}
           {...ariaAttributes}
         >
           {this.loading ? (
-            <ds-spinner {...this.loadingAttrs} part="spinner" size="sm" deactivated={!this.loading} />
+            // aria-hidden keeps the progressbar label out of the button's accessible name; the live region announces instead
+            <ds-spinner
+              aria-hidden="true"
+              {...this.loadingAttrs}
+              part="spinner"
+              size={this.hasBrandIcon ? undefined : 'sm'}
+              deactivated={!this.loading}
+            />
           ) : (
             ''
           )}
           {this.hasBrandIcon ? (
+            // the spinner above replaces the brand icon while loading
             <ds-brand-icon
+              {...(this.loading ? { style: { display: 'none' } } : {})}
               part="icon"
+              disabled={this.isDisabled}
               svg={this.isBrandIconSvg ? this.brandIcon : ''}
               src={this.isBrandIconSvg ? '' : this.brandIcon}
               size={this.brandSize}
@@ -529,6 +618,10 @@ export class Button implements DsComponentInterface {
             ''
           )}
         </TagType>
+        {/* always in the DOM so the text change is announced; outside the native control to stay out of its name */}
+        <span class="live-region" role="status">
+          {this.announcement}
+        </span>
         {hasValue(this.a11yTitle) ? (
           <ds-tooltip reference="button" placement={this.tooltipPlacement}>
             {this.a11yTitle}

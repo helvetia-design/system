@@ -96,6 +96,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
    * Direction of the current value step, driving which way the outgoing/incoming digits slide.
    */
   @State() valueDirection: 'increase' | 'decrease' | null = null
+  @State() private fieldsetDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -224,7 +225,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form. The user can neither edit nor focus on the control, nor its form control descendants.
    */
-  @Prop()
+  @Prop({ reflect: true })
   @Type('boolean')
   readonly disabled: boolean = false
 
@@ -308,6 +309,10 @@ export class Counter implements DsComponentInterface, FieldInterface {
     clearTimeout(this.valueAnimationTimer)
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -315,7 +320,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
 
   @Listen('click', { capture: true, target: 'document' })
   listenToClick(ev: UIEvent) {
-    if ((this.disabled || this.readonly) && ev.target === this.el) {
+    if ((this.isDisabled || this.readonly) && ev.target === this.el) {
       ev.preventDefault()
       ev.stopPropagation()
     }
@@ -350,7 +355,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
    */
   @Method()
   async setFocus(): Promise<void> {
-    const increaseDisabled = this.disabled || this.readonly || this.value >= this.max
+    const increaseDisabled = this.isDisabled || this.readonly || this.value >= this.max
     const target = increaseDisabled ? this.decreaseButtonEl : this.increaseButtonEl
     target?.shadowRoot?.querySelector('button')?.focus()
   }
@@ -361,7 +366,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
    */
   @Method()
   async getInputElement(): Promise<HTMLElement | undefined> {
-    const increaseDisabled = this.disabled || this.readonly || this.value >= this.max
+    const increaseDisabled = this.isDisabled || this.readonly || this.value >= this.max
     return increaseDisabled ? this.decreaseButtonEl : this.increaseButtonEl
   }
 
@@ -371,7 +376,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
    */
 
   private handleIncrease = () => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     const next = stepPlus(this.value, this.effectiveStep())
     if (next > this.max) return
     this.commit(next)
@@ -379,7 +384,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
   }
 
   private handleDecrease = () => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     const next = stepMinus(this.value, this.effectiveStep())
     if (next < this.min) return
     this.commit(next)
@@ -387,7 +392,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     if (ev.key === 'ArrowUp') {
       ev.preventDefault()
       this.handleIncrease()
@@ -409,7 +414,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
 
   private handleFocus = (ev: CustomEvent<void>) => {
     ev.stopPropagation()
-    if (!this.disabled && !this.readonly) {
+    if (!this.isDisabled && !this.readonly) {
       this.dsFocus.emit()
     }
   }
@@ -428,7 +433,7 @@ export class Counter implements DsComponentInterface, FieldInterface {
 
   private handleBlur = () => {
     if (!(this.decreaseHasFocus || this.increaseHasFocus)) {
-      if (!this.disabled && !this.readonly) {
+      if (!this.isDisabled && !this.readonly) {
         this.dsBlur.emit()
       }
     }
@@ -438,6 +443,10 @@ export class Counter implements DsComponentInterface, FieldInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
 
   private clampToRange() {
     const clamped = clampValue(this.value, this.min, this.max)
@@ -492,12 +501,12 @@ export class Counter implements DsComponentInterface, FieldInterface {
   render() {
     const decreaseLabel = i18nDsCounter[this.language].decrease
     const increaseLabel = i18nDsCounter[this.language].increase
-    const decreaseDisabled = this.disabled || this.readonly || this.value <= this.min
-    const increaseDisabled = this.disabled || this.readonly || this.value >= this.max
+    const decreaseDisabled = this.isDisabled || this.readonly || this.value <= this.min
+    const increaseDisabled = this.isDisabled || this.readonly || this.value >= this.max
 
     return (
       <Field
-        disabled={this.disabled || this.readonly}
+        disabled={this.isDisabled || this.readonly}
         color={this.color}
         invalid={this.invalid}
         label={this.label}

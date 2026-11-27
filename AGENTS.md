@@ -34,7 +34,7 @@ pnpm play -- --grep="<test name>"            # Single Playwright test
 
 ## DS team
 
-Six specialist agents with disjoint file ownership, `ds-*` skills, and workflows for a new
+Specialist agents with disjoint file ownership, `ds-*` skills, and workflows for a new
 component, a bug fix, a feature, a Figma mirror and a deprecation. **You are the orchestrator** —
 dispatch them, don't do their work. See `docs/agents/ds-team.md`, then only the workflow file
 the run needs (`docs/agents/workflows/`). A bug fix is one agent (`component-engineer`), not the
@@ -46,7 +46,7 @@ tool group. Rendered markdown, not a code block (box borders break on emoji widt
 workflow's step line and render it as a numbered list: one item per `→` step; `∥` (parallel)
 steps stay together on one item. Each step is `<emoji> **<agent>** / <action>` — the emoji maps
 to the agent (🐙 orchestrator, 🏛️ architect, 🧩 component-engineer, 🧪 test-engineer, ♿️ a11y-expert,
-🧬 token-engineer, 📖 documentation-engineer, 🎨 ux-designer, ⛔ human). Consecutive steps by the
+🧬 token-engineer, 📖 documentation-engineer, 🎨 ux-designer, 📣 issue-manager, 🐦‍⬛ magpie, ⛔ human). Consecutive steps by the
 same agent merge into one item `<emoji> **<agent>**` with a nested numbered list of its actions.
 
 ```markdown
@@ -62,12 +62,17 @@ same agent merge into one item `<emoji> **<agent>**` with a nested numbered list
 4. …
 ```
 
-- **A — New component:** `🐙 grill → 🏛️ plan ∥ ♿️ a11y-plan → ⛔ gate → 🧩 implement → 🧬 tokens → ⛔ visual gate → 🧪 test ∥ ♿️ a11y-test ∥ 📖 docs → 🧬 audit ∥ ♿️ audit → 🧩 repair → 🧩 validate → 🧩 changeset`
-- **B — Bug fix:** `🧩 reproduce → 🧩 fix → 🧩 validate → 🧩 changeset (patch) → 🎨 drift check`
-- **C — Feature:** `🐙 grill → 🏛️ plan → ⛔ gate → 🧩 modify → 🧬 tokens → 🧪 test ∥ ♿️ a11y-test ∥ 📖 docs → 🧬 audit ∥ ♿️ audit → 🧩 changeset (minor) → 🎨 drift check`
+- **A — New component:** `🐙 grill → 🏛️ plan ∥ ♿️ a11y-plan → ⛔ gate → 🧩 implement → 🧬 tokens → ⛔ visual gate → 🧪 test ∥ ♿️ a11y-test ∥ 📖 docs → 🧬 audit ∥ ♿️ audit → 🧩 repair → 🧩 validate → 🧩 changeset → 📣 pr-body ∥ reply`
+- **B — Bug fix:** `🧩 reproduce → 🧩 fix → 🧩 validate → 🧩 changeset (patch) → 🎨 drift check → 📣 pr-body ∥ reply`
+- **C — Feature:** `🐙 grill → 🏛️ plan → ⛔ gate → 🧩 modify → 🧬 tokens → 🧪 test ∥ ♿️ a11y-test ∥ 📖 docs → 🧬 audit ∥ ♿️ audit → 🧩 changeset (minor) → 🎨 drift check → 📣 pr-body ∥ reply`
 - **D — Component into Figma:** `🏛️ plan → 🧬 tokens → ⛔ gate → 🎨 map → 🎨 build → 🎨 review → 🎨 copy me → 🎨 anatomy ∥ 🎨 measurements ∥ 🎨 guidelines → 📖 stories`
-- **E — Deprecation:** `🐙 grill → 🏛️ plan → ⛔ gate → 🧩 deprecate → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (minor) → 🎨 drift check`
-- **E′ — Removal** (later major): `⛔ gate → 🧩 remove → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (major) → 🎨 drift check`
+- **E — Deprecation:** `🐙 grill → 🏛️ plan → ⛔ gate → 🧩 deprecate → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (minor) → 🎨 drift check → 📣 pr-body ∥ reply`
+- **E′ — Removal** (later major): `⛔ gate → 🧩 remove → 🧬 tokens → 🧪 test ∥ 📖 docs → 🧩 validate → 🧩 changeset (major) → 🎨 drift check → 📣 pr-body ∥ reply`
+
+- **F — Triage** (standalone): `📣 triage → ⛔ gate → 📣 post`
+- **G — Recreate from a site:** `🐦‍⬛ scout → ⛔ gate (name, rung) → route` — rung 1 `📖 recipe → 📖 validate`; rung 2/3 → C from `🏛️ plan`; rung 4 → A from `🏛️ plan ∥ ♿️ a11y-plan`
+
+`📣 pr-body ∥ reply` and Triage: see `ds-team.md` → GitHub.
 
 `🎨 drift check` = `ds-figma-review`, only when the component has a `<name>.figma.md` and the change touched its Figma surface (see `ds-team.md` → Figma drift check).
 

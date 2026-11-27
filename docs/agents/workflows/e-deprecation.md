@@ -14,12 +14,14 @@ E · deprecate
 3 token-engineer · ds-manage-tokens                  (only if tokens are deprecated)
 4 test ∥ docs                                         (parallel, disjoint files)
 5 ds-validate-component  →  6 ds-changeset (minor)  →  7 Figma drift check
+8 issue-manager · ds-pr-body ∥ ds-issue-reply  →  ⛔ GATE  →  post
 →  human reviews and commits
 
 E′ · remove — a later major, after the window in ARCHITECTURE.md
 ⛔ GATE: human confirms the window has passed
 →  component-engineer removes  →  token-engineer removes  →  test ∥ docs
 →  ds-validate-component  →  ds-changeset (major)  →  Figma drift check
+→  issue-manager · ds-pr-body ∥ ds-issue-reply  →  ⛔ GATE  →  post
 ```
 
 **0 · Grill** — always: a deprecation is a public API decision. Settle three things in the

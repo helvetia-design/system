@@ -64,7 +64,7 @@ import {
 export class Textarea implements DsComponentInterface, FieldInterface, FormControlInterface<string | null> {
   inputId = `ds-textarea-${TextareaIds++}`
   private inheritedAttributes: { [k: string]: any } = {}
-  private control = new FormControl(this)
+  private control = new FormControl(this, () => this.isDisabled)
   private disconnectInvalidTextSlotWatcher?: () => void
 
   log!: LogInstance
@@ -80,6 +80,7 @@ export class Textarea implements DsComponentInterface, FieldInterface, FormContr
   @State() hasInvalidTextSlotContent = false
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
+  @State() private fieldsetDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -245,11 +246,7 @@ export class Textarea implements DsComponentInterface, FieldInterface, FormContr
 
   @Watch('value')
   valueChanged() {
-    this.control.inputValue = this.value
-    // Only while not focused: a focused change is exactly what onBlur's dsChange must still catch.
-    if (!this.focused) {
-      this.control.committedValue = this.value
-    }
+    this.control.valueChanged()
   }
 
   /**
@@ -312,6 +309,10 @@ export class Textarea implements DsComponentInterface, FieldInterface, FormContr
 
   componentDidLoad() {
     this.control.componentDidLoad()
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -391,6 +392,15 @@ export class Textarea implements DsComponentInterface, FieldInterface, FormContr
   }
 
   /**
+   * PRIVATE METHODS
+   * ─────────────────────────────────────────────────────
+   */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
+  /**
    * RENDER
    * ─────────────────────────────────────────────────────
    */
@@ -402,7 +412,7 @@ export class Textarea implements DsComponentInterface, FieldInterface, FormContr
     return (
       <Field
         inputId={'textarea'}
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={isInvalid}
         label={this.label}
@@ -418,7 +428,7 @@ export class Textarea implements DsComponentInterface, FieldInterface, FormContr
           ref={el => (this.control.nativeEl = el)}
           aria-describedby="description"
           aria-invalid={isInvalid ? 'true' : 'false'}
-          disabled={this.disabled}
+          disabled={this.isDisabled}
           autoCapitalize={this.autocapitalize}
           autocomplete={this.autocomplete}
           autofocus={this.autofocus}

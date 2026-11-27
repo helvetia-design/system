@@ -178,6 +178,18 @@ $host-selector: ('#button');
       text-align: center;
       padding: var(--ds-button-brand-icon-padding);
     }
+
+    // Spinner replaces the brand icon while loading: same footprint so height does not jump
+    ds-spinner {
+      --spinner-logo-size: var(--ds-brand-icon-size-base);
+      // the logo spinner's line box is taller than its logo (descender gap), pin the host to the icon height
+      height: var(--ds-brand-icon-size-base);
+    }
+  }
+
+  :host(.has-brand-icon-lg) ds-spinner {
+    --spinner-logo-size: var(--ds-brand-icon-size-lg);
+    height: var(--ds-brand-icon-size-lg);
   }
 }
 

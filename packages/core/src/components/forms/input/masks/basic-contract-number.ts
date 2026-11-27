@@ -35,6 +35,7 @@ export class BasicContractNumber implements InputMaskFormatterInterface {
 
   private formatValue(value: string): string {
     const digits = value.replace(/\D/g, '')
+    if (!digits) return ''
     const parts = [
       digits.substring(0, 2),
       digits.substring(2, 3),

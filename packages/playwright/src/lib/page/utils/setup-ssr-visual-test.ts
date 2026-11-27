@@ -18,7 +18,8 @@ export const setupSsrVisualTest = async (
   }
 
   // page.request resolves a relative `url` against the effective baseURL, including test.use() overrides.
-  const source = await page.request.get(url)
+  // maxRetries retries ECONNRESET only, which the dev server throws sporadically under CI load.
+  const source = await page.request.get(url, { maxRetries: 3 })
   const absoluteUrl = source.url()
   if (!source.ok()) {
     throw new Error(`setupSsrVisualTest: GET ${absoluteUrl} returned ${source.status()}`)

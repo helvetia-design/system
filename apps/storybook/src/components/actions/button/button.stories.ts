@@ -188,6 +188,40 @@ export const StatesHtml = Story({
 })
 StatesHtml.storyName = '🌍 States'
 
+export const BrandIcon = Story({
+  ...withRender(
+    () => `<ds-button-group>
+  <ds-button color="brand-purple" brand-icon="/assets/images/brand-icons/electric-car-ins-purple.svg">Base</ds-button>
+  <ds-button color="brand-purple" brand-icon="/assets/images/brand-icons/electric-car-ins-purple.svg" brand-size="lg">Large</ds-button>
+</ds-button-group>`,
+  ),
+})
+BrandIcon.storyName = '🧩 Brand Icon'
+
+export const BrandIconColors = Story({
+  ...withRender(
+    () => `<ds-button-group>
+  <ds-button color="brand-purple" brand-icon="/assets/images/brand-icons/electric-car-ins-purple.svg">Brand Purple</ds-button>
+  <ds-button color="brand-red" brand-icon="/assets/images/brand-icons/motorbike-red.svg">Brand Red</ds-button>
+  <ds-button color="brand-yellow" brand-icon="/assets/images/brand-icons/car-tangerine.svg">Brand Yellow</ds-button>
+  <ds-button color="brand-green" brand-icon="/assets/images/brand-icons/camper-green.svg">Brand Green</ds-button>
+</ds-button-group>`,
+  ),
+})
+BrandIconColors.storyName = '🧩 Brand Icon Colors'
+
+export const BrandIconStates = Story({
+  ...withRender(
+    () => `<ds-button-group>
+  <ds-button color="brand-yellow" brand-icon="/assets/images/brand-icons/car-tangerine.svg" disabled>Disabled base</ds-button>
+  <ds-button color="brand-yellow" brand-icon="/assets/images/brand-icons/car-tangerine.svg" brand-size="lg" disabled>Disabled lg</ds-button>
+  <ds-button color="brand-yellow" brand-icon="/assets/images/brand-icons/car-tangerine.svg" loading>Loading base</ds-button>
+  <ds-button color="brand-yellow" brand-icon="/assets/images/brand-icons/car-tangerine.svg" brand-size="lg" loading>Loading lg</ds-button>
+</ds-button-group>`,
+  ),
+})
+BrandIconStates.storyName = '🧩 Brand Icon States'
+
 export const AlertButtons = Story({
   ...withRender(
     () => `<ds-button-group>

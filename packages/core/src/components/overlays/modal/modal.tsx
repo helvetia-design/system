@@ -39,6 +39,7 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
   @State() isOpen = false
   private transitionQueue: Promise<void> = Promise.resolve()
   private suppressCloseWatch = false
+  private pointerDownOnBackdrop = false
 
   /**
    * PUBLIC PROPERTY API
@@ -181,8 +182,14 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
     }
   }
 
+  private handlePointerDown = (ev: PointerEvent): void => {
+    this.pointerDownOnBackdrop = this.isBackdropEvent(ev)
+  }
+
   private handleBackdropClick = (ev: MouseEvent): void => {
-    if (this.closable && ev.target === this.dialogEl) {
+    const startedOnBackdrop = this.pointerDownOnBackdrop
+    this.pointerDownOnBackdrop = false
+    if (this.closable && startedOnBackdrop && this.isBackdropEvent(ev)) {
       this.dismiss(undefined, 'backdrop')
     }
   }
@@ -191,6 +198,13 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  // The dialog box itself is also the click target for its padding, so only coordinates outside its box count as backdrop.
+  private isBackdropEvent(ev: MouseEvent): boolean {
+    if (!this.dialogEl || ev.target !== this.dialogEl) return false
+    const rect = this.dialogEl.getBoundingClientRect()
+    return ev.clientX < rect.left || ev.clientX > rect.right || ev.clientY < rect.top || ev.clientY > rect.bottom
+  }
 
   private runOpen(): void {
     this.transitionQueue = this.transitionQueue.then(() => this.doOpen()).catch(() => undefined)
@@ -254,6 +268,7 @@ export class Modal implements DsComponentInterface, DsConfigObserver {
           aria-labelledby={this.label ? undefined : 'modal-title'}
           aria-label={this.label || undefined}
           aria-describedby="modal-body"
+          onPointerDown={this.handlePointerDown}
           onClick={this.handleBackdropClick}
           onCancel={this.handleCancel}
           onClose={this.handleNativeClose}

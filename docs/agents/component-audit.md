@@ -1,13 +1,13 @@
 # Component Audit Plan
 
-This file is the reusable checklist for auditing a rewritten `ds-*` component in `packages/core/src/components/<name>` (on `next`) against its legacy `bal-*` equivalent on `origin/main` — the LTS, currently-published Baloise Design System.
+This file is the reusable checklist for auditing a rewritten `ds-*` component in `packages/core/src/components/<name>` (on `main`) against its legacy `bal-*` equivalent on `origin/main` of the Baloise Design System repo — the LTS, currently-published Baloise Design System.
 
-Use this as the source when creating a per-component audit issue with `gh issue create` (see [Creating the Issue](#creating-the-issue) below). Issues are created one component at a time, on request — not bulk-generated.
+Use this as the source when 📣 `issue-manager` (`ds-issue-write`) drafts a per-component audit issue (see [Creating the Issue](#creating-the-issue) below). Issues are created one component at a time, on request — not bulk-generated.
 
 ## Background
 
-- `origin/main` = LTS = the published Baloise DS, components prefixed `bal-*` (e.g. `bal-accordion`).
-- `next` (this repo's default working branch lineage) = the rewrite, components prefixed `ds-*`, living in `packages/core/src/components/<name>`.
+- `origin/main` of the Baloise Design System repo = LTS = the published Baloise DS, components prefixed `bal-*` (e.g. `bal-accordion`).
+- `main` (this repo's default branch) = the rewrite, components prefixed `ds-*`, living in `packages/core/src/components/<name>`.
 - The mapping between old and new components is **not 1:1**. Some old components were merged, renamed, or dropped (e.g. `bal-dropdown`, `bal-field`, `bal-option`, `bal-option-list`, `bal-popover`, `bal-tooltip`, `bal-snackbar`, `bal-sheet`, `bal-stage`, `bal-notices`, `bal-nav`, `bal-input-group`, `bal-input-stepper` have no obvious single `ds-*` counterpart). There is no pre-built mapping table — each issue's assignee identifies the closest LTS equivalent(s) themselves and notes the mapping inline.
 - All checks below are performed by a **human**. An AI agent may pre-fill research (e.g. diffing docs against props) but does not perform the visual check, monkey testing, or token scan itself.
 
@@ -54,17 +54,10 @@ Fixed exploratory checklist, applied per component (skip items that don't apply 
 
 ## Creating the Issue
 
-When asked to create the audit issue for a specific component:
+When asked to create the audit issue for a specific component, dispatch 📣 `issue-manager` · `ds-issue-write` with this spec; it drafts, the human approves, it posts:
 
 1. Use the `🧪 test` issue template (`.github/ISSUE_TEMPLATE/test_report.yml`).
 2. Title: `:test_tube: test(<name>): audit docs, use-case parity, visuals, and tokens`
 3. Summary: one line naming the component and referencing this file.
 4. Acceptance Criteria: the five checklist sections above, expanded into their individual checkboxes.
-5. Labels: `🧪 test` (template default) + `ready-for-human`.
-
-```bash
-gh issue create \
-  --title ":test_tube: test(<name>): audit docs, use-case parity, visuals, and tokens" \
-  --label "🧪 test,ready-for-human" \
-  --body-file <path-to-filled-checklist>.md
-```
+5. Labels: `🧪 test` (template default) + `🧑 ready-for-human` (overrides `ds-issue-write`'s default `🔍 needs-triage`).

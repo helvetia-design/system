@@ -1,10 +1,10 @@
 # Triage Labels
 
-This file documents the canonical label vocabulary used by the `triage` agent to move issues through their lifecycle.
+This file documents the canonical label vocabulary used by the 📣 `issue-manager` agent (`ds-issue-triage` skill) to move issues through their lifecycle.
 
 ## Canonical Labels
 
-The `triage` agent moves issues through five states using these labels:
+The `issue-manager` moves issues through five states using these labels:
 
 An issue gets `ready-for-agent` or `ready-for-human` only once it passes the [Definition of Ready](definition-of-ready.md).
 
@@ -32,7 +32,7 @@ If you want to change these label names in the future, update this file and the 
 
 ## Agent Behavior
 
-The `triage` agent will:
+The `issue-manager` will (drafts first; labels and comments post only after a human gate):
 
 1. Read issues with the `🔍 needs-triage` label
 2. Evaluate the issue (is it clear? is it scoped? does it have acceptance criteria?)

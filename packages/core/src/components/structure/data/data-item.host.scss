@@ -136,8 +136,8 @@
   }
 }
 
-// Horizontal layout: stack label above value, no borders
-:host-context(ds-data[horizontal]) {
+// Stacked layout (set by ds-data[horizontal]): label above value, no borders
+:host(.is-stacked) {
   display: flex;
   flex-direction: column;
   gap: var(--_data-item-gap-stacked);

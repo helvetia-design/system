@@ -9,6 +9,7 @@ import {
   Listen,
   Prop,
   State,
+  Watch,
 } from '@stencil/core'
 import {
   deserializeBooleanAttribute,
@@ -20,6 +21,7 @@ import {
   setFormValue,
   Type,
   watchInvalidTextSlot,
+  hasDefaultSlotContent,
 } from '@utils'
 import { Field } from '../input/field.util'
 import { DsComponentInterface, defaultConfig } from '@global'
@@ -66,6 +68,7 @@ export class Toggle implements DsComponentInterface {
 
   @State() focused = false
   @State() hasInvalidTextSlotContent = false
+  @State() private fieldsetDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -87,6 +90,11 @@ export class Toggle implements DsComponentInterface {
   @Prop({ mutable: true, reflect: true })
   @Type('boolean')
   checked: boolean = false
+
+  @Watch('checked')
+  protected checkedChanged() {
+    this.updateFormValue()
+  }
 
   /**
    * If `true`, the toggle is dense and has less size.
@@ -187,7 +195,7 @@ export class Toggle implements DsComponentInterface {
 
   connectedCallback(): void {
     this.initialValue = this.checked
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+    this.updateFormValue()
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })
@@ -198,8 +206,12 @@ export class Toggle implements DsComponentInterface {
   }
 
   componentWillLoad() {
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
+    this.updateFormValue()
     this.inheritAttributes = inheritAttributes(this.el, ['aria-label', 'tabindex', 'title'])
+  }
+
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
   }
 
   /**
@@ -221,7 +233,7 @@ export class Toggle implements DsComponentInterface {
    */
 
   private handleBlur = (ev: FocusEvent) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     this.focused = false
     this.dsBlur.emit(ev)
   }
@@ -229,13 +241,25 @@ export class Toggle implements DsComponentInterface {
   private handleChange = (ev: Event): void => {
     this.checked = (ev.target as HTMLInputElement).checked
     this.dsChange.emit(this.checked)
-    setFormValue(this.internals, this.checked ? (this.value as string) : null)
   }
 
   private handleFocus = (ev: FocusEvent) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     this.focused = true
     this.dsFocus.emit(ev)
+  }
+
+  /**
+   * PRIVATE METHODS
+   * ─────────────────────────────────────────────────────
+   */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
+  private updateFormValue() {
+    setFormValue(this.internals, this.checked ? (this.value as string) : null)
   }
 
   /**
@@ -249,7 +273,7 @@ export class Toggle implements DsComponentInterface {
     return (
       <Field
         role="field"
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color="primary"
         invalid={isInvalid}
         label=""
@@ -258,7 +282,7 @@ export class Toggle implements DsComponentInterface {
         required={this.required}
         language={defaultConfig.language}
         cssClasses={{
-          'is-disabled': this.disabled || this.readonly,
+          'is-disabled': this.isDisabled || this.readonly,
           'is-invalid': isInvalid,
           'is-checked': this.checked,
           'is-dense': this.dense,
@@ -274,7 +298,7 @@ export class Toggle implements DsComponentInterface {
             name={this.name}
             value={this.value}
             checked={this.checked}
-            disabled={this.disabled || this.readonly}
+            disabled={this.isDisabled || this.readonly}
             required={this.required}
             aria-describedby={isInvalid ? 'description' : undefined}
             aria-invalid={isInvalid ? 'true' : 'false'}
@@ -286,6 +310,7 @@ export class Toggle implements DsComponentInterface {
           />
           <div id="slot" part="slot">
             <slot></slot>
+            {!hasDefaultSlotContent(this.el) && this.label}
           </div>
         </label>
       </Field>

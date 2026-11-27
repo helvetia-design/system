@@ -38,7 +38,7 @@ export class Stack implements DsComponentInterface {
    */
 
   /**
-   * Defines the text positioning like center, right or default to start.
+   * Defines the text positioning like center, right or default to start. `stretch` makes children fill the cross axis.
    */
   @Prop()
   @OneOf(STACK_ALIGNMENTS)

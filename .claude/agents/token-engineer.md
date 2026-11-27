@@ -83,8 +83,9 @@ and tell the engineer about any name you changed so the SCSS reference can follo
 
 - Every token change is a visual change until proven otherwise. State explicitly which
   findings alter rendering and which do not.
-- Run the component's visual suite after a token change and report the diff. Never accept a
-  new snapshot — re-baselining is `ds-update-screenshots`, user-invoked.
+- Visual suites run in CI only, never locally. Name the token change as a visual change in
+  your report so CI's diff gets reviewed. Never accept a new snapshot — re-baselining is
+  `ds-update-screenshots`, user-invoked.
 - Do not restructure a stylesheet, rename a CSS custom property in the public (`--`) layer, or
   change a component's API to make tokens tidier. Escalate instead.
 - A standalone token change needs a

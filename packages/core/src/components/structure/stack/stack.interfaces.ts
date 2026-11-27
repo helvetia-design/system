@@ -12,6 +12,7 @@ export const STACK_ALIGNMENTS = [
   'bottom start',
   'bottom center',
   'bottom end',
+  'stretch',
 ] as const
 
 export const STACK_DIRECTIONS = ['row', 'column', 'row-reverse', 'column-reverse'] as const

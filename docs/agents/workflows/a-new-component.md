@@ -12,7 +12,7 @@ deprecation first (Workflow E).
                                ⛔ GATE: human opens test/<name>.visual.html
 4 test ∥ a11y-test ∥ docs      (parallel, disjoint files)
 5 token-audit ∥ a11y-audit  →  6 repair, routed by owner
-7 a11y-verify ∥ validate    →  8 changeset (minor)  →  human reviews and commits
+7 a11y-verify ∥ validate    →  8 changeset (minor)  →  9 📣 pr-body ∥ reply → ⛔ GATE → post  →  human reviews and commits
 
 step 7 failures loop back to step 6
 ```

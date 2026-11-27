@@ -75,7 +75,12 @@ is for the core suites.
   `ds-update-screenshots`, which is user-invoked. If a visual test fails, report the diff —
   do not accept the new snapshot.
 - Run targeted suites before repository-wide ones, and only the Playwright projects the
-  change can affect (`play:components`, `play:visual`, `play:a11y` are separate).
+  change can affect (`play:components`, `play:a11y` are separate).
+- **Never run `play:visual` or start Docker locally.** Visual snapshots run in CI only.
+  Locally you write the `visual.html` sections and `.variants.ts` entries; CI compares them,
+  and new baselines come from `ds-update-screenshots`.
+- CSS-only components (`ds-grid`) are tested against `packages/core/www/assets/css`. Run
+  `pnpm styles` first, or the suite fails on a stale build.
 - Pipe long command output to a file and read the tail — do not dump a full Stencil or
   Playwright run into context.
 

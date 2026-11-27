@@ -7,11 +7,12 @@
  * --------------------------------
  * @prop --tooltip-color-background: Background color of the tooltip container.
  * @prop --tooltip-color-text: Text color of the tooltip content.
- * @prop --tooltip-max-width: Maximum width of the tooltip container.
+ * @prop --tooltip-max-width: Maximum width of the tooltip container, capped to the viewport.
  * @prop --tooltip-radius: Border radius of the tooltip container.
  * @prop --tooltip-shadow: Box shadow of the tooltip container.
  * @prop --tooltip-px: Horizontal padding of the tooltip content.
  * @prop --tooltip-py: Vertical padding of the tooltip content.
+ * @prop --tooltip-gutter: Minimum distance between the tooltip container and the viewport edge.
  * @prop --tooltip-offset: Distance between the trigger element and the tooltip container.
  * @prop --tooltip-text-font-family: Font family of the tooltip text.
  * @prop --tooltip-text-font-weight: Font weight of the tooltip text.
@@ -27,12 +28,13 @@
   @include vars.base(tooltip);
   @include vars.local(tooltip-color-background, var(--ds-tooltip-color-background));
   @include vars.local(tooltip-color-text, var(--ds-tooltip-color-text));
-  // ds-token-check: intentional — consumer-driven via the contentWidth prop; auto is the size-to-content default
-  @include vars.local(tooltip-max-width, auto);
+  @include vars.local(tooltip-max-width, var(--ds-tooltip-max-width));
   @include vars.local(tooltip-radius, var(--ds-tooltip-radius));
   @include vars.local(tooltip-shadow, var(--ds-tooltip-shadow));
   @include vars.local(tooltip-px, var(--ds-tooltip-padding-x));
   @include vars.local(tooltip-py, var(--ds-tooltip-padding-y));
+  // Read from JS (see tooltip.tsx resolvePx) for the shift padding
+  @include vars.local(tooltip-gutter, var(--ds-tooltip-gutter));
   // Read from JS (see tooltip.tsx resolveOffset) — floating-ui needs a number, not a var()
   @include vars.local(tooltip-offset, var(--ds-tooltip-offset));
   @include typo.local(tooltip-text, 'tooltip-text');
@@ -78,7 +80,9 @@
   left: 0;
   box-sizing: border-box;
   width: max-content;
-  max-width: var(--_tooltip-max-width);
+  max-width: min(var(--_tooltip-max-width), calc(100vw - 2 * var(--_tooltip-gutter)));
+  text-wrap: balance;
+  overflow-wrap: anywhere;
   background-color: var(--_tooltip-color-background);
   border-radius: var(--_tooltip-radius);
   box-shadow: var(--_tooltip-shadow);
