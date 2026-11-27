@@ -534,3 +534,27 @@ test.describe('native form', () => {
     expect(await getFormEntries(page)).toEqual([['heroes', 'steve-rogers']])
   })
 })
+
+test.describe('label prop', () => {
+  test('should render the label prop as accessible name', async ({ page }) => {
+    await page.mount(`<ds-radio value="a" label="Option A"></ds-radio>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await expect(radio.nativeInput).toHaveAccessibleName('Option A')
+  })
+
+  test('should render the label prop when the host only contains whitespace', async ({ page }) => {
+    await page.mount(`<ds-radio value="a" label="Option A">
+    </ds-radio>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await expect(radio.nativeInput).toHaveAccessibleName('Option A')
+  })
+
+  test('should prefer slotted content over the label prop', async ({ page }) => {
+    await page.mount(`<ds-radio value="a" label="Option A">Slotted</ds-radio>`)
+    const radio = new DsRadio(page.locator('ds-radio'))
+
+    await expect(radio.nativeInput).toHaveAccessibleName('Slotted')
+  })
+})

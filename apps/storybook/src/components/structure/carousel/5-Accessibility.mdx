@@ -71,6 +71,7 @@ import { CAROUSEL_DOC_CONFIG, getCarouselTabs } from './carousel.doc-config'
 The carousel component implements patterns that meet WCAG 2.2 Level AA standards:
 
 - **Name, Role, Value (4.1.2)** — The track region has an accessible name via `label` and is exposed as a `region` landmark.
+- **Non-text Content (1.1.1)** — Set `alt` on image slides and `alt=""` on decorative ones. A slide image without `alt` logs a console warning.
 - **Keyboard Accessible (2.1.1)** — Slide navigation is fully operable via keyboard arrow keys, Home, and End.
 - **Focus Visible (2.4.7)** — Tile items expose a focus-visible ring when navigated by keyboard.
 - **Pause, Stop, Hide (2.2.2)** — No auto-advancing content; all movement is user-initiated.

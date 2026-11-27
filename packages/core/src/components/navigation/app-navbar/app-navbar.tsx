@@ -12,6 +12,7 @@ import {
   type ResizeObserver,
   OneOf,
   Type,
+  ariaBooleanToString,
 } from '@utils'
 import {
   DsComponentInterface,
@@ -390,7 +391,7 @@ export class AppNavbar implements DsComponentInterface, DsBreakpointObserver, Ds
                     type="button"
                     title={isMenuOpen ? i18n.closeMenu : i18n.openMenu}
                     aria-label={isMenuOpen ? i18n.closeMenu : i18n.openMenu}
-                    aria-expanded={isMenuOpen}
+                    aria-expanded={ariaBooleanToString(isMenuOpen)}
                     aria-controls="sidebar"
                     onClick={() => this.handleHamburgerClick()}
                   >

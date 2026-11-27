@@ -24,6 +24,8 @@ export class CarouselItem implements DsComponentInterface {
 
   @Element() el!: HTMLStencilElement
 
+  private altWarned = false
+
   /**
    * PUBLIC PROPERTY API
    * ─────────────────────────────────────────────────────
@@ -76,9 +78,29 @@ export class CarouselItem implements DsComponentInterface {
   readonly src: string = ''
 
   /**
+   * Alternative text of the image in image-variant slides. Leave empty for decorative images.
+   */
+  @Prop()
+  @Type('string')
+  readonly alt?: string
+
+  /**
    * Emitted when the user clicks this item (product variant).
    */
   @Event() dsCarouselItemSelect!: EventEmitter<{ name: string }>
+
+  /**
+   * LIFECYCLE
+   * ─────────────────────────────────────────────────────
+   */
+
+  componentDidRender(): void {
+    // ds-carousel sets index together with carouselVariant, so before that the variant is only the default
+    if (this.index > 0 && !this.altWarned && this.carouselVariant !== 'tile' && this.src && this.alt === undefined) {
+      this.altWarned = true
+      console.warn('[ds-carousel-item] `alt` is missing for the image. Set `alt=""` if the image is decorative.')
+    }
+  }
 
   /**
    * EVENT HANDLERS
@@ -130,7 +152,7 @@ export class CarouselItem implements DsComponentInterface {
 
     return (
       <Host class={hostClass} aria-label={`Slide ${this.index}`}>
-        {this.src ? <img src={this.src} alt="" draggable={false} /> : <slot />}
+        {this.src ? <img src={this.src} alt={this.alt ?? ''} draggable={false} /> : <slot />}
       </Host>
     )
   }

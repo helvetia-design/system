@@ -22,7 +22,15 @@ import {
   SnackbarColor,
 } from './snackbar.interfaces'
 import { BUTTON_TARGETS, ButtonTarget } from '../../../actions/button/button.interfaces'
-import { DsComponentInterface } from '@global'
+import {
+  DsComponentInterface,
+  DsConfigObserver,
+  DsConfigState,
+  ListenToConfig,
+  defaultConfig,
+  type DsLanguage,
+} from '@global'
+import { i18nDsSnackbar } from './snackbar.i18n'
 import { HTMLStencilElement } from '@stencil/core/internal'
 
 /**
@@ -43,7 +51,7 @@ import { HTMLStencilElement } from '@stencil/core/internal'
   styleUrl: 'snackbar.host.scss',
   shadow: true,
 })
-export class Snackbar implements DsComponentInterface, AlertComponent, DsBreakpointObserver {
+export class Snackbar implements DsComponentInterface, AlertComponent, DsBreakpointObserver, DsConfigObserver {
   log!: LogInstance
 
   @Logger('snackbar')
@@ -56,6 +64,7 @@ export class Snackbar implements DsComponentInterface, AlertComponent, DsBreakpo
   @State() isMobile = dsBreakpoints.isMobile
   @State() mobileOpenState = false
   @State() didLoad = false
+  @State() language: DsLanguage = defaultConfig.language
 
   /**
    * PUBLIC PROPERTY API
@@ -203,6 +212,15 @@ export class Snackbar implements DsComponentInterface, AlertComponent, DsBreakpo
    */
 
   /**
+   * @internal
+   */
+  @Method()
+  @ListenToConfig()
+  async configChanged(state: DsConfigState): Promise<void> {
+    this.language = state.language
+  }
+
+  /**
    * Closes this notification
    */
   @Method()
@@ -274,6 +292,7 @@ export class Snackbar implements DsComponentInterface, AlertComponent, DsBreakpo
             color={this.color}
             square={true}
             icon={iconName}
+            a11yLabel={this.heading || i18nDsSnackbar[this.language].showNotification}
             onClick={() => (this.mobileOpenState = true)}
           ></ds-button>
         )}

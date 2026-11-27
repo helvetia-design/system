@@ -216,9 +216,12 @@
   --mod-snackbar-width: fit-content;
 
   #icon,
-  #content,
   #action {
     display: none;
+  }
+
+  #content {
+    @include sr-only;
   }
 }
 

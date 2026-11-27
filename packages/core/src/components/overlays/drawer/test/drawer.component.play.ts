@@ -193,3 +193,72 @@ test.describe('moved in the DOM', () => {
     await expect(ds.el).not.toHaveAttribute('open')
   })
 })
+
+test.describe('accessible name', () => {
+  let warnings: string[]
+
+  test.beforeEach(({ page }) => {
+    warnings = []
+    page.on('console', msg => {
+      if (msg.type() === 'warning' && msg.text().includes('[ds-drawer]')) warnings.push(msg.text())
+    })
+  })
+
+  test('should use the slotted heading when label is empty', async ({ page }) => {
+    await page.mount(`
+      <ds-drawer>
+        <h2>Drawer heading</h2>
+        <p>Content</p>
+      </ds-drawer>
+    `)
+    await page.evaluate(() => (document.querySelector('ds-drawer') as any).present())
+
+    await expect(page.getByRole('dialog', { name: 'Drawer heading' })).toBeVisible()
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+
+  test('should prefer label over the slotted heading', async ({ page }) => {
+    await page.mount(`
+      <ds-drawer label="Explicit label">
+        <h2>Drawer heading</h2>
+      </ds-drawer>
+    `)
+    await page.evaluate(() => (document.querySelector('ds-drawer') as any).present())
+
+    await expect(page.getByRole('dialog', { name: 'Explicit label' })).toBeVisible()
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+
+  test('should name the dialog before it receives focus', async ({ page }) => {
+    await page.mount(`
+      <ds-drawer>
+        <h2>Drawer heading</h2>
+        <button>Inside</button>
+      </ds-drawer>
+    `)
+    const labelOnPresent = await page.evaluate(() => {
+      const drawer = document.querySelector('ds-drawer') as any
+      return new Promise<string | null>(resolve => {
+        drawer.addEventListener(
+          'focusin',
+          () => resolve(drawer.shadowRoot.querySelector('dialog').getAttribute('aria-label')),
+          { once: true },
+        )
+        drawer.present()
+      })
+    })
+
+    expect(labelOnPresent).toBe('Drawer heading')
+  })
+
+  test('should warn once when there is neither label nor heading', async ({ page }) => {
+    await page.mount(`<ds-drawer><p>Content</p></ds-drawer>`)
+
+    await page.evaluate(() => (document.querySelector('ds-drawer') as any).present())
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(1)
+  })
+})

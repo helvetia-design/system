@@ -692,6 +692,10 @@ export namespace Components {
      */
     interface DsCarouselItem {
         /**
+          * Alternative text of the image in image-variant slides. Leave empty for decorative images.
+         */
+        "alt"?: string;
+        /**
           * Set by ds-carousel. The carousel variant this item is part of.
           * @default 'slide'
          */
@@ -1918,6 +1922,10 @@ export namespace Components {
      */
     interface DsLogo {
         /**
+          * Accessible label for the logo. Defaults to an `aria-label` set on the host, then to the brand name.
+         */
+        "a11yLabel"?: string;
+        /**
           * Defines if the animation should be active
           * @default false
          */
@@ -3112,6 +3120,7 @@ export namespace Components {
           * Defines the color of the element Color type primary is deprecated, please use info instead.
          */
         "color"?: SnackbarColor;
+        "configChanged": (state: DsConfigState) => Promise<void>;
         /**
           * Defines the heading of the notification.
           * @default ''
@@ -5879,6 +5888,10 @@ declare namespace LocalJSX {
      */
     interface DsCarouselItem {
         /**
+          * Alternative text of the image in image-variant slides. Leave empty for decorative images.
+         */
+        "alt"?: string;
+        /**
           * Set by ds-carousel. The carousel variant this item is part of.
           * @default 'slide'
          */
@@ -7214,6 +7227,10 @@ declare namespace LocalJSX {
      * Logo displays animated Baloise or Helvetia brand logos with customizable size, responsive sizing, and an inverted variant for dark backgrounds.
      */
     interface DsLogo {
+        /**
+          * Accessible label for the logo. Defaults to an `aria-label` set on the host, then to the brand name.
+         */
+        "a11yLabel"?: string;
         /**
           * Defines if the animation should be active
           * @default false
@@ -9437,6 +9454,7 @@ declare namespace LocalJSX {
         "name": string;
         "selected": boolean;
         "src": string;
+        "alt": string;
     }
     interface DsCheckboxAttributes {
         "name": string;
@@ -9685,6 +9703,7 @@ declare namespace LocalJSX {
         "brand": LogoBrand;
         "inverted": boolean;
         "size": LogoSize;
+        "a11yLabel": string;
     }
     interface DsModalAttributes {
         "open": boolean;

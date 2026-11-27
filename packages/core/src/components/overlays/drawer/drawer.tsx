@@ -1,7 +1,7 @@
 import { Component, Element, Event, EventEmitter, h, Host, Method, Prop, State, Watch } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { DsComponentInterface, DsConfigObserver, DsConfigState, ListenToConfig } from '@global'
-import { Logger, type LogInstance, ScrollHandler, wait, OneOf, Type } from '@utils'
+import { Logger, type LogInstance, ScrollHandler, wait, OneOf, Type, resolveDialogName } from '@utils'
 import { DrawerPresentDetail, DrawerDismissDetail, DRAWER_CONTAINERS, DrawerContainer } from './drawer.interfaces'
 
 /**
@@ -35,6 +35,7 @@ export class Drawer implements DsComponentInterface, DsConfigObserver {
 
   @State() animated = true
   @State() isOpen = false
+  @State() dialogName = ''
 
   /**
    * PUBLIC PROPERTY API
@@ -160,6 +161,9 @@ export class Drawer implements DsComponentInterface, DsConfigObserver {
   private async doOpen(): Promise<void> {
     if (this.dialogEl?.open) return
     this.dsWillPresent.emit()
+    this.dialogName = resolveDialogName(this.el, this.label, 'ds-drawer')
+    // the state only renders after showModal() has moved focus into the dialog
+    if (this.dialogName) this.dialogEl?.setAttribute('aria-label', this.dialogName)
     this.dialogEl?.showModal()
     this.scrollHandler.disable()
     this.isOpen = true
@@ -217,7 +221,7 @@ export class Drawer implements DsComponentInterface, DsConfigObserver {
         <dialog
           part="dialog"
           ref={el => (this.dialogEl = el as HTMLDialogElement)}
-          aria-label={this.label || undefined}
+          aria-label={this.label || this.dialogName || undefined}
           onClick={this.handleBackdropClick}
           onCancel={this.handleCancel}
           onClose={this.handleNativeClose}

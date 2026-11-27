@@ -264,6 +264,37 @@ test.describe('component', () => {
     await expect(tooltip).toHaveAttribute('aria-hidden', 'false')
   })
 
+  test('should not derive aria-label from a11yTitle when the button has text', async ({ page }) => {
+    await page.mount(`
+      <ds-button a-1-1y-title="Extra hint">Save</ds-button>
+    `)
+
+    const nativeButton = page.locator('ds-button button')
+
+    await expect(nativeButton).not.toHaveAttribute('aria-label')
+    await expect(nativeButton).toHaveAccessibleName('Save')
+  })
+
+  test('should not derive aria-label from the native title when the button has text', async ({ page }) => {
+    await page.mount(`
+      <ds-button title="Extra hint">Save</ds-button>
+    `)
+
+    const nativeButton = page.locator('ds-button button')
+
+    await expect(nativeButton).not.toHaveAttribute('aria-label')
+    await expect(nativeButton).toHaveAttribute('title', 'Extra hint')
+    await expect(nativeButton).toHaveAccessibleName('Save')
+  })
+
+  test('should let a11yLabel win over the text', async ({ page }) => {
+    await page.mount(`
+      <ds-button a-1-1y-label="Save document" a-1-1y-title="Extra hint">Save</ds-button>
+    `)
+
+    await expect(page.locator('ds-button button')).toHaveAccessibleName('Save document')
+  })
+
   test('should forward tooltipPlacement to the tooltip', async ({ page }) => {
     await page.mount(`
       <ds-button icon="edit" square a-1-1y-title="Edit" tooltip-placement="top"></ds-button>
@@ -332,6 +363,12 @@ test.describe('component', () => {
     await page.mount(`<ds-button loading>Save <span aria-hidden="true">★</span>\n  now</ds-button>`)
 
     await expect(page.locator('ds-button [role="status"]')).toHaveText(/^Save now, \S+$/)
+  })
+
+  test('should announce the text instead of a11yTitle when loading', async ({ page }) => {
+    await page.mount(`<ds-button a-1-1y-title="Extra hint" loading>Save</ds-button>`)
+
+    await expect(page.locator('ds-button .live-region')).toHaveText(/^Save, \S+$/)
   })
 
   test('should not emit dsClick or submit the form when loading', async ({ page }) => {

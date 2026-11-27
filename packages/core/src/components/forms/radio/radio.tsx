@@ -26,6 +26,7 @@ import {
   OneOf,
   Type,
   setFormValue,
+  hasDefaultSlotContent,
 } from '@utils'
 import { FOCUS_KEYS } from '../../structure/root/root.focus.util'
 import {
@@ -493,6 +494,7 @@ export class Radio implements DsComponentInterface {
           />
           <div id="slot" part="slot">
             <slot></slot>
+            {!hasDefaultSlotContent(this.el) && this.label}
           </div>
           {this.hasHint() && (
             <div id="hint" part="hint">

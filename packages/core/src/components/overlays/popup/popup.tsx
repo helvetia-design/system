@@ -15,7 +15,17 @@ import {
 } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { DsComponentInterface, DsConfigObserver, DsConfigState, ListenToConfig } from '@global'
-import { FocusHandler, Logger, type LogInstance, dsBrowser, isEscapeKey, wait, OneOf, Type } from '@utils'
+import {
+  FocusHandler,
+  Logger,
+  type LogInstance,
+  dsBrowser,
+  isEscapeKey,
+  wait,
+  OneOf,
+  Type,
+  resolveDialogName,
+} from '@utils'
 import {
   POPUP_PLACEMENTS,
   POPUP_ROLES,
@@ -72,6 +82,7 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
 
   @State() animated = true
   @State() isOpen = false
+  @State() dialogName = ''
 
   panelEl: HTMLDivElement | undefined
 
@@ -408,6 +419,12 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
     await this.dismissGroupSiblings()
     this.dsWillPresent.emit({ trigger })
 
+    if (this.panelRole === 'dialog') {
+      this.dialogName = resolveDialogName(this.el, this.label, 'ds-popup')
+      // without animation the panel gets focus before the state renders
+      if (this.dialogName) this.panelEl?.setAttribute('aria-label', this.dialogName)
+    }
+
     if (trigger) {
       trigger.setAttribute('aria-haspopup', this.panelRole)
       trigger.setAttribute('aria-expanded', 'true')
@@ -553,7 +570,7 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
           ref={el => (this.panelEl = el)}
           role={this.panelRole}
           aria-modal={this.panelRole === 'dialog' && this.shouldTrapFocus ? 'true' : undefined}
-          aria-label={this.label || undefined}
+          aria-label={this.label || this.dialogName || undefined}
           tabindex="-1"
           data-testid="ds-popup-panel"
         >

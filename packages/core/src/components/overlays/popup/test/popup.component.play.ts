@@ -479,3 +479,59 @@ test.describe('component', () => {
     await expect(page.getByRole('button', { name: 'Open' })).toBeFocused()
   })
 })
+
+test.describe('accessible name', () => {
+  let warnings: string[]
+
+  test.beforeEach(({ page }) => {
+    warnings = []
+    page.on('console', msg => {
+      if (msg.type() === 'warning' && msg.text().includes('[ds-popup]')) warnings.push(msg.text())
+    })
+  })
+
+  test('should use the slotted heading when label is empty', async ({ page }) => {
+    await page.mount(`
+      <ds-popup id="popup">
+        <h2>Popup heading</h2>
+        <p>Content</p>
+      </ds-popup>
+    `)
+    await page.evaluate(() => (document.getElementById('popup') as any).present())
+
+    await expect(page.getByRole('dialog', { name: 'Popup heading' })).toBeVisible()
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+
+  test('should prefer label over the slotted heading', async ({ page }) => {
+    await page.mount(`
+      <ds-popup id="popup" label="Explicit label">
+        <h2>Popup heading</h2>
+      </ds-popup>
+    `)
+    await page.evaluate(() => (document.getElementById('popup') as any).present())
+
+    await expect(page.getByRole('dialog', { name: 'Explicit label' })).toBeVisible()
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+
+  test('should warn once when there is neither label nor heading', async ({ page }) => {
+    await page.mount(`<ds-popup id="popup"><p>Content</p></ds-popup>`)
+
+    await page.evaluate(() => (document.getElementById('popup') as any).present())
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(1)
+  })
+
+  test('should not warn for a non-dialog role', async ({ page }) => {
+    await page.mount(`<ds-popup id="popup" panel-role="menu"><p>Content</p></ds-popup>`)
+
+    await page.evaluate(() => (document.getElementById('popup') as any).present())
+    await expect(page.getByTestId('ds-popup-panel')).toBeVisible()
+    await page.waitForChanges()
+    expect(warnings).toHaveLength(0)
+  })
+})
