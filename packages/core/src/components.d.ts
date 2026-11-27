@@ -3068,7 +3068,7 @@ export namespace Components {
          */
         "actionTarget": ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId": string;
         /**
@@ -3630,7 +3630,7 @@ export namespace Components {
          */
         "actionTarget": ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId": string;
         /**
@@ -8475,7 +8475,7 @@ declare namespace LocalJSX {
          */
         "actionTarget"?: ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId"?: string;
         /**
@@ -9075,7 +9075,7 @@ declare namespace LocalJSX {
          */
         "actionTarget"?: ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId"?: string;
         /**

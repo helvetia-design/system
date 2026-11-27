@@ -8,6 +8,7 @@ import {
   ALERT_TYPES,
   ALERT_CONTAINER_SIZES,
 } from './alert-container.interfaces'
+import { createAlertId } from './alert-id'
 import { DsComponentInterface } from '@global'
 import { HTMLStencilElement } from '@stencil/core/internal'
 
@@ -76,7 +77,7 @@ export class AlertContainer implements DsComponentInterface {
       return ''
     }
 
-    const alertId = crypto.randomUUID() as string
+    const alertId = createAlertId()
     const duration = this.getDuration(alert)
     const component: AlertComponent = {
       ...alert,
@@ -106,11 +107,12 @@ export class AlertContainer implements DsComponentInterface {
    */
   @Method()
   async removeAll() {
-    Object.keys(this.alertTimers).forEach(id => this.clearTimer(id))
-    this.alerts = this.alerts.map(n => ({ ...n, visible: false }))
+    const ids = new Set(this.alerts.map(n => n.alertId))
+    ids.forEach(id => this.clearTimer(id))
+    this.alerts = this.alerts.map(n => (ids.has(n.alertId) ? { ...n, visible: false } : n))
 
     await wait(this.animationDurationMs)
-    this.alerts = []
+    this.alerts = this.alerts.filter(n => !ids.has(n.alertId))
   }
 
   /**
@@ -199,12 +201,12 @@ export class AlertContainer implements DsComponentInterface {
               color={alert.color as any}
               duration={alert.duration}
               closable={alert.closable}
-              closeHandler={() => alert.closeHandler(alert.alertId)}
+              closeHandler={() => alert.closeHandler?.(alert.alertId)}
               action={alert.action}
               actionIcon={alert.actionIcon}
               actionTarget={alert.actionTarget}
               actionHref={alert.actionHref}
-              actionHandler={() => alert.actionHandler(alert.alertId)}
+              actionHandler={() => alert.actionHandler?.(alert.alertId)}
               onDsCloseClick={() => this.removeAlert(alert.alertId)}
               onDsDidLoad={() => this.present(alert)}
               onDsDidPause={() => {

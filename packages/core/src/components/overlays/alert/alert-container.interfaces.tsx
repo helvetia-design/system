@@ -29,12 +29,12 @@ export type Alert = {
   message: string
   duration?: number | 'infinite'
   closable: boolean
-  closeHandler: (id: string) => void
+  closeHandler?: (id: string) => void
   action?: string
   actionIcon?: string
   actionTarget?: ButtonTarget
   actionHref?: string
-  actionHandler: (id: string) => void
+  actionHandler?: (id: string) => void
 }
 
 export type AlertComponent = Alert & {
