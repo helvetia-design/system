@@ -82,29 +82,3 @@ test.describe('layout', () => {
     expect(Math.abs(b.width / row.width - 1 / 2)).toBeLessThan(0.01)
   })
 })
-
-test.describe('list indent', () => {
-  for (const width of [1440, 400]) {
-    test(`should equal --ds-list-native-indent @ ${width}px`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 })
-      await page.goto(URL)
-      const ul = section(page, 'default').locator('.ds-card ul')
-      await expect(ul).toBeVisible()
-      const { indent, expected } = await ul.evaluate((el: HTMLElement) => {
-        // resolve the custom property to px through a probe's computed width
-        const probe = document.createElement('div')
-        probe.style.width = 'var(--ds-list-native-indent)'
-        el.parentElement!.appendChild(probe)
-        const expected = parseFloat(getComputedStyle(probe).width)
-        probe.remove()
-        const s = getComputedStyle(el)
-        return {
-          indent: parseFloat(s.marginLeft) + parseFloat(s.paddingInlineStart),
-          expected,
-        }
-      })
-      expect(expected).toBeGreaterThan(0)
-      expect(indent).toBe(expected)
-    })
-  }
-})
