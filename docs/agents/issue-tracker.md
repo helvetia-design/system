@@ -41,7 +41,7 @@ gh issue close <issue-number>           # Close an issue
 
 ## Pull Requests
 
-PRs are opened against the `next` branch and require:
+PRs are opened against the `main` branch and require:
 
 - All CI checks passing (lint, test, build)
 - At least one approval

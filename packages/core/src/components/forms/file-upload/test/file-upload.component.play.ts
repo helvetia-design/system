@@ -1,5 +1,5 @@
 import { DsFileUpload, test } from '@helvetia-design/playwright'
-import { expect } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 
 test.describe('value assigned after load', () => {
   test('should render a value that is assigned after the component has loaded', async ({ page }) => {
@@ -220,5 +220,98 @@ test.describe('required attribute', () => {
     const fileUpload = new DsFileUpload(page.locator('ds-file-upload'))
 
     await expect(fileUpload.el).toHaveJSProperty('required', false)
+  })
+})
+
+test.describe('form association', () => {
+  const files = [
+    { name: 'a.txt', mimeType: 'text/plain', buffer: Buffer.from('a') },
+    { name: 'b.txt', mimeType: 'text/plain', buffer: Buffer.from('b') },
+  ]
+  const formMarkup = `<form id="f" target="sink"><ds-file-upload name="docs" label="Upload"></ds-file-upload></form><iframe name="sink"></iframe>`
+  const readFileNames = (page: Page) =>
+    page
+      .locator('#f')
+      .evaluate((form: HTMLFormElement) => new FormData(form).getAll('docs').map(entry => (entry as File).name))
+
+  test('should add the selected files to the FormData', async ({ page }) => {
+    await page.mount(formMarkup)
+    const component = new DsFileUpload(page.locator('ds-file-upload'))
+
+    await component.input.setInputFiles(files)
+    await page.waitForChanges()
+
+    expect(await readFileNames(page)).toEqual(['a.txt', 'b.txt'])
+  })
+
+  test('should pass the selected files to the formdata event of a native submit', async ({ page }) => {
+    await page.mount(formMarkup)
+    const component = new DsFileUpload(page.locator('ds-file-upload'))
+
+    await component.input.setInputFiles(files)
+    await page.waitForChanges()
+
+    const submitted = await page.locator('#f').evaluate(
+      (form: HTMLFormElement) =>
+        new Promise<string[]>(resolve => {
+          form.addEventListener('formdata', ev => {
+            resolve(ev.formData.getAll('docs').map(entry => (entry as File).name))
+          })
+          form.requestSubmit()
+        }),
+    )
+
+    expect(submitted).toEqual(['a.txt', 'b.txt'])
+  })
+
+  test('should update the FormData when a file is removed or cleared', async ({ page }) => {
+    await page.mount(formMarkup)
+    const component = new DsFileUpload(page.locator('ds-file-upload'))
+
+    await component.input.setInputFiles(files)
+    await page.waitForChanges()
+
+    await component.fileList.locator('li').first().locator('ds-button').click()
+    await page.waitForChanges()
+    expect(await readFileNames(page)).toEqual(['b.txt'])
+
+    await component.clear()
+    await page.waitForChanges()
+    expect(await readFileNames(page)).toEqual([])
+    await expect(component.input).toHaveJSProperty('files.length', 0)
+  })
+
+  test('should clear the FormData and the file list on form reset', async ({ page }) => {
+    await page.mount(formMarkup)
+    const component = new DsFileUpload(page.locator('ds-file-upload'))
+
+    await component.input.setInputFiles(files)
+    await page.waitForChanges()
+
+    await page.locator('#f').evaluate((form: HTMLFormElement) => form.reset())
+    await page.waitForChanges()
+
+    expect(await readFileNames(page)).toEqual([])
+    await component.assertHasNoFileList()
+    await expect(component.input).toHaveJSProperty('files.length', 0)
+  })
+
+  test('should restore the assigned value on form reset', async ({ page }) => {
+    await page.mount(formMarkup)
+    const component = new DsFileUpload(page.locator('ds-file-upload'))
+
+    await component.el.evaluate((el: HTMLDsFileUploadElement) => {
+      el.value = [new File(['init'], 'init.txt', { type: 'text/plain' })]
+    })
+    await component.input.setInputFiles(files)
+    await page.waitForChanges()
+    expect(await readFileNames(page)).toEqual(['init.txt', 'a.txt', 'b.txt'])
+
+    await page.locator('#f').evaluate((form: HTMLFormElement) => form.reset())
+    await page.waitForChanges()
+
+    expect(await readFileNames(page)).toEqual(['init.txt'])
+    await expect(component.fileList).toContainText('init.txt')
+    await expect(component.fileList).not.toContainText('a.txt')
   })
 })

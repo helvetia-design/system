@@ -79,7 +79,7 @@ Copy as-is, in every form: `arrow`. It keeps its name and its default. `backdrop
 | `tooltip` | _(not migrated)_ | See "Popovers left legacy". `tooltip={false}` and `tooltip="false"` are dropped, and the popover migrates. |
 | `hover` | _(removed)_ | Drop it in every form. Legacy 19.11.0 declares it but never reads it, so the popover never opened on hover. |
 | _(none)_ | `label` | `ds-popup` has no visible title. When the trigger holds a short text and nothing else, or exactly one button or link whose content is a short text, set `label` to that text. Otherwise report the missing accessible name. |
-| _(none)_ | `closable`, `role`, `trapFocus` | New props. Leave them unset. `closable` would add a visible close button. |
+| _(none)_ | `closable`, `panelRole`, `trapFocus` | New props. Leave them unset. `closable` would add a visible close button. |
 
 ### Props: `bal-popover-content`
 

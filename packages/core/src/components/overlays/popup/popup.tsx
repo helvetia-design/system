@@ -1,5 +1,18 @@
 import { arrow, autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
-import { Component, Element, Event, EventEmitter, h, Host, Listen, Method, Prop, State, Watch } from '@stencil/core'
+import {
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  h,
+  Host,
+  Listen,
+  Method,
+  Prop,
+  State,
+  Watch,
+  writeTask,
+} from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { DsComponentInterface, DsConfigObserver, DsConfigState, ListenToConfig } from '@global'
 import {
@@ -26,6 +39,12 @@ import {
 // Module-level map so same-group popups can dismiss each other.
 const popupGroups = new Map<string, Set<HTMLDsPopupElement>>()
 
+// Open popups in opening order, so Escape only closes the topmost closable one.
+const openPopups: Popup[] = []
+
+const FOCUSABLE_SELECTOR =
+  'button:not([disabled]):not([tabindex^="-"]),input:not([type=hidden]):not([disabled]):not([tabindex^="-"]),select:not([disabled]):not([tabindex^="-"]),textarea:not([disabled]):not([tabindex^="-"]),a[href]:not([tabindex^="-"]),[tabindex]:not([tabindex^="-"])'
+
 /**
  * Popup displays anchored overlay content positioned relative to a trigger element.
  * Serves as a primitive for dropdowns, hints, menus, datepickers, and autocompletes.
@@ -48,6 +67,7 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
   private arrowEl: HTMLDivElement | undefined
   private cleanupPositioner?: () => void
   private currentTrigger: HTMLElement | undefined = undefined
+  private didLoad = false
   private focusHandler = new FocusHandler()
   private transitionQueue: Promise<void> = Promise.resolve()
 
@@ -96,7 +116,7 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
       oldTrigger.removeAttribute('aria-expanded')
     }
     if (newTrigger) {
-      newTrigger.setAttribute('aria-haspopup', this.role)
+      newTrigger.setAttribute('aria-haspopup', this.panelRole)
       newTrigger.setAttribute('aria-expanded', 'false')
     }
   }
@@ -116,13 +136,12 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
   readonly offset: number = 8
 
   /**
-   * ARIA role applied to the panel.
-   * Controls focus-trap behaviour and the aria-haspopup value set on the trigger.
+   * ARIA role applied to the panel and the aria-haspopup value set on the trigger.
    * Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
    */
   @Prop()
   @OneOf(POPUP_ROLES)
-  readonly role: PopupRole = 'dialog'
+  readonly panelRole: PopupRole = 'dialog'
 
   /**
    * If `true`, the popup can be dismissed via the Escape key and shows a close button.
@@ -198,24 +217,29 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
 
   connectedCallback(): void {
     this.registerGroup()
+    // Reconnecting after a DOM move: componentDidLoad only runs once, but disconnectedCallback cleared the trigger state.
+    if (this.didLoad) this.restoreTriggerState()
   }
 
   componentDidLoad(): void {
+    this.didLoad = true
     if (this.trigger) {
-      this.trigger.setAttribute('aria-haspopup', this.role)
+      this.trigger.setAttribute('aria-haspopup', this.panelRole)
       this.trigger.setAttribute('aria-expanded', 'false')
     }
+    this.wireDeclarativeTriggers()
     if (this.open) {
       this.runPresent()
     }
   }
 
   disconnectedCallback(): void {
+    this.removeFromOpenStack()
     this.cleanupPositioner?.()
     this.focusHandler.disconnect()
-    if (this.trigger) {
-      this.trigger.removeAttribute('aria-haspopup')
-      this.trigger.removeAttribute('aria-expanded')
+    for (const trigger of new Set([this.trigger, this.currentTrigger, ...this.declarativeTriggers])) {
+      trigger?.removeAttribute('aria-haspopup')
+      trigger?.removeAttribute('aria-expanded')
     }
     this.unregisterGroup()
   }
@@ -229,8 +253,8 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
   async listenToClick(ev: MouseEvent): Promise<void> {
     // Declarative trigger: element with data-popup matching this element's id.
     if (this.el.id) {
-      const closest = (ev.target as HTMLElement).closest(`[data-popup="${this.el.id}"]`) as HTMLElement | null
-      if (closest) {
+      const closest = (ev.target as HTMLElement).closest<HTMLElement>('[data-popup]')
+      if (closest && this.isDeclarativeTrigger(closest)) {
         this.currentTrigger = closest
         await this.toggle()
         return
@@ -251,12 +275,14 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
 
   @Listen('keydown', { target: 'document' })
   listenToKeyDown(ev: KeyboardEvent): void {
-    if (!this.isOpen) return
+    if (!this.isOpen || !this.closable || !isEscapeKey(ev)) return
+    const topmostClosable = [...openPopups].reverse().find(popup => popup.closable)
+    if (topmostClosable !== this) return
 
-    if (this.closable && isEscapeKey(ev)) {
-      ev.stopPropagation()
-      this.dismiss()
-    }
+    // preventDefault also stops a surrounding native <dialog> (ds-modal, ds-drawer) from closing on the same Escape.
+    ev.preventDefault()
+    ev.stopPropagation()
+    this.dismiss()
   }
 
   /**
@@ -310,6 +336,74 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
     return this.backdrop
   }
 
+  private isDeclarativeTrigger(el: HTMLElement): boolean {
+    return !!this.el.id && el.getAttribute('data-popup') === this.el.id
+  }
+
+  private get declarativeTriggers(): HTMLElement[] {
+    if (!this.el.id || !dsBrowser.hasDocument) return []
+    return Array.from(document.querySelectorAll<HTMLElement>('[data-popup]')).filter(el =>
+      this.isDeclarativeTrigger(el),
+    )
+  }
+
+  private wireDeclarativeTriggers(): void {
+    this.declarativeTriggers.forEach(trigger => {
+      trigger.setAttribute('aria-haspopup', this.panelRole)
+      trigger.setAttribute('aria-expanded', 'false')
+    })
+  }
+
+  private restoreTriggerState(): void {
+    this.wireDeclarativeTriggers()
+    if (this.trigger) {
+      this.trigger.setAttribute('aria-haspopup', this.panelRole)
+      this.trigger.setAttribute('aria-expanded', 'false')
+    }
+    if (!this.isOpen) return
+
+    if (!openPopups.includes(this)) openPopups.push(this)
+    const trigger = this.currentTrigger ?? this.trigger
+    if (trigger) {
+      trigger.setAttribute('aria-haspopup', this.panelRole)
+      trigger.setAttribute('aria-expanded', 'true')
+      this.startPositioner(trigger)
+    }
+    if (this.shouldTrapFocus) this.enableFocusTrap(trigger)
+  }
+
+  private enableFocusTrap(trigger: HTMLElement | undefined): void {
+    this.focusHandler.enable({
+      target: this.panelEl,
+      restoreElement: trigger ?? null,
+      allowOutsideClick: this.isOutsideClickAllowed,
+    })
+  }
+
+  private isOutsideClickAllowed = (ev: MouseEvent | TouchEvent): boolean => {
+    if (this.backdropDismiss) return true
+    const effectiveTrigger = this.currentTrigger ?? this.trigger
+    return ev.composedPath().some(target => {
+      if (target === effectiveTrigger) return true
+      return target instanceof HTMLElement ? this.isDeclarativeTrigger(target) : false
+    })
+  }
+
+  private removeFromOpenStack(): void {
+    const index = openPopups.indexOf(this)
+    if (index !== -1) openPopups.splice(index, 1)
+  }
+
+  private isFocusInside(): boolean {
+    let active = document.activeElement
+    if (!active || active === document.body) return true
+    while (active) {
+      if (this.el.contains(active)) return true
+      active = active.shadowRoot?.activeElement ?? null
+    }
+    return false
+  }
+
   private runPresent(): void {
     this.transitionQueue = this.transitionQueue.then(() => this.doPresent()).catch(() => undefined)
   }
@@ -325,13 +419,14 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
     await this.dismissGroupSiblings()
     this.dsWillPresent.emit({ trigger })
 
-    if (this.role === 'dialog') {
+    if (this.panelRole === 'dialog') {
       this.dialogName = resolveDialogName(this.el, this.label, 'ds-popup')
       // without animation the panel gets focus before the state renders
       if (this.dialogName) this.panelEl?.setAttribute('aria-label', this.dialogName)
     }
 
     if (trigger) {
+      trigger.setAttribute('aria-haspopup', this.panelRole)
       trigger.setAttribute('aria-expanded', 'true')
       // Compute initial position while panel is still invisible so there is no flash.
       await this.updatePosition(trigger)
@@ -339,14 +434,14 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
     }
 
     this.isOpen = true
+    openPopups.push(this)
 
+    // The panel stays visibility:hidden until the is-open class renders, and hidden elements cannot take focus.
+    await new Promise<void>(resolve => writeTask(() => resolve()))
     if (this.animated) await wait(300)
 
-    if (this.shouldTrapFocus) {
-      this.focusHandler.enable({ target: this.panelEl, restoreElement: trigger ?? null })
-    } else {
-      this.focusPanel()
-    }
+    if (this.shouldTrapFocus) this.enableFocusTrap(trigger)
+    this.focusPanel()
     this.dsDidPresent.emit({ trigger })
   }
 
@@ -364,13 +459,15 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
     }
 
     this.isOpen = false
+    this.removeFromOpenStack()
 
     if (this.animated) await wait(300)
 
+    const focusWasInside = this.isFocusInside()
     if (this.shouldTrapFocus) {
-      this.focusHandler.disable()
-      this.focusHandler.restoreFocus()
-    } else {
+      this.focusHandler.disable({ returnFocus: focusWasInside })
+      if (focusWasInside) this.focusHandler.restoreFocus()
+    } else if (focusWasInside) {
       trigger?.focus()
     }
     this.dsDidDismiss.emit({ trigger })
@@ -413,16 +510,28 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
 
   private focusPanel(): void {
     if (!this.panelEl) return
-    const focusable = Array.from(
-      this.panelEl.querySelectorAll<HTMLElement>(
-        'button:not([disabled]):not([tabindex^="-"]),input:not([type=hidden]):not([disabled]):not([tabindex^="-"]),select:not([disabled]):not([tabindex^="-"]),textarea:not([disabled]):not([tabindex^="-"]),a[href]:not([tabindex^="-"]),[tabindex]:not([tabindex^="-"])',
-      ),
-    )
-    if (focusable.length > 0) {
-      focusable[0].focus({ preventScroll: true })
-    } else {
-      this.panelEl.focus({ preventScroll: true })
+    const slotted = this.panelEl.querySelector('slot')?.assignedElements({ flatten: true }) ?? []
+    for (const el of slotted) {
+      const focusable = this.findFocusable(el)
+      if (focusable) {
+        focusable.focus({ preventScroll: true })
+        return
+      }
     }
+    this.panelEl.focus({ preventScroll: true })
+  }
+
+  private findFocusable(el: globalThis.Element): HTMLElement | undefined {
+    if (el instanceof HTMLElement && el.matches(FOCUSABLE_SELECTOR)) return el
+    const children = Array.from(el.shadowRoot ? el.shadowRoot.children : el.children)
+    for (const child of children) {
+      const candidates = child instanceof HTMLSlotElement ? child.assignedElements({ flatten: true }) : [child]
+      for (const candidate of candidates) {
+        const focusable = this.findFocusable(candidate)
+        if (focusable) return focusable
+      }
+    }
+    return undefined
   }
 
   private registerGroup(): void {
@@ -459,8 +568,8 @@ export class Popup implements DsComponentInterface, DsConfigObserver {
         <div
           part="panel"
           ref={el => (this.panelEl = el)}
-          role={this.role}
-          aria-modal={this.role === 'dialog' ? 'true' : undefined}
+          role={this.panelRole}
+          aria-modal={this.panelRole === 'dialog' && this.shouldTrapFocus ? 'true' : undefined}
           aria-label={this.label || this.dialogName || undefined}
           tabindex="-1"
           data-testid="ds-popup-panel"

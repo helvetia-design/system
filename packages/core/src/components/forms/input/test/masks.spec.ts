@@ -1,9 +1,16 @@
+import { BasicContractNumber } from '../masks/basic-contract-number'
 import { BeEnterpriseNumber } from '../masks/be-enterprise-number'
 import { BeIBAN } from '../masks/be-iban'
 import { ClaimNumber } from '../masks/claim-number'
 import { ContractNumber } from '../masks/contract-number'
 import { OfferNumber } from '../masks/offer-number'
 import { VehicleRegistrationNumber } from '../masks/vehicle-registration-number'
+
+const inputEvent = (value: string) => {
+  const target = document.createElement('input')
+  target.value = value
+  return { ev: { target } as unknown as InputEvent, target }
+}
 
 describe('VehicleRegistrationNumber', () => {
   const formatter = new VehicleRegistrationNumber()
@@ -161,5 +168,64 @@ describe('BeIBAN', () => {
     test('15 characters truncates to 14', () => {
       expect(formatter.format('11234567890123')).toStrictEqual('BE11 2345 6789 0123')
     })
+  })
+})
+
+describe('BasicContractNumber', () => {
+  const formatter = new BasicContractNumber()
+
+  describe('format', () => {
+    test('full entry', () => {
+      expect(formatter.format('987654321')).toStrictEqual('98/7.654.321')
+    })
+    test('empty', () => {
+      expect(formatter.format('')).toStrictEqual('')
+    })
+  })
+})
+
+describe.each([
+  { name: 'BasicContractNumber', mask: new BasicContractNumber(), nonDigitOnly: '/', input: '987', expected: '98/7' },
+  { name: 'BeEnterpriseNumber', mask: new BeEnterpriseNumber(), nonDigitOnly: '.', input: '1234', expected: '1234' },
+  { name: 'BeIBAN', mask: new BeIBAN(), nonDigitOnly: 'BE', input: '1234', expected: 'BE12 34' },
+  { name: 'ClaimNumber', mask: new ClaimNumber(), nonDigitOnly: ' ', input: '730', expected: '73/0' },
+  { name: 'ContractNumber', mask: new ContractNumber(), nonDigitOnly: '/', input: '987', expected: '98/7' },
+  { name: 'OfferNumber', mask: new OfferNumber(), nonDigitOnly: '/', input: '987', expected: '98/7' },
+  {
+    name: 'VehicleRegistrationNumber',
+    mask: new VehicleRegistrationNumber(),
+    nonDigitOnly: '.',
+    input: '1234',
+    expected: '123.4',
+  },
+])('$name empty and non-digit input', ({ mask, nonDigitOnly, input, expected }) => {
+  test('empty value', () => {
+    const { ev, target } = inputEvent('')
+    mask.onInput(ev)
+    expect(target.value).toStrictEqual('')
+  })
+  test('non-digit only value', () => {
+    const { ev, target } = inputEvent(nonDigitOnly)
+    mask.onInput(ev)
+    expect(target.value).toStrictEqual('')
+  })
+  test('format with non-digit only value', () => {
+    expect(mask.format(nonDigitOnly)).toStrictEqual('')
+  })
+  test('non-empty value', () => {
+    const { ev, target } = inputEvent(input)
+    mask.onInput(ev)
+    expect(target.value).toStrictEqual(expected)
+  })
+})
+
+describe.each([
+  { name: 'BasicContractNumber', mask: new BasicContractNumber() },
+  { name: 'ContractNumber', mask: new ContractNumber() },
+])('$name onInput leading zero', ({ mask }) => {
+  test('single zero', () => {
+    const { ev, target } = inputEvent('0')
+    mask.onInput(ev)
+    expect(target.value).toStrictEqual('')
   })
 })

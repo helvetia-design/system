@@ -22,15 +22,14 @@
 
 ## Supported Versions
 
-Two major versions receive security patches at any given time:
+The latest major version receives security patches:
 
-| Branch | Version              | Support type                          | Supported |
-| ------ | -------------------- | ------------------------------------- | --------- |
-| `next` | Latest major         | Active development + security patches | ✅        |
-| `main` | Previous major (LTS) | Security patches only                 | ✅        |
-| —      | Older majors         | No patches                            | ❌        |
+| Branch | Version      | Support type                          | Supported |
+| ------ | ------------ | ------------------------------------- | --------- |
+| `main` | Latest major | Active development + security patches | ✅        |
+| —      | Older majors | No patches                            | ❌        |
 
-The previous major enters **Long-Term Support (LTS)** the moment the next major is released and receives security patches for a minimum of **24 months** from that date. After 24 months, EOL is announced at least **6 months in advance** via a GitHub release note and a pinned repository issue before support is dropped.
+EOL of an older major is announced at least **6 months in advance** via a GitHub release note and a pinned repository issue before support is dropped.
 
 ## Reporting a Vulnerability
 
@@ -110,7 +109,7 @@ We maintain security through automated scanning, dependency management, and secu
 
 **Tool:** CodeQL  
 **Location:** `.github/workflows/security.yml`  
-**Frequency:** On every push to `next`, all PRs, and weekly schedule  
+**Frequency:** On every push to `main`, all PRs, and weekly schedule  
 **What it does:** Performs static analysis to detect security vulnerabilities (TOCTOU race conditions, unvalidated network data, injection risks, etc.)  
 **Where to see results:** [GitHub Security → Code scanning](../../security/code-scanning)
 
@@ -237,15 +236,14 @@ Fix available:    Yes / No / In progress
 
 ### Version Support Policy
 
-| Aspect                 | Policy                                                                                             |
-| ---------------------- | -------------------------------------------------------------------------------------------------- |
-| **Supported versions** | Latest major (`next` branch) + previous major in LTS (`main` branch)                               |
-| **LTS duration**       | Minimum 24 months of security patches from the date the next major is released                     |
-| **Patch frequency**    | Security patches released within 90 days of a confirmed vulnerability                              |
-| **EOL announcement**   | At least 6 months' notice via GitHub release note and pinned repository issue                      |
-| **EOL behaviour**      | EOL versions receive no patches, even for critical CVEs — consumers must upgrade                   |
-| **Breaking changes**   | Only in new major versions; communicated via CHANGELOG.md and release notes                        |
-| **LTS workflow**       | Automated via `.github/workflows/lts-continuous.yml`, `lts-prepare-release.yml`, `lts-release.yml` |
+| Aspect                 | Policy                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| **Supported versions** | Latest major (`main` branch)                                                     |
+| **Patch frequency**    | Security patches released within 90 days of a confirmed vulnerability            |
+| **EOL announcement**   | At least 6 months' notice via GitHub release note and pinned repository issue    |
+| **EOL behaviour**      | EOL versions receive no patches, even for critical CVEs — consumers must upgrade |
+| **Breaking changes**   | Only in new major versions; communicated via CHANGELOG.md and release notes      |
+| **Release workflow**   | Automated via `.github/workflows/prepare-release.yml`, `release.yml`             |
 
 ### Security by Default
 

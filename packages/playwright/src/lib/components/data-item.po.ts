@@ -32,6 +32,14 @@ export class DsDataItem extends PageObject {
     await expect(this.el).not.toHaveClass(/is-multiline/)
   }
 
+  async assertIsStacked() {
+    await expect(this.el).toHaveClass(/is-stacked/)
+  }
+
+  async assertIsNotStacked() {
+    await expect(this.el).not.toHaveClass(/is-stacked/)
+  }
+
   async assertIsEditable() {
     await expect(this.el).toHaveClass(/is-editable/)
   }

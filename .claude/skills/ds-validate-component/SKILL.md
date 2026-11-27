@@ -23,18 +23,18 @@ Validate a component against project standards, its specification and its accept
 
 This repo uses **pnpm workspaces + Turbo** (no Nx). Available checks:
 
-| Check             | Command                                              |
-| ----------------- | ---------------------------------------------------- |
-| Unit tests        | `pnpm --filter @helvetia-design/core test`           |
-| Single unit file  | `pnpm --filter @helvetia-design/core test -- <path>` |
-| Lint              | `pnpm --filter @helvetia-design/core lint`           |
-| Build (core)      | `pnpm core`                                          |
-| Interaction tests | `pnpm play:components`                               |
-| Visual tests      | `pnpm play:visual`                                   |
-| A11y tests        | `pnpm play:a11y`                                     |
-| Single Playwright | `pnpm play:file -- --grep="<test name>"`             |
-| Spell check       | `pnpm spell`                                         |
-| Format check      | `pnpm format:check`                                  |
+| Check             | Command                                                 |
+| ----------------- | ------------------------------------------------------- |
+| Unit tests        | `pnpm --filter @helvetia-design/core test`              |
+| Single unit file  | `pnpm --filter @helvetia-design/core test -- <path>`    |
+| Lint              | `pnpm --filter @helvetia-design/core lint`              |
+| Build (core)      | `pnpm core`                                             |
+| Interaction tests | `pnpm play:components`                                  |
+| Visual tests      | CI only. Never run locally; report as NOT_VERIFIED (CI) |
+| A11y tests        | `pnpm play:a11y`                                        |
+| Single Playwright | `pnpm play:file -- --grep="<test name>"`                |
+| Spell check       | `pnpm spell`                                            |
+| Format check      | `pnpm format:check`                                     |
 
 Do not invent commands. If a check you want doesn't exist, say so and move on.
 

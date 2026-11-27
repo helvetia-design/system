@@ -21,7 +21,7 @@ import { POPUP_DOC_CONFIG, getPopupTabs } from './popup.doc-config'
     {
       type: 'do',
       title: 'Use appropriate role',
-      content: <p style={{ margin: '0.5rem 0 0 0' }}>Set `role` to match content: "dialog" for rich content, "listbox" for option lists, "menu" for navigation menus. Screen readers announce the role to provide context.</p>,
+      content: <p style={{ margin: '0.5rem 0 0 0' }}>Set `panel-role` to match content: "dialog" for rich content, "listbox" for option lists, "menu" for navigation menus. Screen readers announce the role to provide context.</p>,
     },
     {
       type: 'do',
@@ -41,7 +41,7 @@ import { POPUP_DOC_CONFIG, getPopupTabs } from './popup.doc-config'
     {
       type: 'dont',
       title: 'Don\'t trap focus unexpectedly',
-      content: <p style={{ margin: '0.5rem 0 0 0' }}>Focus trap only applies to `role="dialog"`. For other roles (listbox, menu), focus may move outside the popup. Clarify this behavior in your UI.</p>,
+      content: <p style={{ margin: '0.5rem 0 0 0' }}>Focus trap only applies when `trap-focus` is set or the popup has a `backdrop`. Without it, focus may move outside the popup. Clarify this behavior in your UI.</p>,
     },
     {
       type: 'dont',
@@ -55,9 +55,9 @@ import { POPUP_DOC_CONFIG, getPopupTabs } from './popup.doc-config'
 
 The popup component implements patterns that meet WCAG 2.2 Level AA standards:
 
-- **Dialog Semantics** — The panel uses `role="dialog"` by default, with proper `aria-label` for accessible naming.
+- **Dialog Semantics** — The panel uses `role="dialog"` by default (set via `panel-role`), with proper `aria-label` for accessible naming. `aria-modal="true"` is set only when focus is trapped.
 - **Focus Management** — When opening, focus moves into the popup. When closing, focus returns to the trigger (if available). Focus trap (Tab navigation) works within the panel.
-- **Keyboard Navigation** — Escape key closes the popup. Tab navigates focusable elements. For role="listbox", arrow keys can be used with proper ARIA attributes.
+- **Keyboard Navigation** — Escape closes the topmost open popup that is `closable`. A non-closable popup opened on top does not block it, and a surrounding modal or drawer stays open. Tab navigates focusable elements. For `panel-role="listbox"`, arrow keys can be used with proper ARIA attributes.
 - **Positioned Correctly** — Floating positioning uses `computePosition()` to ensure the popup doesn't get cut off by viewport boundaries.
 - **Contrast** — The close button (part="close") and content have sufficient contrast for visibility.
 - **Touch-friendly** — Backdrop dismiss provides a clear touch target to close the popup when backdrop-dismiss is enabled.

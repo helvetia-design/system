@@ -320,6 +320,8 @@ export const config: Config = {
               'src/blocks/**/*.style.html',
               'src/templates/**/*.visual.html',
               'src/templates/**/*.style.html',
+              'src/sections/**/*.visual.html',
+              'src/sections/**/*.style.html',
               'src/foundation/**/*.visual.html',
               'src/foundation/**/*.style.html',
               'src/components/**/*.visual.html',

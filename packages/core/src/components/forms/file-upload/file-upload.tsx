@@ -1,11 +1,11 @@
 import {
+  AttachInternals,
   AttrDeserialize,
   Component,
   Element,
   Event,
   EventEmitter,
   h,
-  Listen,
   Method,
   Prop,
   State,
@@ -19,6 +19,7 @@ import {
   stopEventBubbling,
   areArraysEqual,
   OneOf,
+  setFormValue,
   Type,
   watchInvalidTextSlot,
 } from '@utils'
@@ -51,10 +52,10 @@ import { i18nDsFileUpload } from './file-upload.i18n'
   tag: 'ds-file-upload',
   styleUrl: 'file-upload.host.scss',
   shadow: true,
+  formAssociated: true,
 })
 export class FileUpload implements DsComponentInterface, FieldInterface {
   private fileUploadId = `ds-file-upload-${FileUploadIds++}`
-  private initialValue: File[] = []
   private nativeInput?: HTMLInputElement
   private dropZoneEl?: HTMLDivElement
 
@@ -65,6 +66,7 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
   }
 
   @Element() el!: HTMLStencilElement
+  @AttachInternals() internals!: ElementInternals
 
   @State() files: File[] = []
   @State() focused = false
@@ -72,6 +74,11 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() hasInvalidTextSlotContent = false
+
+  @Watch('files')
+  filesChanged() {
+    this.syncFormValue()
+  }
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -101,6 +108,11 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
   @Prop({ reflect: true })
   @Type('string')
   readonly name: string = this.fileUploadId
+
+  @Watch('name')
+  nameChanged() {
+    this.syncFormValue()
+  }
 
   /**
    * The label of the file upload, displayed in the drop zone area.
@@ -150,6 +162,11 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
   @Prop()
   @Type('boolean')
   readonly multiple: boolean = true
+
+  @AttrDeserialize('multiple')
+  private deserializeMultiple(value: unknown): boolean {
+    return deserializeBooleanAttribute(value)
+  }
 
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form.
@@ -269,10 +286,10 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
 
   componentWillLoad() {
     this.valueChanged()
+    this.syncFormValue()
   }
 
   connectedCallback() {
-    this.initialValue = [...(this.value || [])]
     this.disconnectInvalidTextSlotWatcher = watchInvalidTextSlot(this.el, hasContent => {
       this.hasInvalidTextSlotContent = hasContent
     })
@@ -287,23 +304,15 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
     this.disconnectInvalidTextSlotWatcher?.()
   }
 
+  formResetCallback() {
+    this.files = [...(this.value || [])]
+    this.updateFileInput()
+  }
+
   /**
    * LISTENERS
    * ------------------------------------------------------
    */
-
-  @Listen('reset', { capture: true, target: 'document' })
-  listenToReset(ev: UIEvent) {
-    const formElement = ev.target as HTMLElement
-    if (formElement?.contains(this.el)) {
-      this.files = [...this.initialValue]
-      setTimeout(() => {
-        if (this.nativeInput) {
-          this.nativeInput.files = toFileList(this.initialValue)
-        }
-      })
-    }
-  }
 
   @Method()
   @ListenToConfig()
@@ -379,6 +388,12 @@ export class FileUpload implements DsComponentInterface, FieldInterface {
     }
 
     this.updateFileInput()
+  }
+
+  private syncFormValue() {
+    const formData = new FormData()
+    this.files.forEach(file => formData.append(this.name, file))
+    setFormValue(this.internals, this.files.length ? formData : null)
   }
 
   private updateFileInput = () => {

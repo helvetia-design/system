@@ -28,6 +28,15 @@ const PRODUCT_ITEMS = `
   <ds-carousel-item name="p5">Item 5</ds-carousel-item>
   <ds-carousel-item name="p6">Last item with a long content</ds-carousel-item>`
 
+const RESPONSIVE_ITEMS = [1, 2, 3, 4, 5, 6]
+  .map(
+    n => `
+  <ds-carousel-item name="r${n}">
+    <div style="${slideStyle('#4a5568')} width: 100%">Item ${n}</div>
+  </ds-carousel-item>`,
+  )
+  .join('')
+
 const BRAND_ICON_ITEMS = `
   <ds-carousel-item name="auto" color="green" navigation>
     <a href="/auto" class="ds-stack align-top gap-xs ds-button is-brand-green" style="width: 10rem">
@@ -235,3 +244,34 @@ export const ProductBrandIconsHtml = Story({
   ),
 })
 ProductBrandIconsHtml.storyName = '🌍 Product Carousel (brand icons, navigation)'
+
+// Responsive items per view
+// ------------------------------------------------------
+
+export const ItemsPerView = Story({
+  args: {
+    variant: 'tile',
+    controls: 'large-below',
+    label: 'Responsive items',
+    itemsPerView: '1 tablet:2 desktop:3',
+  },
+  ...withRender(
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')}>${RESPONSIVE_ITEMS}
+</ds-carousel>`,
+  ),
+})
+ItemsPerView.storyName = '🧩 Items per View (responsive)'
+
+export const ItemsPerViewHtml = Story({
+  args: {
+    variant: 'tile',
+    controls: 'large-below',
+    label: 'Responsive items',
+    itemsPerView: '1 tablet:2 desktop:3',
+  },
+  ...withRender(
+    ({ ...args }) => `<ds-carousel ${props(args, 'ds-carousel')}>${RESPONSIVE_ITEMS}
+</ds-carousel>`,
+  ),
+})
+ItemsPerViewHtml.storyName = '🌍 Items per View (responsive)'

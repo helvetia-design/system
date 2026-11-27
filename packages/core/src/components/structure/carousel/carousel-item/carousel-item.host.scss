@@ -33,6 +33,14 @@
   cursor: pointer;
   outline: none;
   transition: box-shadow 120ms ease;
+
+  @include tablet {
+    flex-basis: var(--carousel-item-width-tablet, var(--carousel-item-width, auto));
+  }
+
+  @include desktop {
+    flex-basis: var(--carousel-item-width-desktop, var(--carousel-item-width-tablet, var(--carousel-item-width, auto)));
+  }
 }
 
 :host(.is-tile:focus-visible:not(:active)) {

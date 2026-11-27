@@ -13,6 +13,7 @@ export const VARIANTS = [
   'column-alignment-top',
   'column-alignment-center',
   'column-alignment-bottom',
+  'column-alignment-stretch',
   'margins',
   'padding',
 ] as const
