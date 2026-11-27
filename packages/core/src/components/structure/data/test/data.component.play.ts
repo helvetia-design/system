@@ -108,7 +108,7 @@ test.describe('ds-data', () => {
         el.appendChild(item)
       })
 
-      await new DsDataItem(page.locator('ds-data-item').nth(1)).assertIsStacked()
+      await new DsDataItem(page.locator('ds-data-item:nth-child(2)')).assertIsStacked()
     })
   })
 
