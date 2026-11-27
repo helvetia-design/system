@@ -1,7 +1,7 @@
 {
   "compiler": {
     "name": "@stencil/core",
-    "version": "4.45.2",
+    "version": "4.45.3",
     "typescriptVersion": "5.8.3"
   },
   "components": [
@@ -7507,56 +7507,8 @@
           ]
         },
         {
-          "name": "🧩 Component / BrandIcon / Tile / Size / Base / Tablet",
-          "cssVarName": "--ds-brandicon-tile-size-base-tablet",
-          "value": "{🌐 Global.📏 Dimension.Size.64}",
-          "nativeValue": "{\"value\":64,\"unit\":\"px\"}",
-          "inheritance": [
-            {
-              "cssVar": "--ds-dimension-size-64",
-              "figmaName": "Global / Dimension / Size / 64"
-            },
-            {
-              "cssVar": "--ds-brandicon-tile-size-base-tablet",
-              "figmaName": "Component / BrandIcon / Tile / Size / Base / Tablet"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "BrandIcon",
-            "Tile",
-            "Size",
-            "Base",
-            "Tablet"
-          ]
-        },
-        {
-          "name": "🧩 Component / BrandIcon / Tile / Size / Base / Desktop",
-          "cssVarName": "--ds-brandicon-tile-size-base-desktop",
-          "value": "{🌐 Global.📏 Dimension.Size.64}",
-          "nativeValue": "{\"value\":64,\"unit\":\"px\"}",
-          "inheritance": [
-            {
-              "cssVar": "--ds-dimension-size-64",
-              "figmaName": "Global / Dimension / Size / 64"
-            },
-            {
-              "cssVar": "--ds-brandicon-tile-size-base-desktop",
-              "figmaName": "Component / BrandIcon / Tile / Size / Base / Desktop"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "BrandIcon",
-            "Tile",
-            "Size",
-            "Base",
-            "Desktop"
-          ]
-        },
-        {
-          "name": "🧩 Component / BrandIcon / Tile / Size / Base / Mobile",
-          "cssVarName": "--ds-brandicon-tile-size-base-mobile",
+          "name": "🧩 Component / BrandIcon / Tile / Size / Base",
+          "cssVarName": "--ds-brandicon-tile-size-base",
           "value": "{🌐 Global.📏 Dimension.Size.56}",
           "nativeValue": "{\"value\":56,\"unit\":\"px\"}",
           "inheritance": [
@@ -7565,8 +7517,8 @@
               "figmaName": "Global / Dimension / Size / 56"
             },
             {
-              "cssVar": "--ds-brandicon-tile-size-base-mobile",
-              "figmaName": "Component / BrandIcon / Tile / Size / Base / Mobile"
+              "cssVar": "--ds-brandicon-tile-size-base",
+              "figmaName": "Component / BrandIcon / Tile / Size / Base"
             }
           ],
           "path": [
@@ -7574,85 +7526,12 @@
             "BrandIcon",
             "Tile",
             "Size",
-            "Base",
-            "Mobile"
+            "Base"
           ]
         },
         {
-          "name": "🧩 Component / BrandIcon / Tile / Size / LG / Mobile",
-          "cssVarName": "--ds-brandicon-tile-size-lg-mobile",
-          "value": "{🌐 Global.📏 Dimension.Size.64}",
-          "nativeValue": "{\"value\":64,\"unit\":\"px\"}",
-          "inheritance": [
-            {
-              "cssVar": "--ds-dimension-size-64",
-              "figmaName": "Global / Dimension / Size / 64"
-            },
-            {
-              "cssVar": "--ds-brandicon-tile-size-lg-mobile",
-              "figmaName": "Component / BrandIcon / Tile / Size / LG / Mobile"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "BrandIcon",
-            "Tile",
-            "Size",
-            "LG",
-            "Mobile"
-          ]
-        },
-        {
-          "name": "🧩 Component / BrandIcon / Tile / Size / LG / Tablet",
-          "cssVarName": "--ds-brandicon-tile-size-lg-tablet",
-          "value": "{🌐 Global.📏 Dimension.Size.96}",
-          "nativeValue": "{\"value\":96,\"unit\":\"px\"}",
-          "inheritance": [
-            {
-              "cssVar": "--ds-dimension-size-96",
-              "figmaName": "Global / Dimension / Size / 96"
-            },
-            {
-              "cssVar": "--ds-brandicon-tile-size-lg-tablet",
-              "figmaName": "Component / BrandIcon / Tile / Size / LG / Tablet"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "BrandIcon",
-            "Tile",
-            "Size",
-            "LG",
-            "Tablet"
-          ]
-        },
-        {
-          "name": "🧩 Component / BrandIcon / Tile / Size / LG / Desktop",
-          "cssVarName": "--ds-brandicon-tile-size-lg-desktop",
-          "value": "{🌐 Global.📏 Dimension.Size.96}",
-          "nativeValue": "{\"value\":96,\"unit\":\"px\"}",
-          "inheritance": [
-            {
-              "cssVar": "--ds-dimension-size-96",
-              "figmaName": "Global / Dimension / Size / 96"
-            },
-            {
-              "cssVar": "--ds-brandicon-tile-size-lg-desktop",
-              "figmaName": "Component / BrandIcon / Tile / Size / LG / Desktop"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "BrandIcon",
-            "Tile",
-            "Size",
-            "LG",
-            "Desktop"
-          ]
-        },
-        {
-          "name": "🧩 Component / BrandIcon / Tile / Size / SM / Mobile",
-          "cssVarName": "--ds-brandicon-tile-size-sm-mobile",
+          "name": "🧩 Component / BrandIcon / Tile / Size / SM",
+          "cssVarName": "--ds-brandicon-tile-size-sm",
           "value": "{🌐 Global.📏 Dimension.Size.48}",
           "nativeValue": "{\"value\":48,\"unit\":\"px\"}",
           "inheritance": [
@@ -7661,8 +7540,8 @@
               "figmaName": "Global / Dimension / Size / 48"
             },
             {
-              "cssVar": "--ds-brandicon-tile-size-sm-mobile",
-              "figmaName": "Component / BrandIcon / Tile / Size / SM / Mobile"
+              "cssVar": "--ds-brandicon-tile-size-sm",
+              "figmaName": "Component / BrandIcon / Tile / Size / SM"
             }
           ],
           "path": [
@@ -7670,23 +7549,22 @@
             "BrandIcon",
             "Tile",
             "Size",
-            "SM",
-            "Mobile"
+            "SM"
           ]
         },
         {
-          "name": "🧩 Component / BrandIcon / Tile / Size / SM / Tablet",
-          "cssVarName": "--ds-brandicon-tile-size-sm-tablet",
-          "value": "{🌐 Global.📏 Dimension.Size.56}",
-          "nativeValue": "{\"value\":56,\"unit\":\"px\"}",
+          "name": "🧩 Component / BrandIcon / Tile / Size / LG",
+          "cssVarName": "--ds-brandicon-tile-size-lg",
+          "value": "{🌐 Global.📏 Dimension.Size.64}",
+          "nativeValue": "{\"value\":64,\"unit\":\"px\"}",
           "inheritance": [
             {
-              "cssVar": "--ds-dimension-size-56",
-              "figmaName": "Global / Dimension / Size / 56"
+              "cssVar": "--ds-dimension-size-64",
+              "figmaName": "Global / Dimension / Size / 64"
             },
             {
-              "cssVar": "--ds-brandicon-tile-size-sm-tablet",
-              "figmaName": "Component / BrandIcon / Tile / Size / SM / Tablet"
+              "cssVar": "--ds-brandicon-tile-size-lg",
+              "figmaName": "Component / BrandIcon / Tile / Size / LG"
             }
           ],
           "path": [
@@ -7694,32 +7572,7 @@
             "BrandIcon",
             "Tile",
             "Size",
-            "SM",
-            "Tablet"
-          ]
-        },
-        {
-          "name": "🧩 Component / BrandIcon / Tile / Size / SM / Desktop",
-          "cssVarName": "--ds-brandicon-tile-size-sm-desktop",
-          "value": "{🌐 Global.📏 Dimension.Size.56}",
-          "nativeValue": "{\"value\":56,\"unit\":\"px\"}",
-          "inheritance": [
-            {
-              "cssVar": "--ds-dimension-size-56",
-              "figmaName": "Global / Dimension / Size / 56"
-            },
-            {
-              "cssVar": "--ds-brandicon-tile-size-sm-desktop",
-              "figmaName": "Component / BrandIcon / Tile / Size / SM / Desktop"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "BrandIcon",
-            "Tile",
-            "Size",
-            "SM",
-            "Desktop"
+            "LG"
           ]
         },
         {
@@ -8275,33 +8128,6 @@
           ]
         },
         {
-          "name": "🧩 Component / BrandIcon / Color / Red / Level2",
-          "cssVarName": "--ds-brandicon-color-red-level2",
-          "value": "{🔗 Alias.🎨 Surface.RedDark}",
-          "nativeValue": "#99172D",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-red-6",
-              "figmaName": "Global / Color / Red / 6"
-            },
-            {
-              "cssVar": "--ds-surface-reddark",
-              "figmaName": "Alias / Surface / RedDark"
-            },
-            {
-              "cssVar": "--ds-brandicon-color-red-level2",
-              "figmaName": "Component / BrandIcon / Color / Red / Level2"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "BrandIcon",
-            "Color",
-            "Red",
-            "Level2"
-          ]
-        },
-        {
           "name": "🧩 Component / BrandIcon / Color / Red / Level3",
           "cssVarName": "--ds-brandicon-color-red-level3",
           "value": "{🔗 Alias.🎨 Surface.Red}",
@@ -8326,6 +8152,29 @@
             "Color",
             "Red",
             "Level3"
+          ]
+        },
+        {
+          "name": "🧩 Component / BrandIcon / Color / Red / Level2",
+          "cssVarName": "--ds-brandicon-color-red-level2",
+          "value": "{🌐 Global.🌈 Color.Red.5}",
+          "nativeValue": "#D9304C",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-red-5",
+              "figmaName": "Global / Color / Red / 5"
+            },
+            {
+              "cssVar": "--ds-brandicon-color-red-level2",
+              "figmaName": "Component / BrandIcon / Color / Red / Level2"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "BrandIcon",
+            "Color",
+            "Red",
+            "Level2"
           ]
         },
         {
@@ -8383,33 +8232,6 @@
           ]
         },
         {
-          "name": "🧩 Component / BrandIcon / Color / Yellow / Level2",
-          "cssVarName": "--ds-brandicon-color-yellow-level2",
-          "value": "{🔗 Alias.🎨 Surface.YellowDark}",
-          "nativeValue": "#B24A00",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-yellow-6",
-              "figmaName": "Global / Color / Yellow / 6"
-            },
-            {
-              "cssVar": "--ds-surface-yellowdark",
-              "figmaName": "Alias / Surface / YellowDark"
-            },
-            {
-              "cssVar": "--ds-brandicon-color-yellow-level2",
-              "figmaName": "Component / BrandIcon / Color / Yellow / Level2"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "BrandIcon",
-            "Color",
-            "Yellow",
-            "Level2"
-          ]
-        },
-        {
           "name": "🧩 Component / BrandIcon / Color / Yellow / Level3",
           "cssVarName": "--ds-brandicon-color-yellow-level3",
           "value": "{🔗 Alias.🎨 Surface.Yellow}",
@@ -8434,6 +8256,29 @@
             "Color",
             "Yellow",
             "Level3"
+          ]
+        },
+        {
+          "name": "🧩 Component / BrandIcon / Color / Yellow / Level2",
+          "cssVarName": "--ds-brandicon-color-yellow-level2",
+          "value": "{🌐 Global.🌈 Color.Yellow.5}",
+          "nativeValue": "#FA9319",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-yellow-5",
+              "figmaName": "Global / Color / Yellow / 5"
+            },
+            {
+              "cssVar": "--ds-brandicon-color-yellow-level2",
+              "figmaName": "Component / BrandIcon / Color / Yellow / Level2"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "BrandIcon",
+            "Color",
+            "Yellow",
+            "Level2"
           ]
         }
       ],
@@ -15250,6 +15095,10 @@
           "text": "card - The card container element."
         },
         {
+          "name": "part",
+          "text": "link - The link stretched over the whole card, only rendered if `href` is set."
+        },
+        {
           "name": "attachment",
           "text": "ds-badge top-right - Optional badge as the first child of the default slot, centered on the card's top-right corner."
         },
@@ -15271,6 +15120,35 @@
       "dependencies": [],
       "dependencyGraph": {},
       "props": [
+        {
+          "name": "a11yLabel",
+          "type": "string",
+          "complexType": {
+            "original": "string",
+            "resolved": "string",
+            "references": {}
+          },
+          "mutable": false,
+          "attr": "a-1-1y-label",
+          "reflectToAttr": false,
+          "docs": "Accessible name of the card link. Defaults to the text of the `ds-card-title`.\nOnly applies when an `href` is provided.",
+          "docsTags": [
+            {
+              "name": "default",
+              "text": "''"
+            }
+          ],
+          "default": "''",
+          "values": [
+            {
+              "type": "string"
+            }
+          ],
+          "optional": false,
+          "required": false,
+          "getter": false,
+          "setter": false
+        },
         {
           "name": "align",
           "type": "\"center\" | \"left\" | undefined",
@@ -15324,7 +15202,7 @@
           "mutable": false,
           "attr": "clickable",
           "reflectToAttr": false,
-          "docs": "If `true` the card has a hover effect.",
+          "docs": "If `true` the card has a hover effect. Set `href` as well to make the card a keyboard accessible link.",
           "docsTags": [
             {
               "name": "default",
@@ -15517,6 +15395,35 @@
           "setter": false
         },
         {
+          "name": "href",
+          "type": "string",
+          "complexType": {
+            "original": "string",
+            "resolved": "string",
+            "references": {}
+          },
+          "mutable": false,
+          "attr": "href",
+          "reflectToAttr": false,
+          "docs": "Specifies the URL of the page the card links to. A link is stretched over the whole card,\nso the card becomes focusable and operable by keyboard.",
+          "docsTags": [
+            {
+              "name": "default",
+              "text": "''"
+            }
+          ],
+          "default": "''",
+          "values": [
+            {
+              "type": "string"
+            }
+          ],
+          "optional": false,
+          "required": false,
+          "getter": false,
+          "setter": false
+        },
+        {
           "name": "imageTeaser",
           "type": "\"wide-center\" | \"wide-left\" | \"wide-right\" | undefined",
           "complexType": {
@@ -15599,6 +15506,35 @@
           "setter": false
         },
         {
+          "name": "rel",
+          "type": "string",
+          "complexType": {
+            "original": "string",
+            "resolved": "string",
+            "references": {}
+          },
+          "mutable": false,
+          "attr": "rel",
+          "reflectToAttr": false,
+          "docs": "Specifies the relationship of the target object to the link object.\nThe value is a space-separated list of [link types](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types).",
+          "docsTags": [
+            {
+              "name": "default",
+              "text": "''"
+            }
+          ],
+          "default": "''",
+          "values": [
+            {
+              "type": "string"
+            }
+          ],
+          "optional": false,
+          "required": false,
+          "getter": false,
+          "setter": false
+        },
+        {
           "name": "selected",
           "type": "boolean",
           "complexType": {
@@ -15668,6 +15604,52 @@
             "sm",
             "lg"
           ]
+        },
+        {
+          "name": "target",
+          "type": "\"_blank\" | \"_parent\" | \"_self\" | \"_top\" | undefined",
+          "complexType": {
+            "original": "ButtonTarget",
+            "resolved": "\"_blank\" | \"_parent\" | \"_self\" | \"_top\" | undefined",
+            "references": {
+              "ButtonTarget": {
+                "location": "import",
+                "path": "../../actions/button/button.interfaces",
+                "id": "src/components/actions/button/button.interfaces.ts::ButtonTarget",
+                "referenceLocation": "ButtonTarget"
+              }
+            }
+          },
+          "mutable": false,
+          "attr": "target",
+          "reflectToAttr": false,
+          "docs": "Specifies where to display the linked URL.\nOnly applies when an `href` is provided.",
+          "docsTags": [],
+          "values": [
+            {
+              "value": "_blank",
+              "type": "string"
+            },
+            {
+              "value": "_parent",
+              "type": "string"
+            },
+            {
+              "value": "_self",
+              "type": "string"
+            },
+            {
+              "value": "_top",
+              "type": "string"
+            },
+            {
+              "type": "undefined"
+            }
+          ],
+          "optional": true,
+          "required": false,
+          "getter": false,
+          "setter": false
         },
         {
           "name": "tile",
@@ -15765,6 +15747,10 @@
         {
           "name": "card",
           "docs": "The card container element."
+        },
+        {
+          "name": "link",
+          "docs": "The link stretched over the whole card, only rendered if `href` is set."
         }
       ],
       "customStates": [],
@@ -17718,10 +17704,10 @@
       "props": [
         {
           "name": "controls",
-          "type": "\"dots\" | \"large\" | \"none\"",
+          "type": "\"dots\" | \"large\" | \"large-below\" | \"none\"",
           "complexType": {
             "original": "CarouselControls",
-            "resolved": "\"dots\" | \"large\" | \"none\"",
+            "resolved": "\"dots\" | \"large\" | \"large-below\" | \"none\"",
             "references": {
               "CarouselControls": {
                 "location": "import",
@@ -17734,7 +17720,7 @@
           "mutable": false,
           "attr": "controls",
           "reflectToAttr": false,
-          "docs": "Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `none` hides all controls.",
+          "docs": "Control style. `dots` shows dot pagination with prev/next arrows (image variant). `large` shows large side arrows (product variant). `large-below` shows large round arrow buttons centered below the track. `none` hides all controls.",
           "docsTags": [
             {
               "name": "default",
@@ -17752,6 +17738,10 @@
               "type": "string"
             },
             {
+              "value": "large-below",
+              "type": "string"
+            },
+            {
               "value": "none",
               "type": "string"
             }
@@ -17763,16 +17753,16 @@
         },
         {
           "name": "itemsPerView",
-          "type": "\"auto\" | number",
+          "type": "number | string",
           "complexType": {
-            "original": "number | 'auto'",
-            "resolved": "\"auto\" | number",
+            "original": "number | 'auto' | string",
+            "resolved": "number | string",
             "references": {}
           },
           "mutable": false,
           "attr": "items-per-view",
           "reflectToAttr": false,
-          "docs": "Number of items visible at once. `auto` sizes items by content. A number divides the container width equally.",
+          "docs": "Number of items visible at once. `auto` sizes items by content. A number divides the container width equally. A string sets it per breakpoint with `ds-col` prefixes, e.g. `\"1 tablet:2 desktop:3\"`.",
           "docsTags": [
             {
               "name": "default",
@@ -17782,11 +17772,10 @@
           "default": "'auto'",
           "values": [
             {
-              "value": "auto",
-              "type": "string"
+              "type": "number"
             },
             {
-              "type": "number"
+              "type": "string"
             }
           ],
           "optional": false,
@@ -17991,6 +17980,22 @@
         {
           "name": "--carousel-scroll-btn-opacity-disabled",
           "docs": "Opacity of a product-variant arrow button that cannot scroll further."
+        },
+        {
+          "name": "--carousel-scroll-btn-background-disabled",
+          "docs": "Background color of a below-track scroll button that cannot scroll further."
+        },
+        {
+          "name": "--carousel-scroll-btn-color-disabled",
+          "docs": "Icon color of a below-track scroll button that cannot scroll further."
+        },
+        {
+          "name": "--carousel-scroll-btn-below-gap",
+          "docs": "Gap between the slide track and the below-track scroll buttons."
+        },
+        {
+          "name": "--carousel-scroll-btn-below-button-gap",
+          "docs": "Gap between the two below-track scroll buttons."
         }
       ],
       "slots": [
@@ -18093,6 +18098,33 @@
           ]
         },
         {
+          "name": "🧩 Component / Carousel / ScrollBtn / Color / Disabled",
+          "cssVarName": "--ds-carousel-scrollbtn-color-disabled",
+          "value": "{🔗 Alias.🔤 Text.Color.Disabled}",
+          "nativeValue": "#313131",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-grey-6",
+              "figmaName": "Global / Color / Grey / 6"
+            },
+            {
+              "cssVar": "--ds-text-color-disabled",
+              "figmaName": "Alias / Text / Color / Disabled"
+            },
+            {
+              "cssVar": "--ds-carousel-scrollbtn-color-disabled",
+              "figmaName": "Component / Carousel / ScrollBtn / Color / Disabled"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Carousel",
+            "ScrollBtn",
+            "Color",
+            "Disabled"
+          ]
+        },
+        {
           "name": "🧩 Component / Carousel / ScrollBtn / Background / Active",
           "cssVarName": "--ds-carousel-scrollbtn-background-active",
           "value": "{🔗 Alias.🎨 Surface.Primary}",
@@ -18171,6 +18203,33 @@
             "ScrollBtn",
             "Background",
             "ActivePressed"
+          ]
+        },
+        {
+          "name": "🧩 Component / Carousel / ScrollBtn / Background / Disabled",
+          "cssVarName": "--ds-carousel-scrollbtn-background-disabled",
+          "value": "{🔗 Alias.🎨 Surface.Disabled}",
+          "nativeValue": "#E8E8E8",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-grey-2",
+              "figmaName": "Global / Color / Grey / 2"
+            },
+            {
+              "cssVar": "--ds-surface-disabled",
+              "figmaName": "Alias / Surface / Disabled"
+            },
+            {
+              "cssVar": "--ds-carousel-scrollbtn-background-disabled",
+              "figmaName": "Component / Carousel / ScrollBtn / Background / Disabled"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Carousel",
+            "ScrollBtn",
+            "Background",
+            "Disabled"
           ]
         },
         {
@@ -18302,6 +18361,54 @@
             "ScrollBtn",
             "Opacity",
             "Disabled"
+          ]
+        },
+        {
+          "name": "🧩 Component / Carousel / ScrollBtnBelow / Gap",
+          "cssVarName": "--ds-carousel-scrollbtnbelow-gap",
+          "value": "{🔗 Alias.↔️ Space.Gap.Base}",
+          "nativeValue": "{\"value\":1,\"unit\":\"rem\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-space-16",
+              "figmaName": "Global / Dimension / Space / 16"
+            },
+            {
+              "cssVar": "--ds-space-gap-base",
+              "figmaName": "Alias / Space / Gap / Base"
+            },
+            {
+              "cssVar": "--ds-carousel-scrollbtnbelow-gap",
+              "figmaName": "Component / Carousel / ScrollBtnBelow / Gap"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Carousel",
+            "ScrollBtnBelow",
+            "Gap"
+          ]
+        },
+        {
+          "name": "🧩 Component / Carousel / ScrollBtnBelow / ButtonGap",
+          "cssVarName": "--ds-carousel-scrollbtnbelow-buttongap",
+          "value": "{🌐 Global.📏 Dimension.Space.56}",
+          "nativeValue": "{\"value\":3.5,\"unit\":\"rem\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-space-56",
+              "figmaName": "Global / Dimension / Space / 56"
+            },
+            {
+              "cssVar": "--ds-carousel-scrollbtnbelow-buttongap",
+              "figmaName": "Component / Carousel / ScrollBtnBelow / ButtonGap"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Carousel",
+            "ScrollBtnBelow",
+            "ButtonGap"
           ]
         },
         {
@@ -18484,469 +18591,6 @@
             "Item",
             "Padding"
           ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Default / Color / Background / Base",
-          "cssVarName": "--ds-carousel-item-default-color-background-base",
-          "value": "{🔗 Alias.🎨 Surface.GreyLight}",
-          "nativeValue": "#F6F6F6",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-grey-1",
-              "figmaName": "Global / Color / Grey / 1"
-            },
-            {
-              "cssVar": "--ds-surface-greylight",
-              "figmaName": "Alias / Surface / GreyLight"
-            },
-            {
-              "cssVar": "--ds-carousel-item-default-color-background-base",
-              "figmaName": "Component / Carousel / Item / Default / Color / Background / Base"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Default",
-            "Color",
-            "Background",
-            "Base"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Default / Color / Background / Hover",
-          "cssVarName": "--ds-carousel-item-default-color-background-hover",
-          "value": "{🔗 Alias.🎨 Surface.GreyDark}",
-          "nativeValue": "#D0D0D0",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-grey-3",
-              "figmaName": "Global / Color / Grey / 3"
-            },
-            {
-              "cssVar": "--ds-surface-greydark",
-              "figmaName": "Alias / Surface / GreyDark"
-            },
-            {
-              "cssVar": "--ds-carousel-item-default-color-background-hover",
-              "figmaName": "Component / Carousel / Item / Default / Color / Background / Hover"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Default",
-            "Color",
-            "Background",
-            "Hover"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Default / Color / Background / Active",
-          "cssVarName": "--ds-carousel-item-default-color-background-active",
-          "value": "{🔗 Alias.🎨 Surface.GreyDarker}",
-          "nativeValue": "#B6B6B6",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-grey-4",
-              "figmaName": "Global / Color / Grey / 4"
-            },
-            {
-              "cssVar": "--ds-surface-greydarker",
-              "figmaName": "Alias / Surface / GreyDarker"
-            },
-            {
-              "cssVar": "--ds-carousel-item-default-color-background-active",
-              "figmaName": "Component / Carousel / Item / Default / Color / Background / Active"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Default",
-            "Color",
-            "Background",
-            "Active"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Selected / Color / Background",
-          "cssVarName": "--ds-carousel-item-selected-color-background",
-          "value": "{🔗 Alias.🎨 Surface.Selected}",
-          "nativeValue": "#CCCFE2",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-primary-1b",
-              "figmaName": "Global / Color / Primary / 1B"
-            },
-            {
-              "cssVar": "--ds-surface-selected",
-              "figmaName": "Alias / Surface / Selected"
-            },
-            {
-              "cssVar": "--ds-carousel-item-selected-color-background",
-              "figmaName": "Component / Carousel / Item / Selected / Color / Background"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Selected",
-            "Color",
-            "Background"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Purple / Color / Background / Base",
-          "cssVarName": "--ds-carousel-item-purple-color-background-base",
-          "value": "{🔗 Alias.🎨 Surface.PurpleLighter}",
-          "nativeValue": "#F9F3FF",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-purple-1",
-              "figmaName": "Global / Color / Purple / 1"
-            },
-            {
-              "cssVar": "--ds-surface-purplelighter",
-              "figmaName": "Alias / Surface / PurpleLighter"
-            },
-            {
-              "cssVar": "--ds-carousel-item-purple-color-background-base",
-              "figmaName": "Component / Carousel / Item / Purple / Color / Background / Base"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Purple",
-            "Color",
-            "Background",
-            "Base"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Purple / Color / Background / Hover",
-          "cssVarName": "--ds-carousel-item-purple-color-background-hover",
-          "value": "{🔗 Alias.🎨 Surface.PurpleLight}",
-          "nativeValue": "#E1D9FF",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-purple-2",
-              "figmaName": "Global / Color / Purple / 2"
-            },
-            {
-              "cssVar": "--ds-surface-purplelight",
-              "figmaName": "Alias / Surface / PurpleLight"
-            },
-            {
-              "cssVar": "--ds-carousel-item-purple-color-background-hover",
-              "figmaName": "Component / Carousel / Item / Purple / Color / Background / Hover"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Purple",
-            "Color",
-            "Background",
-            "Hover"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Purple / Color / Background / Active",
-          "cssVarName": "--ds-carousel-item-purple-color-background-active",
-          "value": "{🔗 Alias.🎨 Surface.Purple}",
-          "nativeValue": "#B8B2FF",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-purple-3",
-              "figmaName": "Global / Color / Purple / 3"
-            },
-            {
-              "cssVar": "--ds-surface-purple",
-              "figmaName": "Alias / Surface / Purple"
-            },
-            {
-              "cssVar": "--ds-carousel-item-purple-color-background-active",
-              "figmaName": "Component / Carousel / Item / Purple / Color / Background / Active"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Purple",
-            "Color",
-            "Background",
-            "Active"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Green / Color / Background / Base",
-          "cssVarName": "--ds-carousel-item-green-color-background-base",
-          "value": "{🔗 Alias.🎨 Surface.GreenLighter}",
-          "nativeValue": "#E9FBF7",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-green-1",
-              "figmaName": "Global / Color / Green / 1"
-            },
-            {
-              "cssVar": "--ds-surface-greenlighter",
-              "figmaName": "Alias / Surface / GreenLighter"
-            },
-            {
-              "cssVar": "--ds-carousel-item-green-color-background-base",
-              "figmaName": "Component / Carousel / Item / Green / Color / Background / Base"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Green",
-            "Color",
-            "Background",
-            "Base"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Green / Color / Background / Hover",
-          "cssVarName": "--ds-carousel-item-green-color-background-hover",
-          "value": "{🔗 Alias.🎨 Surface.GreenLight}",
-          "nativeValue": "#CBF2EC",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-green-2",
-              "figmaName": "Global / Color / Green / 2"
-            },
-            {
-              "cssVar": "--ds-surface-greenlight",
-              "figmaName": "Alias / Surface / GreenLight"
-            },
-            {
-              "cssVar": "--ds-carousel-item-green-color-background-hover",
-              "figmaName": "Component / Carousel / Item / Green / Color / Background / Hover"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Green",
-            "Color",
-            "Background",
-            "Hover"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Green / Color / Background / Active",
-          "cssVarName": "--ds-carousel-item-green-color-background-active",
-          "value": "{🔗 Alias.🎨 Surface.Green}",
-          "nativeValue": "#94E3D4",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-green-3",
-              "figmaName": "Global / Color / Green / 3"
-            },
-            {
-              "cssVar": "--ds-surface-green",
-              "figmaName": "Alias / Surface / Green"
-            },
-            {
-              "cssVar": "--ds-carousel-item-green-color-background-active",
-              "figmaName": "Component / Carousel / Item / Green / Color / Background / Active"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Green",
-            "Color",
-            "Background",
-            "Active"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Red / Color / Background / Base",
-          "cssVarName": "--ds-carousel-item-red-color-background-base",
-          "value": "{🔗 Alias.🎨 Surface.RedLighter}",
-          "nativeValue": "#FFEEF1",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-red-1",
-              "figmaName": "Global / Color / Red / 1"
-            },
-            {
-              "cssVar": "--ds-surface-redlighter",
-              "figmaName": "Alias / Surface / RedLighter"
-            },
-            {
-              "cssVar": "--ds-carousel-item-red-color-background-base",
-              "figmaName": "Component / Carousel / Item / Red / Color / Background / Base"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Red",
-            "Color",
-            "Background",
-            "Base"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Red / Color / Background / Hover",
-          "cssVarName": "--ds-carousel-item-red-color-background-hover",
-          "value": "{🔗 Alias.🎨 Surface.RedLight}",
-          "nativeValue": "#FFD7D7",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-red-2",
-              "figmaName": "Global / Color / Red / 2"
-            },
-            {
-              "cssVar": "--ds-surface-redlight",
-              "figmaName": "Alias / Surface / RedLight"
-            },
-            {
-              "cssVar": "--ds-carousel-item-red-color-background-hover",
-              "figmaName": "Component / Carousel / Item / Red / Color / Background / Hover"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Red",
-            "Color",
-            "Background",
-            "Hover"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Red / Color / Background / Active",
-          "cssVarName": "--ds-carousel-item-red-color-background-active",
-          "value": "{🔗 Alias.🎨 Surface.Red}",
-          "nativeValue": "#FFACA6",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-red-3",
-              "figmaName": "Global / Color / Red / 3"
-            },
-            {
-              "cssVar": "--ds-surface-red",
-              "figmaName": "Alias / Surface / Red"
-            },
-            {
-              "cssVar": "--ds-carousel-item-red-color-background-active",
-              "figmaName": "Component / Carousel / Item / Red / Color / Background / Active"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Red",
-            "Color",
-            "Background",
-            "Active"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Yellow / Color / Background / Base",
-          "cssVarName": "--ds-carousel-item-yellow-color-background-base",
-          "value": "{🔗 Alias.🎨 Surface.YellowLighter}",
-          "nativeValue": "#FFF9E8",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-yellow-1",
-              "figmaName": "Global / Color / Yellow / 1"
-            },
-            {
-              "cssVar": "--ds-surface-yellowlighter",
-              "figmaName": "Alias / Surface / YellowLighter"
-            },
-            {
-              "cssVar": "--ds-carousel-item-yellow-color-background-base",
-              "figmaName": "Component / Carousel / Item / Yellow / Color / Background / Base"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Yellow",
-            "Color",
-            "Background",
-            "Base"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Yellow / Color / Background / Hover",
-          "cssVarName": "--ds-carousel-item-yellow-color-background-hover",
-          "value": "{🔗 Alias.🎨 Surface.YellowLight}",
-          "nativeValue": "#FFECBC",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-yellow-2",
-              "figmaName": "Global / Color / Yellow / 2"
-            },
-            {
-              "cssVar": "--ds-surface-yellowlight",
-              "figmaName": "Alias / Surface / YellowLight"
-            },
-            {
-              "cssVar": "--ds-carousel-item-yellow-color-background-hover",
-              "figmaName": "Component / Carousel / Item / Yellow / Color / Background / Hover"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Yellow",
-            "Color",
-            "Background",
-            "Hover"
-          ]
-        },
-        {
-          "name": "🧩 Component / Carousel / Item / Yellow / Color / Background / Active",
-          "cssVarName": "--ds-carousel-item-yellow-color-background-active",
-          "value": "{🔗 Alias.🎨 Surface.Yellow}",
-          "nativeValue": "#FAE052",
-          "inheritance": [
-            {
-              "cssVar": "--ds-color-yellow-3",
-              "figmaName": "Global / Color / Yellow / 3"
-            },
-            {
-              "cssVar": "--ds-surface-yellow",
-              "figmaName": "Alias / Surface / Yellow"
-            },
-            {
-              "cssVar": "--ds-carousel-item-yellow-color-background-active",
-              "figmaName": "Component / Carousel / Item / Yellow / Color / Background / Active"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Carousel",
-            "Item",
-            "Yellow",
-            "Color",
-            "Background",
-            "Active"
-          ]
         }
       ],
       "pageObject": {
@@ -19017,52 +18661,6 @@
       "dependencies": [],
       "dependencyGraph": {},
       "props": [
-        {
-          "name": "color",
-          "type": "\"green\" | \"purple\" | \"red\" | \"yellow\" | undefined",
-          "complexType": {
-            "original": "CarouselItemColor",
-            "resolved": "\"green\" | \"purple\" | \"red\" | \"yellow\" | undefined",
-            "references": {
-              "CarouselItemColor": {
-                "location": "import",
-                "path": "../carousel.interfaces",
-                "id": "src/components/structure/carousel/carousel.interfaces.ts::CarouselItemColor",
-                "referenceLocation": "CarouselItemColor"
-              }
-            }
-          },
-          "mutable": false,
-          "attr": "color",
-          "reflectToAttr": false,
-          "docs": "Background color for product tiles.",
-          "docsTags": [],
-          "values": [
-            {
-              "value": "green",
-              "type": "string"
-            },
-            {
-              "value": "purple",
-              "type": "string"
-            },
-            {
-              "value": "red",
-              "type": "string"
-            },
-            {
-              "value": "yellow",
-              "type": "string"
-            },
-            {
-              "type": "undefined"
-            }
-          ],
-          "optional": true,
-          "required": false,
-          "getter": false,
-          "setter": false
-        },
         {
           "name": "name",
           "type": "string",
@@ -28244,7 +27842,7 @@
           "name": "🧩 Component / Datepicker / Calendar / DayName / Family",
           "cssVarName": "--ds-datepicker-calendar-dayname-family",
           "value": "{🔗 Alias.🔤 Text.Family.Heading}",
-          "nativeValue": "[\"BaloiseCreateHeadline\",\"Arial\",\"sans-serif\"]",
+          "nativeValue": "[\"Baloise Create Headline\",\"Arial\",\"sans-serif\"]",
           "inheritance": [
             {
               "cssVar": "--ds-font-family-heading",
@@ -28379,7 +27977,7 @@
           "name": "🧩 Component / Datepicker / Calendar / Family",
           "cssVarName": "--ds-datepicker-calendar-family",
           "value": "{🔗 Alias.🔤 Text.Family.Text}",
-          "nativeValue": "[\"BaloiseCreateText\",\"Arial\",\"sans-serif\"]",
+          "nativeValue": "[\"Baloise Create Text\",\"Arial\",\"sans-serif\"]",
           "inheritance": [
             {
               "cssVar": "--ds-font-family-text",
@@ -30178,7 +29776,7 @@
           "mutable": false,
           "attr": "accept",
           "reflectToAttr": false,
-          "docs": "Accepted MIME-Types like `image/png,image/jpeg`.",
+          "docs": "Accepted file types like the native `accept` attribute, e.g. `image/png,image/*,.pdf`.",
           "docsTags": [
             {
               "name": "default",
@@ -45851,32 +45449,6 @@
           ]
         },
         {
-          "name": "🧩 Component / Pagination / Dots / Gap",
-          "cssVarName": "--ds-pagination-dots-gap",
-          "value": "{🔗 Alias.↔️ Space.Gap.3XS}",
-          "nativeValue": "{\"value\":0.125,\"unit\":\"rem\"}",
-          "inheritance": [
-            {
-              "cssVar": "--ds-dimension-space-2",
-              "figmaName": "Global / Dimension / Space / 2"
-            },
-            {
-              "cssVar": "--ds-space-gap-3xs",
-              "figmaName": "Alias / Space / Gap / 3XS"
-            },
-            {
-              "cssVar": "--ds-pagination-dots-gap",
-              "figmaName": "Component / Pagination / Dots / Gap"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Pagination",
-            "Dots",
-            "Gap"
-          ]
-        },
-        {
           "name": "🧩 Component / Pagination / Dots / MinHeight",
           "cssVarName": "--ds-pagination-dots-minheight",
           "value": "{🔗 Alias.📏 Size.Control.SM}",
@@ -45900,32 +45472,6 @@
             "Pagination",
             "Dots",
             "MinHeight"
-          ]
-        },
-        {
-          "name": "🧩 Component / Pagination / Dots / MinWidth",
-          "cssVarName": "--ds-pagination-dots-minwidth",
-          "value": "{🔗 Alias.📏 Size.Counter.MinWidth}",
-          "nativeValue": "{\"value\":63,\"unit\":\"px\"}",
-          "inheritance": [
-            {
-              "cssVar": "--ds-dimension-size-63",
-              "figmaName": "Global / Dimension / Size / 63"
-            },
-            {
-              "cssVar": "--ds-size-counter-minwidth",
-              "figmaName": "Alias / Size / Counter / MinWidth"
-            },
-            {
-              "cssVar": "--ds-pagination-dots-minwidth",
-              "figmaName": "Component / Pagination / Dots / MinWidth"
-            }
-          ],
-          "path": [
-            "🧩 Component",
-            "Pagination",
-            "Dots",
-            "MinWidth"
           ]
         },
         {
@@ -46136,6 +45682,54 @@
             "Color",
             "Background",
             "Base"
+          ]
+        },
+        {
+          "name": "🧩 Component / Pagination / Dots / Gap",
+          "cssVarName": "--ds-pagination-dots-gap",
+          "value": "{🔗 Alias.↔️ Space.Gap.2XS}",
+          "nativeValue": "{\"value\":0.25,\"unit\":\"rem\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-space-4",
+              "figmaName": "Global / Dimension / Space / 4"
+            },
+            {
+              "cssVar": "--ds-space-gap-2xs",
+              "figmaName": "Alias / Space / Gap / 2XS"
+            },
+            {
+              "cssVar": "--ds-pagination-dots-gap",
+              "figmaName": "Component / Pagination / Dots / Gap"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Pagination",
+            "Dots",
+            "Gap"
+          ]
+        },
+        {
+          "name": "🧩 Component / Pagination / Dots / MinWidth",
+          "cssVarName": "--ds-pagination-dots-minwidth",
+          "value": "{🌐 Global.📏 Dimension.Size.64}",
+          "nativeValue": "{\"value\":64,\"unit\":\"px\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-size-64",
+              "figmaName": "Global / Dimension / Size / 64"
+            },
+            {
+              "cssVar": "--ds-pagination-dots-minwidth",
+              "figmaName": "Component / Pagination / Dots / MinWidth"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Pagination",
+            "Dots",
+            "MinWidth"
           ]
         },
         {
@@ -64927,10 +64521,10 @@
       "props": [
         {
           "name": "align",
-          "type": "\"bottom center\" | \"bottom end\" | \"bottom start\" | \"center\" | \"end\" | \"start\" | \"top center\" | \"top end\" | \"top start\" | undefined",
+          "type": "\"bottom center\" | \"bottom end\" | \"bottom start\" | \"center\" | \"end\" | \"start\" | \"stretch\" | \"top center\" | \"top end\" | \"top start\" | undefined",
           "complexType": {
             "original": "StackAlignment",
-            "resolved": "\"bottom center\" | \"bottom end\" | \"bottom start\" | \"center\" | \"end\" | \"start\" | \"top center\" | \"top end\" | \"top start\" | undefined",
+            "resolved": "\"bottom center\" | \"bottom end\" | \"bottom start\" | \"center\" | \"end\" | \"start\" | \"stretch\" | \"top center\" | \"top end\" | \"top start\" | undefined",
             "references": {
               "StackAlignment": {
                 "location": "import",
@@ -64943,7 +64537,7 @@
           "mutable": false,
           "attr": "align",
           "reflectToAttr": false,
-          "docs": "Defines the text positioning like center, right or default to start.",
+          "docs": "Defines the text positioning like center, right or default to start. `stretch` makes children fill the cross axis.",
           "docsTags": [],
           "values": [
             {
@@ -64968,6 +64562,10 @@
             },
             {
               "value": "start",
+              "type": "string"
+            },
+            {
+              "value": "stretch",
               "type": "string"
             },
             {
@@ -64999,7 +64597,8 @@
             "end",
             "bottom start",
             "bottom center",
-            "bottom end"
+            "bottom end",
+            "stretch"
           ]
         },
         {
@@ -79181,7 +78780,7 @@
           "mutable": false,
           "attr": "content-width",
           "reflectToAttr": false,
-          "docs": "Defines the maximum width of the tooltip content in pixels.",
+          "docs": "Defines the maximum width of the tooltip content in pixels.\nDefaults to the `--ds-tooltip-max-width` token; always capped to the viewport.",
           "docsTags": [
             {
               "name": "default",
@@ -79195,6 +78794,35 @@
             },
             {
               "type": "undefined"
+            }
+          ],
+          "optional": false,
+          "required": false,
+          "getter": false,
+          "setter": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "complexType": {
+            "original": "boolean",
+            "resolved": "boolean",
+            "references": {}
+          },
+          "mutable": false,
+          "attr": "disabled",
+          "reflectToAttr": false,
+          "docs": "When true, the tooltip never presents, even on hover/focus of the trigger.",
+          "docsTags": [
+            {
+              "name": "default",
+              "text": "false"
+            }
+          ],
+          "default": "false",
+          "values": [
+            {
+              "type": "boolean"
             }
           ],
           "optional": false,
@@ -79471,7 +79099,7 @@
         },
         {
           "name": "--tooltip-max-width",
-          "docs": "Maximum width of the tooltip container."
+          "docs": "Maximum width of the tooltip container, capped to the viewport."
         },
         {
           "name": "--tooltip-radius",
@@ -79488,6 +79116,10 @@
         {
           "name": "--tooltip-py",
           "docs": "Vertical padding of the tooltip content."
+        },
+        {
+          "name": "--tooltip-gutter",
+          "docs": "Minimum distance between the tooltip container and the viewport edge."
         },
         {
           "name": "--tooltip-offset",
@@ -79767,6 +79399,56 @@
             "Tooltip",
             "Offset"
           ]
+        },
+        {
+          "name": "🧩 Component / Tooltip / MaxWidth",
+          "cssVarName": "--ds-tooltip-maxwidth",
+          "value": "{🔗 Alias.📏 Size.Overlay.SM}",
+          "nativeValue": "{\"value\":20,\"unit\":\"rem\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-size-320",
+              "figmaName": "Global / Dimension / Size / 320"
+            },
+            {
+              "cssVar": "--ds-size-overlay-sm",
+              "figmaName": "Alias / Size / Overlay / SM"
+            },
+            {
+              "cssVar": "--ds-tooltip-maxwidth",
+              "figmaName": "Component / Tooltip / MaxWidth"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Tooltip",
+            "MaxWidth"
+          ]
+        },
+        {
+          "name": "🧩 Component / Tooltip / Gutter",
+          "cssVarName": "--ds-tooltip-gutter",
+          "value": "{🔗 Alias.↔️ Space.Gap.XS}",
+          "nativeValue": "{\"value\":0.5,\"unit\":\"rem\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-space-8",
+              "figmaName": "Global / Dimension / Space / 8"
+            },
+            {
+              "cssVar": "--ds-space-gap-xs",
+              "figmaName": "Alias / Space / Gap / XS"
+            },
+            {
+              "cssVar": "--ds-tooltip-gutter",
+              "figmaName": "Component / Tooltip / Gutter"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Tooltip",
+            "Gutter"
+          ]
         }
       ],
       "pageObject": {
@@ -79822,13 +79504,13 @@
       "path": "src/components/overlays/tooltip/tooltip.interfaces.ts"
     },
     "src/components/actions/button/button.interfaces.ts::ButtonClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type ButtonClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/actions/button/button.interfaces.ts"
     },
     "src/components/actions/button/button.interfaces.ts::ButtonNavigateDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type ButtonNavigateDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/actions/button/button.interfaces.ts"
     },
     "src/components/actions/button/button.interfaces.ts::ButtonFocusDetail": {
@@ -79887,13 +79569,13 @@
       "path": "src/components/forms/checkbox/checkbox.interfaces.ts"
     },
     "src/components/forms/checkbox/checkbox.interfaces.ts::CheckboxFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type CheckboxFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/checkbox/checkbox.interfaces.ts"
     },
     "src/components/forms/checkbox/checkbox.interfaces.ts::CheckboxBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type CheckboxBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/checkbox/checkbox.interfaces.ts"
     },
     "src/components/forms/checkbox/checkbox.interfaces.ts::CheckboxChangeDetail": {
@@ -79907,18 +79589,18 @@
       "path": "src/components/forms/input/input.interfaces.ts"
     },
     "src/components/forms/checkbox/checkbox.interfaces.ts::CheckboxGroupBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type CheckboxGroupBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/checkbox/checkbox.interfaces.ts"
     },
     "src/components/forms/checkbox/checkbox.interfaces.ts::CheckboxGroupChangeDetail": {
-      "declaration": "interface Array<T> {\n    /**\n     * Gets or sets the length of the array. This is a number one higher than the highest index in the array.\n     */\n    length: number;\n    /**\n     * Returns a string representation of an array.\n     */\n    toString(): string;\n    /**\n     * Returns a string representation of an array. The elements are converted to string using their toLocaleString methods.\n     */\n    toLocaleString(): string;\n    /**\n     * Removes the last element from an array and returns it.\n     * If the array is empty, undefined is returned and the array is not modified.\n     */\n    pop(): T | undefined;\n    /**\n     * Appends new elements to the end of an array, and returns the new length of the array.\n     * @param items New elements to add to the array.\n     */\n    push(...items: T[]): number;\n    /**\n     * Combines two or more arrays.\n     * This method returns a new array without modifying any existing arrays.\n     * @param items Additional arrays and/or items to add to the end of the array.\n     */\n    concat(...items: ConcatArray<T>[]): T[];\n    /**\n     * Combines two or more arrays.\n     * This method returns a new array without modifying any existing arrays.\n     * @param items Additional arrays and/or items to add to the end of the array.\n     */\n    concat(...items: (T | ConcatArray<T>)[]): T[];\n    /**\n     * Adds all the elements of an array into a string, separated by the specified separator string.\n     * @param separator A string used to separate one element of the array from the next in the resulting string. If omitted, the array elements are separated with a comma.\n     */\n    join(separator?: string): string;\n    /**\n     * Reverses the elements in an array in place.\n     * This method mutates the array and returns a reference to the same array.\n     */\n    reverse(): T[];\n    /**\n     * Removes the first element from an array and returns it.\n     * If the array is empty, undefined is returned and the array is not modified.\n     */\n    shift(): T | undefined;\n    /**\n     * Returns a copy of a section of an array.\n     * For both start and end, a negative index can be used to indicate an offset from the end of the array.\n     * For example, -2 refers to the second to last element of the array.\n     * @param start The beginning index of the specified portion of the array.\n     * If start is undefined, then the slice begins at index 0.\n     * @param end The end index of the specified portion of the array. This is exclusive of the element at the index 'end'.\n     * If end is undefined, then the slice extends to the end of the array.\n     */\n    slice(start?: number, end?: number): T[];\n    /**\n     * Sorts an array in place.\n     * This method mutates the array and returns a reference to the same array.\n     * @param compareFn Function used to determine the order of the elements. It is expected to return\n     * a negative value if the first argument is less than the second argument, zero if they're equal, and a positive\n     * value otherwise. If omitted, the elements are sorted in ascending, UTF-16 code unit order.\n     * ```ts\n     * [11,2,22,1].sort((a, b) => a - b)\n     * ```\n     */\n    sort(compareFn?: (a: T, b: T) => number): this;\n    /**\n     * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.\n     * @param start The zero-based location in the array from which to start removing elements.\n     * @param deleteCount The number of elements to remove.\n     * @returns An array containing the elements that were deleted.\n     */\n    splice(start: number, deleteCount?: number): T[];\n    /**\n     * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.\n     * @param start The zero-based location in the array from which to start removing elements.\n     * @param deleteCount The number of elements to remove.\n     * @param items Elements to insert into the array in place of the deleted elements.\n     * @returns An array containing the elements that were deleted.\n     */\n    splice(start: number, deleteCount: number, ...items: T[]): T[];\n    /**\n     * Inserts new elements at the start of an array, and returns the new length of the array.\n     * @param items Elements to insert at the start of the array.\n     */\n    unshift(...items: T[]): number;\n    /**\n     * Returns the index of the first occurrence of a value in an array, or -1 if it is not present.\n     * @param searchElement The value to locate in the array.\n     * @param fromIndex The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0.\n     */\n    indexOf(searchElement: T, fromIndex?: number): number;\n    /**\n     * Returns the index of the last occurrence of a specified value in an array, or -1 if it is not present.\n     * @param searchElement The value to locate in the array.\n     * @param fromIndex The array index at which to begin searching backward. If fromIndex is omitted, the search starts at the last index in the array.\n     */\n    lastIndexOf(searchElement: T, fromIndex?: number): number;\n    /**\n     * Determines whether all the members of an array satisfy the specified test.\n     * @param predicate A function that accepts up to three arguments. The every method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value false, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    every<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): this is S[];\n    /**\n     * Determines whether all the members of an array satisfy the specified test.\n     * @param predicate A function that accepts up to three arguments. The every method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value false, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;\n    /**\n     * Determines whether the specified callback function returns true for any element of an array.\n     * @param predicate A function that accepts up to three arguments. The some method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value true, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    some(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;\n    /**\n     * Performs the specified action for each element in an array.\n     * @param callbackfn A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.\n     */\n    forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;\n    /**\n     * Calls a defined callback function on each element of an array, and returns an array that contains the results.\n     * @param callbackfn A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.\n     */\n    map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];\n    /**\n     * Returns the elements of an array that meet the condition specified in a callback function.\n     * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.\n     */\n    filter<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): S[];\n    /**\n     * Returns the elements of an array that meet the condition specified in a callback function.\n     * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.\n     */\n    filter(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): T[];\n    /**\n     * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;\n    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;\n    /**\n     * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;\n    /**\n     * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;\n    reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;\n    /**\n     * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;\n\n    [n: number]: T;\n}",
+      "declaration": "export type CheckboxGroupChangeDetail = any[]",
       "docstring": "",
       "path": "src/components/forms/checkbox/checkbox.interfaces.ts"
     },
     "src/components/forms/checkbox/checkbox.interfaces.ts::CheckboxGroupFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type CheckboxGroupFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/checkbox/checkbox.interfaces.ts"
     },
     "src/components/forms/counter/counter.interfaces.ts::CounterInputDetail": {
@@ -79962,23 +79644,23 @@
       "path": "src/components/forms/input/input.interfaces.ts"
     },
     "src/components/forms/datepicker/datepicker.interfaces.ts::DatepickerBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type DatepickerBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/datepicker/datepicker.interfaces.ts"
     },
     "src/components/forms/datepicker/datepicker.interfaces.ts::DatepickerKeyPressDetail": {
-      "declaration": "interface KeyboardEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/altKey) */\n    readonly altKey: boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/charCode)\n     */\n    readonly charCode: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/code) */\n    readonly code: string;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/isComposing) */\n    readonly isComposing: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/key) */\n    readonly key: string;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/keyCode)\n     */\n    readonly keyCode: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/location) */\n    readonly location: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/repeat) */\n    readonly repeat: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/initKeyboardEvent)\n     */\n    initKeyboardEvent(typeArg: string, bubblesArg?: boolean, cancelableArg?: boolean, viewArg?: Window | null, keyArg?: string, locationArg?: number, ctrlKey?: boolean, altKey?: boolean, shiftKey?: boolean, metaKey?: boolean): void;\n    readonly DOM_KEY_LOCATION_STANDARD: 0x00;\n    readonly DOM_KEY_LOCATION_LEFT: 0x01;\n    readonly DOM_KEY_LOCATION_RIGHT: 0x02;\n    readonly DOM_KEY_LOCATION_NUMPAD: 0x03;\n}",
-      "docstring": "KeyboardEvent objects describe a user interaction with the keyboard; each event describes a single interaction between the user and a key (or combination of a key with modifier keys) on the keyboard.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent)",
+      "declaration": "export type DatepickerKeyPressDetail = KeyboardEvent",
+      "docstring": "",
       "path": "src/components/forms/datepicker/datepicker.interfaces.ts"
     },
     "src/components/forms/datepicker/datepicker.interfaces.ts::DatepickerFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type DatepickerFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/datepicker/datepicker.interfaces.ts"
     },
     "src/components/forms/datepicker/datepicker.interfaces.ts::DatepickerClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type DatepickerClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/forms/datepicker/datepicker.interfaces.ts"
     },
     "src/components/forms/datepicker/datepicker.interfaces.ts::DatepickerInputDetail": {
@@ -79992,17 +79674,17 @@
       "path": "src/components/forms/datepicker/datepicker.interfaces.ts"
     },
     "src/components/forms/file-upload/file-upload.interfaces.ts::FileUploadChangeDetail": {
-      "declaration": "interface Array<T> {\n    /**\n     * Gets or sets the length of the array. This is a number one higher than the highest index in the array.\n     */\n    length: number;\n    /**\n     * Returns a string representation of an array.\n     */\n    toString(): string;\n    /**\n     * Returns a string representation of an array. The elements are converted to string using their toLocaleString methods.\n     */\n    toLocaleString(): string;\n    /**\n     * Removes the last element from an array and returns it.\n     * If the array is empty, undefined is returned and the array is not modified.\n     */\n    pop(): T | undefined;\n    /**\n     * Appends new elements to the end of an array, and returns the new length of the array.\n     * @param items New elements to add to the array.\n     */\n    push(...items: T[]): number;\n    /**\n     * Combines two or more arrays.\n     * This method returns a new array without modifying any existing arrays.\n     * @param items Additional arrays and/or items to add to the end of the array.\n     */\n    concat(...items: ConcatArray<T>[]): T[];\n    /**\n     * Combines two or more arrays.\n     * This method returns a new array without modifying any existing arrays.\n     * @param items Additional arrays and/or items to add to the end of the array.\n     */\n    concat(...items: (T | ConcatArray<T>)[]): T[];\n    /**\n     * Adds all the elements of an array into a string, separated by the specified separator string.\n     * @param separator A string used to separate one element of the array from the next in the resulting string. If omitted, the array elements are separated with a comma.\n     */\n    join(separator?: string): string;\n    /**\n     * Reverses the elements in an array in place.\n     * This method mutates the array and returns a reference to the same array.\n     */\n    reverse(): T[];\n    /**\n     * Removes the first element from an array and returns it.\n     * If the array is empty, undefined is returned and the array is not modified.\n     */\n    shift(): T | undefined;\n    /**\n     * Returns a copy of a section of an array.\n     * For both start and end, a negative index can be used to indicate an offset from the end of the array.\n     * For example, -2 refers to the second to last element of the array.\n     * @param start The beginning index of the specified portion of the array.\n     * If start is undefined, then the slice begins at index 0.\n     * @param end The end index of the specified portion of the array. This is exclusive of the element at the index 'end'.\n     * If end is undefined, then the slice extends to the end of the array.\n     */\n    slice(start?: number, end?: number): T[];\n    /**\n     * Sorts an array in place.\n     * This method mutates the array and returns a reference to the same array.\n     * @param compareFn Function used to determine the order of the elements. It is expected to return\n     * a negative value if the first argument is less than the second argument, zero if they're equal, and a positive\n     * value otherwise. If omitted, the elements are sorted in ascending, UTF-16 code unit order.\n     * ```ts\n     * [11,2,22,1].sort((a, b) => a - b)\n     * ```\n     */\n    sort(compareFn?: (a: T, b: T) => number): this;\n    /**\n     * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.\n     * @param start The zero-based location in the array from which to start removing elements.\n     * @param deleteCount The number of elements to remove.\n     * @returns An array containing the elements that were deleted.\n     */\n    splice(start: number, deleteCount?: number): T[];\n    /**\n     * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.\n     * @param start The zero-based location in the array from which to start removing elements.\n     * @param deleteCount The number of elements to remove.\n     * @param items Elements to insert into the array in place of the deleted elements.\n     * @returns An array containing the elements that were deleted.\n     */\n    splice(start: number, deleteCount: number, ...items: T[]): T[];\n    /**\n     * Inserts new elements at the start of an array, and returns the new length of the array.\n     * @param items Elements to insert at the start of the array.\n     */\n    unshift(...items: T[]): number;\n    /**\n     * Returns the index of the first occurrence of a value in an array, or -1 if it is not present.\n     * @param searchElement The value to locate in the array.\n     * @param fromIndex The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0.\n     */\n    indexOf(searchElement: T, fromIndex?: number): number;\n    /**\n     * Returns the index of the last occurrence of a specified value in an array, or -1 if it is not present.\n     * @param searchElement The value to locate in the array.\n     * @param fromIndex The array index at which to begin searching backward. If fromIndex is omitted, the search starts at the last index in the array.\n     */\n    lastIndexOf(searchElement: T, fromIndex?: number): number;\n    /**\n     * Determines whether all the members of an array satisfy the specified test.\n     * @param predicate A function that accepts up to three arguments. The every method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value false, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    every<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): this is S[];\n    /**\n     * Determines whether all the members of an array satisfy the specified test.\n     * @param predicate A function that accepts up to three arguments. The every method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value false, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;\n    /**\n     * Determines whether the specified callback function returns true for any element of an array.\n     * @param predicate A function that accepts up to three arguments. The some method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value true, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    some(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;\n    /**\n     * Performs the specified action for each element in an array.\n     * @param callbackfn A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.\n     */\n    forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;\n    /**\n     * Calls a defined callback function on each element of an array, and returns an array that contains the results.\n     * @param callbackfn A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.\n     */\n    map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];\n    /**\n     * Returns the elements of an array that meet the condition specified in a callback function.\n     * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.\n     */\n    filter<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): S[];\n    /**\n     * Returns the elements of an array that meet the condition specified in a callback function.\n     * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.\n     */\n    filter(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): T[];\n    /**\n     * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;\n    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;\n    /**\n     * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;\n    /**\n     * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;\n    reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;\n    /**\n     * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;\n\n    [n: number]: T;\n}",
+      "declaration": "export type FileUploadChangeDetail = File[]",
       "docstring": "",
       "path": "src/components/forms/file-upload/file-upload.interfaces.ts"
     },
     "src/components/forms/file-upload/file-upload.interfaces.ts::FileUploadFilesAddedDetail": {
-      "declaration": "interface Array<T> {\n    /**\n     * Gets or sets the length of the array. This is a number one higher than the highest index in the array.\n     */\n    length: number;\n    /**\n     * Returns a string representation of an array.\n     */\n    toString(): string;\n    /**\n     * Returns a string representation of an array. The elements are converted to string using their toLocaleString methods.\n     */\n    toLocaleString(): string;\n    /**\n     * Removes the last element from an array and returns it.\n     * If the array is empty, undefined is returned and the array is not modified.\n     */\n    pop(): T | undefined;\n    /**\n     * Appends new elements to the end of an array, and returns the new length of the array.\n     * @param items New elements to add to the array.\n     */\n    push(...items: T[]): number;\n    /**\n     * Combines two or more arrays.\n     * This method returns a new array without modifying any existing arrays.\n     * @param items Additional arrays and/or items to add to the end of the array.\n     */\n    concat(...items: ConcatArray<T>[]): T[];\n    /**\n     * Combines two or more arrays.\n     * This method returns a new array without modifying any existing arrays.\n     * @param items Additional arrays and/or items to add to the end of the array.\n     */\n    concat(...items: (T | ConcatArray<T>)[]): T[];\n    /**\n     * Adds all the elements of an array into a string, separated by the specified separator string.\n     * @param separator A string used to separate one element of the array from the next in the resulting string. If omitted, the array elements are separated with a comma.\n     */\n    join(separator?: string): string;\n    /**\n     * Reverses the elements in an array in place.\n     * This method mutates the array and returns a reference to the same array.\n     */\n    reverse(): T[];\n    /**\n     * Removes the first element from an array and returns it.\n     * If the array is empty, undefined is returned and the array is not modified.\n     */\n    shift(): T | undefined;\n    /**\n     * Returns a copy of a section of an array.\n     * For both start and end, a negative index can be used to indicate an offset from the end of the array.\n     * For example, -2 refers to the second to last element of the array.\n     * @param start The beginning index of the specified portion of the array.\n     * If start is undefined, then the slice begins at index 0.\n     * @param end The end index of the specified portion of the array. This is exclusive of the element at the index 'end'.\n     * If end is undefined, then the slice extends to the end of the array.\n     */\n    slice(start?: number, end?: number): T[];\n    /**\n     * Sorts an array in place.\n     * This method mutates the array and returns a reference to the same array.\n     * @param compareFn Function used to determine the order of the elements. It is expected to return\n     * a negative value if the first argument is less than the second argument, zero if they're equal, and a positive\n     * value otherwise. If omitted, the elements are sorted in ascending, UTF-16 code unit order.\n     * ```ts\n     * [11,2,22,1].sort((a, b) => a - b)\n     * ```\n     */\n    sort(compareFn?: (a: T, b: T) => number): this;\n    /**\n     * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.\n     * @param start The zero-based location in the array from which to start removing elements.\n     * @param deleteCount The number of elements to remove.\n     * @returns An array containing the elements that were deleted.\n     */\n    splice(start: number, deleteCount?: number): T[];\n    /**\n     * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.\n     * @param start The zero-based location in the array from which to start removing elements.\n     * @param deleteCount The number of elements to remove.\n     * @param items Elements to insert into the array in place of the deleted elements.\n     * @returns An array containing the elements that were deleted.\n     */\n    splice(start: number, deleteCount: number, ...items: T[]): T[];\n    /**\n     * Inserts new elements at the start of an array, and returns the new length of the array.\n     * @param items Elements to insert at the start of the array.\n     */\n    unshift(...items: T[]): number;\n    /**\n     * Returns the index of the first occurrence of a value in an array, or -1 if it is not present.\n     * @param searchElement The value to locate in the array.\n     * @param fromIndex The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0.\n     */\n    indexOf(searchElement: T, fromIndex?: number): number;\n    /**\n     * Returns the index of the last occurrence of a specified value in an array, or -1 if it is not present.\n     * @param searchElement The value to locate in the array.\n     * @param fromIndex The array index at which to begin searching backward. If fromIndex is omitted, the search starts at the last index in the array.\n     */\n    lastIndexOf(searchElement: T, fromIndex?: number): number;\n    /**\n     * Determines whether all the members of an array satisfy the specified test.\n     * @param predicate A function that accepts up to three arguments. The every method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value false, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    every<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): this is S[];\n    /**\n     * Determines whether all the members of an array satisfy the specified test.\n     * @param predicate A function that accepts up to three arguments. The every method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value false, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;\n    /**\n     * Determines whether the specified callback function returns true for any element of an array.\n     * @param predicate A function that accepts up to three arguments. The some method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value true, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    some(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;\n    /**\n     * Performs the specified action for each element in an array.\n     * @param callbackfn A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.\n     */\n    forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;\n    /**\n     * Calls a defined callback function on each element of an array, and returns an array that contains the results.\n     * @param callbackfn A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.\n     */\n    map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];\n    /**\n     * Returns the elements of an array that meet the condition specified in a callback function.\n     * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.\n     */\n    filter<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): S[];\n    /**\n     * Returns the elements of an array that meet the condition specified in a callback function.\n     * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.\n     */\n    filter(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): T[];\n    /**\n     * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;\n    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;\n    /**\n     * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;\n    /**\n     * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;\n    reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;\n    /**\n     * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;\n\n    [n: number]: T;\n}",
+      "declaration": "export type FileUploadFilesAddedDetail = File[]",
       "docstring": "",
       "path": "src/components/forms/file-upload/file-upload.interfaces.ts"
     },
     "src/components/forms/file-upload/file-upload.interfaces.ts::FileUploadFilesRemovedDetail": {
-      "declaration": "interface Array<T> {\n    /**\n     * Gets or sets the length of the array. This is a number one higher than the highest index in the array.\n     */\n    length: number;\n    /**\n     * Returns a string representation of an array.\n     */\n    toString(): string;\n    /**\n     * Returns a string representation of an array. The elements are converted to string using their toLocaleString methods.\n     */\n    toLocaleString(): string;\n    /**\n     * Removes the last element from an array and returns it.\n     * If the array is empty, undefined is returned and the array is not modified.\n     */\n    pop(): T | undefined;\n    /**\n     * Appends new elements to the end of an array, and returns the new length of the array.\n     * @param items New elements to add to the array.\n     */\n    push(...items: T[]): number;\n    /**\n     * Combines two or more arrays.\n     * This method returns a new array without modifying any existing arrays.\n     * @param items Additional arrays and/or items to add to the end of the array.\n     */\n    concat(...items: ConcatArray<T>[]): T[];\n    /**\n     * Combines two or more arrays.\n     * This method returns a new array without modifying any existing arrays.\n     * @param items Additional arrays and/or items to add to the end of the array.\n     */\n    concat(...items: (T | ConcatArray<T>)[]): T[];\n    /**\n     * Adds all the elements of an array into a string, separated by the specified separator string.\n     * @param separator A string used to separate one element of the array from the next in the resulting string. If omitted, the array elements are separated with a comma.\n     */\n    join(separator?: string): string;\n    /**\n     * Reverses the elements in an array in place.\n     * This method mutates the array and returns a reference to the same array.\n     */\n    reverse(): T[];\n    /**\n     * Removes the first element from an array and returns it.\n     * If the array is empty, undefined is returned and the array is not modified.\n     */\n    shift(): T | undefined;\n    /**\n     * Returns a copy of a section of an array.\n     * For both start and end, a negative index can be used to indicate an offset from the end of the array.\n     * For example, -2 refers to the second to last element of the array.\n     * @param start The beginning index of the specified portion of the array.\n     * If start is undefined, then the slice begins at index 0.\n     * @param end The end index of the specified portion of the array. This is exclusive of the element at the index 'end'.\n     * If end is undefined, then the slice extends to the end of the array.\n     */\n    slice(start?: number, end?: number): T[];\n    /**\n     * Sorts an array in place.\n     * This method mutates the array and returns a reference to the same array.\n     * @param compareFn Function used to determine the order of the elements. It is expected to return\n     * a negative value if the first argument is less than the second argument, zero if they're equal, and a positive\n     * value otherwise. If omitted, the elements are sorted in ascending, UTF-16 code unit order.\n     * ```ts\n     * [11,2,22,1].sort((a, b) => a - b)\n     * ```\n     */\n    sort(compareFn?: (a: T, b: T) => number): this;\n    /**\n     * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.\n     * @param start The zero-based location in the array from which to start removing elements.\n     * @param deleteCount The number of elements to remove.\n     * @returns An array containing the elements that were deleted.\n     */\n    splice(start: number, deleteCount?: number): T[];\n    /**\n     * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.\n     * @param start The zero-based location in the array from which to start removing elements.\n     * @param deleteCount The number of elements to remove.\n     * @param items Elements to insert into the array in place of the deleted elements.\n     * @returns An array containing the elements that were deleted.\n     */\n    splice(start: number, deleteCount: number, ...items: T[]): T[];\n    /**\n     * Inserts new elements at the start of an array, and returns the new length of the array.\n     * @param items Elements to insert at the start of the array.\n     */\n    unshift(...items: T[]): number;\n    /**\n     * Returns the index of the first occurrence of a value in an array, or -1 if it is not present.\n     * @param searchElement The value to locate in the array.\n     * @param fromIndex The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0.\n     */\n    indexOf(searchElement: T, fromIndex?: number): number;\n    /**\n     * Returns the index of the last occurrence of a specified value in an array, or -1 if it is not present.\n     * @param searchElement The value to locate in the array.\n     * @param fromIndex The array index at which to begin searching backward. If fromIndex is omitted, the search starts at the last index in the array.\n     */\n    lastIndexOf(searchElement: T, fromIndex?: number): number;\n    /**\n     * Determines whether all the members of an array satisfy the specified test.\n     * @param predicate A function that accepts up to three arguments. The every method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value false, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    every<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): this is S[];\n    /**\n     * Determines whether all the members of an array satisfy the specified test.\n     * @param predicate A function that accepts up to three arguments. The every method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value false, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;\n    /**\n     * Determines whether the specified callback function returns true for any element of an array.\n     * @param predicate A function that accepts up to three arguments. The some method calls\n     * the predicate function for each element in the array until the predicate returns a value\n     * which is coercible to the Boolean value true, or until the end of the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function.\n     * If thisArg is omitted, undefined is used as the this value.\n     */\n    some(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;\n    /**\n     * Performs the specified action for each element in an array.\n     * @param callbackfn A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.\n     */\n    forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;\n    /**\n     * Calls a defined callback function on each element of an array, and returns an array that contains the results.\n     * @param callbackfn A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.\n     */\n    map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];\n    /**\n     * Returns the elements of an array that meet the condition specified in a callback function.\n     * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.\n     */\n    filter<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): S[];\n    /**\n     * Returns the elements of an array that meet the condition specified in a callback function.\n     * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.\n     * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.\n     */\n    filter(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): T[];\n    /**\n     * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;\n    reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;\n    /**\n     * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;\n    /**\n     * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;\n    reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;\n    /**\n     * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.\n     * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.\n     * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.\n     */\n    reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;\n\n    [n: number]: T;\n}",
+      "declaration": "export type FileUploadFilesRemovedDetail = File[]",
       "docstring": "",
       "path": "src/components/forms/file-upload/file-upload.interfaces.ts"
     },
@@ -80012,18 +79694,18 @@
       "path": "src/components/forms/file-upload/file-upload.interfaces.ts"
     },
     "src/components/forms/file-upload/file-upload.interfaces.ts::FileUploadInputClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type FileUploadInputClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/forms/file-upload/file-upload.interfaces.ts"
     },
     "src/components/forms/file-upload/file-upload.interfaces.ts::FileUploadBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type FileUploadBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/file-upload/file-upload.interfaces.ts"
     },
     "src/components/forms/file-upload/file-upload.interfaces.ts::FileUploadFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type FileUploadFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/file-upload/file-upload.interfaces.ts"
     },
     "src/global/index.ts::DsLanguage": {
@@ -80057,23 +79739,23 @@
       "path": "src/components/forms/input/input.interfaces.ts"
     },
     "src/components/forms/input/input.interfaces.ts::InputBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type InputBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/input/input.interfaces.ts"
     },
     "src/components/forms/input/input.interfaces.ts::InputKeyPressDetail": {
-      "declaration": "interface KeyboardEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/altKey) */\n    readonly altKey: boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/charCode)\n     */\n    readonly charCode: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/code) */\n    readonly code: string;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/isComposing) */\n    readonly isComposing: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/key) */\n    readonly key: string;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/keyCode)\n     */\n    readonly keyCode: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/location) */\n    readonly location: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/repeat) */\n    readonly repeat: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/initKeyboardEvent)\n     */\n    initKeyboardEvent(typeArg: string, bubblesArg?: boolean, cancelableArg?: boolean, viewArg?: Window | null, keyArg?: string, locationArg?: number, ctrlKey?: boolean, altKey?: boolean, shiftKey?: boolean, metaKey?: boolean): void;\n    readonly DOM_KEY_LOCATION_STANDARD: 0x00;\n    readonly DOM_KEY_LOCATION_LEFT: 0x01;\n    readonly DOM_KEY_LOCATION_RIGHT: 0x02;\n    readonly DOM_KEY_LOCATION_NUMPAD: 0x03;\n}",
-      "docstring": "KeyboardEvent objects describe a user interaction with the keyboard; each event describes a single interaction between the user and a key (or combination of a key with modifier keys) on the keyboard.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent)",
+      "declaration": "export type InputKeyPressDetail = KeyboardEvent",
+      "docstring": "",
       "path": "src/components/forms/input/input.interfaces.ts"
     },
     "src/components/forms/input/input.interfaces.ts::InputFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type InputFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/input/input.interfaces.ts"
     },
     "src/components/forms/input/input.interfaces.ts::InputClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type InputClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/forms/input/input.interfaces.ts"
     },
     "src/components/forms/input/input.interfaces.ts::InputInputDetail": {
@@ -80102,23 +79784,23 @@
       "path": "src/components/forms/number-input/number-input.interfaces.ts"
     },
     "src/components/forms/number-input/number-input.interfaces.ts::NumberInputBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type NumberInputBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/number-input/number-input.interfaces.ts"
     },
     "src/components/forms/number-input/number-input.interfaces.ts::NumberInputFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type NumberInputFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/number-input/number-input.interfaces.ts"
     },
     "src/components/forms/number-input/number-input.interfaces.ts::NumberInputClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type NumberInputClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/forms/number-input/number-input.interfaces.ts"
     },
     "src/components/forms/number-input/number-input.interfaces.ts::NumberInputKeyPressDetail": {
-      "declaration": "interface KeyboardEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/altKey) */\n    readonly altKey: boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/charCode)\n     */\n    readonly charCode: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/code) */\n    readonly code: string;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/isComposing) */\n    readonly isComposing: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/key) */\n    readonly key: string;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/keyCode)\n     */\n    readonly keyCode: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/location) */\n    readonly location: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/repeat) */\n    readonly repeat: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/initKeyboardEvent)\n     */\n    initKeyboardEvent(typeArg: string, bubblesArg?: boolean, cancelableArg?: boolean, viewArg?: Window | null, keyArg?: string, locationArg?: number, ctrlKey?: boolean, altKey?: boolean, shiftKey?: boolean, metaKey?: boolean): void;\n    readonly DOM_KEY_LOCATION_STANDARD: 0x00;\n    readonly DOM_KEY_LOCATION_LEFT: 0x01;\n    readonly DOM_KEY_LOCATION_RIGHT: 0x02;\n    readonly DOM_KEY_LOCATION_NUMPAD: 0x03;\n}",
-      "docstring": "KeyboardEvent objects describe a user interaction with the keyboard; each event describes a single interaction between the user and a key (or combination of a key with modifier keys) on the keyboard.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent)",
+      "declaration": "export type NumberInputKeyPressDetail = KeyboardEvent",
+      "docstring": "",
       "path": "src/components/forms/number-input/number-input.interfaces.ts"
     },
     "src/components/forms/phone-input/phone-input.interfaces.ts::PhoneInputDetail": {
@@ -80152,8 +79834,8 @@
       "path": "src/components/forms/radio/radio.interfaces.ts"
     },
     "src/components/forms/radio/radio.interfaces.ts::RadioBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type RadioBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/radio/radio.interfaces.ts"
     },
     "src/components/forms/radio/radio.interfaces.ts::RadioChangeDetail": {
@@ -80162,13 +79844,13 @@
       "path": "src/components/forms/radio/radio.interfaces.ts"
     },
     "src/components/forms/radio/radio.interfaces.ts::RadioFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type RadioFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/radio/radio.interfaces.ts"
     },
     "src/components/forms/radio/radio.interfaces.ts::RadioGroupBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type RadioGroupBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/radio/radio.interfaces.ts"
     },
     "src/components/forms/radio/radio.interfaces.ts::RadioGroupChangeDetail": {
@@ -80177,13 +79859,13 @@
       "path": "src/components/forms/radio/radio.interfaces.ts"
     },
     "src/components/forms/radio/radio.interfaces.ts::RadioGroupFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type RadioGroupFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/radio/radio.interfaces.ts"
     },
     "src/components/forms/segment/segment-item.interfaces.ts::SegmentBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type SegmentBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/segment/segment-item.interfaces.ts"
     },
     "src/components/forms/segment/segment-item.interfaces.ts::SegmentChangeDetail": {
@@ -80192,8 +79874,8 @@
       "path": "src/components/forms/segment/segment-item.interfaces.ts"
     },
     "src/components/forms/segment/segment-item.interfaces.ts::SegmentFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type SegmentFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/segment/segment-item.interfaces.ts"
     },
     "src/components/forms/select/select.interfaces.ts::SelectOption": {
@@ -80212,18 +79894,18 @@
       "path": "src/components/forms/select/select.interfaces.ts"
     },
     "src/components/forms/select/select.interfaces.ts::SelectFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type SelectFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/select/select.interfaces.ts"
     },
     "src/components/forms/select/select.interfaces.ts::SelectBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type SelectBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/select/select.interfaces.ts"
     },
     "src/components/forms/select/select.interfaces.ts::SelectClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type SelectClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/forms/select/select.interfaces.ts"
     },
     "src/components/forms/slider/slider.interfaces.ts::SliderBrandColor": {
@@ -80237,18 +79919,18 @@
       "path": "src/components/forms/slider/slider.interfaces.ts"
     },
     "src/components/forms/slider/slider.interfaces.ts::SliderFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type SliderFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/slider/slider.interfaces.ts"
     },
     "src/components/forms/slider/slider.interfaces.ts::SliderBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type SliderBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/slider/slider.interfaces.ts"
     },
     "src/components/forms/slider/slider.interfaces.ts::SliderClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type SliderClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/forms/slider/slider.interfaces.ts"
     },
     "src/components/forms/slider/slider.interfaces.ts::SliderChangeDetail": {
@@ -80267,8 +79949,8 @@
       "path": "src/components/forms/textarea/textarea.interfaces.ts"
     },
     "src/components/forms/textarea/textarea.interfaces.ts::TextareaBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type TextareaBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/textarea/textarea.interfaces.ts"
     },
     "src/components/forms/textarea/textarea.interfaces.ts::TextareaChangeDetail": {
@@ -80277,13 +79959,13 @@
       "path": "src/components/forms/textarea/textarea.interfaces.ts"
     },
     "src/components/forms/textarea/textarea.interfaces.ts::TextareaClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type TextareaClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/forms/textarea/textarea.interfaces.ts"
     },
     "src/components/forms/textarea/textarea.interfaces.ts::TextareaFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type TextareaFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/textarea/textarea.interfaces.ts"
     },
     "src/components/forms/textarea/textarea.interfaces.ts::TextareaInputDetail": {
@@ -80292,8 +79974,8 @@
       "path": "src/components/forms/textarea/textarea.interfaces.ts"
     },
     "src/components/forms/textarea/textarea.interfaces.ts::TextareaKeyPressDetail": {
-      "declaration": "interface KeyboardEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/altKey) */\n    readonly altKey: boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/charCode)\n     */\n    readonly charCode: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/code) */\n    readonly code: string;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/isComposing) */\n    readonly isComposing: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/key) */\n    readonly key: string;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/keyCode)\n     */\n    readonly keyCode: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/location) */\n    readonly location: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/repeat) */\n    readonly repeat: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/initKeyboardEvent)\n     */\n    initKeyboardEvent(typeArg: string, bubblesArg?: boolean, cancelableArg?: boolean, viewArg?: Window | null, keyArg?: string, locationArg?: number, ctrlKey?: boolean, altKey?: boolean, shiftKey?: boolean, metaKey?: boolean): void;\n    readonly DOM_KEY_LOCATION_STANDARD: 0x00;\n    readonly DOM_KEY_LOCATION_LEFT: 0x01;\n    readonly DOM_KEY_LOCATION_RIGHT: 0x02;\n    readonly DOM_KEY_LOCATION_NUMPAD: 0x03;\n}",
-      "docstring": "KeyboardEvent objects describe a user interaction with the keyboard; each event describes a single interaction between the user and a key (or combination of a key with modifier keys) on the keyboard.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/KeyboardEvent)",
+      "declaration": "export type TextareaKeyPressDetail = KeyboardEvent",
+      "docstring": "",
       "path": "src/components/forms/textarea/textarea.interfaces.ts"
     },
     "src/components/forms/toggle/toggle.interfaces.ts::ToggleLabelPosition": {
@@ -80302,8 +79984,8 @@
       "path": "src/components/forms/toggle/toggle.interfaces.ts"
     },
     "src/components/forms/toggle/toggle.interfaces.ts::ToggleBlurDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type ToggleBlurDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/toggle/toggle.interfaces.ts"
     },
     "src/components/forms/toggle/toggle.interfaces.ts::ToggleChangeDetail": {
@@ -80312,8 +79994,8 @@
       "path": "src/components/forms/toggle/toggle.interfaces.ts"
     },
     "src/components/forms/toggle/toggle.interfaces.ts::ToggleFocusDetail": {
-      "declaration": "interface FocusEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n}",
-      "docstring": "Focus-related events like focus, blur, focusin, or focusout.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/FocusEvent)",
+      "declaration": "export type ToggleFocusDetail = FocusEvent",
+      "docstring": "",
       "path": "src/components/forms/toggle/toggle.interfaces.ts"
     },
     "src/components/indicators/badge/badge.interfaces.ts::BadgeSize": {
@@ -80377,8 +80059,8 @@
       "path": "src/components/indicators/tag/tag.interfaces.ts"
     },
     "src/components/indicators/tag/tag.interfaces.ts::TagCloseClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type TagCloseClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/indicators/tag/tag.interfaces.ts"
     },
     "src/components/media/brand-icon/brand-icon.interfaces.ts::IconSize": {
@@ -80502,13 +80184,13 @@
       "path": "src/components/overlays/alert/snackbar/snackbar.interfaces.ts"
     },
     "src/components/overlays/alert/snackbar/snackbar.interfaces.ts::SnackbarCloseClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type SnackbarCloseClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/overlays/alert/snackbar/snackbar.interfaces.ts"
     },
     "src/components/overlays/alert/snackbar/snackbar.interfaces.ts::SnackbarActionClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type SnackbarActionClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/overlays/alert/snackbar/snackbar.interfaces.ts"
     },
     "src/components/overlays/alert/toast/toast.interfaces.ts::ToastColor": {
@@ -80522,13 +80204,13 @@
       "path": "src/components/overlays/alert/toast/toast.interfaces.ts"
     },
     "src/components/overlays/alert/toast/toast.interfaces.ts::ToastCloseClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type ToastCloseClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/overlays/alert/toast/toast.interfaces.ts"
     },
     "src/components/overlays/alert/toast/toast.interfaces.ts::ToastActionClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type ToastActionClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/overlays/alert/toast/toast.interfaces.ts"
     },
     "src/components/overlays/drawer/drawer.interfaces.ts::DrawerContainer": {
@@ -80567,8 +80249,8 @@
       "path": "src/components/overlays/notification/notification.interfaces.ts"
     },
     "src/components/overlays/notification/notification.interfaces.ts::NotificationCloseClickDetail": {
-      "declaration": "interface MouseEvent extends UIEvent {\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/altKey) */\n    readonly altKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) */\n    readonly button: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/buttons) */\n    readonly buttons: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientX) */\n    readonly clientX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/clientY) */\n    readonly clientY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/ctrlKey) */\n    readonly ctrlKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerX) */\n    readonly layerX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/layerY) */\n    readonly layerY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/metaKey) */\n    readonly metaKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementX) */\n    readonly movementX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/movementY) */\n    readonly movementY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetX) */\n    readonly offsetX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/offsetY) */\n    readonly offsetY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageX) */\n    readonly pageX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/pageY) */\n    readonly pageY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget) */\n    readonly relatedTarget: EventTarget | null;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenX) */\n    readonly screenX: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/screenY) */\n    readonly screenY: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/shiftKey) */\n    readonly shiftKey: boolean;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/x) */\n    readonly x: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/y) */\n    readonly y: number;\n    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/getModifierState) */\n    getModifierState(keyArg: string): boolean;\n    /**\n     * @deprecated\n     *\n     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent/initMouseEvent)\n     */\n    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget | null): void;\n}",
-      "docstring": "Events that occur due to the user interacting with a pointing device (such as a mouse). Common events using this interface include click, dblclick, mouseup, mousedown.\n\n[MDN Reference](https://developer.mozilla.org/docs/Web/API/MouseEvent)",
+      "declaration": "export type NotificationCloseClickDetail = MouseEvent",
+      "docstring": "",
       "path": "src/components/overlays/notification/notification.interfaces.ts"
     },
     "src/components/overlays/popup/popup.interfaces.ts::PopupRole": {
@@ -80682,7 +80364,7 @@
       "path": "src/components/structure/heading/heading.interfaces.ts"
     },
     "src/components/structure/carousel/carousel.interfaces.ts::CarouselControls": {
-      "declaration": "\"none\" | \"large\" | \"dots\"",
+      "declaration": "\"none\" | \"large\" | \"dots\" | \"large-below\"",
       "docstring": "",
       "path": "src/components/structure/carousel/carousel.interfaces.ts"
     },
@@ -80693,11 +80375,6 @@
     },
     "src/components/structure/carousel/carousel.interfaces.ts::CarouselChangeDetail": {
       "declaration": "{ value: string }",
-      "docstring": "",
-      "path": "src/components/structure/carousel/carousel.interfaces.ts"
-    },
-    "src/components/structure/carousel/carousel.interfaces.ts::CarouselItemColor": {
-      "declaration": "\"purple\" | \"red\" | \"yellow\" | \"green\"",
       "docstring": "",
       "path": "src/components/structure/carousel/carousel.interfaces.ts"
     },
@@ -80727,7 +80404,7 @@
       "path": "src/components/structure/content/content.interfaces.ts"
     },
     "src/components/structure/stack/stack.interfaces.ts::StackAlignment": {
-      "declaration": "\"center\" | \"top start\" | \"top center\" | \"top end\" | \"start\" | \"end\" | \"bottom start\" | \"bottom center\" | \"bottom end\"",
+      "declaration": "\"center\" | \"top start\" | \"top center\" | \"top end\" | \"start\" | \"end\" | \"bottom start\" | \"bottom center\" | \"bottom end\" | \"stretch\"",
       "docstring": "",
       "path": "src/components/structure/stack/stack.interfaces.ts"
     },

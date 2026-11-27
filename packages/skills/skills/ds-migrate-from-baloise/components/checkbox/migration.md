@@ -52,11 +52,11 @@ Legacy `interface` (`'checkbox' | 'switch' | 'button' | 'tile'`) lived on `bal-c
 | old `interface` | new | handling |
 | --- | --- | --- |
 | omitted, `"checkbox"` | omit `tile` | Default on both sides. Copy every other prop as-is. |
-| `"tile"` | `tile` on `ds-checkbox-group` | Boolean attribute, same meaning: a bordered card layout. See the `color` row below for the tile colour. |
+| `"tile"` | `tile` + `hideTrigger` on `ds-checkbox-group` | A bordered card layout. Legacy drew no indicator on a tile. See Shape: tile below. See the `color` row below for the tile colour. |
 | `"switch"` | tag becomes `ds-toggle` | See Shape: switch below. This is a tag change, not a prop rewrite. |
-| `"button"` | `tile` + `hideTrigger` on `ds-checkbox-group` | See Shape: button below. This is a visual approximation, not an exact match. |
+| `"button"` | `tile` on `ds-checkbox-group` | See Shape: button below. This is a visual approximation, not an exact match. |
 
-`ds-checkbox-group` overwrites `tile`, `hideTrigger`, `cols`, `colsTablet` and `colsMobile` on every `ds-checkbox` child, also on children added later through `slotchange`, so `*ngFor` and `.map` children are covered. A value written on a child inside a group is lost. Write these props on the group only and drop `interface` from every child inside a group. A child-level `interface="tile"` or `"button"` inside a group whose own `interface` is unset moves to the group when every non-switch child carries the same value. When the children of one group carry different `interface` values, or values that differ from the group, write nothing on the group and report it. A group renders all children the same way. A child with `interface="switch"` still becomes a `ds-toggle` as Shape: switch describes, because the group does not touch a `ds-toggle`. A standalone `bal-checkbox` outside any group keeps `tile` and `hideTrigger` on itself, because no group overwrites it. A wrapper `ds-checkbox-group` that the migration adds around a single checkbox (a forms binding, a `bal-field` label or a following `bal-field-message`) gets the checkbox's `name`, `tile` and `hideTrigger` instead of the checkbox. The wrapper also overwrites `name` on its child, and without its own `name` it writes a generated id there, so the form would submit the checkbox under that id. It defaults `tile` to `false` and would overwrite that too.
+`ds-checkbox-group` overwrites `tile`, `hideTrigger`, `cols`, `colsTablet` and `colsMobile` on every `ds-checkbox` child, also on children added later through `slotchange`, so `*ngFor` and `.map` children are covered. A value written on a child inside a group is lost. Write these props on the group only and drop `interface` from every child inside a group. A child-level `interface="tile"` or `"button"` inside a group whose own `interface` is unset moves to the group when every non-switch child carries the same value. When the children of one group carry different `interface` values, or values that differ from the group, write nothing on the group and report it. A group renders all children the same way. A child with `interface="switch"` still becomes a `ds-toggle` as Shape: switch describes, because the group does not touch a `ds-toggle`. A standalone `bal-checkbox` outside any group keeps `tile` and `hideTrigger` on itself, as the Shape sections below map them, because no group overwrites it. A wrapper `ds-checkbox-group` that the migration adds around a single checkbox (a forms binding, a `bal-field` label or a following `bal-field-message`) gets the checkbox's `name`, `tile` and `hideTrigger` instead of the checkbox, as the Shape sections below map them. The wrapper also overwrites `name` on its child, and without its own `name` it writes a generated id there, so the form would submit the checkbox under that id. It defaults `tile` to `false` and would overwrite that too.
 
 ### Shape: `interface="switch"` becomes a `ds-toggle`
 
@@ -82,11 +82,17 @@ A switch inside a group needs one of three rules. Read the whole group first.
 - The group has `control`, but no bound `value` and no forms binding. Examples are `control value="news"` or `control` with a `balChange` handler on the group. Still rewrite the tag to `ds-toggle`, and report it with exactly this note: **"visual benefit persists, but value binding breaks"**. `ds-checkbox-group` finds its children with `this.el.querySelectorAll('ds-checkbox')`, so it never sees a `ds-toggle`. The static `value` no longer checks the toggle, and the group's `dsChange` array no longer includes it.
 - Any other group is used only for layout, label or fieldset. This is the common case, and the legacy `Switch` story is one. It needs no report, because nothing read the switch state through the group.
 
-### Shape: `interface="button"` becomes `tile` + `hideTrigger`
+### Shape: `interface="tile"` becomes `tile` + `hideTrigger`
 
-The legacy `button` look (set on `bal-checkbox-group`, cascading to children) is an auto-width, inline-flowing row of bordered buttons, with the selected one filled solid dark-navy with white text. Neither `tile` nor `hideTrigger` reproduces that: `ds-checkbox-group`'s tile mode is always a block-level card, either full width (no `cols`) or an equal-width grid cell (`cols` set) — never auto-width to its own label text — and its selected state is a border plus a soft color tint, never a solid fill.
+Legacy `bal-checkbox` drew no indicator on a tile. Its selected state was only the border color. A `bal-check` that the consumer put in the tile body was the only indicator such a tile showed. `ds-checkbox` shows its trigger in every mode and hides it only when both `tile` and `hideTrigger` are set.
 
-Rewrite anyway, as the closest available approximation: add `tile` and `hideTrigger` to the group only. A standalone `bal-checkbox` outside any group keeps both on itself. Carry over `color` on individual children as the `tile-color` attribute (see the `color` row below). `bal-checkbox-group` has no `color`, so only children carry it. Flag every occurrence with a **"slight design deviation"** note: sizing behavior changed from auto-width/inline to fixed/grid-width block, and the selected-state fill changed from solid to border-plus-tint.
+So `"tile"` always becomes `tile` + `hideTrigger`. Never add `hideTrigger` for `"button"`. A plain tile then shows no indicator, as in legacy. A `bal-check` left in the tile body stays, and it is the tile's one indicator. Without `hideTrigger` that tile would show two. When the consumer later replaces that `bal-check` by hand, removing `hideTrigger` lets `ds-checkbox` draw its own trigger.
+
+### Shape: `interface="button"` becomes `tile`
+
+The legacy `button` look (set on `bal-checkbox-group`, cascading to children) is an auto-width, inline-flowing row of bordered buttons, with the selected one filled solid dark-navy with white text. Legacy drew a `bal-check` in each button, inverted when checked. `tile` does not reproduce the layout: `ds-checkbox-group`'s tile mode is always a block-level card, either full width (no `cols`) or an equal-width grid cell (`cols` set) — never auto-width to its own label text — and its selected state is a border plus a soft color tint, never a solid fill.
+
+Rewrite anyway, as the closest available approximation: add `tile` to the group only. Do not add `hideTrigger`. The `ds-checkbox` trigger then draws the check mark that legacy drew. A standalone `bal-checkbox` outside any group keeps `tile` on itself. Carry over `color` on individual children as the `tile-color` attribute (see the `color` row below). `bal-checkbox-group` has no `color`, so only children carry it. Flag every occurrence with a **"slight design deviation"** note: sizing behavior changed from auto-width/inline to fixed/grid-width block, and the selected-state fill changed from solid to border-plus-tint. The check mark stays.
 
 ### Switch group with a bound value
 
@@ -98,7 +104,7 @@ Rewrite the group like this instead:
 - When the group has a field label from a surrounding `bal-field`, put that text on the div as `aria-label`. `shared/field.md` removes the wrapper as usual.
 - The label can also come from a label element right before the group, such as a `bal-label` or `BalLabel` with the group's heading text. Give that label an `id` and put `aria-labelledby` with that `id` on the div. Or put its text on the div as `aria-label`.
 - Drop `interface`, `control`, `value` and the forms binding from the group, together with its `balChange` handler. Also drop `vertical`, because the div already stacks the toggles vertically. Move the group's `name` to every child that has none.
-- Each switch child becomes a standalone `ds-toggle` with its own `checked` binding, derived from the array. A switch child is a child with its own `interface="switch"`, or any child of a group with `interface="switch"`, because the group's `interface` cascades. Only a child without its own `interface="switch"` in a group without `interface="switch"` becomes a standalone `ds-checkbox`, with the same bindings. It keeps its own `tile` and `hideTrigger`, and the group's `interface="tile"` or `"button"` moves onto it, because no group overwrites it.
+- Each switch child becomes a standalone `ds-toggle` with its own `checked` binding, derived from the array. A switch child is a child with its own `interface="switch"`, or any child of a group with `interface="switch"`, because the group's `interface` cascades. Only a child without its own `interface="switch"` in a group without `interface="switch"` becomes a standalone `ds-checkbox`, with the same bindings. It keeps its own `tile` and `hideTrigger`, and the group's `interface` moves onto it, because no group overwrites it. `"tile"` gives it `tile` and `hideTrigger`. `"button"` gives it `tile` only.
 
 React:
 
@@ -165,7 +171,7 @@ So every `ds-checkbox-group` with `formControlName`, `formControl`, `ngModel` or
 `@helvetia-design/angular` exports value accessors for `DsCheckboxGroup` and `DsToggle`, but not for `DsCheckbox`. `formControlName`, `formControl` or `ngModel` on a `ds-checkbox` throws "No value accessor" at runtime. Rewrite a `bal-checkbox` with a forms binding (scan flag `formsBinding`) one of two ways:
 
 - With `interface="switch"`, rewrite it to `ds-toggle` and keep the binding on it. `DsToggle` has a value accessor, and the value stays a boolean.
-- Otherwise, wrap it in `<ds-checkbox-group control>` and move the binding to the group. The checkbox keeps its `value`. Its `name` moves to the wrapper. With `interface="tile"` or `"button"`, `tile` and `hideTrigger` go on the wrapper, not on the checkbox. The form value changes from a boolean to an array: unchecked is `[]`, checked is `[value]`. A checkbox without `value` puts `'on'` into the array. Change the form control's initial value from `false` to `[]` and from `true` to `[value]` in the same-basename `.ts`, and fix every place that reads it as a boolean. `Validators.requiredTrue` becomes `Validators.required`, which fails on an empty array. Report the type change.
+- Otherwise, wrap it in `<ds-checkbox-group control>` and move the binding to the group. The checkbox keeps its `value`. Its `name` moves to the wrapper. With `interface="tile"`, `tile` and `hideTrigger` go on the wrapper, not on the checkbox. With `interface="button"`, only `tile` goes on the wrapper. The form value changes from a boolean to an array: unchecked is `[]`, checked is `[value]`. A checkbox without `value` puts `'on'` into the array. Change the form control's initial value from `false` to `[]` and from `true` to `[value]` in the same-basename `.ts`, and fix every place that reads it as a boolean. `Validators.requiredTrue` becomes `Validators.required`, which fails on an empty array. Report the type change.
 
 ```html
 <!-- before -->
@@ -189,7 +195,7 @@ Until `DsCheckbox` has a value accessor, this is the only path that works. A sin
 
 ### Legacy indicators: `bal-check` and `bal-switch`
 
-`bal-check` and `bal-switch` draw a check mark or a switch from `checked`, `disabled`, `invalid` and `inverted`. `hovered` and `pressed` are internal. They are not form controls, and `ds-*` has no equivalent. Leave every `bal-check`, `bal-switch`, `BalCheck` and `BalSwitch` exactly as it is, and keep their symbols on the `@baloise` import. Report each one by file and line as "no `ds-*` equivalent, needs manual rework". Do not add a comment to the consumer's code. `scan-migratable.mjs` keeps listing them under `byHand` until someone replaces them by hand, and while they are left the legacy config call stays (see `shared/legacy-config.md`).
+`bal-check` and `bal-switch` draw a check mark or a switch from `checked`, `disabled`, `invalid` and `inverted`. `hovered` and `pressed` are internal. They are not form controls, and `ds-*` has no equivalent. Leave every `bal-check`, `bal-switch`, `BalCheck` and `BalSwitch` exactly as it is, and keep their symbols on the `@baloise` import. Report each one by file and line as "no `ds-*` equivalent, needs manual rework". Do not add a comment to the consumer's code. `scan-migratable.mjs` keeps listing them under `byHand` until someone replaces them by hand, and while they are left the legacy config call stays (see `shared/legacy-config.md`). A `bal-check` in a migrated tile body also stays. It is the tile's only indicator, because the tile got `hideTrigger`. When you replace it by hand, delete it and remove `hideTrigger`.
 
 ### Props: `bal-checkbox` → `ds-checkbox`
 
@@ -214,7 +220,7 @@ Until `DsCheckbox` has a value accessor, this is the only path that works. A sin
 | `expanded` | _(no equivalent)_ | Drop it. Mention each dropped occurrence. |
 | _(none — new prop)_ | `required` (defaults `true`) | Do not set this on a group without a label. Its only effect is an "(optional)" suffix next to the group's own `label` prop. When the group sits inside a `bal-field` with a label, `shared/field.md` sets `label` and `required` on the group. Outside a `bal-field`, leave the new default alone. `ds-checkbox-group` is excluded from the required default rule in `SKILL.md`. Mention once, not per-occurrence, that this new prop exists. |
 | _(none — new props)_ | `label`, `description`, `invalidText`, `loading`, `color` | New capabilities, nothing to migrate from legacy. `bal-checkbox-group` had neither `label` nor `color`. Leave them unset. `color` here is the group's input colour, not the tile colour. Do not carry a child's `color` onto the group's `color`. |
-| `interface` (`"tile"`, `"button"`, `"switch"`) | `tile`, `hideTrigger` | Set on the group only, as Shape describes. The group overwrites both on every child. `"switch"` follows Shape: switch. |
+| `interface` (`"tile"`, `"button"`, `"switch"`) | `tile`, `hideTrigger` | Set on the group only, as Shape describes. `"tile"` becomes `tile` + `hideTrigger`. `"button"` becomes `tile` only. The group overwrites both on every child. `"switch"` follows Shape: switch. |
 | _(none — new prop)_ | `tileColor` | A fallback for children without a `tile-color` attribute. It does not override a child's `tile-color`. |
 
 ### Tags and imports
@@ -268,22 +274,23 @@ Needs your attention when found:
 4. Every `ds-checkbox-group` where the migration added `control` because it has a forms binding, a bound `value` or a rewritten `setValue()` call. Leave out the wrapper groups around a single checkbox, which item 3 already reports.
 5. Every `setValue()` call on a `bal-checkbox-group` ref, with the rewrite it got: the form control, the model property, or `el.value` plus `control`. For `el.value`, note that no `dsChange` fires.
 6. Every `bal-check`, `bal-switch`, `BalCheck` or `BalSwitch` left in place because it has no `ds-*` equivalent. Name file and line for each.
-7. Every `interface="button"` rewritten to `tile` + `hideTrigger`, with its "slight design deviation" note.
-8. Every child `interface`, `colSize*` or `col-size*` value that differs from its siblings or from the group, with what was written on the group (`tile`, `hideTrigger`, `cols*`). Every group whose children had `colSize*` and no group `columns*`, with the `cols*` written or the reason none was.
-9. Every dropped `labelHidden`. The label is now visible.
-10. Every dropped `flat`.
-11. Every dropped `nonSubmit`. The checkbox is now always submitted with the form.
-12. Every dropped `verticalOnMobile`.
-13. Every dropped `expanded`.
-14. Every dropped `options` or `newBalCheckboxOption`, flagged for manual conversion to slotted children, together with every `getOptionByValue()` call tied to it and its Unmapped props and handlers outcome.
-15. Every `setFocus()`, `setBlur()`, `getInputElement()` or `getOption()` call, with its Unmapped props and handlers outcome.
-16. One-time note: the scan reports `setValue()` on a ref typed `HTMLBalCheckboxGroupElement` in every scanned file. It does not report other method calls or listeners in a file that has no finding and no scanned `.html` of the same name beside it.
-17. Every legacy type left or written out and every bundle kept, as `SKILL.md` "Legacy types and bundles" describes: each `BalProps.BalCheckbox*` type left in place, each detail alias such as `BalEvents.BalCheckboxChangeDetail` written out, each `BalCheckboxBundle` spread kept because a `bal-check` or `bal-switch` is left, and each multi-family bundle kept.
+7. Every `interface="button"` rewritten to `tile`, with its "slight design deviation" note.
+8. Every `interface="tile"` group or standalone checkbox that got `hideTrigger`. Name each tile body that still holds a `bal-check`, which is now its only indicator.
+9. Every child `interface`, `colSize*` or `col-size*` value that differs from its siblings or from the group, with what was written on the group (`tile`, `hideTrigger`, `cols*`). Every group whose children had `colSize*` and no group `columns*`, with the `cols*` written or the reason none was.
+10. Every dropped `labelHidden`. The label is now visible.
+11. Every dropped `flat`.
+12. Every dropped `nonSubmit`. The checkbox is now always submitted with the form.
+13. Every dropped `verticalOnMobile`.
+14. Every dropped `expanded`.
+15. Every dropped `options` or `newBalCheckboxOption`, flagged for manual conversion to slotted children, together with every `getOptionByValue()` call tied to it and its Unmapped props and handlers outcome.
+16. Every `setFocus()`, `setBlur()`, `getInputElement()` or `getOption()` call, with its Unmapped props and handlers outcome.
+17. One-time note: the scan reports `setValue()` on a ref typed `HTMLBalCheckboxGroupElement` in every scanned file. It does not report other method calls or listeners in a file that has no finding and no scanned `.html` of the same name beside it.
+18. Every legacy type left or written out and every bundle kept, as `SKILL.md` "Legacy types and bundles" describes: each `BalProps.BalCheckbox*` type left in place, each detail alias such as `BalEvents.BalCheckboxChangeDetail` written out, each `BalCheckboxBundle` spread kept because a `bal-check` or `bal-switch` is left, and each multi-family bundle kept.
 
 Coverage only, written to the file:
 
-18. Every `interface="switch"` rewritten to `ds-toggle`.
-19. One-time note, for groups outside a `bal-field` only: `ds-checkbox-group` defaults its new `required` prop to `true`, and the migration left it alone. It only shows once the group gets a `label`.
+19. Every `interface="switch"` rewritten to `ds-toggle`.
+20. One-time note, for groups outside a `bal-field` only: `ds-checkbox-group` defaults its new `required` prop to `true`, and the migration left it alone. It only shows once the group gets a `label`.
 
 Leave every change unstaged for the consumer to review, including `ds-migration-report.md`. Stop. Do not run `git add` or `git commit`.
 

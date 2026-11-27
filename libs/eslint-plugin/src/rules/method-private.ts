@@ -14,8 +14,11 @@ const LIFECYCLE_HOOKS = new Set([
   'componentDidRender',
   'componentWillUpdate',
   'componentDidUpdate',
-  'formDisabledCallback',
   'render',
+  'formAssociatedCallback',
+  'formResetCallback',
+  'formDisabledCallback',
+  'formStateRestoreCallback',
 ])
 
 const EXEMPT_DECORATORS = ['Method', 'Watch', 'Listen', 'Logger', 'ListenToBreakpoints', 'ListenToWindowResize']

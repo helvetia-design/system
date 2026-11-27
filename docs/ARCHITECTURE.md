@@ -373,7 +373,7 @@ All changes affecting end users must be documented in a changeset. Use the `ds-c
 skill to create one — it drives the repo's `scripts/create-changeset.mjs` CLI non-interactively
 and leaves the result unstaged for review.
 
-**Why changesets matter:** When PRs are merged into `next`, the `prepare-release.yml` workflow scans all changesets and opens a "Changeset Release PR" that aggregates all changes into a single version bump. This PR is reviewed by the core team, then merged to trigger the actual npm publication via `release.yml`.
+**Why changesets matter:** When PRs are merged into `main`, the `prepare-release.yml` workflow scans all changesets and opens a "Changeset Release PR" that aggregates all changes into a single version bump. This PR is reviewed by the core team, then merged to trigger the actual npm publication via `release.yml`.
 
 See [Changesets documentation](https://github.com/changesets/changesets) for format and best practices.
 
@@ -397,7 +397,7 @@ Post this comment in the PR to trigger `snapshot.yml`. The resulting version fol
 ### Release Flow
 
 ```
-1. Changes merged to next
+1. Changes merged to main
    ↓
 2. prepare-release.yml reads all .changeset/*.md files
    ↓
@@ -405,18 +405,16 @@ Post this comment in the PR to trigger `snapshot.yml`. The resulting version fol
    ↓
 4. Core team reviews and approves Release PR
    ↓
-5. Release PR merged to next
+5. Release PR merged to main
    ↓
 6. release.yml publishes all packages to npm with GitHub provenance
    ↓
 7. Docs automatically redeploy to helvetia-design.vercel.app
 ```
 
-For LTS (`main` branch), follow the same process with `lts-prepare-release.yml` and `lts-release.yml`.
-
 ### Branch and PR Workflow
 
-- Open PRs against the `next` branch
+- Open PRs against the `main` branch
 - Feature branches should use prefixes: `feat/`, `fix/`, `chore/`, `docs/`
 - All checks must pass before merge
 - Include a changeset unless your PR is documentation-only or infrastructure
@@ -505,7 +503,6 @@ This gives consumers 2+ release cycles to migrate before the feature is removed.
 
 - **Latest major version**: Receives patches and minor updates
 - **Older major versions**: No longer receive updates (see [SECURITY.md](../SECURITY.md#supported-versions))
-- **LTS branch** (`main`): Parallel releases with same versioning scheme
 - **Prerelease versions**: Snapshot versions (e.g., `1.2.3-snapshot.456.abc1234`) for testing before merge
 
 ## CI/CD Workflows
@@ -514,12 +511,10 @@ All workflows live in `.github/workflows/`. Here is what runs automatically:
 
 | Workflow                  | Trigger                                          | Purpose                                                                                                              |
 | ------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `continuous.yml`          | Every push to `next` + all PRs                   | Lint, test, and build. Cancels superseded runs.                                                                      |
-| `prepare-release.yml`     | Every push to `next`                             | Opens or updates a **Changeset Release PR** via the changesets bot.                                                  |
+| `continuous.yml`          | Every push to `main` + all PRs                   | Lint, test, and build. Cancels superseded runs.                                                                      |
+| `prepare-release.yml`     | Every push to `main`                             | Opens or updates a **Changeset Release PR** via the changesets bot.                                                  |
 | `release.yml`             | Changeset Release PR merged (or manual dispatch) | Publishes all packages to npm with provenance.                                                                       |
-| `lts-prepare-release.yml` | Every push to `main`                             | Same as prepare-release but for the LTS (`main`) branch.                                                             |
-| `lts-release.yml`         | LTS Release PR merged                            | Publishes LTS packages to npm.                                                                                       |
-| `security.yml`            | Push to `next` + all PRs + weekly schedule       | CodeQL static analysis. Results appear in the GitHub Security tab. Required for EU Cyber Resilience Act obligations. |
+| `security.yml`            | Push to `main` + all PRs + weekly schedule       | CodeQL static analysis. Results appear in the GitHub Security tab. Required for EU Cyber Resilience Act obligations. |
 | `screenshots.yml`         | PR comment `/update-screenshots`                 | Regenerates visual regression snapshots for the PR branch and commits them.                                          |
 | `snapshot.yml`            | PR comment `/snapshot`                           | Publishes a snapshot npm version from the PR branch for manual testing.                                              |
 | `create-issue-branch.yml` | Issue comment                                    | Auto-creates a branch from an issue using the `robvanderleek/create-issue-branch` action.                            |
@@ -540,19 +535,17 @@ The design system documentation site is automatically deployed to **Vercel** whe
 
 ### Deployment Domains
 
-| Domain                                                                         | Branch                  | Purpose                                                                     |
-| ------------------------------------------------------------------------------ | ----------------------- | --------------------------------------------------------------------------- |
-| [helvetia-design.vercel.app](https://helvetia-design.vercel.app)               | `next` (latest release) | Production domain serving the latest published version                      |
-| [baloise-design-preview.vercel.app](https://baloise-design-preview.vercel.app) | `main`                  | LTS version of Baloise                                                      |
-| `design-system-*.vercel.app`                                                   | Every PR                | Each pull request gets a unique preview URL (linked in Vercel's PR comment) |
+| Domain                                                           | Branch                  | Purpose                                                                     |
+| ---------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------- |
+| [helvetia-design.vercel.app](https://helvetia-design.vercel.app) | `main` (latest release) | Production domain serving the latest published version                      |
+| `design-system-*.vercel.app`                                     | Every PR                | Each pull request gets a unique preview URL (linked in Vercel's PR comment) |
 
 ### How It Works
 
 Vercel watches the repository for changes and automatically rebuilds and deploys when:
 
-- Changes are pushed to `next` → rebuilds production docs at `helvetia-design.vercel.app`
-- Changes are pushed to `main` → rebuilds lts at `baloise-design-lts.vercel.app`
-- A pull request is opened or updated → builds a lts at a unique Vercel URL and comments with the link
+- Changes are pushed to `main` → rebuilds production docs at `helvetia-design.vercel.app`
+- A pull request is opened or updated → builds a preview at a unique Vercel URL and comments with the link
 
 This allows reviewers to see documentation changes live before merging.
 

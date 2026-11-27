@@ -401,6 +401,7 @@
   "foundation-typography": "foundation/typography.mdx",
   "support": "support.mdx",
   "templates-errorpages-notfound": "templates/error-page/error-page.mdx",
+  "templates-sections-overview": "templates/sections/1-Overview.mdx",
   "tokens-all-tokens": "tokens/00-all-tokens.mdx",
   "tokens-component-variables": "tokens/03-component-variables.mdx",
   "tokens-design-tokens-explained": "tokens/01-design-tokens-explained.mdx",

@@ -382,7 +382,7 @@ export namespace Components {
          */
         "brandIcon": string;
         /**
-          * Size of the brand icon.
+          * Size of the brand icon. Unset renders the base size.
          */
         "brandSize": ButtonBrandSize;
         /**
@@ -390,6 +390,7 @@ export namespace Components {
           * @default 'primary'
          */
         "color": ButtonColor;
+        "configChanged": (state: DsConfigState) => Promise<void>;
         /**
           * If `true`, the user cannot interact with the button.
           * @default false
@@ -460,7 +461,7 @@ export namespace Components {
          */
         "shadow": boolean;
         /**
-          * Size of the button
+          * Size of the button. Ignored when `brandIcon` is set — use `brandSize` instead.
          */
         "size"?: ButtonSize;
         /**
@@ -662,10 +663,10 @@ export namespace Components {
          */
         "controls": CarouselControls;
         /**
-          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally.
+          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally. A string sets it per breakpoint with `ds-col` prefixes, e.g. `"1 tablet:2 desktop:3"`.
           * @default 'auto'
          */
-        "itemsPerView": number | 'auto';
+        "itemsPerView": number | 'auto' | string;
         /**
           * Accessible label for the carousel region.
           * @default ''
@@ -1356,6 +1357,9 @@ export namespace Components {
           * @default 'primary'
          */
         "color": InputColor;
+        /**
+          * LISTENERS ------------------------------------------------------
+         */
         "configChanged": (state: { language: DsLanguage; region: DsRegion; }) => Promise<void>;
         /**
           * The description of the file upload, displayed below the drop zone.
@@ -2360,6 +2364,11 @@ export namespace Components {
          */
         "open": boolean;
         /**
+          * ARIA role applied to the panel and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
+          * @default 'dialog'
+         */
+        "panelRole": PopupRole;
+        /**
           * Preferred placement of the popup relative to the trigger.
           * @default 'bottom'
          */
@@ -2368,11 +2377,6 @@ export namespace Components {
           * Opens the popup.
          */
         "present": () => Promise<void>;
-        /**
-          * ARIA role applied to the panel. Controls focus-trap behaviour and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
-          * @default 'dialog'
-         */
-        "role": PopupRole;
         /**
           * Toggles the popup open or closed.
          */
@@ -3088,7 +3092,7 @@ export namespace Components {
          */
         "actionTarget": ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId": string;
         /**
@@ -3173,7 +3177,7 @@ export namespace Components {
      */
     interface DsStack {
         /**
-          * Defines the text positioning like center, right or default to start.
+          * Defines the text positioning like center, right or default to start. `stretch` makes children fill the cross axis.
          */
         "align"?: StackAlignment;
         "alignment"?: StackAlignment;
@@ -3650,7 +3654,7 @@ export namespace Components {
          */
         "actionTarget": ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId": string;
         /**
@@ -5539,7 +5543,7 @@ declare namespace LocalJSX {
          */
         "brandIcon"?: string;
         /**
-          * Size of the brand icon.
+          * Size of the brand icon. Unset renders the base size.
          */
         "brandSize"?: ButtonBrandSize;
         /**
@@ -5641,7 +5645,7 @@ declare namespace LocalJSX {
          */
         "shadow"?: boolean;
         /**
-          * Size of the button
+          * Size of the button. Ignored when `brandIcon` is set — use `brandSize` instead.
          */
         "size"?: ButtonSize;
         /**
@@ -5842,10 +5846,10 @@ declare namespace LocalJSX {
          */
         "controls"?: CarouselControls;
         /**
-          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally.
+          * Number of items visible at once. `auto` sizes items by content. A number divides the container width equally. A string sets it per breakpoint with `ds-col` prefixes, e.g. `"1 tablet:2 desktop:3"`.
           * @default 'auto'
          */
-        "itemsPerView"?: number | 'auto';
+        "itemsPerView"?: number | 'auto' | string;
         /**
           * Accessible label for the carousel region.
           * @default ''
@@ -6625,6 +6629,10 @@ declare namespace LocalJSX {
           * @default ''
          */
         "dropZoneLabel"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
         /**
           * If `true` below the drop-zone area it generates a file list.
           * @default true
@@ -7695,15 +7703,15 @@ declare namespace LocalJSX {
          */
         "open"?: boolean;
         /**
+          * ARIA role applied to the panel and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
+          * @default 'dialog'
+         */
+        "panelRole"?: PopupRole;
+        /**
           * Preferred placement of the popup relative to the trigger.
           * @default 'bottom'
          */
         "placement"?: PopupPlacement;
-        /**
-          * ARIA role applied to the panel. Controls focus-trap behaviour and the aria-haspopup value set on the trigger. Use "dialog" for rich content, "listbox" or "menu" for interactive option lists.
-          * @default 'dialog'
-         */
-        "role"?: PopupRole;
         /**
           * Override the automatic focus-trap behaviour. When undefined, trapping is enabled when `backdrop` is `true` and disabled otherwise.
           * @default undefined
@@ -8516,7 +8524,7 @@ declare namespace LocalJSX {
          */
         "actionTarget"?: ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId"?: string;
         /**
@@ -8605,7 +8613,7 @@ declare namespace LocalJSX {
      */
     interface DsStack {
         /**
-          * Defines the text positioning like center, right or default to start.
+          * Defines the text positioning like center, right or default to start. `stretch` makes children fill the cross axis.
          */
         "align"?: StackAlignment;
         "alignment"?: StackAlignment;
@@ -9116,7 +9124,7 @@ declare namespace LocalJSX {
          */
         "actionTarget"?: ButtonTarget;
         /**
-          * @default crypto.randomUUID() as string
+          * @default createAlertId()
          */
         "alertId"?: string;
         /**
@@ -9750,7 +9758,7 @@ declare namespace LocalJSX {
         "open": boolean;
         "placement": PopupPlacement;
         "offset": number;
-        "role": PopupRole;
+        "panelRole": PopupRole;
         "closable": boolean;
         "backdropDismiss": boolean;
         "backdrop": boolean;

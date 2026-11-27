@@ -4,7 +4,7 @@ import { localBaseTokensPath, readLocalBaseTokensDocument } from './local'
 
 describe('local token mode', () => {
   it('resolves the core token file inside this monorepo', () => {
-    expect(localBaseTokensPath(CORE_TOKY_CONFIG)).toMatch(/packages\/tokens\/tokens\/Base\.tokens\.json$/)
+    expect(localBaseTokensPath(CORE_TOKY_CONFIG)).toMatch(/packages[\\/]tokens[\\/]tokens[\\/]Base\.tokens\.json$/)
   })
 
   it('refuses a token source other than core with a clear message', async () => {

@@ -21,4 +21,5 @@ export const VARIANTS = [
   'group-column',
 ]
 
-export const HOST_VARIANTS = VARIANTS.filter(variant => variant !== 'html-tags')
+// host-only: no section in button.style.html
+export const HOST_VARIANTS = [...VARIANTS.filter(variant => variant !== 'html-tags'), 'brand-icons-states']

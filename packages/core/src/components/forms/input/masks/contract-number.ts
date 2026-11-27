@@ -35,6 +35,7 @@ export class ContractNumber implements InputMaskFormatterInterface {
 
   private formatValue(value: string): string {
     const digits = value.replace(/\D/g, '')
+    if (!digits) return ''
     const offerPart = digits.substring(0, 9)
     const lastDigit = digits.substring(9, 10)
     const formatted = this.formatOffer(offerPart)

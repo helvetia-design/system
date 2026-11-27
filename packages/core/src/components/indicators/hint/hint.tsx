@@ -281,7 +281,7 @@ export class Hint implements DsComponentInterface, DsConfigObserver, DsBreakpoin
             closable={false}
             placement={this.placement}
             backdropDismiss
-            role="dialog"
+            panelRole="dialog"
             onDsWillPresent={this.handleWillPresent}
             onDsWillDismiss={this.handleWillDismiss}
           >

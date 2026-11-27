@@ -91,6 +91,11 @@
 
 :host(.is-animated) #inner {
   animation: spinner 1.6s linear infinite;
+
+  // slowed, not stopped, so it still reads as loading (WCAG 2.3.3); logo variant is slowed in spinner.tsx
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 6.4s;
+  }
 }
 
 /**
@@ -130,7 +135,7 @@
   width: auto;
 }
 
-::part(label) {
+.label {
   @include typo.apply(spinner-label);
   color: var(--_spinner-label-color-text);
 }

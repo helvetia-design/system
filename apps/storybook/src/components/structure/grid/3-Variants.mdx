@@ -30,6 +30,14 @@ Add `is-multiline` to the grid so columns wrap onto additional rows once they no
 
 {/* ------------------------------------------------------ */}
 
+<StoryHeading of={GridStories.RowGap}></StoryHeading>
+
+Add `row-gap-*` (`none` to `4xl`) to set the space between rows, meaning stacked columns on mobile and wrapped rows with `is-multiline`. It falls back to the column gap when not set, and is independent of `gap-*`.
+
+<CanvasWithCodePen of={GridStories.RowGap} sourceState="shown" />
+
+{/* ------------------------------------------------------ */}
+
 <StoryHeading of={GridStories.Gapless}></StoryHeading>
 
 Add `is-gapless` to remove the gap between columns, useful for edge-to-edge layouts like image galleries.

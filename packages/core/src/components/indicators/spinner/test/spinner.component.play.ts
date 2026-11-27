@@ -83,4 +83,25 @@ test.describe('component', () => {
 
     expect(rafCallsAfterRemoval).toBe(0)
   })
+
+  const CIRCLE_DURATION_CASES = [
+    { reducedMotion: 'no-preference', duration: '1.6s' },
+    { reducedMotion: 'reduce', duration: '6.4s' },
+  ] as const
+
+  CIRCLE_DURATION_CASES.forEach(({ reducedMotion, duration }) => {
+    test(`should use a ${duration} circle animation with reducedMotion ${reducedMotion}`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion })
+      await page.mount(`<div id="host"></div>`)
+      await page.waitForFunction(() => (window as any).dsAppReady)
+      await page.evaluate(() => {
+        ;(window as any).DesignSystem.config.animated = true
+        document.querySelector('#host')!.innerHTML = '<ds-spinner variation="circle"></ds-spinner>'
+      })
+
+      const inner = page.locator('ds-spinner #inner')
+      await expect(inner).toBeAttached()
+      await expect(inner).toHaveCSS('animation-duration', duration)
+    })
+  })
 })

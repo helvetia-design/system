@@ -70,7 +70,7 @@ Render a full-screen overlay behind the popup with the `backdrop` prop. Combines
 
 <StoryHeading of={PopupStories.RoleListbox}></StoryHeading>
 
-Use `role="listbox"` when the popup contains selectable options. This provides proper ARIA semantics for screen readers and enables keyboard navigation within lists.
+Use `panel-role="listbox"` when the popup contains selectable options. This provides proper ARIA semantics for screen readers and enables keyboard navigation within lists.
 
 <CanvasWithCodePen of={PopupStories.RoleListbox} overflowVisible={true} />
 
@@ -94,7 +94,7 @@ Control popups programmatically by setting the `trigger` property and calling `p
 
 <StoryHeading of={PopupStories.FocusTrap}></StoryHeading>
 
-When the popup has `role="dialog"` (default) and contains focusable elements, focus is trapped within the popup. Tab navigates between elements and wraps at the boundaries.
+When `trap-focus` is set, or the popup has a `backdrop`, focus is trapped within the popup. Opening moves focus to the first focusable element. Tab navigates between elements and wraps at the boundaries.
 
 <CanvasWithCodePen of={PopupStories.FocusTrap} overflowVisible={true} />
 

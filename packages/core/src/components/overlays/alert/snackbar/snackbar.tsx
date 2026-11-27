@@ -14,6 +14,7 @@ import {
   Type,
 } from '@utils'
 import { AlertComponent } from '../alert-container.interfaces'
+import { createAlertId } from '../alert-id'
 import {
   SNACKBAR_COLORS,
   SnackbarActionClickDetail,
@@ -138,7 +139,7 @@ export class Snackbar implements DsComponentInterface, AlertComponent, DsBreakpo
    */
   @Prop()
   @Type('string')
-  readonly alertId: string = crypto.randomUUID() as string
+  readonly alertId: string = createAlertId()
 
   /**
    * @internal
@@ -307,7 +308,7 @@ export class Snackbar implements DsComponentInterface, AlertComponent, DsBreakpo
               target={this.actionTarget}
               href={this.actionHref}
               onClick={ev => {
-                stopEventBubbling(ev)
+                ev.stopPropagation()
                 this.dsActionClick.emit(ev)
                 this.actionHandler(this.alertId)
               }}

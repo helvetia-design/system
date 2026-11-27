@@ -78,7 +78,7 @@ docs: update contribution guidelines
 
    See [ARCHITECTURE.md — Changesets and Versioning](docs/ARCHITECTURE.md#release-and-versioning) for how changesets flow into the release pipeline.
 
-2. **Open a PR against the `next` branch**
+2. **Open a PR against the `main` branch**
    - Include a descriptive title
    - Reference related issues if applicable
    - Ensure all checks pass (`pnpm lint && pnpm format`)
@@ -134,7 +134,7 @@ This creates a properly named branch (e.g., `feat/button-hover-state`) and opens
 6. **Finalize your PR**:
    - Ensure all checks pass: `pnpm lint && pnpm format && pnpm test`
    - Get approval from a core team member
-   - Merge to `next`
+   - Merge to `main`
 
 ## Creating a Feature
 
@@ -161,7 +161,7 @@ This creates a properly named branch (e.g., `feat/button-hover-state`) and opens
 7. **Finalize your PR**:
    - Ensure all checks pass: `pnpm lint && pnpm format && pnpm test`
    - Get approval from a core team member
-   - Merge to `next`
+   - Merge to `main`
 
 ## Adding a New Component
 

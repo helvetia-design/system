@@ -1,3 +1,4 @@
+@use '@helvetia-design/styles/dist/scss/mixins' as *;
 @use '../../../hybrid' as hybrid;
 @use './button.style' with (
   $use-host: true
@@ -44,4 +45,8 @@
 :host #button {
   margin: 0 !important;
   width: 100%;
+}
+
+.live-region {
+  @include visually-hidden();
 }

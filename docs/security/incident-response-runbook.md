@@ -119,7 +119,6 @@ Timeline:
 - [ ] Run `pnpm audit --audit-level high` to confirm no remaining critical/high CVEs
 - [ ] Create a changeset entry: `pnpm changeset` — mark as `patch`
 - [ ] Trigger the release workflow (this generates the SBOM, provenance attestation, and publishes to npm)
-- [ ] For LTS branches: apply the same fix via the `lts-release` workflow
 
 ---
 

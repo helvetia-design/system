@@ -63,6 +63,78 @@ test.describe('component', () => {
     await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'true')
   })
 
+  test('should hide on Escape while presented by hover', async ({ page }) => {
+    const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
+
+    await page.locator('#my-trigger').hover()
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+
+    await page.keyboard.press('Escape')
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  test('should hide on Escape while presented by focus and keep focus on the trigger', async ({ page }) => {
+    const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
+    const trigger = page.locator('#my-trigger')
+
+    await trigger.focus()
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+
+    await page.keyboard.press('Escape')
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'true')
+    await expect(trigger).toBeFocused()
+  })
+
+  test('should stay visible while the pointer moves from the trigger onto the tooltip', async ({ page }) => {
+    const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
+
+    await page.locator('#my-trigger').hover()
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+
+    const box = (await dsTooltip.el.locator('[part="container"]').boundingBox())!
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- proving a delayed dismiss does not fire needs elapsed time
+    await page.waitForTimeout(300)
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+
+    await page.mouse.move(box.x + box.width + 200, box.y + box.height + 200)
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  test('should stay visible while the trigger has focus and the pointer passes over the tooltip', async ({ page }) => {
+    const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
+    const trigger = page.locator('#my-trigger')
+
+    await trigger.focus()
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+
+    const box = (await dsTooltip.el.locator('[part="container"]').boundingBox())!
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    await page.mouse.move(box.x + box.width + 200, box.y + box.height + 200)
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- proving a delayed dismiss does not fire needs elapsed time
+    await page.waitForTimeout(300)
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+    await expect(trigger).toBeFocused()
+  })
+
+  test('should not emit a second dismiss when the pointer leaves after Escape', async ({ page }) => {
+    const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
+
+    await page.locator('#my-trigger').hover()
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'false')
+    const box = (await dsTooltip.el.locator('[part="container"]').boundingBox())!
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+
+    const willSpy = await dsTooltip.el.spyOnEvent('dsWillAnimate')
+    await page.keyboard.press('Escape')
+    await expect(dsTooltip.el).toHaveAttribute('aria-hidden', 'true')
+    await page.mouse.move(box.x + box.width + 200, box.y + box.height + 200)
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- proving a delayed dismiss does not fire needs elapsed time
+    await page.waitForTimeout(300)
+
+    expect(willSpy).toHaveReceivedEventTimes(1)
+  })
+
   test('should wrap long content and stay within a narrow viewport', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 640 })
     const dsTooltip = new DsTooltip(page.locator('ds-tooltip'))
@@ -128,6 +200,35 @@ test.describe('component', () => {
     })
 
     expect(removedListenerTypes.sort()).toEqual(['blur', 'focus', 'mouseenter', 'mouseleave'])
+  })
+})
+
+test.describe('aria-describedby', () => {
+  test('should append its id to an existing aria-describedby and restore it on disconnect', async ({ page }) => {
+    await page.mount(`
+      <button id="my-trigger" aria-describedby="hint-1">Hover over me</button>
+      <span id="hint-1">Hint</span>
+      <ds-tooltip reference="my-trigger">Tooltip content</ds-tooltip>
+    `)
+    const trigger = page.locator('#my-trigger')
+    const tooltipId = await page.locator('ds-tooltip').getAttribute('id')
+
+    await expect(trigger).toHaveAttribute('aria-describedby', `hint-1 ${tooltipId}`)
+
+    await page.evaluate(() => document.querySelector('ds-tooltip')?.remove())
+    await expect(trigger).toHaveAttribute('aria-describedby', 'hint-1')
+  })
+
+  test('should remove aria-describedby on disconnect when it set the only token', async ({ page }) => {
+    await page.mount(`
+      <button id="my-trigger">Hover over me</button>
+      <ds-tooltip reference="my-trigger">Tooltip content</ds-tooltip>
+    `)
+    const trigger = page.locator('#my-trigger')
+    await expect(trigger).toHaveAttribute('aria-describedby')
+
+    await page.evaluate(() => document.querySelector('ds-tooltip')?.remove())
+    await expect(trigger).not.toHaveAttribute('aria-describedby')
   })
 })
 

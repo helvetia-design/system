@@ -200,6 +200,9 @@ jobs:
           *   - Foundation visual tests live directly under src/foundation (no test subfolder)
           *   - The same name(s) from TAG are also matched there, e.g. TAG='colors' matches
           *     src/foundation/colors.visual.play.ts
+          *
+          * Section selection:
+          *   - The same name(s) from TAG are also matched anywhere under src/sections
           */
           import { defineConfig, devices } from '@playwright/test'
           import baseConfig from './playwright.config'
@@ -208,7 +211,8 @@ jobs:
           const components = TAG === 'all' ? ['all'] : TAG.split(',').map(t => t.trim())
           const componentsMatch = components.map(comp => comp === 'all' ? 'src/components/all/test/*visual.play.ts' : 'src/components/**/' + comp + '.visual.play.ts')
           const foundationMatch = components.map(comp => 'src/foundation/' + comp + '.visual.play.ts')
-          const testMatch = [...componentsMatch, ...foundationMatch]
+          const sectionsMatch = components.map(comp => 'src/sections/**/' + comp + '.visual.play.ts')
+          const testMatch = [...componentsMatch, ...foundationMatch, ...sectionsMatch]
           // SSR tests keep their own *-ssr-static baselines, so they need updating too.
           const ssrMatch = components.map(comp => comp === 'all' ? '**/*.ssr.play.ts' : 'src/components/**/' + comp + '.ssr.play.ts')
           const ssrProject = baseConfig.projects!.find(p => p.name === '🧬 SSR')!
