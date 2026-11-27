@@ -257,6 +257,7 @@ export class Item implements DsComponentInterface {
         attributes['aria-disabled'] = 'true'
         attributes.role = 'link'
       } else {
+        attributes.onClick = this.handleClick
         if (this.href) {
           attributes.href = this.href
         }

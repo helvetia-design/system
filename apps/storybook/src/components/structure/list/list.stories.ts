@@ -77,13 +77,13 @@ export const LinkedList = Story({
   ...withRender(
     ({ ...args }) => `
 <ds-list ${props(args, 'ds-list')}>
-  <ds-item variant="link" label="Internal Link" href="www.helvetia.com" target="_blank"></ds-item>
+  <ds-item variant="link" label="Internal Link" href="https://www.helvetia-baloise.com/" target="_blank"></ds-item>
   <ds-item
     variant="link"
     action-icon="link-external"
     label="External Link"
     description="Description"
-    href="www.helvetia.com"
+    href="https://www.helvetia-baloise.com/"
     target="_blank"
   ></ds-item>
   <ds-item
@@ -92,7 +92,7 @@ export const LinkedList = Story({
     action-icon="link-external"
     label="Disabled Link"
     description="Description"
-    href="www.helvetia.com"
+    href="https://www.helvetia-baloise.com/"
     target="_blank"
   ></ds-item>
 </ds-list>
@@ -107,13 +107,13 @@ export const LinkedListHtml = Story({
     () => `
         <ul class="ds-list">
           <li>
-            <a class="ds-item" href="www.helvetia.com" target="_blank">
+            <a class="ds-item" href="https://www.helvetia-baloise.com/" target="_blank">
               <span class="ds-item-content">Internal Link</span>
               <ds-icon name="caret-right"></ds-icon>
             </a>
           </li>
           <li>
-            <a class="ds-item" href="www.helvetia.com" target="_blank">
+            <a class="ds-item" href="https://www.helvetia-baloise.com/" target="_blank">
               <span class="ds-item-content">
                 <span class="ds-item-title">External Link</span>
                 <span class="ds-item-text">Description</span>
@@ -231,13 +231,13 @@ export const Inverted = Story({
     ({ ...args }) => `
 <div class="bg-primary p-base">
   <ds-list ${props(args, 'ds-list')}>
-    <ds-item variant="link" label="Internal Link" href="www.helvetia.com" target="_blank"></ds-item>
+    <ds-item variant="link" label="Internal Link" href="https://www.helvetia-baloise.com/" target="_blank"></ds-item>
     <ds-item
       variant="link"
       action-icon="link-external"
       label="External Link"
       description="Description"
-      href="www.helvetia.com"
+      href="https://www.helvetia-baloise.com/"
       target="_blank"
     ></ds-item>
     <ds-item
@@ -246,7 +246,7 @@ export const Inverted = Story({
       action-icon="link-external"
       label="Disabled Link"
       description="Description"
-      href="www.helvetia.com"
+      href="https://www.helvetia-baloise.com/"
       target="_blank"
     ></ds-item>
   </ds-list>
@@ -263,13 +263,13 @@ export const InvertedHtml = Story({
 <div class="bg-primary p-base">
   <ul class="ds-list is-inverted">
     <li>
-      <a class="ds-item" href="www.helvetia.com" target="_blank">
+      <a class="ds-item" href="https://www.helvetia-baloise.com/" target="_blank">
         <span class="ds-item-content">Internal Link</span>
         <ds-icon name="caret-right"></ds-icon>
       </a>
     </li>
     <li>
-      <a class="ds-item" href="www.helvetia.com" target="_blank">
+      <a class="ds-item" href="https://www.helvetia-baloise.com/" target="_blank">
         <span class="ds-item-content">
           <span class="ds-item-title">External Link</span>
           <span class="ds-item-text">Description</span>
@@ -391,7 +391,7 @@ export const OrderedList = Story({
   ...withRender(
     ({ ...args }) => `
         <ds-list ${props(args, 'ds-list')}>
-          <ds-item variant="link" href="www.helvetia.com" target="_blank">
+          <ds-item variant="link" href="https://www.helvetia-baloise.com/" target="_blank">
             <ds-badge color="success" size="lg" slot="icon">
               <ds-icon name="check"></ds-icon>
             </ds-badge>

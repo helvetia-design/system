@@ -70,6 +70,22 @@ test.describe('component', () => {
     expect(spy).toHaveReceivedEventTimes(1)
   })
 
+  test('should fire dsClick event on link variant without preventing navigation', async ({ page }) => {
+    await page.mount(`
+      <ds-list>
+        <ds-item variant="link" label="Item 1" href="#target"></ds-item>
+      </ds-list>
+    `)
+
+    const dsItem = new DsItem(page.locator('ds-item'))
+    const spy = await dsItem.el.spyOnEvent('dsClick')
+
+    await dsItem.clickItem()
+
+    expect(spy).toHaveReceivedEventTimes(1)
+    await expect.poll(() => page.evaluate(() => location.hash)).toBe('#target')
+  })
+
   test('should fire dsAccordionToggle event on accordion variant', async ({ page }) => {
     await page.mount(`
       <ds-list>

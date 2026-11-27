@@ -99,6 +99,15 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
   @Type('string')
   value?: string | null
 
+  @Watch('value')
+  valueChanged() {
+    // Sync selection/activeIndex now so the post-render updateChildren() has nothing left to change.
+    this.updateChildren()
+    // Internal changes (observer, activateItem, setup default) already have the track where it needs to be.
+    if (this.isInternalValueChange) return
+    this.scrollToActive()
+  }
+
   /**
    * Emitted when the selected item changes.
    */
@@ -119,6 +128,9 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
   private isProgrammaticScroll = false
   private programmaticScrollTimeout = 0
   private snapRestoreTimeout = 0
+  // True while `value` is being assigned by the component itself, so the value watcher doesn't scroll.
+  private isInternalValueChange = false
+  private hasPresetValue = false
 
   /**
    * LIFECYCLE
@@ -133,10 +145,16 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     }
   }
 
-  componentDidLoad() {
+  componentWillLoad() {
+    // State (itemCount, value default, activeIndex) is set here, not in componentDidLoad, to avoid a second render pass.
+    this.hasPresetValue = !!this.value
     this.setup()
+  }
+
+  componentDidLoad() {
     this.initScroll()
     this.initIntersection()
+    if (this.hasPresetValue) this.scrollToActive('instant')
   }
 
   componentDidUpdate() {
@@ -405,7 +423,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     })
 
     if (!this.value && items.length) {
-      this.value = items[0].name
+      this.setValue(items[0].name)
     }
 
     this.updateChildren()
@@ -423,7 +441,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
   private activateItem(name: string) {
     if (!name || name === this.value) return
     const items = this.getItems()
-    this.value = name
+    this.setValue(name)
     // Update activeIndex synchronously alongside value so a re-render never observes
     // a stale activeIndex — ds-pagination is fed `value={activeIndex + 1}` and a lagging
     // activeIndex would briefly reset its disabled state, letting rapid clicks overshoot.
@@ -432,12 +450,18 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     this.scrollToActive()
   }
 
-  private scrollToActive() {
+  private setValue(name: string) {
+    this.isInternalValueChange = true
+    this.value = name
+    this.isInternalValueChange = false
+  }
+
+  private scrollToActive(behavior: ScrollBehavior = 'smooth') {
     const items = this.getItems()
     const active = items.find(i => i.name === this.value)
     if (!active) return
 
-    if (this.variant === 'slide' && this.trackEl) {
+    if (this.variant === 'slide' && this.trackEl && behavior === 'smooth') {
       this.isProgrammaticScroll = true
       clearTimeout(this.programmaticScrollTimeout)
       // Fallback in case 'scrollend' doesn't fire (e.g. scroll is a no-op, or unsupported browser).
@@ -445,7 +469,7 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
       this.trackEl.addEventListener('scrollend', this.handleScrollEnd, { once: true })
     }
 
-    active.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+    active.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior })
   }
 
   private handleScrollEnd = () => {
@@ -460,9 +484,11 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
     el.addEventListener('scroll', this.checkOverflow, { passive: true })
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver(this.checkOverflow)
+      // Fires once on observe(), which covers the initial overflow check.
       this.resizeObserver.observe(el)
+    } else {
+      requestAnimationFrame(this.checkOverflow)
     }
-    this.checkOverflow()
   }
 
   private initIntersection() {
@@ -487,8 +513,12 @@ export class Carousel implements DsComponentInterface, DsConfigObserver {
         const items = this.getItems()
         const idx = items.findIndex(i => i === visible.target)
         if (idx !== -1) {
+          const name = items[idx].name
           this.activeIndex = idx
-          this.value = items[idx].name
+          if (name !== this.value) {
+            this.setValue(name)
+            this.dsChange.emit({ value: name })
+          }
         }
       },
       { root: this.trackEl, threshold: 0.5 },

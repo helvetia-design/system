@@ -196,10 +196,10 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
     // ignore self
     if (id === this.accordionId) return
 
-    // only react if same group (or no group = global)
-    if ((this.group && group !== this.group) || !hasValue(this.group)) return
+    // only react if same group; ungrouped accordions are ignored
+    if (!hasValue(this.group) || group !== this.group) return
 
-    this.open = false
+    if (this.open) this.setOpen(false)
   }
 
   /**
@@ -232,11 +232,11 @@ export class Accordion implements DsComponentInterface, DsConfigObserver {
       return
     }
 
-    if (this.animated) {
-      this.isAnimating = true
-    } else {
-      this.isAnimating = false
-    }
+    this.setOpen(open)
+  }
+
+  private setOpen(open: boolean) {
+    this.isAnimating = !!this.animated
 
     this.open = open
 
