@@ -1,8 +1,8 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
-import { Component, Element, Event, EventEmitter, h, Host, Method, Prop, State, Watch } from '@stencil/core'
+import { Component, Element, Event, EventEmitter, h, Host, Listen, Method, Prop, State, Watch } from '@stencil/core'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import { DsComponentInterface } from '@global'
-import { Logger, type LogInstance, dsBrowser, OneOf, Type } from '@utils'
+import { Logger, type LogInstance, dsBrowser, isEscapeKey, OneOf, Type } from '@utils'
 import {
   TOOLTIP_PLACEMENTS,
   type TooltipPlacement,
@@ -14,6 +14,9 @@ let tooltipIds = 0
 
 /** SSR/no-DOM fallback, kept in sync with `--ds-tooltip-offset` and `--ds-tooltip-gutter` (`Alias.Space.Gap.XS`). */
 const DEFAULT_OFFSET = 8
+
+/** Grace period that lets the pointer travel from the trigger onto the tooltip (WCAG 1.4.13 hoverable). */
+const HOVER_DISMISS_DELAY = 100
 
 /**
  * Tooltip displays contextual information when users hover over, focus on, or tap a trigger element.
@@ -32,8 +35,11 @@ export class Tooltip implements DsComponentInterface {
   private containerEl: HTMLDivElement | undefined
   private cleanup?: () => void
   private trigger: HTMLElement | undefined
+  private dismissTimer: ReturnType<typeof setTimeout> | undefined
   private handlePresent = () => this.present()
   private handleDismiss = () => this.dismiss()
+  private handleDelayedDismiss = () => this.scheduleDismiss()
+  private handleContainerMouseEnter = () => this.clearDismissTimer()
 
   log!: LogInstance
 
@@ -128,18 +134,34 @@ export class Tooltip implements DsComponentInterface {
   }
 
   disconnectedCallback(): void {
+    this.clearDismissTimer()
+
     if (this.cleanup) {
       this.cleanup()
       this.cleanup = undefined
     }
 
     if (this.trigger) {
-      this.trigger.removeAttribute('aria-describedby')
+      this.removeDescribedBy(this.trigger)
       this.trigger.removeEventListener('mouseenter', this.handlePresent)
       this.trigger.removeEventListener('focus', this.handlePresent)
-      this.trigger.removeEventListener('mouseleave', this.handleDismiss)
+      this.trigger.removeEventListener('mouseleave', this.handleDelayedDismiss)
       this.trigger.removeEventListener('blur', this.handleDismiss)
       this.trigger = undefined
+    }
+  }
+
+  /**
+   * PUBLIC LISTENERS
+   * ─────────────────────────────────────────────────────
+   */
+
+  @Listen('keydown', { target: 'document' })
+  listenToKeyDown(ev: KeyboardEvent): void {
+    if (!this.presented) return
+
+    if (isEscapeKey(ev)) {
+      this.dismiss()
     }
   }
 
@@ -155,6 +177,8 @@ export class Tooltip implements DsComponentInterface {
   async present(): Promise<boolean> {
     const trigger = this.triggerElement
     if (!trigger || !this.containerEl || this.disabled) return false
+
+    this.clearDismissTimer()
 
     this.dsWillAnimate.emit(true)
 
@@ -182,6 +206,8 @@ export class Tooltip implements DsComponentInterface {
   @Method()
   async dismiss(): Promise<boolean> {
     if (!this.containerEl) return false
+
+    this.clearDismissTimer()
 
     this.dsWillAnimate.emit(false)
 
@@ -249,15 +275,56 @@ export class Tooltip implements DsComponentInterface {
     if (!trigger) return
 
     this.trigger = trigger
-    trigger.setAttribute('aria-describedby', this.tooltipId)
+    this.addDescribedBy(trigger)
 
     trigger.addEventListener('mouseenter', this.handlePresent)
     trigger.addEventListener('focus', this.handlePresent)
-    trigger.addEventListener('mouseleave', this.handleDismiss)
+    trigger.addEventListener('mouseleave', this.handleDelayedDismiss)
     trigger.addEventListener('blur', this.handleDismiss)
 
     if (this.open) {
       this.present()
+    }
+  }
+
+  private addDescribedBy(trigger: HTMLElement): void {
+    const ids = this.describedByIds(trigger)
+    if (!ids.includes(this.tooltipId)) {
+      trigger.setAttribute('aria-describedby', [...ids, this.tooltipId].join(' '))
+    }
+  }
+
+  private removeDescribedBy(trigger: HTMLElement): void {
+    const ids = this.describedByIds(trigger).filter(id => id !== this.tooltipId)
+    if (ids.length > 0) {
+      trigger.setAttribute('aria-describedby', ids.join(' '))
+    } else {
+      trigger.removeAttribute('aria-describedby')
+    }
+  }
+
+  private describedByIds(trigger: HTMLElement): string[] {
+    return (trigger.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean)
+  }
+
+  private scheduleDismiss(): void {
+    this.clearDismissTimer()
+    if (!this.presented) return
+
+    this.dismissTimer = setTimeout(() => {
+      if (!this.isTriggerFocused()) this.dismiss()
+    }, HOVER_DISMISS_DELAY)
+  }
+
+  private isTriggerFocused(): boolean {
+    const root = this.trigger?.getRootNode() as Document | ShadowRoot | undefined
+    return !!this.trigger && root?.activeElement === this.trigger
+  }
+
+  private clearDismissTimer(): void {
+    if (this.dismissTimer !== undefined) {
+      clearTimeout(this.dismissTimer)
+      this.dismissTimer = undefined
     }
   }
 
@@ -301,7 +368,12 @@ export class Tooltip implements DsComponentInterface {
   render() {
     return (
       <Host id={this.tooltipId} role="tooltip" aria-hidden={`${!this.presented}`}>
-        <div part="container" ref={el => (this.containerEl = el)}>
+        <div
+          part="container"
+          ref={el => (this.containerEl = el)}
+          onMouseEnter={this.handleContainerMouseEnter}
+          onMouseLeave={this.handleDelayedDismiss}
+        >
           <div part="content" data-testid="ds-tooltip-content">
             <slot></slot>
           </div>
