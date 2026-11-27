@@ -70,7 +70,7 @@ export class NumberInput implements DsComponentInterface, FieldInterface, FormCo
   private numberInputId = `ds-number-input-${NumberInputIds++}`
   private inheritedAttributes: { [k: string]: any } = {}
   private selectTimeout?: NodeJS.Timeout
-  private control = new FormControl<number | null>(this)
+  private control = new FormControl<number | null>(this, () => this.isDisabled)
   private disconnectInvalidTextSlotWatcher?: () => void
   private lastValue = ''
 
@@ -89,6 +89,7 @@ export class NumberInput implements DsComponentInterface, FieldInterface, FormCo
   @State() region: DsRegion = defaultConfig.region
   @State() nativeInputValue = ''
   @State() inputPattern = ''
+  @State() private fieldsetDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -317,6 +318,10 @@ export class NumberInput implements DsComponentInterface, FieldInterface, FormCo
     this.control.componentDidLoad()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -459,6 +464,10 @@ export class NumberInput implements DsComponentInterface, FieldInterface, FormCo
    * ─────────────────────────────────────────────────────
    */
 
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
   private get nativeInput(): HTMLInputElement | undefined {
     return this.control.nativeEl as HTMLInputElement | undefined
   }
@@ -488,7 +497,7 @@ export class NumberInput implements DsComponentInterface, FieldInterface, FormCo
 
     return (
       <Field
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={isInvalid}
         label={this.label}
@@ -507,7 +516,7 @@ export class NumberInput implements DsComponentInterface, FieldInterface, FormCo
           aria-describedby="description"
           aria-invalid={isInvalid ? 'true' : 'false'}
           name={this.name}
-          disabled={this.disabled}
+          disabled={this.isDisabled}
           placeholder={this.placeholder || ''}
           readonly={this.readonly}
           required={this.required}

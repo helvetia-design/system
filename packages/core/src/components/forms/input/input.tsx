@@ -83,7 +83,7 @@ import {
 })
 export class Input implements DsComponentInterface, FieldInterface, FormControlInterface<string | null> {
   private inheritedAttributes: { [k: string]: any } = {}
-  private control = new FormControl(this)
+  private control = new FormControl(this, () => this.isDisabled)
   private maskUtil = new InputMaskUtil(this)
   inputId = `ds-input-${InputIds++}`
 
@@ -99,6 +99,7 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
   @State() language: DsLanguage = defaultConfig.language
   @State() region: DsRegion = defaultConfig.region
   @State() hasInvalidTextSlotContent = false
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -303,7 +304,7 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
   /**
    * If `true`, the element is not mutable, focusable, or even submitted with the form. The user can neither edit nor focus on the control, nor its form control descendants.
    */
-  @Prop()
+  @Prop({ reflect: true })
   @Type('boolean')
   readonly disabled: boolean = false
 
@@ -413,6 +414,10 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
     this.control.componentDidLoad()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -510,6 +515,10 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
    * ─────────────────────────────────────────────────────
    */
 
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
   private getRawValue(): string {
     const value = (this.value || '').toString()
     return value
@@ -543,7 +552,7 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
 
     return (
       <Field
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={isInvalid}
         loading={this.loading}
@@ -560,7 +569,7 @@ export class Input implements DsComponentInterface, FieldInterface, FormControlI
           ref={inputEl => (this.control.nativeEl = inputEl)}
           aria-describedby="description"
           aria-invalid={isInvalid ? 'true' : 'false'}
-          disabled={this.disabled}
+          disabled={this.isDisabled}
           accept={this.accept}
           inputMode={this.inputmode}
           autoCapitalize={this.autocapitalize}

@@ -67,6 +67,7 @@ export class Toggle implements DsComponentInterface {
 
   @State() focused = false
   @State() hasInvalidTextSlotContent = false
+  @State() private fieldsetDisabled = false
 
   /**
    * PUBLIC PROPERTY API
@@ -208,6 +209,10 @@ export class Toggle implements DsComponentInterface {
     this.inheritAttributes = inheritAttributes(this.el, ['aria-label', 'tabindex', 'title'])
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -227,7 +232,7 @@ export class Toggle implements DsComponentInterface {
    */
 
   private handleBlur = (ev: FocusEvent) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     this.focused = false
     this.dsBlur.emit(ev)
   }
@@ -238,7 +243,7 @@ export class Toggle implements DsComponentInterface {
   }
 
   private handleFocus = (ev: FocusEvent) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     this.focused = true
     this.dsFocus.emit(ev)
   }
@@ -247,6 +252,10 @@ export class Toggle implements DsComponentInterface {
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
 
   private updateFormValue() {
     setFormValue(this.internals, this.checked ? (this.value as string) : null)
@@ -263,7 +272,7 @@ export class Toggle implements DsComponentInterface {
     return (
       <Field
         role="field"
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color="primary"
         invalid={isInvalid}
         label=""
@@ -272,7 +281,7 @@ export class Toggle implements DsComponentInterface {
         required={this.required}
         language={defaultConfig.language}
         cssClasses={{
-          'is-disabled': this.disabled || this.readonly,
+          'is-disabled': this.isDisabled || this.readonly,
           'is-invalid': isInvalid,
           'is-checked': this.checked,
           'is-dense': this.dense,
@@ -288,7 +297,7 @@ export class Toggle implements DsComponentInterface {
             name={this.name}
             value={this.value}
             checked={this.checked}
-            disabled={this.disabled || this.readonly}
+            disabled={this.isDisabled || this.readonly}
             required={this.required}
             aria-describedby={isInvalid ? 'description' : undefined}
             aria-invalid={isInvalid ? 'true' : 'false'}

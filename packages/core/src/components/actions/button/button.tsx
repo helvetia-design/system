@@ -70,6 +70,7 @@ export class Button implements DsComponentInterface, DsConfigObserver {
 
   @Element() el!: HTMLStencilElement
 
+  @State() private fieldsetDisabled = false
   @State() language: DsLanguage = defaultConfig.language
   @State() announcement = ''
 
@@ -355,6 +356,10 @@ export class Button implements DsComponentInterface, DsConfigObserver {
     this.dsDidRender.emit()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -372,6 +377,10 @@ export class Button implements DsComponentInterface, DsConfigObserver {
    * EVENT HANDLERS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled() {
+    return this.disabled || this.fieldsetDisabled
+  }
 
   /**
    * PRIVATE METHODS
@@ -458,7 +467,7 @@ export class Button implements DsComponentInterface, DsConfigObserver {
 
   // loading keeps the native control focusable (WCAG 2.4.3), so activation is blocked here instead of via `disabled`
   private get isInert() {
-    return this.disabled || this.loading
+    return this.isDisabled || this.loading
   }
 
   private handleHostClick = (ev: MouseEvent) => {
@@ -530,7 +539,7 @@ export class Button implements DsComponentInterface, DsConfigObserver {
           [`is-${this.color || 'primary'}`]: true,
           [`is-${size}`]: hasValue(size),
           [`is-inverted`]: this.inverted,
-          [`is-disabled`]: this.disabled,
+          [`is-disabled`]: this.isDisabled,
           [`is-loading`]: this.loading,
           [`is-flat`]: this.flat,
           [`is-square`]: this.square,
@@ -546,12 +555,12 @@ export class Button implements DsComponentInterface, DsConfigObserver {
           type={this.elementType}
           id="button"
           part="native"
-          disabled={this.disabled}
+          disabled={this.isDisabled}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           onClick={this.handleClick}
           aria-busy={ariaBooleanToString(!!this.loading)}
-          aria-disabled={ariaBooleanToString(this.disabled || this.loading)}
+          aria-disabled={ariaBooleanToString(this.isInert)}
           {...ariaAttributes}
         >
           {this.loading ? (
@@ -571,7 +580,7 @@ export class Button implements DsComponentInterface, DsConfigObserver {
             <ds-brand-icon
               {...(this.loading ? { style: { display: 'none' } } : {})}
               part="icon"
-              disabled={this.disabled}
+              disabled={this.isDisabled}
               svg={this.isBrandIconSvg ? this.brandIcon : ''}
               src={this.isBrandIconSvg ? '' : this.brandIcon}
               size={this.brandSize}

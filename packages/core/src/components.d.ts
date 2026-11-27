@@ -148,6 +148,11 @@ export namespace Components {
         "buttonWide": boolean;
         "configChanged": (state: DsConfigState) => Promise<void>;
         /**
+          * If `true`, the user cannot open or close the accordion.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * The name of the group the accordion belongs to. Accordions with the same group name will automatically close when another accordion in the same group is opened.
           * @default ''
          */
@@ -747,6 +752,14 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * @default false
+         */
+        "groupDisabled": boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly": boolean;
         /**
           * If `true` and `tile` is set, the checkbox box is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
@@ -2431,6 +2444,14 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * @default false
+         */
+        "groupDisabled": boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly": boolean;
         /**
           * If `true` and `tile` is set, the radio circle is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
@@ -5283,6 +5304,11 @@ declare namespace LocalJSX {
          */
         "buttonWide"?: boolean;
         /**
+          * If `true`, the user cannot open or close the accordion.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * The name of the group the accordion belongs to. Accordions with the same group name will automatically close when another accordion in the same group is opened.
           * @default ''
          */
@@ -5921,6 +5947,14 @@ declare namespace LocalJSX {
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
+        /**
+          * @default false
+         */
+        "groupDisabled"?: boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly"?: boolean;
         /**
           * If `true` and `tile` is set, the checkbox box is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
@@ -7745,6 +7779,14 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         /**
+          * @default false
+         */
+        "groupDisabled"?: boolean;
+        /**
+          * @default false
+         */
+        "groupReadonly"?: boolean;
+        /**
           * If `true` and `tile` is set, the radio circle is visually hidden. The tile remains fully clickable and keyboard-accessible.
           * @default false
          */
@@ -9263,6 +9305,7 @@ declare namespace LocalJSX {
 
     interface DsAccordionAttributes {
         "open": boolean;
+        "disabled": boolean;
         "group": string;
         "summaryLevel": AccordionSummaryLevel;
         "summaryVisualLevel": AccordionSummaryLevel;
@@ -9402,6 +9445,8 @@ declare namespace LocalJSX {
         "value": string;
         "checked": boolean;
         "disabled": boolean;
+        "groupDisabled": boolean;
+        "groupReadonly": boolean;
         "readonly": boolean;
         "required": boolean;
         "autoInvalidOff": boolean;
@@ -9734,6 +9779,8 @@ declare namespace LocalJSX {
         "colsMobile": RadioGroupColumns;
         "colsTablet": RadioGroupColumns;
         "disabled": boolean;
+        "groupDisabled": boolean;
+        "groupReadonly": boolean;
         "invalid": boolean;
         "label": string;
         "labelPosition": RadioLabelPosition;

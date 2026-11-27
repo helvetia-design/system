@@ -59,6 +59,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
   @State() items: SegmentItemInterface[] = []
   @State() autoVertical = false
   @State() hasInvalidTextSlotContent = false
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
   private initialValue?: any | null
@@ -241,6 +242,10 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
     this.updatePill()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -314,7 +319,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
    */
 
   private handleInputChange = (itemValue: any) => {
-    if (this.disabled || this.readonly) return
+    if (this.isDisabled || this.readonly) return
     this.value = itemValue
     this.dsChange.emit(this.value)
   }
@@ -327,7 +332,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
       ev.preventDefault()
       return
     }
-    if (!this.allowEmptySelection || this.disabled) return
+    if (!this.allowEmptySelection || this.isDisabled) return
     if (this.value === itemValue) {
       ev.preventDefault()
       this.value = undefined
@@ -343,6 +348,10 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
    * PRIVATE METHODS
    * ─────────────────────────────────────────────────────
    */
+
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
 
   private updateFormValue() {
     setFormValue(this.internals, this.value ?? null)
@@ -425,7 +434,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
     return (
       <Field
         role="fieldset"
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={'primary'}
         invalid={isInvalid}
         loading={this.loading}
@@ -451,7 +460,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
                 'is-selected': item.value === this.value,
               }}
               aria-invalid={isInvalid ? 'true' : null}
-              aria-disabled={this.disabled ? 'true' : null}
+              aria-disabled={this.isDisabled ? 'true' : null}
               {...(this.iconOnly
                 ? {
                     'aria-label': `${item.label}${item.description ? `- ${item.description}` : ''}`,
@@ -462,7 +471,7 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
               <input
                 type="radio"
                 name={this.name}
-                disabled={this.disabled}
+                disabled={this.isDisabled}
                 readOnly={this.readonly}
                 value={item.value}
                 checked={item.value === this.value}

@@ -22,7 +22,6 @@ import {
   isDescendant,
   stopEventBubbling,
   areArraysEqual,
-  hasValue,
   OneOf,
   shallowReady,
   Type,
@@ -70,6 +69,7 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
   @State() private internalValue: any[] = []
   private initialValue: any[] = []
   @State() hasInvalidTextSlotContent = false
+  @State() private fieldsetDisabled = false
 
   private disconnectInvalidTextSlotWatcher?: () => void
 
@@ -293,6 +293,10 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     this.handleSlotChange()
   }
 
+  formDisabledCallback(disabled: boolean) {
+    this.fieldsetDisabled = disabled
+  }
+
   /**
    * PUBLIC LISTENERS
    * ─────────────────────────────────────────────────────
@@ -410,6 +414,10 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     }
   }
 
+  private get isDisabled(): boolean {
+    return this.disabled || this.fieldsetDisabled
+  }
+
   private getCheckboxes(): HTMLDsCheckboxElement[] {
     return Array.from(this.el.querySelectorAll('ds-checkbox'))
   }
@@ -417,13 +425,9 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
   private passDownAttributes() {
     const isInvalid = this.invalid || this.hasInvalidTextSlotContent
     this.getCheckboxes().forEach(checkbox => {
+      checkbox.groupDisabled = this.control && this.isDisabled
+      checkbox.groupReadonly = this.control && this.readonly
       if (this.control) {
-        if (hasValue(this.disabled)) {
-          checkbox.disabled = this.disabled
-        }
-        if (hasValue(this.readonly)) {
-          checkbox.readonly = this.readonly
-        }
         checkbox.invalid = isInvalid
       }
 
@@ -461,7 +465,7 @@ export class CheckboxGroup implements DsComponentInterface, FieldInterface {
     return (
       <Field
         role="fieldset"
-        disabled={this.disabled}
+        disabled={this.isDisabled}
         color={this.color}
         invalid={this.invalid || this.hasInvalidTextSlotContent}
         loading={this.loading}

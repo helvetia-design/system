@@ -55,6 +55,14 @@ export const LeftMarkerAccordion = Story({
 })
 LeftMarkerAccordion.storyName = '🧩 Left Marker Accordion'
 
+export const DisabledAccordion = Story({
+  args: {
+    disabled: true,
+    summaryTitle: true,
+  },
+})
+DisabledAccordion.storyName = '🧩 Disabled Accordion'
+
 export const StackAccordion = Story({
   args: {},
   ...withRender(

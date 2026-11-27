@@ -126,6 +126,11 @@
   }
 }
 
+:host(.is-disabled) #summary:not(.ds-button) {
+  cursor: default;
+  pointer-events: none;
+}
+
 //
 // Summary Label
 :host #label {

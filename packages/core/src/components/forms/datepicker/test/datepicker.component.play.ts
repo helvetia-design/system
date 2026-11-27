@@ -230,6 +230,34 @@ test.describe('inline', () => {
   })
 })
 
+test.describe('disabled', () => {
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-datepicker name="field" label="Date" value="2026-07-13"></ds-datepicker></form>`)
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+    expect(await getFormEntries(page)).toEqual([['field', '2026-07-13']])
+
+    await date.el.evaluate((el: HTMLDsDatepickerElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-datepicker name="field" label="Date" value="2026-07-13"></ds-datepicker></fieldset></form>`,
+    )
+    const date = new DsDatepicker(page.locator('ds-datepicker'))
+
+    await date.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['field', '2026-07-13']])
+  })
+})
+
 test.describe('moved in the DOM', () => {
   test('should still open the calendar and accept a typed date after being moved', async ({ page }) => {
     await page.mount(`<ds-datepicker label="Date of birth"></ds-datepicker>`)

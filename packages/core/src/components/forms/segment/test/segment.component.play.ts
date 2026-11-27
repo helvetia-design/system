@@ -88,6 +88,32 @@ test.describe('disabled', () => {
 
     await segment.assertToBeDisabled()
   })
+
+  test('should not submit its value when disabled is set as property', async ({ page }) => {
+    await page.mount(`<form><ds-segment name="fruits" label="Fruits" value="apple">${ITEMS}</ds-segment></form>`)
+    const segment = new DsSegment(page.locator('ds-segment'))
+    expect(await getFormEntries(page)).toEqual([['fruits', 'apple']])
+
+    await segment.el.evaluate((el: HTMLDsSegmentElement) => (el.disabled = true))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([])
+  })
+
+  test('should be disabled and not submit its value inside a disabled fieldset', async ({ page }) => {
+    await page.mount(
+      `<form><fieldset disabled><ds-segment name="fruits" label="Fruits" value="apple">${ITEMS}</ds-segment></fieldset></form>`,
+    )
+    const segment = new DsSegment(page.locator('ds-segment'))
+
+    await segment.assertToBeDisabled()
+    expect(await getFormEntries(page)).toEqual([])
+
+    await page.locator('form > fieldset').evaluate((el: HTMLFieldSetElement) => (el.disabled = false))
+    await page.waitForChanges()
+
+    expect(await getFormEntries(page)).toEqual([['fruits', 'apple']])
+  })
 })
 
 test.describe('readonly', () => {
