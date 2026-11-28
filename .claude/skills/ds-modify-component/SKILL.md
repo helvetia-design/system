@@ -89,7 +89,10 @@ always gets a touch seam.
 ## Phase 4: Validate
 
 Run the narrowest suite that covers your change: the reproduction test from Phase 1 must now
-pass, and the component's existing suite must stay green. The full `ds-validate-component` pass
+pass, and the component's existing suite must stay green. A change to anything visible (SCSS,
+markup, a new state) also gets the screenshot self-critique from
+[`ds-implement-component` → Look at it](../ds-implement-component/SKILL.md#look-at-it); report
+what you saw. The full `ds-validate-component` pass
 is a separate workflow step (Workflow B), not part of this skill — Workflow C has none.
 
 ## Phase 5: Deliver

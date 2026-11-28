@@ -2,7 +2,7 @@
 
 # Workflow K — Audit sweep
 
-**Find, don't fix.** Audits a component family (or all) across a11y, tokens, lint and docs and
+**Find, don't fix.** Audits a component family (or all) across a11y, tokens, lint, UI polish and docs and
 turns the findings into issues. Fixes then run as Workflow B per issue.
 
 ```text
@@ -10,7 +10,7 @@ scope (components or "all")  →  orchestrator: list components, batch by family
   →  per batch, parallel and read-only:
        a11y-expert        · ds-a11y-audit
        token-engineer     · ds-audit-tokens
-       component-engineer · ds-lint-component        (report only — never --fix)
+       component-engineer · ds-lint-component + ds-ui-polish-audit   (report only — never --fix)
        documentation-engineer · ds-validate-documentation
   →  orchestrator: merge into docs/plans/components/audit-<scope>.md
   →  ⛔ GATE  (human picks which findings become issues, merges duplicates)

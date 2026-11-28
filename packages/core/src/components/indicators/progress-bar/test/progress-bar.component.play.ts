@@ -1,4 +1,5 @@
 import { DsProgressBar, expect, test } from '@helvetia-design/playwright'
+import { renderToString } from '@helvetia-design/core/hydrate'
 import { PROGRESS_BAR_BACKGROUNDS, PROGRESS_BAR_COLORS } from '../progress-bar.interfaces'
 
 test.describe('component', () => {
@@ -65,5 +66,21 @@ test.describe('component', () => {
 
       await expect(bar.el).toHaveClass(new RegExp(`\\bis-${background}\\b`))
     })
+  })
+
+  test('should emit line width and is-full in server-rendered markup', async () => {
+    const { html } = (await renderToString('<ds-progress-bar value="100"></ds-progress-bar>')) as { html: string }
+
+    expect(html).toMatch(/id="line"[^>]*style="width:\s*100%/)
+    expect(html).toMatch(/class="[^"]*\bis-full\b/)
+  })
+
+  test('should stay visible in forced colors', async ({ page }) => {
+    await page.emulateMedia({ forcedColors: 'active' })
+    await page.mount(`<ds-progress-bar value="50"></ds-progress-bar>`)
+    const bar = new DsProgressBar(page.locator('ds-progress-bar'))
+
+    await expect(bar.el).toHaveCSS('outline-style', 'solid')
+    await expect(bar.line).toHaveCSS('forced-color-adjust', 'none')
   })
 })

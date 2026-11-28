@@ -36,6 +36,7 @@ know which file you're writing. This file covers the rules and the process only.
   - **Hybrid or CSS-only**: Use `<CanvasTabs htmlOf={Stories.BasicHtml} of={Stories.Basic} />` — shows both web component and HTML/CSS tabs
 - **Stories have dual variants**: every story comes in a `🧩 Name` (web component, `ds-*` tags) and a `🌍 Name` (HTML/CSS classes only) pair.
 - **`4-Styling.mdx`** uses `ComponentCssVariables` and `ComponentDesignTokens` — NOT `TokenOverview`.
+- **Story and page copy** follows [`docs/STYLE_GUIDE.md` → Copy](../../../docs/STYLE_GUIDE.md#copy): realistic insurance content at realistic lengths, actions named for what they do.
 
 ---
 

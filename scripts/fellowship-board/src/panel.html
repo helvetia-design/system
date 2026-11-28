@@ -392,6 +392,26 @@
         color: var(--muted);
       }
 
+      .clear {
+        margin-left: auto;
+        padding: 3px 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font: inherit;
+        font-size: 11.5px;
+        color: var(--muted);
+        background: transparent;
+        cursor: pointer;
+      }
+      .clear:hover {
+        color: var(--fg);
+        background: var(--orca-accent);
+      }
+      .clear:focus-visible {
+        outline: 2px solid var(--orca-ring);
+        outline-offset: 2px;
+      }
+
       /* ── Empty ──────────────────────────────── */
       .empty {
         margin-top: 24px;
@@ -572,7 +592,22 @@
         const { statuses, done, pct } = progress(board)
         const current = statuses.findIndex(s => s !== 'done')
         return [
-          h('div', { class: 'title' }, tile(board, false), h('h1', {}, board.name)),
+          h(
+            'div',
+            { class: 'title' },
+            tile(board, false),
+            h('h1', {}, board.name),
+            h(
+              'button',
+              {
+                'class': 'clear',
+                'type': 'button',
+                'aria-label': `Clear ${board.component} board`,
+                'onclick': () => orca.plugin.request('board.clear', { id: board.id }).then(show),
+              },
+              'Clear',
+            ),
+          ),
           h('span', { class: 'component' }, board.component),
           h(
             'div',

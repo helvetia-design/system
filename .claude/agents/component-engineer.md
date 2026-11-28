@@ -43,6 +43,7 @@ that name as your first action — before reading code, before anything else:
 | Verify a component's quality         | `ds-validate-component`  |
 | Work through review findings         | `ds-repair-component`    |
 | Angular/React wrappers and exports   | `ds-framework-wrappers`  |
+| UI polish audit (report only)        | `ds-ui-polish-audit`     |
 
 Each of those delegates validation to `ds-validate-component` — call it when you reach that
 step rather than re-deriving its checks. Validation in turn delegates the mechanical checks to

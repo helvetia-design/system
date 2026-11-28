@@ -101,7 +101,9 @@ Stop at the first rung that fits the delta:
 4. **New web component** — behavior, state, a11y wiring or an API that needs encapsulation.
 
 Check the candidate's real API before claiming a rung (`grep -n "@Prop" packages/core/src/components/<category>/<name>/<name>.tsx`).
-A composite is normal: rung 1 plus one rung-2 delta. Name the rejected rungs and why.
+A composite is normal: rung 1 plus one rung-2 delta. Name the rejected rungs and why. A rung-4
+claim names the behavior or state no lower rung can carry — "it looks custom" is a rung-1/2
+delta, not a component.
 
 ## 4. Anatomy
 

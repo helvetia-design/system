@@ -68,6 +68,9 @@ Rules that keep these useful:
 - **One idea per pair.** A pair demonstrating three things at once teaches none of them.
 - **No invented props.** Every attribute in your markup must exist — the docs agent's
   `ds-validate-documentation` checks exactly this, and an invented prop fails the build.
+- **Copy by the rules.** Titles, descriptions and the markup's own text follow
+  [`docs/STYLE_GUIDE.md` → Copy](../../../docs/STYLE_GUIDE.md#copy) — a do/don't with
+  "Submit" or lorem ipsum in its `correct` example teaches the opposite of the page.
 - **Earn each one.** Three sharp pairs beat ten obvious ones. "Don't put a paragraph in a badge"
   is not guidance.
 

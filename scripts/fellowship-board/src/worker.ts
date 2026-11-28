@@ -1,5 +1,5 @@
 // Reads every <focused workspace>/.ds-team/boards/*.json and pushes them to the panel on change.
-import { mkdirSync, readdirSync, readFileSync, watch, type FSWatcher } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, rmSync, watch, type FSWatcher } from 'node:fs'
 import { join } from 'node:path'
 import type { OrcaWorkerApi } from 'orca/worker'
 import type { Board } from './protocol'
@@ -63,6 +63,12 @@ export default function activate(orca: OrcaWorkerApi): void {
 
   orca.panels.handle('board.get', async () => {
     follow(await rootOf(orca, (await orca.host.call('workspace.readContext'))?.workspaceId))
+    return { boards: readBoards(root) }
+  })
+
+  orca.panels.handle('board.clear', ({ id }) => {
+    // The id names a file: refuse anything that could leave the boards folder.
+    if (root && /^[\w-]+$/.test(id)) rmSync(join(boardsDir(root), `${id}.json`), { force: true })
     return { boards: readBoards(root) }
   })
 }

@@ -10,6 +10,7 @@ PR number
   →  orchestrator: gh pr view/diff → classify what the PR touched   (no component file reads)
   →  review fan-out, only the rows that apply (disjoint, read-only)
        component-engineer · ds-validate-component   (build, lint, tests, spec)
+       component-engineer · ds-ui-polish-audit      (report only)
        a11y-expert        · ds-a11y-audit
        token-engineer     · ds-audit-tokens
        documentation-engineer · ds-validate-documentation
@@ -24,6 +25,7 @@ PR number
 | `packages/core/src/components/**` (logic, markup) | ds-validate-component                    |
 | interaction, semantics, ARIA, focus, color        | ds-a11y-audit (layout-only CSS skips it) |
 | SCSS, `var(--ds-*)`, `packages/tokens/**`         | ds-audit-tokens                          |
+| component SCSS or markup, default strings         | ds-ui-polish-audit                       |
 | `apps/storybook/**`, a prop/event/slot changed    | ds-validate-documentation                |
 | docs, CI, tooling only                            | none — orchestrator reviews by hand      |
 

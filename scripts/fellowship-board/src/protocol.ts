@@ -18,6 +18,8 @@ declare module 'orca' {
   interface PluginRequests {
     /** The focused workspace's boards, most recently updated first. */
     'board.get': { output: { boards: Board[] } }
+    /** Deletes one board (its session's file); answers the boards left. */
+    'board.clear': { input: { id: string }; output: { boards: Board[] } }
   }
   interface PluginPanelEvents {
     /** Posted when a board file changes or the focused workspace moves. */

@@ -3,6 +3,8 @@ name: ds-implement-component
 description: Implement a new component test-first (TDD) from an approved plan — files, API, behavior tests, styling, tokens, a11y. Use once the plan is approved.
 ---
 
+<!-- cspell:words Haftpflichtversicherungsbeitragsrückerstattung -->
+
 # ds-implement-component
 
 Implement a new component from an approved architecture plan.
@@ -179,12 +181,29 @@ Rules:
 - Cover **every** prop value, state (disabled, invalid, loading, selected), size, slot
   arrangement and the inverted-on-dark rendering. This is the one artifact that shows the
   whole surface at once.
+- **One `<section data-testid="stress">`** for real-world content: a very long unbroken label
+  (`Kfz-Haftpflichtversicherungsbeitragsrückerstattung`), a long multi-word label that must
+  wrap, a one-character label, and every optional slot left empty. It gets screenshots like any
+  variant, so a broken layout on long or missing content is caught in CI, not by a user.
 - A CSS-only or hybrid component also gets `test/<name>.style.html`, the same sections
   rendered with classes instead of the custom element.
 
-Then verify it yourself before handing over: run `pnpm start` and open
-`/components/<category>/<name>/test/<name>.visual.html`. Report what you saw. If a variant
-renders wrong, fix it now — a screenshot baseline taken over a broken variant bakes the bug in.
+### Look at it
+
+A picture beats reading the SCSS. Before handing over, run `pnpm start` and screenshot the
+fixture at phone and wide desktop width:
+
+```bash
+for w in 320 1440; do
+  pnpm --dir packages/core exec playwright screenshot --full-page --viewport-size="$w,900" \
+    http://localhost:3333/components/<category>/<name>/test/<name>.visual.html /tmp/<name>-$w.png
+done
+```
+
+`Read` each PNG and critique it as a reviewer would: overflow or clipped text, the `stress`
+section broken, a variant indistinguishable from another, hover-only affordance, spacing that
+doesn't match neighboring components. Fix what you find and re-shoot. Report what you saw at
+each width — a screenshot baseline taken over a broken variant bakes the bug in.
 
 ## Phase 6: Hand off tests and docs
 

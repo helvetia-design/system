@@ -1,18 +1,5 @@
 import { Component, Element, Host, Method, Prop, State, h } from '@stencil/core'
-import {
-  Logger,
-  type LogInstance,
-  DsBreakpointObserver,
-  ListenToBreakpoints,
-  DsBreakpoints,
-  raf,
-  WindowResizeObserver,
-  ListenToWindowResize,
-  initialBreakpoints,
-  hasValue,
-  OneOf,
-  Type,
-} from '@utils'
+import { Logger, type LogInstance, hasValue, OneOf, Type } from '@utils'
 import { HTMLStencilElement } from '@stencil/core/internal'
 import {
   ListenToConfig,
@@ -40,7 +27,7 @@ import {
   styleUrl: 'progress-bar.host.scss',
   shadow: true,
 })
-export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBreakpointObserver, WindowResizeObserver {
+export class ProgressBar implements DsComponentInterface, DsConfigObserver {
   log!: LogInstance
 
   @Logger('progress-bar')
@@ -57,8 +44,6 @@ export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBr
   private labelObserver?: MutationObserver
 
   private animated = true
-  private lineEl?: HTMLDivElement
-  private isTouch = initialBreakpoints.touch
 
   /**
    * PUBLIC PROPERTY API
@@ -103,25 +88,6 @@ export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBr
     this.labelObserver?.disconnect()
   }
 
-  componentDidRender(): void {
-    this.updateProgress()
-  }
-
-  /**
-   * PUBLIC LISTENERS
-   * ─────────────────────────────────────────────────────
-   */
-
-  @ListenToBreakpoints()
-  listenToBreakpoint(_breakpoints: DsBreakpoints) {
-    this.updateProgress()
-  }
-
-  @ListenToWindowResize()
-  listenToWindowResize() {
-    this.updateProgress()
-  }
-
   /**
    * PUBLIC METHODS
    * ─────────────────────────────────────────────────────
@@ -161,24 +127,6 @@ export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBr
     return Number.isNaN(this.value) ? 0 : Math.max(0, Math.min(100, this.value))
   }
 
-  private updateProgress() {
-    if (this.lineEl) {
-      raf(() => {
-        const value = this.clampedValue
-        if (this.lineEl === undefined) return
-
-        // percentage, not px: a rounded clientWidth made the line overflow the track by sub-pixels
-        this.lineEl.style.width = `${value}%`
-
-        if (value === 100) {
-          this.lineEl.classList.add('is-full')
-        } else {
-          this.lineEl.classList.remove('is-full')
-        }
-      })
-    }
-  }
-
   /**
    * RENDER
    * ─────────────────────────────────────────────────────
@@ -208,8 +156,10 @@ export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBr
           part="line"
           class={{
             'is-animated': this.animated,
+            'is-full': value === 100,
           }}
-          ref={lineEl => (this.lineEl = lineEl)}
+          // percentage, not px: a rounded clientWidth made the line overflow the track by sub-pixels
+          style={{ width: `${value}%` }}
         ></div>
       </Host>
     )

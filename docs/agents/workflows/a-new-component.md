@@ -11,7 +11,7 @@ deprecation first (Workflow E).
 2 implement (tdd)           →  3 tokens  (only if step 2 reported gaps)
                                ⛔ GATE: human opens test/<name>.visual.html
 4 coverage-review + visual ∥ a11y-test ∥ docs   (parallel, disjoint files)
-5 token-audit ∥ a11y-audit ∥ code-review  →  6 repair, routed by owner
+5 token-audit ∥ a11y-audit ∥ polish-audit ∥ code-review  →  6 repair, routed by owner
 7 a11y-verify ∥ validate    →  8 changeset (minor)  →  9 🗺️ pr-body ∥ reply → ⛔ GATE → post  →  human reviews and commits
 
 step 7 failures loop back to step 6
@@ -151,7 +151,8 @@ out if the fixture is missing, which keeps the gate above from being skipped.
 variant covered, no `tdd` anti-pattern, mounted through the PO. No numeric threshold. Gaps are
 findings, routed to step 6 with the audits — the engineer fixes its own tests.
 
-**5 · Review — parallel, read-only.** `ds-audit-tokens` ∥ `ds-a11y-audit` ∥ the `code-review`
+**5 · Review — parallel, read-only.** `ds-audit-tokens` ∥ `ds-a11y-audit` ∥ `ds-ui-polish-audit`
+(🧙, report only) ∥ the `code-review`
 skill (mattpocock-skills), run by the orchestrator on the diff: Standards against
 `docs/STYLE_GUIDE.md` and `docs/ARCHITECTURE.md`, Spec against the brief and plan (or spec #N).
 The audits produce findings files; `code-review` reports inline. All converge on one repair round.

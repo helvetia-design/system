@@ -216,6 +216,13 @@ Before delivering, re-check the plan against:
 
 Resolve inconsistencies before returning the plan, or report them as blocking.
 
+Then **review the plan against the brief**, section by section: would you have written this
+exact decision for any similar component, without reading this brief? A `size` enum of
+`sm | md | lg`, a `color` list copied from the model, a prop where the content wants a slot, a
+variant nobody in the brief asked for — those are defaults, not decisions. Tie each one to a
+line of the brief or a real data set, or cut it. Record what you changed and why under
+`## Self-review` in the plan; an empty section means you checked and kept everything.
+
 ## Phase 6: Deliver
 
 **Write** the plan to `docs/plans/components/<component>-plan.md` yourself, then return a
@@ -255,6 +262,7 @@ The file must contain:
 7. `## Touch` — tap behavior, hover-only behaviors and their alternatives, gestures
 8. Testing strategy, ending in a `## Test seams` section (touch seams included)
 9. Risks and open questions
+10. `## Self-review` — defaults found and what replaced them (Phase 5)
 
 Mark every statement as either a **decision** (backed by a file path you read) or an
 **assumption**. Do not silently resolve ambiguous requirements — mark blocking decisions for

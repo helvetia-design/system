@@ -47,9 +47,8 @@
 }
 
 :host #line.is-animated {
-  will-change: width;
   // ds-token-check: intentional — motion timing, no motion token layer
-  transition: all 300ms ease-in-out;
+  transition: width 300ms ease-in-out;
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -107,4 +106,18 @@
 }
 :host(.is-green.is-light) {
   --mod-progress-bar-background: var(--ds-progress-bar-green-light-color-background);
+}
+
+@media (forced-colors: active) {
+  :host {
+    // ds-token-check: intentional — system colors, no token layer
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+
+  :host #line {
+    forced-color-adjust: none;
+    // ds-token-check: intentional — system color
+    background: Highlight;
+  }
 }

@@ -60,7 +60,7 @@ and every agent return, gate and status board is a turn. Keep that context _shor
   next 🧚 dispatch; resume a large agent for one only when no later dispatch is coming.
 - **Batch findings, then fan out once.** When a run collects code findings (a planner's
   out-of-scope list, an audit, a review), gather them all **before** dispatching 🧙, and run
-  🛡️ a11y-audit, `pnpm spell` and code-review in that gathering pass. One 🧙 pass fixes the
+  🛡️ a11y-audit, 🧙 polish-audit, `pnpm spell` and code-review in that gathering pass. One 🧙 pass fixes the
   batch; then 🧪 ∥ 🛡️ ∥ 📜 run **once**, last. Dispatching tests or docs between fix rounds
   pays for the same MDX or test file again every time a later finding changes the behavior.
 - **Skip what can't apply, by rule.** Layout-only CSS (no color, no interaction, no
@@ -238,7 +238,7 @@ stay where they are; only new a11y coverage follows the rule above.
 
 Each agent file's Workflow table lists its skills — that is the source of truth. A skill that
 writes has exactly one owner; one that only reads, reports or runs checks
-(`ds-validate-*`, `ds-audit-tokens`, `ds-changeset`) can be shared with any agent whose tools
+(`ds-validate-*`, `ds-audit-tokens`, `ds-ui-polish-audit`, `ds-changeset`) can be shared with any agent whose tools
 run it. Only the component-engineer runs `ds-lint-component --fix`. `ds-update-screenshots` is
 user-invoked only.
 

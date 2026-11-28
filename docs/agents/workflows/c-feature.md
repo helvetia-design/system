@@ -15,7 +15,7 @@ feature request
        ∥ a11y-expert (new interaction, colour or state)
        ∥ documentation-engineer · ds-manage-stories
   →  visual or token surface changed?
-       yes  →  ds-audit-tokens and/or ds-a11y-audit
+       yes  →  ds-audit-tokens and/or ds-a11y-audit, + ds-ui-polish-audit (🧙, report only)
                + ds-a11y-verify if a colour changed  →  repair by owner
   →  code-review skill (orchestrator, on the diff)  →  repair by owner
   →  ds-changeset (minor)

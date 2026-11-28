@@ -152,6 +152,9 @@ Page Object. Follow the `mattpocock-skills:tdd` skill's definition of a good tes
    no behavior is reachable by hover only; every gesture has a single-pointer alternative that is
    tested. Layout on phones and tablets (one breakpoint) is the `📱 Mobile Chrome` visual project:
    check `visual.html` has the sections that reflow there. Emulation only — say so.
+6. **Stress content** — `visual.html` has a `stress` section (very long unbroken label, long
+   wrapping label, one-character label, optional slots empty). Missing is a finding for the
+   engineer; it is the only screenshot that catches overflow and empty-state breakage.
 
 No numeric coverage threshold. **Never edit those files** — each gap is a finding in your report
 (`file:line`, what is missing, which check), routed by the orchestrator to the component-engineer's

@@ -4,7 +4,7 @@ This is a quick reference for component code standards. For comprehensive detail
 
 ## Table of Contents
 
-- [Key Rules at a Glance](#key-rules-at-a-glance)
+- [Key Rules at a Glance](#key-rules-at-a-glance) (incl. [Copy](#copy))
 - [Creating Values and Types](#creating-values-and-types)
 - [Prop Validation](#prop-validation)
 - [Quick Reference Table](#quick-reference-table)
@@ -288,6 +288,23 @@ item.href ? (
   <button role="tab">Tab 1</button>
 )
 ```
+
+### Copy
+
+Every word a component, story or docs page shows — default labels, visually hidden text,
+live-region messages, placeholders, story content, do/don't examples — follows these rules.
+
+- **Name things for the user**, in plain words, not by how the system is built: "Notifications",
+  not "Webhook config".
+- **Active voice, sentence case**: "Save changes", not "Changes Will Be Saved".
+- **An action says what happens** — "Save changes", never "Submit" or "OK" — and keeps its verb
+  through the flow: the "Publish" button produces a "Published" message.
+- **Errors say what happened and how to fix it**, in the interface's voice: no apology, never
+  vague. "Enter a date after 01.01.2020", not "Sorry, invalid input".
+- **An empty state invites the next action**, not a mood.
+- **Real content in examples** — realistic Helvetia/insurance copy at realistic lengths;
+  no lorem ipsum, no `Title`/`Label` where a real word fits.
+- `…` not `...`; loading states end with it ("Loading…").
 
 ### Component JSDoc
 

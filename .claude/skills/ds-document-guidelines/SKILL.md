@@ -60,6 +60,11 @@ index lives in `apps/storybook/.storybook/blocks/`.
 - **Composition pages stay simple** (templates, sections, recipes from a magpie brief): Banner,
   its Lead inside, the canvas with its code, and a short "When to use". No "How it is built" or
   "Decisions" sections. The markup shows how, and the brief and ADRs hold the why.
+- **Copy** follows [`docs/STYLE_GUIDE.md` → Copy](../../../docs/STYLE_GUIDE.md#copy).
+- **Structure is information.** Numbered markers only on a real sequence (steps, a migration
+  path); a divider, eyebrow label or card only where it separates or groups real content. One
+  focal element per page — the canvas or the decision table — everything around it quiet.
+  Before adding a device, name the information it carries; none means it goes.
 - Decisions have a home in `docs/adr/`. A guideline page may summarize and link an ADR; it
   does not replace or contradict one.
 

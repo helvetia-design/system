@@ -16,7 +16,7 @@ agent's step a card that turns green when done.
     `working`; `SubagentStop` marks it `done`.
 - The Orca plugin (`orca-plugin.json`, `src/`) reads every board of the focused workspace and
   redraws on every write. With more than one, a switcher lists them with their most urgent
-  status (🙋 needs you first).
+  status (🙋 needs you first). **Clear** in a board's header deletes its file.
 
 ```bash
 orca plugin dev load ./scripts/fellowship-board --approve <fingerprint>  # Orca prints it
