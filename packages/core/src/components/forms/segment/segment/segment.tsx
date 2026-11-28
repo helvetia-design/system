@@ -390,14 +390,17 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
     const pill = this.el.shadowRoot?.querySelector<HTMLDivElement>('#pill')
     if (!group || !pill) return
 
-    // From here the pill draws the selection; until then (SSR) the label does.
-    group.classList.add('has-pill')
     const selectedLabel = group.querySelector<HTMLLabelElement>('label:has(input:checked)')
     if (!selectedLabel) {
       pill.style.display = 'none'
       return
     }
 
+    // No layout (SSR renderer: offsets are undefined; hidden: 0) — keep the label drawing the selection.
+    if (!selectedLabel.offsetWidth) return
+
+    // From here the pill draws the selection instead of the label.
+    group.classList.add('has-pill')
     pill.style.display = 'block'
     pill.style.left = `${selectedLabel.offsetLeft}px`
     pill.style.top = `${selectedLabel.offsetTop}px`

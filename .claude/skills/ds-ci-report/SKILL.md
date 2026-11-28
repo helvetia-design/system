@@ -12,5 +12,5 @@ description: Download the core Playwright HTML report of the current branch's la
    `npx playwright show-report <REPORT_DIR> --port 9324 --host 127.0.0.1`
    (from `packages/core`, so its Playwright version is used) with the max background timeout (7200000 ms).
    Skip if port 9324 already answers.
-3. `orca tab create --url http://127.0.0.1:9324 --focus`.
+3. `orca tab create --url http://127.0.0.1:9324 --split right --focus`.
 4. Report: run URL, failed jobs, report URL.
