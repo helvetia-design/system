@@ -1,6 +1,6 @@
 {
   "name": "@helvetia-design/context",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The agent-facing context of the Helvetia Design System — architecture, style guide, ADRs and Claude Code skills — packaged so that a consuming repository reads them instead of copying them.",
   "repository": {
     "type": "git",

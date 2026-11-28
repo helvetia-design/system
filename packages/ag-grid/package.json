@@ -1,6 +1,6 @@
 {
   "name": "@helvetia-design/ag-grid",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The Helvetia Design System is an open source project for styling awesome web applications that follow the Helvetia corporate styling guidelines.",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "ag-grid-community": ">=33.0.0 <37.0.0"
   },
   "dependencies": {
-    "@helvetia-design/tokens": "0.1.0"
+    "@helvetia-design/tokens": "0.2.0"
   },
   "devDependencies": {
     "ag-grid-community": "36.3.0",

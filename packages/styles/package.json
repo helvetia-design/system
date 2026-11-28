@@ -1,6 +1,6 @@
 {
   "name": "@helvetia-design/styles",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "UnoCSS utility preset and pre-built CSS bundle for the Helvetia Design System.",
   "repository": {
     "type": "git",
@@ -31,11 +31,11 @@
     "build": "node --import tsx/esm src/build.ts"
   },
   "dependencies": {
-    "@helvetia-design/assets": "0.1.0",
-    "@helvetia-design/tokens": "0.1.0"
+    "@helvetia-design/assets": "0.2.0",
+    "@helvetia-design/tokens": "0.2.0"
   },
   "devDependencies": {
-    "@helvetia-design/tokens": "0.1.0",
+    "@helvetia-design/tokens": "0.2.0",
     "autoprefixer": "10.6.2",
     "cssnano": "9.9.0",
     "postcss": "8.5.33",
