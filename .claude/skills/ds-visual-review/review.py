@@ -45,7 +45,8 @@ def failures(report_dir):
                     "testId": t["testId"],
                     "test": " › ".join(t["path"] + [t["title"]]),
                     "project": t["projectName"],
-                    "ssr": ssr,
+                    # shares the desktop baseline; SSR_STATIC variants own one and approve like visual tests
+                    "ssr": ssr and ".ssr.play.ts-snapshots" not in str(baseline),
                     "ratio": ratio and float(ratio.group(1)),
                     "expected": str(report_dir / a["path"]),
                     "actual": str(report_dir / actual["path"]),
