@@ -150,7 +150,12 @@ All notable changes to this project will be documented in this file.
 
 ### ❤️ Thank You
 
+- [@alinalaura](https://github.com/alinalaura)
+- [@davidheimgartner](https://github.com/davidheimgartner)
+- [@Envaya](https://github.com/Envaya)
+- [@Gerd-Emmanuel](https://github.com/Gerd-Emmanuel)
 - [@hirsch88](https://github.com/hirsch88)
+- [@VanHoangTran](https://github.com/VanHoangTran)
 
 ## 0.1.0
 
