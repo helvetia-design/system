@@ -42,10 +42,11 @@ full pipeline.
 
 **Kickoff banner — your very first output on any DS-team request, before any tool call** (incl.
 reading `ds-team.md`). Text only, its own message, so the UI shows it and doesn't fold it into a
-tool group. Rendered markdown, not a code block (box borders break on emoji widths). Pick the
+tool group. The banner never ends the turn: keep going in the same turn, first call
+`board.mjs start` (below). Rendered markdown, not a code block (box borders break on emoji widths). Pick the
 workflow's step line and render it as a numbered list: one item per `→` step; `∥` (parallel)
 steps stay together on one item. Each step is `<emoji> **<Display name>** / <action>` — the emoji and display name map
-to the agent (👑 Guild Master = orchestrator, 🏰 Castle Keeper = architect, 🧙 Brick Wizard = component-engineer,
+to the agent (👑 Guild Master = orchestrator, ⚔️ Sir Plans-a-Lot = architect, 🧙 Brick Wizard = component-engineer,
 🧪 Potion Taster = test-engineer, 🛡️ Tab Knight = a11y-expert, 🔮 Rune Master = token-engineer,
 📜 Scroll Keeper = documentation-engineer, 🧚 Pixel Fairy = ux-designer, 🗺️ Quest Master = issue-manager,
 🐦‍⬛ Loot Raven = magpie, ⛔ human). Display names are labels only; dispatch by the agent's `name`. Consecutive steps by the
@@ -56,31 +57,32 @@ same agent merge into one item `<emoji> **<Display name>**` with a nested number
 
 **Workflow <X> — <name>** · `<ds-component>`
 
-1. 🏰 **Castle Keeper** / plan
+1. ⚔️ **Sir Plans-a-Lot** / plan
 2. 🧙 **Brick Wizard**
-   1. reproduce
-   2. fix
-3. 🧪 **Potion Taster** / test ∥ 🛡️ **Tab Knight** / a11y-test
+   1. reproduce (red)
+   2. fix (green)
+3. 🧪 **Potion Taster** / coverage-review + visual ∥ 🛡️ **Tab Knight** / a11y-test
 4. …
 ```
 
-- **A — New component:** `👑 grill → 🏰 plan ∥ 🛡️ a11y-plan → ⛔ gate → 🧙 implement → 🔮 tokens → ⛔ visual gate → 🧪 test ∥ 🛡️ a11y-test ∥ 📜 docs → 🔮 audit ∥ 🛡️ audit ∥ 👑 code-review → 🧙 repair → 🧙 validate → 🧙 changeset → 🗺️ pr-body ∥ reply`
-- **B — Bug fix:** `🧙 reproduce → 🧙 fix → 🧙 validate → 🧙 changeset (patch) → 🧚 drift check → 🗺️ pr-body ∥ reply`
-- **C — Feature:** `👑 grill → 🏰 plan → ⛔ gate → 🧙 modify → 🔮 tokens → 🧪 test ∥ 🛡️ a11y-test ∥ 📜 docs → 🔮 audit ∥ 🛡️ audit ∥ 👑 code-review → 🧙 changeset (minor) → 🧚 drift check → 🗺️ pr-body ∥ reply`
-- **D — Component into Figma:** `🏰 plan → 🔮 tokens → ⛔ gate → 🧚 map → 🧚 build → 🧚 review → 🧚 copy me → 🧚 anatomy ∥ 🧚 measurements ∥ 🧚 guidelines → 📜 stories`
-- **E — Deprecation:** `👑 grill → 🏰 plan → ⛔ gate → 🧙 deprecate → 🔮 tokens → 🧪 test ∥ 📜 docs → 🧙 validate ∥ 👑 code-review → 🧙 changeset (minor) → 🧚 drift check → 🗺️ pr-body ∥ reply`
+- **A — New component:** `👑 grill → ⚔️ plan ∥ 🛡️ a11y-plan → ⛔ gate → 🧙 implement (tdd) → 🔮 tokens → ⛔ visual gate → 🧪 coverage-review + visual ∥ 🛡️ a11y-test ∥ 📜 docs → 🔮 audit ∥ 🛡️ audit ∥ 👑 code-review → 🧙 repair → 🧙 validate → 🧙 changeset → 🗺️ pr-body ∥ reply`
+- **B — Bug fix:** `🧙 reproduce (red) → 🧙 fix (green) → 🧙 validate → 🧙 changeset (patch) → 🧚 drift check → 🗺️ pr-body ∥ reply`
+- **C — Feature:** `👑 grill → ⚔️ plan → ⛔ gate → 🧙 modify (tdd) → 🔮 tokens → 🧪 coverage-review + visual ∥ 🛡️ a11y-test ∥ 📜 docs → 🔮 audit ∥ 🛡️ audit ∥ 👑 code-review → 🧙 changeset (minor) → 🧚 drift check → 🗺️ pr-body ∥ reply`
+- **D — Component into Figma:** `⚔️ plan → 🔮 tokens → ⛔ gate → 🧚 map + default → ⛔ default gate → 🧚 fan-out + review + copy me + anatomy + measurements ∥ 📜 guidelines + stories → ⛔ approve Figma`
+- **E — Deprecation:** `👑 grill → ⚔️ plan → ⛔ gate → 🧙 deprecate (tdd) → 🔮 tokens → 🧪 coverage-review + visual ∥ 📜 docs → 🧙 validate ∥ 👑 code-review → 🧙 changeset (minor) → 🧚 drift check → 🗺️ pr-body ∥ reply`
 - **E′ — Removal** (later major): `⛔ gate → 🧙 remove → 🔮 tokens → 🧪 test ∥ 📜 docs → 🧙 validate → 🧙 changeset (major) → 🧚 drift check → 🗺️ pr-body ∥ reply`
 
 - **F — Triage** (standalone): `🗺️ triage → ⛔ gate → 🗺️ post`
-- **G — Recreate from a site:** `🐦‍⬛ scout → ⛔ gate (name, rung) → route` — rung 1 `📜 recipe → 📜 validate`; rung 2/3 → C from `🏰 plan`; rung 4 → A from `🏰 plan ∥ 🛡️ a11y-plan`
+- **G — Recreate from a site:** `🐦‍⬛ scout → ⛔ gate (name, rung) → route` — rung 1 `📜 recipe → 📜 validate`; rung 2/3 → C from `⚔️ plan`; rung 4 → A from `⚔️ plan ∥ 🛡️ a11y-plan`
 - **H — PR review** (read-only): `👑 classify → 🧙 validate ∥ 🛡️ a11y-audit ∥ 🔮 token-audit ∥ 📜 docs-validate → 👑 code-review → 🗺️ review draft → ⛔ gate → 🗺️ post`
 - **I — PR rescue:** `🧙 merge + resolve → 🧙 validate → ⛔ human commits`
 - **J — CI triage:** `🧙 classify → ⛔ gate → 🧙 fix ∥ 🧪 test-fix → 🧙 validate → ⛔ screenshots`
 - **K — Audit sweep:** `👑 scope → 🛡️ a11y-audit ∥ 🔮 token-audit ∥ 🧙 lint ∥ 📜 docs-validate → 👑 merge → ⛔ gate → 🗺️ issues → ⛔ gate → 🗺️ post`
-- **L — Spec only:** `👑 grill → 🏰 plan ∥ 🛡️ a11y-plan → ⛔ gate → ⛔ human /to-spec`
+- **L — Spec only:** `👑 grill → ⚔️ plan ∥ 🛡️ a11y-plan → ⛔ gate → ⛔ human /to-spec`
 
 `🗺️ pr-body ∥ reply` and Triage: see `ds-team.md` → GitHub.
 
 `🧚 drift check` = `ds-figma-review`, only when the component has a `<name>.figma.md` and the change touched its Figma surface (see `ds-team.md` → Figma drift check).
 
-Then the status board (`ds-team.md` → Status board) on every dispatch, return and gate.
+Then, same turn, without waiting for a reply: `node scripts/fellowship-board/board.mjs start <X> <component>` as the
+first tool call, and the status board it names (`ds-team.md` → Status board).

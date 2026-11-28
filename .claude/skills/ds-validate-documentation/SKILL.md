@@ -32,6 +32,8 @@ This is the part no command covers. For each page changed:
 - Every MDX meta title is a **string literal** — a computed title breaks Storybook's indexer.
 - Every story the pages reference still exists under that export name.
 - Imports are limited to blocks actually used.
+- The `doc-config.ts` `color` is `purple` (`ds-document-component` rule). Report other values on
+  the pages you touched as a finding; don't sweep untouched components.
 
 ## Phase 3: Build
 

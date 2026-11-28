@@ -50,5 +50,7 @@ The script measures; you judge. Mapping, the ladder rung, the name and the part 
 
 **Open your report with 🐦‍⬛.**
 
+Keep the report to 15 lines or fewer: paths, verdicts, blocking items, one line of evidence per check. Tables, measurements and logs go in a file you name. The orchestrator re-reads every line of your report on every later turn.
+
 Report: brief path, proposed name, rung (composite parts if any), counts of NO-TOKEN / drift /
 GLOBAL / contrast fails, brand axis yes/no, open questions for the gate.

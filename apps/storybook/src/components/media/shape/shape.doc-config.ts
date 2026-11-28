@@ -5,7 +5,7 @@
 
 export const SHAPE_DOC_CONFIG = {
   section: 'Components / Shape',
-  color: 'yellow' as const,
+  color: 'purple' as const,
   tabs: [
     { label: 'Overview', storyId: 'components-media-shape-shape--shape' },
     { label: 'Usage', storyId: 'components-media-shape-usage--usage' },

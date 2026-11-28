@@ -51,6 +51,13 @@ Benefits:
 | **A11y**        | `.a11y.play.ts`      | Accessibility compliance     | axe-core checks + manual assertions    |
 | **SSR**         | `.ssr.play.ts`       | Server markup and hydration  | Screenshots before and after hydration |
 
+**Touch.** A `.component.play.ts` test tagged `@touch` (`test('…', { tag: '@touch' }, …)`) runs
+only in the `⚙️ Component / 👆 Touch` project (Pixel 5, `hasTouch`) and is excluded from
+`⚙️ Component` (desktop has no touchscreen, so `tap()` would throw). Drive it with the base
+`PageObject.tap()`. Target size (WCAG 2.5.8) is asserted with `expectMinTargetSize(locator, 24)`
+in `.a11y.play.ts`; phone + tablet layout is the `📱 Mobile Chrome` visual project (they share one
+breakpoint). All emulation — no real-device run.
+
 ### Test Mounting
 
 Components are mounted in each test using the `mount` fixture:

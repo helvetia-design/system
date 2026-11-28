@@ -8,9 +8,9 @@ how a team like this gets abandoned.
 ```text
 bug report
   →  component-engineer · ds-modify-component
-       1 reproduce as a failing test
+       1 reproduce as a failing test  (red — tdd skill)
        2 grep every caller
-       3 fix the root cause once
+       3 fix the root cause once      (green)
   →  does the fix cross an ownership line?
        no (the common case)  →  validate
        yes                   →  escalate only the row that applies  →  validate
@@ -21,8 +21,11 @@ bug report
   →  human reviews and commits
 ```
 
-`ds-modify-component` reproduces the defect as a failing test first, greps every caller before
-editing anything shared, and fixes the root cause once.
+`ds-modify-component` reproduces the defect as a failing test first (red), greps every caller
+before editing anything shared, and fixes the root cause once (green) — one `tdd` cycle. It
+names the seam the test sits at in its report; the human confirms it at review. `.spec.ts`,
+`.component.play.ts` and the Page Object are the engineer's own files, so a new behavior test
+or file is no escalation.
 
 **Escalate only when the fix crosses an ownership line:**
 
@@ -31,12 +34,22 @@ editing anything shared, and fixes the root cause once.
 | Breaking public API change                     | stop — it is Workflow E (deprecate first), or A if it can't |
 | A needed token does not exist                  | token-engineer                                              |
 | The fix needs an **a11y decision** or sign-off | a11y-expert — audits and verifies; the engineer still fixes |
-| A new suite, new test file, or variant matrix  | test-engineer                                               |
 | The fix adds a `visual.html` section           | test-engineer — must regenerate `.variants.ts`              |
+| Framework integration tests need a change      | test-engineer                                               |
 | Public API or behavior visibly changed         | documentation-engineer                                      |
 
 Default to no escalation. Add an agent because the work crosses into its files, not because
 the pipeline has a slot for it.
+
+**More than one finding → batch, then fix once.** When the findings arrive from a planner
+(Workflow D step 1), an audit or a review, collect them all first, then dispatch one
+component-engineer pass over the batch, then 🧪 ∥ 🛡️ ∥ 📜 once. A fix that changes behavior
+(an accessible name, a clamp, a default) makes every test and doc written between rounds stale,
+and each stale file costs a second dispatch.
+
+**Started from a Figma-plan findings file** (Workflow D pause)? The engineer ticks each
+finding and updates the plan rows its fix changed (anatomy, token table), so `/figma` resumes at
+the gate without re-dispatching ⚔️. A `@part` text finding is written into the JSDoc verbatim.
 
 **A bug with an a11y dimension is still a bug.** The a11y-expert writes tests and findings; it
 never edits component source. Escalate when the _decision_ is an a11y one — which ARIA

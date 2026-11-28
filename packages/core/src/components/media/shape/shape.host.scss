@@ -12,13 +12,12 @@
  * @prop --shape-color: Fill color of the shape.
  * @prop --shape-size: Size of the shape (width and height).
  * @prop --shape-rotation: Rotation angle of the shape.
- * @prop --shape-opacity: Opacity of the shape.
  */
 
 :host {
   @include vars.base(shape);
-  @include vars.local(shape-color, var(--ds-alias-surface-green));
-  @include vars.local(shape-size, 66px);
+  @include vars.local(shape-color, var(--ds-shape-color-purple));
+  @include vars.local(shape-size, var(--ds-shape-size));
   @include vars.local(shape-rotation, 0deg);
 }
 
@@ -39,14 +38,6 @@
   // Size
   width: var(--_shape-size);
   height: var(--_shape-size);
-
-  @include tablet {
-    --mod-shape-size: 120px;
-  }
-
-  @include desktop {
-    --mod-shape-size: 198px;
-  }
 }
 
 /**
@@ -75,19 +66,10 @@
 
 //
 // Colors
-$shape-colors: (
-  'red': 'red-6',
-  'green': 'green-6',
-  'yellow': 'yellow-6',
-  'purple': 'purple-6',
-  'red-light': 'red-3',
-  'green-light': 'green-3',
-  'yellow-light': 'yellow-3',
-  'purple-light': 'purple-3',
-);
+$shape-colors: ('red', 'green', 'yellow', 'purple', 'red-light', 'green-light', 'yellow-light', 'purple-light');
 
-@each $name, $token in $shape-colors {
+@each $name in $shape-colors {
   @include attr.has('color', $name) {
-    --mod-shape-color: var(--ds-global-color-#{$token});
+    --mod-shape-color: var(--ds-shape-color-#{$name});
   }
 }

@@ -31,9 +31,8 @@ import {
 } from './progress-bar.interfaces'
 
 /**
- * Progress bar displays a visual indicator of progress or completion for a task or operation with percentage and label.
+ * Progress bar displays a track with a filled line that shows the completion of a task as a percentage value.
  *
- * @slot - Optional label or caption text.
  * @part line - The filled progress indicator element.
  */
 @Component({
@@ -52,6 +51,10 @@ export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBr
   @Element() el!: HTMLStencilElement
 
   @State() language: DsLanguage = defaultConfig.language
+  // A consumer-set aria-label wins over the generated one. Undefined means "none set".
+  @State() consumerLabel?: string
+
+  private labelObserver?: MutationObserver
 
   private animated = true
   private lineEl?: HTMLDivElement
@@ -87,6 +90,18 @@ export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBr
    * LIFECYCLE
    * ─────────────────────────────────────────────────────
    */
+
+  connectedCallback(): void {
+    this.readConsumerLabel()
+    // aria-labelledby needs no handling: it outranks aria-label natively
+    if (typeof MutationObserver === 'undefined') return
+    this.labelObserver = new MutationObserver(() => this.readConsumerLabel())
+    this.labelObserver.observe(this.el, { attributes: true, attributeFilter: ['aria-label'] })
+  }
+
+  disconnectedCallback(): void {
+    this.labelObserver?.disconnect()
+  }
 
   componentDidRender(): void {
     this.updateProgress()
@@ -127,15 +142,33 @@ export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBr
    * ─────────────────────────────────────────────────────
    */
 
+  private get generatedLabel(): string {
+    return i18nDsProgressBar[this.language].progress
+  }
+
+  // Rule: a name is ours when it equals the purpose word of any language, so server-rendered HTML in another
+  // language is not mistaken for the consumer's. Anything else is the consumer's and wins.
+  private readConsumerLabel() {
+    const attr = this.el.getAttribute('aria-label')
+    if (attr === this.consumerLabel) return
+    const isGenerated = attr !== null && Object.values(i18nDsProgressBar).some(i18n => i18n.progress === attr)
+    this.consumerLabel = isGenerated || attr === null ? undefined : attr
+    // Stencil skips attributes whose rendered value did not change, so restore our name after the consumer removed theirs.
+    if (attr === null) this.el.setAttribute('aria-label', this.generatedLabel)
+  }
+
+  private get clampedValue(): number {
+    return Number.isNaN(this.value) ? 0 : Math.max(0, Math.min(100, this.value))
+  }
+
   private updateProgress() {
     if (this.lineEl) {
       raf(() => {
-        const maxWidth = this.el.clientWidth
-        const value = Math.max(0, Math.min(100, this.value))
-        const lineWidth = (maxWidth / 100) * value
+        const value = this.clampedValue
         if (this.lineEl === undefined) return
 
-        this.lineEl.style.width = `${lineWidth}px`
+        // percentage, not px: a rounded clientWidth made the line overflow the track by sub-pixels
+        this.lineEl.style.width = `${value}%`
 
         if (value === 100) {
           this.lineEl.classList.add('is-full')
@@ -152,11 +185,12 @@ export class ProgressBar implements DsComponentInterface, DsConfigObserver, DsBr
    */
 
   render() {
+    const value = this.clampedValue
     return (
       <Host
         role="progressbar"
-        aria-label={`${i18nDsProgressBar[this.language].progress}: ${this.value}%`}
-        aria-valuenow={this.value}
+        aria-label={this.consumerLabel ?? this.generatedLabel}
+        aria-valuenow={value}
         aria-valuemin="0"
         aria-valuemax="100"
         class={{

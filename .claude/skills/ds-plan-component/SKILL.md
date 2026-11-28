@@ -181,6 +181,10 @@ Define only the sections the component actually needs:
   behind it.
 - Responsive behavior across 320px–2560px: what reflows, and at which boundaries.
 - Keyboard interaction and WCAG 2.2 AA requirements.
+- **Touch** (always — the DS must work on phones and tablets): what a tap does, every
+  hover-only behavior (tooltip, hover reveal) and its touch alternative, any gesture (drag,
+  swipe) and its single-pointer alternative. Each testable item becomes a test seam. Target
+  sizes are the a11y plan's.
 - Framework integration (React/Angular output targets), SSR and hydration compatibility.
 
 ## Phase 4: Plan
@@ -191,8 +195,13 @@ Define only the sections the component actually needs:
   changeset — are real work and belong in a build-out agent's scope from the start.
 - Ordered implementation steps, with dependencies between them called out.
 - Required Storybook stories and documentation pages.
-- Tests: unit (`.spec.ts`), interaction (`.component.play.ts`), visual (`.visual.play.ts`),
-  a11y (`.a11y.play.ts`), and the Page Object in `packages/playwright/`.
+- Tests: unit (`.spec.ts`), interaction (`.component.play.ts`) and the Page Object in
+  `packages/playwright/` — written test-first by the component-engineer at the seams below;
+  visual (`.visual.play.ts`) by the test-engineer; a11y (`.a11y.play.ts`) by the a11y-expert.
+- **Test seams** — the public boundaries the component-engineer's TDD cycles test at (see the
+  `mattpocock-skills:tdd` skill). One line per seam: what it catches, what it misses. The first
+  is always "renders with defaults". Pick the critical paths and complex logic, not every edge
+  case. The human approves them at the plan gate; no test is written at an unlisted seam.
 - Whether a changeset is needed, and at what bump level.
 
 ## Phase 5: Validate
@@ -225,6 +234,7 @@ Return to the orchestrator, in under 30 lines:
 - the plan's path
 - the blocking decisions a human must approve, each with your recommended answer
 - the token gaps the token-engineer must fill
+- the test seams, one line each — the human approves them with the plan
 - **out-of-scope findings** — defects or debt you found outside the brief's scope (e.g. in the
   model component), one line each with `file:line`. The orchestrator files them as issues; a
   finding left only in the plan is lost when the next run overwrites it
@@ -242,8 +252,9 @@ The file must contain:
 4. Component specification (API, slots, tokens, responsive, accessibility)
 5. Files to create or modify
 6. Implementation steps
-7. Testing strategy
-8. Risks and open questions
+7. `## Touch` — tap behavior, hover-only behaviors and their alternatives, gestures
+8. Testing strategy, ending in a `## Test seams` section (touch seams included)
+9. Risks and open questions
 
 Mark every statement as either a **decision** (backed by a file path you read) or an
 **assumption**. Do not silently resolve ambiguous requirements — mark blocking decisions for

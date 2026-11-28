@@ -101,3 +101,11 @@ Use these terms, and only these, in every phase and topic file.
   token or explicitly accept a one-off hardcode, never silently build with an assumed value. See
   [`conventions/tokens-and-props.md`](conventions/tokens-and-props.md) for resolution mechanics
   and verification techniques.
+
+- **The Plugin API cannot resize or reposition a nested layer inside an instance — a designer
+  can, in the Figma UI.** `resize()` on an instance child does nothing and position overrides
+  throw "relative-transform cannot be overridden" (seen on `ProgressBar/line`, a SCALE-constrained
+  child of a frame without auto-layout). Do not conclude the set is broken: ask the human to try
+  the drag by hand, and record the result in `<name>.figma.md` ("verified manually in the UI").
+  Behavior-card states that need a resized layer (e.g. value 100) are drawn as a plain frame built
+  from the same variable-bound fills and radii, labelled "illustration, not an instance".

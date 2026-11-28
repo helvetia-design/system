@@ -2401,7 +2401,7 @@ export namespace Components {
         "trigger": HTMLElement | undefined;
     }
     /**
-     * Progress bar displays a visual indicator of progress or completion for a task or operation with percentage and label.
+     * Progress bar displays a track with a filled line that shows the completion of a task as a percentage value.
      */
     interface DsProgressBar {
         /**
@@ -4702,7 +4702,7 @@ declare global {
         new (): HTMLDsPopupElement;
     };
     /**
-     * Progress bar displays a visual indicator of progress or completion for a task or operation with percentage and label.
+     * Progress bar displays a track with a filled line that shows the completion of a task as a percentage value.
      */
     interface HTMLDsProgressBarElement extends Components.DsProgressBar, HTMLStencilElement {
     }
@@ -7741,7 +7741,7 @@ declare namespace LocalJSX {
         "trigger"?: HTMLElement | undefined;
     }
     /**
-     * Progress bar displays a visual indicator of progress or completion for a task or operation with percentage and label.
+     * Progress bar displays a track with a filled line that shows the completion of a task as a percentage value.
      */
     interface DsProgressBar {
         /**
@@ -10382,7 +10382,7 @@ declare module "@stencil/core" {
              */
             "ds-popup": LocalJSX.IntrinsicElements["ds-popup"] & JSXBase.HTMLAttributes<HTMLDsPopupElement>;
             /**
-             * Progress bar displays a visual indicator of progress or completion for a task or operation with percentage and label.
+             * Progress bar displays a track with a filled line that shows the completion of a task as a percentage value.
              */
             "ds-progress-bar": LocalJSX.IntrinsicElements["ds-progress-bar"] & JSXBase.HTMLAttributes<HTMLDsProgressBarElement>;
             /**

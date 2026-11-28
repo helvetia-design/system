@@ -67,7 +67,15 @@ export default defineConfig({
     {
       name: '⚙️ Component',
       testMatch: '**/*.component.play.ts',
+      grepInvert: /@touch/,
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Touch interaction (tap, no hover-only behavior) — only tests tagged `@touch`.
+      name: '⚙️ Component / 👆 Touch',
+      testMatch: '**/*.component.play.ts',
+      grep: /@touch/,
+      use: { ...devices['Pixel 5'] },
     },
     {
       name: '🧬 SSR',

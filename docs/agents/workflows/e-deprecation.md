@@ -10,7 +10,7 @@ releases:** deprecate now (minor), remove in a later major (E′). Never both in
 E · deprecate
 0 grill the human           →  brief: what goes, its replacement, the removal major
 1 architect · ds-plan-component  (deprecation plan)  →  ⛔ GATE
-2 component-engineer · ds-modify-component           (old API keeps working + warns)
+2 component-engineer · ds-modify-component           (TDD: old API keeps working + warns)
 3 token-engineer · ds-manage-tokens                  (only if tokens are deprecated)
 4 test ∥ docs                                         (parallel, disjoint files)
 5 ds-validate-component ∥ code-review  →  6 ds-changeset (minor)  →  7 Figma drift check
@@ -34,7 +34,9 @@ and React wrapper inputs/outputs, Storybook stories and controls, and other comp
 it internally. Internal users migrate in this run; consumers migrate on their own schedule.
 Out-of-scope findings become issues as usual.
 
-**2 · Deprecate** — the component-engineer, from the plan:
+**2 · Deprecate** — the component-engineer, from the plan, test-first (`tdd`): a red → green
+cycle per seam — the old API still works and warns, the replacement works. Existing tests
+stay; none deleted.
 
 - `@deprecated Use <replacement> instead. Removed in <major>.` JSDoc on the member, so it
   reaches `components.d.ts`, the wrappers and the editor.
@@ -52,7 +54,7 @@ and is marked deprecated in its `$description`.
 
 | Agent                  | Skill               | Writes                                                                                               |
 | ---------------------- | ------------------- | ---------------------------------------------------------------------------------------------------- |
-| test-engineer          | `ds-test-component` | the old API still works and warns; the replacement works; existing tests stay — none deleted         |
+| test-engineer          | `ds-test-component` | coverage review of step 2's tests (findings → repair); visual sections for the replacement, if any   |
 | documentation-engineer | `ds-manage-stories` | deprecated member out of controls and examples; a deprecation note with old → new markup on its page |
 
 **5 · Review** — `code-review` (mattpocock-skills) run by the orchestrator on the diff, beside `ds-validate-component`; findings routed to the owner.
@@ -67,6 +69,7 @@ E′: new designs must stop using it while code still renders it. `ds-figma-revi
 **E′ · Remove.** No grilling and no planner — the decisions were made at E; the brief and the
 E changeset are the record. The human gate only confirms the window has passed. Removing a
 test that covers the removed API is the one case where deleting a test is the change itself,
-not weakening the suite — the test-engineer names each one it deletes. Changeset: **major**.
+not weakening the suite — the owner of the file (component-engineer for `.spec.ts`,
+`.component.play.ts`, PO; test-engineer for visual/SSR/variants) names each one it deletes. Changeset: **major**.
 
 **Optional · Retro** — the orchestrator's last line is "Type `/retro` to review how this run went." `retro` is user-invoked only (mattpocock-skills); no agent runs it.

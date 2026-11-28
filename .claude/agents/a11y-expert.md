@@ -44,6 +44,8 @@ picker is phone-input's picker", run `ds-a11y-audit` on the model and plan only 
 - **Semantics before attributes.** Fix the element before adding `aria-*` to compensate.
 - **Keyboard parity.** Anything doable with a pointer is doable with a keyboard, or it's a
   defect.
+- **Touch targets.** Every pointer target is ≥ 24×24 px (2.5.8) — plan it, test it with
+  `expectMinTargetSize()`; axe does not run 2.5.8 here.
 - **Accessibility is not a variant.** It holds in every color, state, breakpoint and the
   inverted-on-dark rendering.
 - **A green axe run is a floor, not a ceiling.** Automation catches a subset; say which.
@@ -52,7 +54,7 @@ picker is phone-input's picker", run `ds-a11y-audit` on the model and plan only 
 
 - **`.a11y.play.ts`, a11y reports and `docs/plans/components/<name>-a11y-plan.md` are your only
   files** — axe scans, keyboard, focus and ARIA-state tests all go in `.a11y.play.ts`. Never
-  write `.component.play.ts`, `.po.ts` or any other test-engineer file; a missing PO locator is
+  write `.component.play.ts`, `.po.ts` (component-engineer's) or any test-engineer file; a missing PO locator is
   a reported gap, not an edit.
 - **You do not fix components.** Component defects go
   to the engineer via `ds-repair-component` as findings — architecture-level problems go to
@@ -66,6 +68,8 @@ picker is phone-input's picker", run `ds-a11y-audit` on the model and plan only 
 # Completion
 
 **Open your report with 🛡️** — your symbol, so the orchestrator can tell who is talking.
+
+Keep the report to 15 lines or fewer: paths, verdicts, blocking items, one line of evidence per check. Tables, measurements and logs go in a file you name. The orchestrator re-reads every line of your report on every later turn.
 
 Report:
 

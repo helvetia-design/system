@@ -6,7 +6,8 @@
     "andrej-karpathy-skills@karpathy-skills": true,
     "ponytail@ponytail": true,
     "mattpocock-skills@claude-plugins-official": true,
-    "claude-mem@thedotmack": true
+    "claude-mem@thedotmack": true,
+    "vercel@claude-plugins-official": false
   },
   "hooks": {
     "SessionStart": [
@@ -15,6 +16,27 @@
           {
             "type": "command",
             "command": "grep -q 'mattpocock-skills@' \"$HOME/.claude/plugins/installed_plugins.json\" 2>/dev/null || echo 'WARNING: plugin mattpocock-skills is not installed. DS workflows (grilling, /to-spec, code-review) need it. Tell the user to run: /plugin install mattpocock-skills@claude-plugins-official'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/fellowship-board/board.mjs\" hook"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/fellowship-board/board.mjs\" hook"
           }
         ]
       }

@@ -19,50 +19,130 @@ import { PROGRESS_BAR_DOC_CONFIG, getProgressBarTabs } from './progress-bar.doc-
 
 ## When to Use
 
-- Display task or operation progress (0–100%)
-- Show loading or completion status in workflows
-- Indicate multi-step process progress
-- Provide visual feedback for long-running operations
-- Display file upload or download progress
-- Show form completion percentage
+- Show how much of a measurable task is done, as 0–100% (upload, sync, import)
+- Show completion of a form or profile when the percentage is known
+- Give feedback on a long-running operation whose progress the app can calculate
 
 ## When NOT to Use
 
-- For status indicators that aren't measurable progress — use badge or notification
-- For simple loading without progress details — use spinner
-- For very large datasets where progress is unreliable — use skeleton loading
-- For circular progress animations — use spinner or circular progress component
-- For boolean states (done/not done) — use checkbox or toggle
+- Progress is unknown (waiting on a response) — use `ds-spinner`
+- The user moves through named, navigable steps — use `ds-steps`
+- The value is a status or category, not an amount — use `ds-badge` or `ds-tag`
+- The user sets the value themselves — use `ds-slider`
 
 ## Do's and Don'ts
 
-### Clear Progress Values
+### Label and value
 
-Always provide meaningful progress information. Users need to know how much is complete.
+The bar has no slot and no visible text. Put the label and the percentage next to it, outside the component.
 
 <UsageExamples
   items={[
     {
       type: 'correct',
-      title: 'Correct: Show progress percentage',
+      title: 'Correct: Label and percentage beside the bar',
       content: (
-        <div>
-          <p>File upload: 65%</p>
-          <ds-progress-bar value="65" max="100"></ds-progress-bar>
+        <div className="ds-stack has-space-xs">
+          <div className="ds-stack as-row">
+            <ds-text>Uploading contract.pdf</ds-text>
+            <ds-text bold>65%</ds-text>
+          </div>
+          <ds-progress-bar value="65"></ds-progress-bar>
         </div>
       ),
-      description: 'Users understand progress toward completion',
+      description: 'Users see what is progressing and how far it is',
     },
     {
       type: 'incorrect',
-      title: 'Incorrect: No indication of progress',
+      title: 'Incorrect: Text placed inside the component',
+      content: <ds-progress-bar value="65">Uploading contract.pdf 65%</ds-progress-bar>,
+      description: 'The bar has no slot, so the text is never shown',
+    },
+  ]}
+/>
+
+### Known progress only
+
+A progress bar must reflect a real, changing value. A bar stuck at 0 looks broken.
+
+<UsageExamples
+  items={[
+    {
+      type: 'correct',
+      title: 'Correct: Spinner while progress is unknown',
+      content: <ds-spinner label="Loading your documents" variation="circle"></ds-spinner>,
+      description: 'Signals activity without promising a percentage',
+    },
+    {
+      type: 'incorrect',
+      title: 'Incorrect: Empty bar as a loading indicator',
       content: (
-        <div>
-          <p>Processing...</p>
-          <ds-progress-bar value="0" max="100"></ds-progress-bar>
+        <div className="ds-stack has-space-xs">
+          <ds-text>Loading your documents</ds-text>
+          <ds-progress-bar value="0"></ds-progress-bar>
         </div>
       ),
-      description: 'Users unsure of progress or time remaining',
+      description: 'An empty track reads as "nothing happening"',
+    },
+  ]}
+/>
+
+### Background and surface
+
+`background="light"` draws a white track. Use it only on a tinted surface; keep the default `dark` on white.
+
+<UsageExamples
+  items={[
+    {
+      type: 'correct',
+      title: 'Correct: Light background on a tinted surface',
+      content: (
+        <ds-card color="grey">
+          <ds-card-content>
+            <ds-progress-bar value="50" background="light"></ds-progress-bar>
+          </ds-card-content>
+        </ds-card>
+      ),
+      description: 'The white track stands out against the grey card',
+    },
+    {
+      type: 'incorrect',
+      title: 'Incorrect: Light background on a white page',
+      content: <ds-progress-bar value="50" background="light"></ds-progress-bar>,
+      description: 'The track disappears; only the line is visible and the total is lost',
+    },
+  ]}
+/>
+
+### Color
+
+Pick one color per context. Different colors for the same kind of progress suggest a difference that isn't there.
+
+<UsageExamples
+  items={[
+    {
+      type: 'correct',
+      title: 'Correct: One color for comparable bars',
+      content: (
+        <div className="ds-stack has-space-sm">
+          <ds-progress-bar value="80"></ds-progress-bar>
+          <ds-progress-bar value="45"></ds-progress-bar>
+          <ds-progress-bar value="20"></ds-progress-bar>
+        </div>
+      ),
+      description: 'Only the length differs, so only the length is compared',
+    },
+    {
+      type: 'incorrect',
+      title: 'Incorrect: A different color per bar',
+      content: (
+        <div className="ds-stack has-space-sm">
+          <ds-progress-bar value="80" color="green"></ds-progress-bar>
+          <ds-progress-bar value="45" color="yellow"></ds-progress-bar>
+          <ds-progress-bar value="20" color="red"></ds-progress-bar>
+        </div>
+      ),
+      description: 'Colors read as status the content never states',
     },
   ]}
 />

@@ -67,8 +67,10 @@ rather than guessing.
 ## Phase 4: Define the anatomy
 
 From the `@part` tags: each part's name, what it is, and whether it is always present or
-conditional. This list is what both the Figma 📐 Anatomy section and Storybook's
-`ComponentParts` block describe, so it is written once, here.
+conditional. The `@part` JSDoc text is the single source: Storybook's `ComponentParts` reads
+only that, and the Figma 📐 Anatomy legend copies it. If the JSDoc text is missing, vague or
+wrong, write the final wording as a **code finding** (`file:line — replace with "<text>"`), so
+the fix session puts it in the JSDoc before Figma copies it.
 
 A component with no `@part` tags has no anatomy section — say so explicitly.
 
@@ -85,6 +87,23 @@ expensive place to find it.
 
 Name which single variant is the **default** — the one the UX designer builds and gets approved
 first.
+
+**A numeric or free-form prop is not a variant by default — say how a designer sets it, and put
+that question to the gate.** A `value` from 0–100, a `max`, a count: Figma has no numeric
+component property, so the only controls are a variant axis in steps (cheap in variants, coarse)
+or a manual resize/override of the nested layer (no panel control, no snapping). List both with
+the variant cost of the axis and your recommendation. The human otherwise discovers that
+consumers cannot set the value only after the set is built.
+
+**Put every decision a later step would ask into Open questions, for the gate.** A responsive
+token (one value per Device mode) raises how Measurements draws it — one row with a cell per
+mode, or a card per mode; recommend one row. Anything the ux-designer would otherwise stop to
+ask mid-build costs a human round-trip there.
+
+**List code findings you hit while reading.** A documented slot with no `<slot>`, a token the
+SCSS never uses, ARIA that disagrees with the value: they go in the return summary's
+out-of-scope findings with `file:line`, so the orchestrator can hand them off (Workflow D →
+1a · Pause for findings) before the Figma build mirrors the defect.
 
 ## Phase 6: Deliver
 

@@ -159,7 +159,7 @@ function printPlannedWrites({ baseTokens, brandNames, brandTokensByName, referen
     responsiveCollectionId ? buildNameIndex(localVariables, responsiveCollectionId) : new Map(),
   )
   const mismatches = findResolvedTypeMismatches(baseTokens, variables)
-  const removedIds = findRemovedVariableIds(loadSyncStateFile(inputs.syncStateFile), baseTokens)
+  const removedIds = findRemovedVariableIds(loadSyncStateFile(inputs.syncStateFile), idByPath)
   const deletable = removedIds.filter(id => variables[id])
   const creates = buildCreatePassPayload({
     baseTokens,
@@ -180,7 +180,7 @@ function printPlannedWrites({ baseTokens, brandNames, brandTokensByName, referen
   console.log(`  delete: ${deletable.length}${list(deletable.map(id => variables[id].name))}`)
   console.log(`  rename: ${renames.length}${list(renames.map(v => `${variables[v.id]?.name} -> ${v.name}`))}`)
   console.log(
-    `  description update: ${descriptions.length}${list(descriptions.map(v => variables[v.id]?.name ?? v.id))}`,
+    `  description update: ${descriptions.length} (existing variables only; created ones get theirs in pass 3)${list(descriptions.map(v => variables[v.id]?.name ?? v.id))}`,
   )
 }
 

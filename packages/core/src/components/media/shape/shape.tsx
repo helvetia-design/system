@@ -15,8 +15,7 @@ import { DsComponentInterface } from '@global'
 /**
  * Shape renders decorative geometric shapes with customizable color, size, rotation, and variation.
  *
- * @slot - Optional overlay content or labels.
- * @part shape - The SVG shape element container.
+ * @part shape - The SVG that draws the active variation, filling the host square. Always present.
  */
 @Component({
   tag: 'ds-shape',
@@ -67,7 +66,7 @@ export class Shape implements DsComponentInterface {
   render() {
     return (
       <Host aria-hidden="true">
-        <svg version="1.1" x="0px" y="0px" viewBox="0 0 198 198" focusable="false" aria-hidden="true">
+        <svg part="shape" version="1.1" x="0px" y="0px" viewBox="0 0 198 198" focusable="false" aria-hidden="true">
           {shapes[parseInt(this.variation) - 1]}
         </svg>
       </Host>

@@ -8,10 +8,10 @@ Between A and B. Additive change to a component that already ships.
 feature request
   →  public API changes?   yes  →  grill the human  →  architect · ds-plan-component  →  ⛔ GATE
                            no   →  straight to the engineer
-  →  component-engineer · ds-modify-component
+  →  component-engineer · ds-modify-component   (TDD cycles at the plan's test seams)
   →  needs a new token?    yes  →  token-engineer · ds-manage-tokens
   →  build out only what the change touches:
-       test-engineer (new prop or state)
+       test-engineer · coverage review + visual (new prop or state)
        ∥ a11y-expert (new interaction, colour or state)
        ∥ documentation-engineer · ds-manage-stories
   →  visual or token surface changed?
@@ -33,7 +33,10 @@ public prop is a permanent API decision. The branch that skips the planner skips
 with it: a change whose shape is already settled does not need a design tree.
 
 `ds-modify-component`, not `ds-implement-component` — backward compatibility and impact
-assessment are the point. A new prop reaches stories (`ds-manage-stories`) and tests; a new
+assessment are the point. It runs test-first: one red → green `tdd` cycle per seam in the plan's
+`## Test seams` (no plan: the engineer names the seams in its report). The test-engineer then
+reviews that coverage read-only and adds the visual tests; its gaps go to the engineer's repair
+round with the other findings. A new prop reaches stories (`ds-manage-stories`) and tests; a new
 visual state reaches tokens too.
 
 **A form component's value, event or disabled/validity behaviour reaches the frameworks too.**

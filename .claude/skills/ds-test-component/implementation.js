@@ -2,7 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const { globSync } = require('glob')
 const { resolveComponentPath } = require('../_shared/component-categories')
-const { playwrightComponentsDir } = require('../_shared/ds-context')
 
 const REPO_ROOT = path.resolve(__dirname, '../../..')
 
@@ -30,8 +29,7 @@ async function testComponent(componentName) {
   • Props: ${componentInfo.props.length} (${componentInfo.enumProps.length} enums, ${componentInfo.stateProps.length} states)
   • Events: ${componentInfo.events.length}
   • Slots: ${componentInfo.slots.length}
-  • Parts: ${componentInfo.parts.length}
-  • Utils: ${componentInfo.hasUtils ? 'Yes' : 'No'}\n`)
+  • Parts: ${componentInfo.parts.length}\n`)
 
   // Show checklists
   const visualProps = await promptVisualProps(componentInfo.enumProps, componentInfo.stateProps)
@@ -55,7 +53,6 @@ function parseComponent(filePath) {
     events: extractEvents(content),
     slots: extractSlots(content),
     parts: extractParts(content),
-    hasUtils: checkHasUtils(filePath),
   }
 }
 
@@ -130,12 +127,6 @@ function extractParts(content) {
   return parts
 }
 
-function checkHasUtils(filePath) {
-  const dir = path.dirname(filePath)
-  const utilFile = path.join(dir, path.basename(filePath, '.tsx') + '.util.ts')
-  return fs.existsSync(utilFile)
-}
-
 async function promptVisualProps(enumProps, stateProps) {
   // For now, return all (interactive prompts would be implemented in actual CLI)
   return {
@@ -151,8 +142,6 @@ async function promptSlots(slots) {
 
 function generateTestFiles(componentName, componentInfo, visualProps, slotsToDemo) {
   const testDir = path.join(resolveComponentPath(REPO_ROOT, componentName), 'test')
-
-  const poDir = playwrightComponentsDir(REPO_ROOT)
 
   const files = []
 
@@ -178,22 +167,8 @@ function generateTestFiles(componentName, componentInfo, visualProps, slotsToDem
     files.push({ path: path.join(testDir, `${componentName}.ssr.play.ts`), content: ssrPlayTs, type: 'ssr' })
   }
 
-  // Generate component.play.ts
-  const componentPlayTs = generateComponentPlayTs(componentName, componentInfo)
-  const componentPlayTsPath = path.join(testDir, `${componentName}.component.play.ts`)
-  files.push({ path: componentPlayTsPath, content: componentPlayTs, type: 'component' })
-
-  // Generate page object
-  const poTs = generatePageObject(componentName, componentInfo)
-  const poTsPath = path.join(poDir, `${componentName}.po.ts`)
-  files.push({ path: poTsPath, content: poTs, type: 'page-object' })
-
-  // Generate util tests if applicable
-  if (componentInfo.hasUtils) {
-    const utilSpecTs = generateUtilSpecTs(componentName)
-    const utilSpecTsPath = path.join(testDir, `${componentName}.util.spec.ts`)
-    files.push({ path: utilSpecTsPath, content: utilSpecTs, type: 'util' })
-  }
+  // component.play.ts, the Page Object and .spec.ts are the component-engineer's,
+  // written test-first (TDD) before the code exists — never generated here.
 
   return files
 }
@@ -333,112 +308,6 @@ ${
 `
 }
 
-function generateComponentPlayTs(componentName, componentInfo) {
-  let content = `import { Ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)}, expect, test } from '@helvetia-design/playwright'
-
-test.describe('component', () => {
-`
-
-  // Event tests
-  if (componentInfo.events.length > 0) {
-    content += `\n  test.describe('events', () => {`
-    componentInfo.events.forEach(event => {
-      content += `
-    test('should fire ${event} event', async ({ page }) => {
-      await page.mount(\`<ds-${componentName}>Content</ds-${componentName}>\`)
-      const ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)} = new Ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)}(page.locator('ds-${componentName}'))
-      const spy = await ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)}.el.spyOnEvent('${event}')
-
-      // TODO: trigger action that fires ${event}
-
-      expect(spy).toHaveReceivedEventTimes(1)
-    })`
-    })
-    content += `\n  })\n`
-  }
-
-  // State tests
-  if (componentInfo.stateProps.length > 0) {
-    content += `\n  test.describe('states', () => {`
-    componentInfo.stateProps.forEach(state => {
-      content += `
-    test('should handle ${state} state', async ({ page }) => {
-      await page.mount(\`<ds-${componentName} ${state}>Content</ds-${componentName}>\`)
-      const ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)} = new Ds${componentName.charAt(0).toUpperCase() + componentName.slice(1)}(page.locator('ds-${componentName}'))
-
-      // TODO: add assertions for ${state} state
-    })`
-    })
-    content += `\n  })\n`
-  }
-
-  content += `})
-`
-
-  return content
-}
-
-function generatePageObject(componentName, componentInfo) {
-  const className = componentName.charAt(0).toUpperCase() + componentName.slice(1)
-
-  let content = `import { expect } from '@playwright/test'
-import { PageObject } from './page-object'
-import { E2ELocator } from '../page/utils'
-
-export class Ds${className} extends PageObject {
-  constructor(el: E2ELocator) {
-    super(el)
-  }
-
-`
-
-  // Part locators
-  if (componentInfo.parts.length > 0) {
-    componentInfo.parts.forEach(part => {
-      content += `  readonly ${part} = this.el.locator('[part="${part}"]')\n`
-    })
-    content += '\n'
-  }
-
-  // Action methods
-  content += `  async click() {
-    await this.el.click()
-  }
-
-`
-
-  // State assertions
-  if (componentInfo.stateProps.length > 0) {
-    componentInfo.stateProps.forEach(state => {
-      const methodName = state.charAt(0).toUpperCase() + state.slice(1)
-      content += `  async assertToBe${methodName}() {
-    await expect(this.el).toHaveAttribute('${state}')
-  }
-
-`
-    })
-  }
-
-  content += `  async assertToContainText(text: string) {
-    await expect(this.el).toContainText(text)
-  }
-}
-`
-
-  return content
-}
-
-function generateUtilSpecTs(componentName) {
-  return `import { describe, it, expect } from 'vitest'
-// import { someUtil } from './${componentName}.util'
-
-describe('${componentName} utils', () => {
-  // Add comprehensive unit tests here
-  // Include happy paths, edge cases, and type variations
-})
-`
-}
-
 function reportGeneration(componentName, files) {
   console.log(`📝 Test files to be generated:\n`)
 
@@ -450,10 +319,9 @@ function reportGeneration(componentName, files) {
   console.log(`\n✅ Ready to generate ${files.length} test files`)
   console.log(`\nNext steps:\n`)
   console.log(`  1. Review the generated files`)
-  console.log(`  2. Fill in event handlers and state assertions`)
-  console.log(`  3. Run visual tests: pnpm play -- --grep "${componentName}"`)
-  console.log(`  4. Run unit tests: pnpm test -- ${componentName}.util.spec.ts`)
-  console.log(`  5. a11y coverage (.a11y.play.ts) is the a11y-expert's — hand it off\n`)
+  console.log(`  2. Visual snapshots run in CI only — new baselines via ds-update-screenshots`)
+  console.log(`  3. Review the component-engineer's .spec.ts / .component.play.ts / PO coverage`)
+  console.log(`  4. a11y coverage (.a11y.play.ts) is the a11y-expert's — hand it off\n`)
 }
 
 module.exports = {

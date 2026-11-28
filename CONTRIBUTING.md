@@ -98,6 +98,25 @@ Post these as a PR comment to trigger automation:
 
 `/cib` is an issue comment, not a PR comment. The type label chooses the branch prefix: `✨ feature` → `feat/…`, `🐛 bug` → `fix/…`, `🔧 chore` → `chore/…` (also `♻️ refactor`, `🧪 test`, `💥 breaking change`, `⚡️ perf`, `🚀 release`, `🛡️ lts`). Without one of those labels the workflow runs but creates nothing.
 
+### Claude Code Commands
+
+Type these in a Claude Code session in this repo (defined in `.claude/commands/`):
+
+| Command             | Effect                                                                  |
+| ------------------- | ----------------------------------------------------------------------- |
+| `/dev`              | Starts the core components dev server (`pnpm start`) in the background. |
+| `/docs`             | Starts Storybook (`pnpm docs`) in the background.                       |
+| `/stop`             | Stops the background servers Claude started.                            |
+| `/check`            | Runs lint, format check and spell check; reports failures only.         |
+| `/test <filter>`    | Runs a single Vitest file in core.                                      |
+| `/play <test name>` | Runs a single Playwright test in core (opens the Playwright UI).        |
+| `/tokens`           | Rebuilds tokens and styles.                                             |
+| `/new <name>`       | Starts the DS team workflow for a new component (Workflow A).           |
+| `/fix <issue>`      | Starts the DS team workflow for a bug fix (Workflow B).                 |
+| `/figma <name>`     | Starts the DS team workflow for mirroring a component into Figma (D).   |
+
+The workflow commands hand the work to the DS agent team — see [docs/agents/ds-team.md](docs/agents/ds-team.md).
+
 ## Reporting Issues
 
 Start any contribution (bug fix or feature) by creating a GitHub issue:

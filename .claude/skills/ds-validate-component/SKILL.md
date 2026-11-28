@@ -75,6 +75,9 @@ core package before `pnpm build`.
 Note that Playwright projects are split (`play:components`, `play:visual`, `play:a11y`), so
 run only the ones the change can affect.
 
+**Always run `pnpm spell`** (it is cheap) alongside lint: spell failures live in comments and
+JSDoc the lint scripts never read, and a late spell flag costs a whole extra dispatch.
+
 **Never run `pnpm play:update`.** Re-baselining visual snapshots goes through the
 `ds-update-screenshots` skill, which posts a PR comment and is user-invoked only. If visual
 tests fail, report the diff — do not accept the new snapshots.

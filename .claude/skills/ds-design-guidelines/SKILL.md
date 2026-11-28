@@ -1,16 +1,17 @@
 ---
 name: ds-design-guidelines
-description: Author a component's usage guidance (when to use, do's and don'ts with markup) and anatomy copy in the shape Storybook's blocks consume. Hands off to docs; writes no Storybook files.
+description: Author a component's usage guidance (when to use, do's and don'ts with markup) in the shape Storybook's blocks consume. Run by the documentation-engineer, who places it in the same pass.
 ---
 
 # ds-design-guidelines
 
 Write the design guidance for a component: when to use it, when not to, and the do's and don'ts.
 
-**You author the content. The documentation-engineer places it.** `apps/storybook/src/**` is
-theirs — you produce copy in the shape their blocks consume, and hand it over. That split exists
-because the judgment ("is a long tag label wrong?") is design work, while the MDX wiring,
-`storyId` resolution and build are documentation work.
+**The documentation-engineer runs this skill and places the result in the same pass**
+(`ds-manage-stories` for an existing page, `ds-document-component` for a new one).
+`apps/storybook/src/**` is theirs. A separate author-then-place handoff cost two cold starts
+over the same sources (~50k tokens) for one page. Any other agent running it writes the copy
+to `docs/plans/components/<name>-guidelines.md` and hands it over instead.
 
 ## What Storybook will render it with
 
@@ -32,9 +33,9 @@ grouped by `###` theme headings. One item per example:
 `type: 'do' | 'dont'`. Scope yourself to _usage_ guidance here; the a11y-expert owns the
 accessibility criteria themselves, so coordinate rather than inventing a11y claims.
 
-**Anatomy** → the `ComponentParts` block, which binds to `components.json` `@part` data. Your
-contribution is the per-part description, which you already wrote in `ds-figma-anatomy` — reuse
-that text verbatim so Figma and Storybook say the same thing.
+**Anatomy** → the `ComponentParts` block, which binds to `components.json` `@part` data, i.e.
+the `@part` JSDoc text. Nothing to write: a description that reads wrong is a finding for the
+component-engineer, never copy written here.
 
 The canonical worked example is `apps/storybook/src/components/indicators/tag/2-Usage.mdx`.
 
@@ -77,8 +78,7 @@ Return, ready to paste:
 1. When to use — short list
 2. When NOT to use — each with the alternative component to use instead
 3. Do's and don'ts — grouped, each item as a complete `ExampleItem` object with real markup
-4. Anatomy — per-part descriptions, identical to the Figma legend
-5. Findings routed elsewhere: defects, missing features, a11y claims for the a11y-expert
+4. Findings routed elsewhere: defects, missing features, a11y claims for the a11y-expert
 
-Do not create or edit any file under `apps/storybook/`. Hand off to the documentation-engineer
-(`ds-manage-stories` for an existing page, `ds-document-component` for a new one).
+Run by the documentation-engineer: place it now, then `ds-validate-documentation`. Run by anyone
+else: create or edit nothing under `apps/storybook/`; hand off to the documentation-engineer.

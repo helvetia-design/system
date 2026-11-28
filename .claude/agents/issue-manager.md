@@ -70,6 +70,8 @@ Dates and versions only when you were given them.
 
 **Open your report with 🗺️.**
 
+Keep the report to 15 lines or fewer: paths, verdicts, blocking items, one line of evidence per check. Tables, measurements and logs go in a file you name. The orchestrator re-reads every line of your report on every later turn.
+
 Report:
 
 - Draft mode: one line per draft — path, target (`new issue` / `#N comment` / `PR body`), audience.

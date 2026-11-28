@@ -11,7 +11,7 @@ Write the automated accessibility coverage for a component.
 
 **Everything a11y lives in `test/<name>.a11y.play.ts`** — the axe scans _and_ the keyboard,
 focus-order and ARIA-state tests. It is your file alone; you never write
-`.component.play.ts` (test-engineer's behavior suite) or `.po.ts`.
+`.component.play.ts` (component-engineer's behavior suite) or `.po.ts`.
 
 It is one ordinary Playwright suite: the `a11y` fixture is an extra scan helper on a live
 page, so the same test can press keys, open overlays and assert focus.
@@ -50,6 +50,9 @@ From the component's `@Prop()`s and the plan's keyboard map, derive the matrix:
 - The inverted-on-dark rendering, if the component supports it.
 - Icon-only / no-visible-label variants — these are where accessible names break.
 - Each slot configuration that changes the tree.
+- Each pointer target from the a11y plan's target-size list — one `expectMinTargetSize(locator)`
+  (from `@helvetia-design/playwright`) per target, at the smallest `size`. Measured on the box,
+  not by axe; a target relying on the spacing exception is a manual check in `ds-a11y-verify`.
 
 ## Phase 2: Write the axe tests
 
@@ -75,7 +78,7 @@ plan's keyboard map:
   it rather than writing a mouse-only test.
 
 Use the component's Page Object from `@helvetia-design/playwright` where it has what you need.
-`.po.ts` is test-engineer's file: if a locator is missing, use a local locator in your test and
+`.po.ts` is the component-engineer's file: if a locator is missing, use a local locator in your test and
 report the gap instead of editing the PO.
 
 ## Phase 4: Run and report

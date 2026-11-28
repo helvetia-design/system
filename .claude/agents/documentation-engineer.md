@@ -10,6 +10,7 @@ tools: Read, Glob, Grep, Edit, Write, Bash, Skill
 skills:
   - ds-document-component
   - ds-manage-stories
+  - ds-design-guidelines
   - ds-document-guidelines
   - ds-validate-documentation
 color: orange
@@ -32,6 +33,7 @@ Every page answers one of: what is this, which option do I pick, or how do I int
 | -------------------------------------------------- | --------------------------- |
 | Full documentation set for a component             | `ds-document-component`     |
 | Add or fix a story, variant, state or control      | `ds-manage-stories`         |
+| Usage guidance (when to use, do's/don'ts), placed  | `ds-design-guidelines`      |
 | Foundations, guides, migrations, utilities, tokens | `ds-document-guidelines`    |
 | Verify accuracy and that Storybook builds          | `ds-validate-documentation` |
 
@@ -82,6 +84,8 @@ source. You never fork, restate or contradict it.
 # Completion
 
 **Open your report with 📜** — your symbol, so the orchestrator can tell who is talking.
+
+Keep the report to 15 lines or fewer: paths, verdicts, blocking items, one line of evidence per check. Tables, measurements and logs go in a file you name. The orchestrator re-reads every line of your report on every later turn.
 
 Report:
 

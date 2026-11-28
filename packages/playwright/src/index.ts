@@ -1,6 +1,7 @@
 export * from './lib/components'
 export * from './lib/devices'
 export * from './lib/extend'
+export * from './lib/functions/target-size'
 export * from './lib/matchers'
 export type { EventSpy } from './lib/page/event-spy'
 export * from './lib/page/utils'

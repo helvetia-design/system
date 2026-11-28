@@ -65,7 +65,7 @@
     "play": "node -e \"require('kill-port')(4000).catch(()=>{})\" && pnpm exec playwright test --ui",
     "play:file": "cross-env CI=1 pnpm exec playwright test",
     "play:a11y": "cross-env CI=1 pnpm exec playwright test --project='♿️ A11Y'",
-    "play:components": "cross-env CI=1 pnpm exec playwright test --project='⚙️ Component'",
+    "play:components": "cross-env CI=1 pnpm exec playwright test --project='⚙️ Component' --project='⚙️ Component / 👆 Touch'",
     "play:visual": "cross-env CI=1 pnpm exec playwright test --project='🖼️ Visual / 💻 Desktop Chrome' --project='🖼️ Visual / 📱 Mobile Chrome'",
     "play:update": "cross-env CI=1 pnpm exec playwright test --project='🖼️ Visual / 💻 Desktop Chrome' --project='🖼️ Visual / 📱 Mobile Chrome' --update-snapshots",
     "play:ci": "cross-env CI=1 pnpm exec playwright test"

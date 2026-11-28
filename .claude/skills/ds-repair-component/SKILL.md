@@ -60,3 +60,9 @@ For every finding, return:
 
 For `INVALID`, give the reason it doesn't hold. For `BLOCKED` or `REQUIRES_APPROVAL`, state
 what is needed to unblock it.
+
+**Findings from a Figma plan** (`docs/plans/components/<name>-findings.md`, Workflow D pause):
+tick each finding in that file with its status, then update the plan it names
+(`<name>-figma-plan.md`) — only the rows your fix changed: anatomy (`@part` names and text),
+token table, and drop its code-findings section. Report any row you could not update, e.g. a
+changed variant axis. Resume then skips a re-plan.

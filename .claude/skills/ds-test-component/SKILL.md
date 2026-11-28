@@ -1,16 +1,17 @@
 ---
 name: ds-test-component
-description: Generate a component's unit, interaction and visual tests plus its Page Object (not `.a11y.play.ts`). Use for new components or missing test coverage.
+description: Review the coverage of a component's TDD tests and generate its visual, SSR and integration tests (not unit, interaction, PO or a11y). Use after a component is implemented or changed.
 ---
 
 # Test Component
 
-Auto-generates a component's unit, interaction and visual test files plus its Playwright Page
-Object. It reads the component-engineer's visual fixture; it never writes one.
+Two jobs, one dispatch: **review the coverage** of the behavior tests the component-engineer
+wrote test-first, then **generate the visual and SSR tests** (plus framework integration tests
+for a form component). It reads the component-engineer's visual fixture; it never writes one.
 
 ## Quick Start
 
-Generate tests for a component:
+Generate the visual and SSR tests for a component:
 
 ```bash
 ds-test-component button
@@ -18,7 +19,7 @@ ds-test-component button
 
 Process:
 
-1. Parse component props, events, slots, parts, states
+1. Parse component props, slots and parts
 2. Read the visual fixture's `data-testid` sections
 3. Show checklists for visual props and slots
 4. Generate the test files (or fewer if not applicable)
@@ -27,19 +28,17 @@ Process:
 Output files:
 
 - `button.visual.play.ts` — Playwright visual regression tests
-- `button.component.play.ts` — Event and behavior tests
 - `button.variants.ts` — `TAG` + `HOST_VARIANTS`, derived from the fixture, shared by the
   visual and SSR tests
 - `button.ssr.play.ts` — SSR screenshots before and after hydration (only when the component has a `.host.scss`)
-- `button.po.ts` — Page object in `packages/playwright/src/lib/components/`
-- `button.util.spec.ts` — Unit tests (if `.util.ts` exists)
 
 **Not written here:**
 
-| File                                 | Owner                                         |
-| ------------------------------------ | --------------------------------------------- |
-| `button.visual.html` / `.style.html` | component-engineer (`ds-implement-component`) |
-| `button.a11y.play.ts`                | a11y-expert (`ds-a11y-test`)                  |
+| File                                                   | Owner                                         |
+| ------------------------------------------------------ | --------------------------------------------- |
+| `button.visual.html` / `.style.html`                   | component-engineer (`ds-implement-component`) |
+| `button.spec.ts`, `.component.play.ts`, `button.po.ts` | component-engineer — written test-first (TDD) |
+| `button.a11y.play.ts`                                  | a11y-expert (`ds-a11y-test`)                  |
 
 The **visual fixture is an input, not an output.** The component-engineer builds it so a human
 can review the component before any test exists; this skill reads its
@@ -80,43 +79,7 @@ have no SSR test for this reason.
 
 Loop a `VARIANTS` string array (each value is both test name and `data-testid`) — see [examples.md](examples.md#data-driven-visual-tests).
 
-### 2. Component Tests
-
-**component.play.ts** — Behavior tests:
-
-- **Event tests** — Auto-discovered from `@Event()` decorators
-  - Verify each event fires
-  - Verify event doesn't fire when expected (e.g., disabled)
-- **State tests** — Auto-discovered from boolean props
-  - Assertions for each state (disabled, loading, invalid, etc.)
-- **Slot tests** — Verify each slot renders correctly
-- **Value tests** — If component has `value` prop, test `hasValue()` assertion
-
-### 3. Page Object
-
-**button.po.ts** — Page object for testing:
-
-- **Part locators** — `readonly` property for each `@part` JSDoc tag
-  - Pattern: `native = this.el.locator('[part="native"]')`
-- **Action methods** — `click()`, `focus()`, etc.
-- **Assertion methods** — `assertToBeDisabled()`, `assertToBeLoading()`, etc.
-  - One method per boolean state prop
-  - Plus `hasValue()` if component has `value` prop`
-
-Located in: `packages/playwright/src/lib/components/button.po.ts`
-
-### 4. Unit Tests (if applicable)
-
-**button.util.spec.ts** — Tests for utility functions:
-
-- Auto-detects `button.util.ts` if it exists
-- Generates comprehensive test cases per function
-  - Happy paths (valid inputs → expected outputs)
-  - Edge cases (undefined, null, empty string, invalid values)
-  - Type variations (if function accepts multiple types)
-- Ready to run with `pnpm test`
-
-### 5. SSR Tests
+### 2. SSR Tests
 
 **variants.ts** — Holds the variant list. Playwright does not allow a test file to import another test file, so the visual and SSR tests both import this file:
 
@@ -172,21 +135,48 @@ The wrapper itself (`packages/angular/src/forms/ds-<name>.ts`) is the component-
 `ngModel` or `formControlName` does nothing, the wrapper or its value accessor is missing:
 report it, don't add it.
 
+## Coverage review
+
+Runs **first**, read-only, over the component-engineer's `.spec.ts`, `.component.play.ts` and
+Page Object. Follow the `mattpocock-skills:tdd` skill's definition of a good test. Check:
+
+1. **Every seam** in the plan's `## Test seams` section has a test (bug fix: the seam the engineer
+   named in its report).
+2. **Every reachable state** — each enum variant, disabled, invalid, loading, empty, each event
+   and its "does not fire" case — is covered.
+3. **No anti-pattern** from `tdd`: implementation-coupled (asserts internals, breaks on refactor),
+   tautological (expected value recomputed the way the code does), horizontal slicing (bulk tests
+   asserting shape, not behavior).
+4. **Mounts through the Page Object** — no direct DOM queries in core suites.
+5. **Touch** — every item in the plan's `## Touch` has a `@touch`-tagged test driven by `tap()`;
+   no behavior is reachable by hover only; every gesture has a single-pointer alternative that is
+   tested. Layout on phones and tablets (one breakpoint) is the `📱 Mobile Chrome` visual project:
+   check `visual.html` has the sections that reflow there. Emulation only — say so.
+
+No numeric coverage threshold. **Never edit those files** — each gap is a finding in your report
+(`file:line`, what is missing, which check), routed by the orchestrator to the component-engineer's
+repair round.
+
 ## Workflow
 
-### Step 1: Invoke
+### Step 1: Review coverage
+
+See "Coverage review" above. Findings, not fixes.
+
+### Step 2: Generate
 
 ```bash
 ds-test-component button
 ```
 
-### Step 2: Confirm visual props and slots
+### Step 3: Confirm visual props and slots
 
 Show the detected props and slots as checklists; the user deselects what to skip.
 
-### Step 3: Report
+### Step 4: Report
 
-List the files generated with test counts. Prompts, output and a full Button example: [examples.md](examples.md#workflow-prompts).
+Coverage findings first, then the files generated with test counts. Prompts, output and a full
+Button example: [examples.md](examples.md#workflow-prompts).
 
 ## Assertions come from the plan, not the implementation
 
@@ -208,16 +198,12 @@ with `file:line` and assert the plan's behaviour.
 
 ## Key Behaviors
 
-- ✅ **Auto-discovers events** from `@Event()` decorators
-- ✅ **Auto-discovers states** from boolean props (disabled, loading, invalid, checked, etc.)
-- ✅ **Auto-discovers slots** from `render()` JSX, auto-generates demo content
-- ✅ **Auto-discovers parts** from `@part` JSDoc tags
-- ✅ **Auto-discovers utils** — generates comprehensive tests if `.util.ts` exists
-- ✅ **Never skips visual props** that user confirms — all get sections
-- ✅ **Never skips events or states** — all get test coverage
-- ✅ **Comprehensive unit tests** — not stubs; edge cases included
+- ✅ **Reads the fixture** — one screenshot per `data-testid` section
+- ✅ **Never skips visual props** that the user confirms — all get sections
+- ✅ **Never writes behavior tests** — gaps there are review findings for the component-engineer
 
 ## Related
 
-See [REFERENCE.md](REFERENCE.md) for detailed generation rules for each test type.
+See [REFERENCE.md](REFERENCE.md) for the conventions of each test type — shared with the
+component-engineer, who writes the behavior tests from it.
 Copy-ready code for each test type and a full Button example: [examples.md](examples.md).

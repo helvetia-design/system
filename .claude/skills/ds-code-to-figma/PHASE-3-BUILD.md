@@ -416,7 +416,7 @@ Link URLs (all mechanically derivable — none may ship blank):
   `<NAME>_DOC_CONFIG.tabs[0].storyId` from
   `apps/storybook/src/components/<category>/<name>/<name>.doc-config.ts` — read it, never derive
   it from the name. If `doc-config.ts` doesn't exist, **hard stop** and ask.
-- **Toky** → `https://helvetia-toky.vercel.app?filter=<component name, lowercase>`
+- **Toky** → `https://helvetia-toky.vercel.app?filter=<token segment>` — the component's token-path segment, lowercased (e.g. `🧩 Component/ProgressBar/*` → `progressbar`)
 - **GitHub** → `https://github.com/helvetia-design/system/tree/main/packages/core/src/components/<category>/<name>`
 
 **Standing rule — applies to every write to a component's frame, not only the first build:**

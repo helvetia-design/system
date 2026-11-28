@@ -155,3 +155,6 @@ playwright.visual.config.ts
 docs/superpowers
 
 .husky/_
+
+# DS-team status board (scripts/fellowship-board)
+.ds-team

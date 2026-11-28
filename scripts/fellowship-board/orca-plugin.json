@@ -1,0 +1,33 @@
+{
+  "manifestVersion": 2,
+  "id": "fellowship-board",
+  "name": "Fellowship board",
+  "version": "0.1.0",
+  "description": "Live DS-team status board (Fellowship of the Brick) from .ds-team/board.json.",
+  "engines": {
+    "orca": ">=1.4.247"
+  },
+  "execution": "trusted-worker",
+  "pluginApi": 1,
+  "main": "src/worker.ts",
+  "contributes": {
+    "panels": [
+      {
+        "id": "fellowship-board",
+        "title": "🧱 Fellowship",
+        "icon": "blocks",
+        "entry": "src/panel.html"
+      }
+    ],
+    "events": [
+      {
+        "on": "workspace.changed"
+      }
+    ]
+  },
+  "capabilities": [
+    {
+      "kind": "workspace:read"
+    }
+  ]
+}

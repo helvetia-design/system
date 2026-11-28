@@ -1,6 +1,6 @@
 ---
 name: ds-implement-component
-description: Implement a new component from an approved architecture plan — files, API, behavior, styling, tokens, a11y. Use once the plan is approved.
+description: Implement a new component test-first (TDD) from an approved plan — files, API, behavior tests, styling, tokens, a11y. Use once the plan is approved.
 ---
 
 # ds-implement-component
@@ -65,7 +65,7 @@ cascade.
 A precedent inside this repo always beats both — if `ds-modal` already solves focus return,
 copy `ds-modal`.
 
-## Phase 3: Implement
+## Phase 3: Implement — test-first
 
 Component files live in `packages/core/src/components/<category>/<name>/` — the category
 folder comes from the taxonomy in `packages/core/CONTEXT.md`:
@@ -82,7 +82,35 @@ See [REFERENCE.md](REFERENCE.md) for a working template of each, plus the token 
 **Sub-components nest inside their owner's folder** — `tabs/tab/tab.tsx`, never `tabs/` and
 `tab/` as siblings.
 
-Then:
+### TDD cycles
+
+Call the Skill tool with `mattpocock-skills:tdd` and follow it. You own the behavior tests:
+`test/<name>.spec.ts`, `test/<name>.component.play.ts` and the Page Object
+`packages/playwright/src/lib/components/<name>.po.ts`. Conventions:
+[`ds-test-component/REFERENCE.md`](../ds-test-component/REFERENCE.md) (Component Tests, Page
+Object, Unit Tests) — read, don't run the generator.
+
+1. **Setup, not a cycle** — the empty component skeleton (tag, `render()` returning `<Host>`) and
+   a PO skeleton (class + constructor, exported like its neighbours).
+2. **Seams come from the plan's `## Test seams` section**, human-approved at the plan gate. No
+   test at a seam not listed there; a missing seam is a blocking question, not a new test.
+3. **First cycle: "renders with defaults".** Then one seam per cycle: one failing test → run it,
+   see it **red** → the minimal code to pass → run it, see it **green** → next seam. Never write
+   all tests first.
+4. Add PO locators and assertions only as a test needs them.
+5. **Assertions come from the plan and a11y plan**, never from the code you are about to write.
+6. No refactoring inside the loop — that is the review → repair step.
+
+**Touch seams** (from the plan's `## Touch`) are ordinary cycles: tag the test `@touch`
+(`test('opens on tap', { tag: '@touch' }, …)`), drive it with `tap()` from the Page Object —
+it then runs only in the `⚙️ Component / 👆 Touch` project (Pixel 5, `hasTouch`). Emulation
+only; say so in the report.
+
+Run single test files every cycle (`pnpm --filter @helvetia-design/core test <file>`, `pnpm play --
+--grep="<test name>"`) and typecheck regularly. Keep one red line and one green line of output
+per seam for the report.
+
+Through the cycles:
 
 - Implement the public API exactly as the plan specifies — `@Prop()` (all `readonly`),
   `@Event()` named `ds<Name>`, `@Method()`, with prop validation.
@@ -162,15 +190,14 @@ renders wrong, fix it now — a screenshot baseline taken over a broken variant 
 
 Everything else is owned by other agents — do not write it here:
 
-| Artifact                                                         | Owner         |
-| ---------------------------------------------------------------- | ------------- |
-| `.spec.ts`, `.component.play.ts`, `.visual.play.ts`, Page Object | test-engineer |
-| `.a11y.play.ts`                                                  | a11y-expert   |
-| `apps/storybook/src/components/<category>/<name>/**`             | documentation |
+| Artifact                                                                              | Owner         |
+| ------------------------------------------------------------------------------------- | ------------- |
+| `.variants.ts`, `.visual.play.ts`, `.ssr.play.ts`, integration tests, coverage review | test-engineer |
+| `.a11y.play.ts`                                                                       | a11y-expert   |
+| `apps/storybook/src/components/<category>/<name>/**`                                  | documentation |
 
-State in your report which test set and which stories the plan calls for, so the orchestrator
-can dispatch them — and name the `data-testid` sections you created, since the visual tests
-derive from them.
+State in your report which stories the plan calls for, so the orchestrator can dispatch them —
+and name the `data-testid` sections you created, since the visual tests derive from them.
 
 ## Phase 7: Validate
 
@@ -185,7 +212,8 @@ plan is a specification you were handed, not a suggestion.
 > anyway. It reached an axe run, a repair dispatch and a test rewrite before being fixed — one
 > grep for `no-results` against the plan would have caught it here, at zero rework cost.
 
-Then run the narrowest suite that covers your own files. Do not run other agents' suites or whole-package
+Then run your full behavior suites once (`.spec.ts`, `.component.play.ts`) — the narrowest run
+that covers your own files. Do not run other agents' suites or whole-package
 builds to "be safe" — step 7 of the workflow does the cross-cutting pass once.
 
 Fix defects within the approved scope. If a fix needs an architectural change, stop and
@@ -199,6 +227,7 @@ Return:
 - Changed and created files
 - Acceptance criteria status
 - Validation results, with evidence
+- **Per seam: test name, red output line, green output line**
 - Deviations from the plan and unresolved issues
 
 Write no changeset — the workflow's ship step writes the run's single one.

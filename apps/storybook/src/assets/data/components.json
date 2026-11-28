@@ -1462,7 +1462,7 @@
             "parameters": [
               {
                 "name": "alert",
-                "type": "{ color?: \"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"outline-base\" | \"outline-purple\" | \"outline-green\" | \"outline-yellow\" | \"outline-red\" | undefined; heading: string; message: string; duration?: number | \"infinite\" | undefined; closable: boolean; closeHandler: (id: string) => void; action?: string | undefined; actionIcon?: string | undefined; actionTarget?: \"_self\" | \"_blank\" | \"_parent\" | \"_top\" | undefined; actionHref?: string | undefined; actionHandler: (id: string) => void; }",
+                "type": "{ color?: \"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"outline-base\" | \"outline-purple\" | \"outline-green\" | \"outline-yellow\" | \"outline-red\" | undefined; heading: string; message: string; duration?: number | \"infinite\" | undefined; closable: boolean; closeHandler?: ((id: string) => void) | undefined; action?: string | undefined; actionIcon?: string | undefined; actionTarget?: \"_self\" | \"_blank\" | \"_parent\" | \"_top\" | undefined; actionHref?: string | undefined; actionHandler?: ((id: string) => void) | undefined; }",
                 "docs": ""
               }
             ],
@@ -1490,7 +1490,7 @@
           "parameters": [
             {
               "name": "alert",
-              "type": "{ color?: \"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"outline-base\" | \"outline-purple\" | \"outline-green\" | \"outline-yellow\" | \"outline-red\" | undefined; heading: string; message: string; duration?: number | \"infinite\" | undefined; closable: boolean; closeHandler: (id: string) => void; action?: string | undefined; actionIcon?: string | undefined; actionTarget?: \"_self\" | \"_blank\" | \"_parent\" | \"_top\" | undefined; actionHref?: string | undefined; actionHandler: (id: string) => void; }",
+              "type": "{ color?: \"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"outline-base\" | \"outline-purple\" | \"outline-green\" | \"outline-yellow\" | \"outline-red\" | undefined; heading: string; message: string; duration?: number | \"infinite\" | undefined; closable: boolean; closeHandler?: ((id: string) => void) | undefined; action?: string | undefined; actionIcon?: string | undefined; actionTarget?: \"_self\" | \"_blank\" | \"_parent\" | \"_top\" | undefined; actionHref?: string | undefined; actionHandler?: ((id: string) => void) | undefined; }",
               "docs": ""
             }
           ],
@@ -8555,10 +8555,10 @@
         },
         {
           "name": "brandSize",
-          "type": "\"lg\" | \"sm\" | undefined",
+          "type": "\"lg\" | undefined",
           "complexType": {
             "original": "ButtonBrandSize",
-            "resolved": "\"lg\" | \"sm\" | undefined",
+            "resolved": "\"lg\" | undefined",
             "references": {
               "ButtonBrandSize": {
                 "location": "import",
@@ -8571,15 +8571,11 @@
           "mutable": false,
           "attr": "brand-size",
           "reflectToAttr": false,
-          "docs": "Size of the brand icon.",
+          "docs": "Size of the brand icon. Unset renders the base size.",
           "docsTags": [],
           "values": [
             {
               "value": "lg",
-              "type": "string"
-            },
-            {
-              "value": "sm",
               "type": "string"
             },
             {
@@ -8589,7 +8585,10 @@
           "optional": false,
           "required": false,
           "getter": false,
-          "setter": false
+          "setter": false,
+          "oneOfValues": [
+            "lg"
+          ]
         },
         {
           "name": "color",
@@ -9133,7 +9132,7 @@
           "mutable": false,
           "attr": "size",
           "reflectToAttr": false,
-          "docs": "Size of the button",
+          "docs": "Size of the button. Ignored when `brandIcon` is set — use `brandSize` instead.",
           "docsTags": [],
           "values": [
             {
@@ -9349,7 +9348,48 @@
           "setter": false
         }
       ],
-      "methods": [],
+      "methods": [
+        {
+          "name": "configChanged",
+          "returns": {
+            "type": "Promise<void>",
+            "docs": ""
+          },
+          "complexType": {
+            "signature": "(state: DsConfigState) => Promise<void>",
+            "parameters": [
+              {
+                "name": "state",
+                "type": "DsConfigState",
+                "docs": ""
+              }
+            ],
+            "references": {
+              "Promise": {
+                "location": "global",
+                "id": "global::Promise"
+              },
+              "DsConfigState": {
+                "location": "import",
+                "path": "@global",
+                "id": "src/global/index.ts::DsConfigState",
+                "referenceLocation": "DsConfigState"
+              }
+            },
+            "return": "Promise<void>"
+          },
+          "signature": "configChanged(state: DsConfigState) => Promise<void>",
+          "parameters": [
+            {
+              "name": "state",
+              "type": "DsConfigState",
+              "docs": ""
+            }
+          ],
+          "docs": "",
+          "docsTags": []
+        }
+      ],
       "events": [
         {
           "event": "dsBlur",
@@ -18662,6 +18702,32 @@
       "dependencyGraph": {},
       "props": [
         {
+          "name": "alt",
+          "type": "string | undefined",
+          "complexType": {
+            "original": "string",
+            "resolved": "string | undefined",
+            "references": {}
+          },
+          "mutable": false,
+          "attr": "alt",
+          "reflectToAttr": false,
+          "docs": "Alternative text of the image in image-variant slides. Leave empty for decorative images.",
+          "docsTags": [],
+          "values": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "undefined"
+            }
+          ],
+          "optional": true,
+          "required": false,
+          "getter": false,
+          "setter": false
+        },
+        {
           "name": "name",
           "type": "string",
           "complexType": {
@@ -18785,7 +18851,7 @@
           },
           "cancelable": true,
           "composed": true,
-          "docs": "Emitted when the user clicks this item (product variant).",
+          "docs": "Emitted when the user clicks or presses Enter or Space on a tile item.",
           "docsTags": []
         }
       ],
@@ -25461,6 +25527,16 @@
             "docs": ""
           },
           {
+            "name": "assertIsStacked",
+            "params": [],
+            "docs": ""
+          },
+          {
+            "name": "assertIsNotStacked",
+            "params": [],
+            "docs": ""
+          },
+          {
             "name": "assertIsEditable",
             "params": [],
             "docs": ""
@@ -30398,7 +30474,7 @@
               "docs": ""
             }
           ],
-          "docs": "",
+          "docs": "LISTENERS\n------------------------------------------------------",
           "docsTags": []
         },
         {
@@ -30816,14 +30892,7 @@
         }
       ],
       "customStates": [],
-      "listeners": [
-        {
-          "event": "reset",
-          "target": "document",
-          "capture": true,
-          "passive": false
-        }
-      ],
+      "listeners": [],
       "tokens": [
         {
           "name": "🧩 Component / FileUpload / Label / Typo",
@@ -48036,6 +48105,66 @@
           "setter": false
         },
         {
+          "name": "panelRole",
+          "type": "\"dialog\" | \"grid\" | \"listbox\" | \"menu\" | \"tree\"",
+          "complexType": {
+            "original": "PopupRole",
+            "resolved": "\"dialog\" | \"grid\" | \"listbox\" | \"menu\" | \"tree\"",
+            "references": {
+              "PopupRole": {
+                "location": "import",
+                "path": "./popup.interfaces",
+                "id": "src/components/overlays/popup/popup.interfaces.ts::PopupRole",
+                "referenceLocation": "PopupRole"
+              }
+            }
+          },
+          "mutable": false,
+          "attr": "panel-role",
+          "reflectToAttr": false,
+          "docs": "ARIA role applied to the panel and the aria-haspopup value set on the trigger.\nUse \"dialog\" for rich content, \"listbox\" or \"menu\" for interactive option lists.",
+          "docsTags": [
+            {
+              "name": "default",
+              "text": "'dialog'"
+            }
+          ],
+          "default": "'dialog'",
+          "values": [
+            {
+              "value": "dialog",
+              "type": "string"
+            },
+            {
+              "value": "grid",
+              "type": "string"
+            },
+            {
+              "value": "listbox",
+              "type": "string"
+            },
+            {
+              "value": "menu",
+              "type": "string"
+            },
+            {
+              "value": "tree",
+              "type": "string"
+            }
+          ],
+          "optional": false,
+          "required": false,
+          "getter": false,
+          "setter": false,
+          "oneOfValues": [
+            "dialog",
+            "listbox",
+            "menu",
+            "tree",
+            "grid"
+          ]
+        },
+        {
           "name": "placement",
           "type": "\"bottom\" | \"bottom-end\" | \"bottom-start\" | \"left\" | \"left-end\" | \"left-start\" | \"right\" | \"right-end\" | \"right-start\" | \"top\" | \"top-end\" | \"top-start\"",
           "complexType": {
@@ -48128,66 +48257,6 @@
             "left",
             "left-start",
             "left-end"
-          ]
-        },
-        {
-          "name": "role",
-          "type": "\"dialog\" | \"grid\" | \"listbox\" | \"menu\" | \"tree\"",
-          "complexType": {
-            "original": "PopupRole",
-            "resolved": "\"dialog\" | \"grid\" | \"listbox\" | \"menu\" | \"tree\"",
-            "references": {
-              "PopupRole": {
-                "location": "import",
-                "path": "./popup.interfaces",
-                "id": "src/components/overlays/popup/popup.interfaces.ts::PopupRole",
-                "referenceLocation": "PopupRole"
-              }
-            }
-          },
-          "mutable": false,
-          "attr": "role",
-          "reflectToAttr": false,
-          "docs": "ARIA role applied to the panel.\nControls focus-trap behaviour and the aria-haspopup value set on the trigger.\nUse \"dialog\" for rich content, \"listbox\" or \"menu\" for interactive option lists.",
-          "docsTags": [
-            {
-              "name": "default",
-              "text": "'dialog'"
-            }
-          ],
-          "default": "'dialog'",
-          "values": [
-            {
-              "value": "dialog",
-              "type": "string"
-            },
-            {
-              "value": "grid",
-              "type": "string"
-            },
-            {
-              "value": "listbox",
-              "type": "string"
-            },
-            {
-              "value": "menu",
-              "type": "string"
-            },
-            {
-              "value": "tree",
-              "type": "string"
-            }
-          ],
-          "optional": false,
-          "required": false,
-          "getter": false,
-          "setter": false,
-          "oneOfValues": [
-            "dialog",
-            "listbox",
-            "menu",
-            "tree",
-            "grid"
           ]
         },
         {
@@ -48819,14 +48888,10 @@
     {
       "fileName": "progress-bar.tsx",
       "tag": "ds-progress-bar",
-      "overview": "Progress bar displays a visual indicator of progress or completion for a task or operation with percentage and label.",
+      "overview": "Progress bar displays a track with a filled line that shows the completion of a task as a percentage value.",
       "usage": {},
-      "docs": "Progress bar displays a visual indicator of progress or completion for a task or operation with percentage and label.",
+      "docs": "Progress bar displays a track with a filled line that shows the completion of a task as a percentage value.",
       "docsTags": [
-        {
-          "name": "slot",
-          "text": "- Optional label or caption text."
-        },
         {
           "name": "part",
           "text": "line - The filled progress indicator element."
@@ -48992,12 +49057,7 @@
           "docs": "Color of the progress indicator fill."
         }
       ],
-      "slots": [
-        {
-          "name": "",
-          "docs": "Optional label or caption text."
-        }
-      ],
+      "slots": [],
       "parts": [
         {
           "name": "line",
@@ -49474,6 +49534,56 @@
           ]
         }
       ],
+      "pageObject": {
+        "class": "DsProgressBar",
+        "import": "@helvetia-design/playwright",
+        "locators": [
+          {
+            "name": "line",
+            "type": "Locator",
+            "docs": ""
+          }
+        ],
+        "actions": [
+          {
+            "name": "setValue",
+            "params": [
+              {
+                "name": "value",
+                "type": "number"
+              }
+            ],
+            "docs": ""
+          },
+          {
+            "name": "getWidths",
+            "params": [],
+            "docs": "Rendered line and track (host) widths in px"
+          }
+        ],
+        "assertions": [
+          {
+            "name": "assertLineWidth",
+            "params": [
+              {
+                "name": "percent",
+                "type": "number"
+              }
+            ],
+            "docs": ""
+          },
+          {
+            "name": "assertValueNow",
+            "params": [
+              {
+                "name": "value",
+                "type": "number"
+              }
+            ],
+            "docs": ""
+          }
+        ]
+      },
       "type": "web-component"
     },
     {
@@ -52970,6 +53080,11 @@
           "passive": false
         },
         {
+          "event": "focusin",
+          "capture": false,
+          "passive": false
+        },
+        {
           "event": "reset",
           "target": "document",
           "capture": true,
@@ -55081,6 +55196,11 @@
           "event": "focusout",
           "capture": false,
           "passive": false
+        },
+        {
+          "event": "focusin",
+          "capture": false,
+          "passive": false
         }
       ],
       "tokens": [
@@ -56987,6 +57107,16 @@
           "event": "click",
           "target": "document",
           "capture": true,
+          "passive": false
+        },
+        {
+          "event": "focusin",
+          "capture": false,
+          "passive": false
+        },
+        {
+          "event": "focusout",
+          "capture": false,
           "passive": false
         },
         {
@@ -59639,12 +59769,8 @@
       "docs": "Shape renders decorative geometric shapes with customizable color, size, rotation, and variation.",
       "docsTags": [
         {
-          "name": "slot",
-          "text": "- Optional overlay content or labels."
-        },
-        {
           "name": "part",
-          "text": "shape - The SVG shape element container."
+          "text": "shape - The SVG that draws the active variation, filling the host square. Always present."
         }
       ],
       "encapsulation": "shadow",
@@ -59847,26 +59973,248 @@
         {
           "name": "--shape-rotation",
           "docs": "Rotation angle of the shape."
-        },
-        {
-          "name": "--shape-opacity",
-          "docs": "Opacity of the shape."
         }
       ],
-      "slots": [
-        {
-          "name": "",
-          "docs": "Optional overlay content or labels."
-        }
-      ],
+      "slots": [],
       "parts": [
         {
           "name": "shape",
-          "docs": "The SVG shape element container."
+          "docs": "The SVG that draws the active variation, filling the host square. Always present."
         }
       ],
       "customStates": [],
       "listeners": [],
+      "tokens": [
+        {
+          "name": "🧩 Component / Shape / Color / Purple",
+          "cssVarName": "--ds-shape-color-purple",
+          "value": "{🔗 Alias.🎨 Surface.PurpleDark}",
+          "nativeValue": "#6C2273",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-purple-6",
+              "figmaName": "Global / Color / Purple / 6"
+            },
+            {
+              "cssVar": "--ds-surface-purpledark",
+              "figmaName": "Alias / Surface / PurpleDark"
+            },
+            {
+              "cssVar": "--ds-shape-color-purple",
+              "figmaName": "Component / Shape / Color / Purple"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Color",
+            "Purple"
+          ]
+        },
+        {
+          "name": "🧩 Component / Shape / Color / PurpleLight",
+          "cssVarName": "--ds-shape-color-purplelight",
+          "value": "{🔗 Alias.🎨 Surface.Purple}",
+          "nativeValue": "#B8B2FF",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-purple-3",
+              "figmaName": "Global / Color / Purple / 3"
+            },
+            {
+              "cssVar": "--ds-surface-purple",
+              "figmaName": "Alias / Surface / Purple"
+            },
+            {
+              "cssVar": "--ds-shape-color-purplelight",
+              "figmaName": "Component / Shape / Color / PurpleLight"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Color",
+            "PurpleLight"
+          ]
+        },
+        {
+          "name": "🧩 Component / Shape / Color / Green",
+          "cssVarName": "--ds-shape-color-green",
+          "value": "{🔗 Alias.🎨 Surface.GreenDark}",
+          "nativeValue": "#1B5951",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-green-6",
+              "figmaName": "Global / Color / Green / 6"
+            },
+            {
+              "cssVar": "--ds-surface-greendark",
+              "figmaName": "Alias / Surface / GreenDark"
+            },
+            {
+              "cssVar": "--ds-shape-color-green",
+              "figmaName": "Component / Shape / Color / Green"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Color",
+            "Green"
+          ]
+        },
+        {
+          "name": "🧩 Component / Shape / Color / GreenLight",
+          "cssVarName": "--ds-shape-color-greenlight",
+          "value": "{🔗 Alias.🎨 Surface.Green}",
+          "nativeValue": "#94E3D4",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-green-3",
+              "figmaName": "Global / Color / Green / 3"
+            },
+            {
+              "cssVar": "--ds-surface-green",
+              "figmaName": "Alias / Surface / Green"
+            },
+            {
+              "cssVar": "--ds-shape-color-greenlight",
+              "figmaName": "Component / Shape / Color / GreenLight"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Color",
+            "GreenLight"
+          ]
+        },
+        {
+          "name": "🧩 Component / Shape / Color / Red",
+          "cssVarName": "--ds-shape-color-red",
+          "value": "{🔗 Alias.🎨 Surface.RedDark}",
+          "nativeValue": "#99172D",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-red-6",
+              "figmaName": "Global / Color / Red / 6"
+            },
+            {
+              "cssVar": "--ds-surface-reddark",
+              "figmaName": "Alias / Surface / RedDark"
+            },
+            {
+              "cssVar": "--ds-shape-color-red",
+              "figmaName": "Component / Shape / Color / Red"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Color",
+            "Red"
+          ]
+        },
+        {
+          "name": "🧩 Component / Shape / Color / RedLight",
+          "cssVarName": "--ds-shape-color-redlight",
+          "value": "{🔗 Alias.🎨 Surface.Red}",
+          "nativeValue": "#FFACA6",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-red-3",
+              "figmaName": "Global / Color / Red / 3"
+            },
+            {
+              "cssVar": "--ds-surface-red",
+              "figmaName": "Alias / Surface / Red"
+            },
+            {
+              "cssVar": "--ds-shape-color-redlight",
+              "figmaName": "Component / Shape / Color / RedLight"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Color",
+            "RedLight"
+          ]
+        },
+        {
+          "name": "🧩 Component / Shape / Color / Yellow",
+          "cssVarName": "--ds-shape-color-yellow",
+          "value": "{🔗 Alias.🎨 Surface.YellowDark}",
+          "nativeValue": "#B24A00",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-yellow-6",
+              "figmaName": "Global / Color / Yellow / 6"
+            },
+            {
+              "cssVar": "--ds-surface-yellowdark",
+              "figmaName": "Alias / Surface / YellowDark"
+            },
+            {
+              "cssVar": "--ds-shape-color-yellow",
+              "figmaName": "Component / Shape / Color / Yellow"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Color",
+            "Yellow"
+          ]
+        },
+        {
+          "name": "🧩 Component / Shape / Color / YellowLight",
+          "cssVarName": "--ds-shape-color-yellowlight",
+          "value": "{🔗 Alias.🎨 Surface.Yellow}",
+          "nativeValue": "#FAE052",
+          "inheritance": [
+            {
+              "cssVar": "--ds-color-yellow-3",
+              "figmaName": "Global / Color / Yellow / 3"
+            },
+            {
+              "cssVar": "--ds-surface-yellow",
+              "figmaName": "Alias / Surface / Yellow"
+            },
+            {
+              "cssVar": "--ds-shape-color-yellowlight",
+              "figmaName": "Component / Shape / Color / YellowLight"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Color",
+            "YellowLight"
+          ]
+        },
+        {
+          "name": "🧩 Component / Shape / Size",
+          "cssVarName": "--ds-shape-size",
+          "value": "{🌐 Global.📏 Dimension.Size.66}",
+          "nativeValue": "{\"value\":66,\"unit\":\"px\"}",
+          "inheritance": [
+            {
+              "cssVar": "--ds-dimension-size-66",
+              "figmaName": "Global / Dimension / Size / 66"
+            },
+            {
+              "cssVar": "--ds-shape-size",
+              "figmaName": "Component / Shape / Size"
+            }
+          ],
+          "path": [
+            "🧩 Component",
+            "Shape",
+            "Size"
+          ]
+        }
+      ],
       "pageObject": {
         "class": "DsShape",
         "import": "@helvetia-design/playwright",
@@ -79201,7 +79549,14 @@
         }
       ],
       "customStates": [],
-      "listeners": [],
+      "listeners": [
+        {
+          "event": "keydown",
+          "target": "document",
+          "capture": false,
+          "passive": false
+        }
+      ],
       "tokens": [
         {
           "name": "🧩 Component / Tooltip / Radius",
@@ -79520,7 +79875,7 @@
       "path": "src/components/actions/button/button.interfaces.ts"
     },
     "src/components/actions/button/button.interfaces.ts::ButtonBrandSize": {
-      "declaration": "export type IconSize = (typeof BRAND_ICON_SIZES)[number] | undefined",
+      "declaration": "export type ButtonBrandSize = (typeof BUTTON_BRAND_SIZES)[number] | undefined",
       "docstring": "",
       "path": "src/components/actions/button/button.interfaces.ts"
     },
@@ -79554,6 +79909,11 @@
       "docstring": "",
       "path": "src/components/actions/button/button.interfaces.ts"
     },
+    "src/global/index.ts::DsConfigState": {
+      "declaration": "export interface DsConfigState {\n  brand: DsBrand\n  region: DsRegion\n  language: DsLanguage\n  allowedLanguages: DsLanguage[]\n  icons: DsIcons\n  fallbackLanguage: DsLanguage\n  logger: DsLogger\n  animated: boolean\n  legalLinks: DsLegalLinks\n  legalText: DsLegalText\n  socialLinks: DsSocialLinks\n  _generateHydrateForCustomElementsOutput: boolean\n}",
+      "docstring": "",
+      "path": "src/global/index.ts"
+    },
     "src/components/actions/button/button.interfaces.ts::ButtonGroupAlignment": {
       "declaration": "export type ButtonGroupAlignment = (typeof BUTTON_GROUP_ALIGNMENTS)[number] | undefined",
       "docstring": "",
@@ -79573,11 +79933,6 @@
       "declaration": "\"sm\" | \"lg\"",
       "docstring": "",
       "path": "src/components/actions/close/close.interfaces.ts"
-    },
-    "src/global/index.ts::DsConfigState": {
-      "declaration": "export interface DsConfigState {\n  brand: DsBrand\n  region: DsRegion\n  language: DsLanguage\n  allowedLanguages: DsLanguage[]\n  icons: DsIcons\n  fallbackLanguage: DsLanguage\n  logger: DsLogger\n  animated: boolean\n  legalLinks: DsLegalLinks\n  legalText: DsLegalText\n  socialLinks: DsSocialLinks\n  _generateHydrateForCustomElementsOutput: boolean\n}",
-      "docstring": "",
-      "path": "src/global/index.ts"
     },
     "src/components/forms/checkbox/checkbox.interfaces.ts::CheckboxLabelPosition": {
       "declaration": "\"left\" | \"right\" | \"top\"",
@@ -80070,7 +80425,7 @@
       "path": "src/components/indicators/spinner/spinner.interfaces.ts"
     },
     "src/components/indicators/tag/tag.interfaces.ts::TagColor": {
-      "declaration": "\"primary\" | \"success\" | \"warning\" | \"danger\" | \"purple\" | \"red\" | \"yellow\" | \"green\" | \"info\" | \"disabled\" | \"red-dark\" | \"yellow-dark\" | \"purple-dark\" | \"green-dark\" | \"green-light\" | \"red-light\" | \"purple-light\" | \"yellow-light\"",
+      "declaration": "\"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"disabled\" | \"purple\" | \"red\" | \"yellow\" | \"green\" | \"red-dark\" | \"yellow-dark\" | \"purple-dark\" | \"green-dark\" | \"green-light\" | \"red-light\" | \"purple-light\" | \"yellow-light\"",
       "docstring": "",
       "path": "src/components/indicators/tag/tag.interfaces.ts"
     },
@@ -80195,7 +80550,7 @@
       "path": "src/components/overlays/alert/alert-container.interfaces.tsx"
     },
     "src/components/overlays/alert/alert-container.interfaces.tsx::Alert": {
-      "declaration": "{\n  color?: AlertColors\n  heading: string\n  message: string\n  duration?: number | 'infinite'\n  closable: boolean\n  closeHandler: (id: string) => void\n  action?: string\n  actionIcon?: string\n  actionTarget?: ButtonTarget\n  actionHref?: string\n  actionHandler: (id: string) => void\n}",
+      "declaration": "{\n  color?: AlertColors\n  heading: string\n  message: string\n  duration?: number | 'infinite'\n  closable: boolean\n  closeHandler?: (id: string) => void\n  action?: string\n  actionIcon?: string\n  actionTarget?: ButtonTarget\n  actionHref?: string\n  actionHandler?: (id: string) => void\n}",
       "docstring": "",
       "path": "src/components/overlays/alert/alert-container.interfaces.tsx"
     },

@@ -11,7 +11,8 @@ PR / run URL
        known-broken env?  → packages/playwright/CONTEXT.md, packages/core/CONTEXT.md
        each failure → branch-caused | pre-existing / unrelated | uncertain
   →  ⛔ GATE  (the classification table; only if any uncertain or unrelated)
-  →  component-engineer fixes branch-caused  ∥  test-engineer for test-only breakage
+  →  component-engineer fixes branch-caused (incl. .spec / .component.play / PO)
+       ∥  test-engineer for visual / SSR / variants / integration-test breakage
   →  ds-validate-component   (the failing suites, narrowly)
   →  visual diffs?  → ⛔ human approves → ds-update-screenshots (user-invoked)
 ```

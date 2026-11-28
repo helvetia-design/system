@@ -1,6 +1,6 @@
 ---
 name: ds-modify-component
-description: Fix a bug in or extend a shipped component, preserving architecture and backward compatibility — smallest change plus regression coverage. Use for bug fixes and additive changes.
+description: Fix a bug in or extend a shipped component, preserving architecture and backward compatibility — smallest change, test-first (TDD). Use for bug fixes and additive changes.
 ---
 
 # ds-modify-component
@@ -27,9 +27,10 @@ Change an existing component without breaking its consumers.
   `test('should not fire dsClick when disabled')` is the shape for an
   "interaction should not happen" bug.
 
-  Writing that one test is **yours**, even though test-engineer owns these files — a fix
-  without a test that pins it is how the same bug ships twice. Escalate to test-engineer only
-  when the coverage is a new suite, a new file, or a broad variant matrix.
+  These files and the Page Object are **yours** — a fix without a test that pins it is how the
+  same bug ships twice. Name the seam the test sits at in your report (one line: what it
+  catches, what it misses); the human confirms it at review. Hand to test-engineer only a new
+  `visual.html` section (it regenerates `.variants.ts`) or integration tests.
 
   Run it and watch it fail before you change any source. A test that passes before the fix
   is testing the wrong thing.
@@ -60,7 +61,20 @@ Evaluate the impact on:
 **Escalate breaking changes and architectural decisions** rather than deciding them here. A
 breaking change needs an approved plan (`ds-plan-component`) and a deprecation path.
 
-## Phase 3: Implement
+## Phase 3: Implement — test-first
+
+Call the Skill tool with `mattpocock-skills:tdd` and follow it. **Bug fix:** one cycle — the
+Phase 1 test goes green. **Feature / deprecation:** one cycle per seam in the plan's
+`## Test seams` section — failing test → run, see red → minimal code → run, see green → next
+seam. Never all tests first; no test at an unlisted seam; no refactoring inside the loop.
+Conventions: [`ds-test-component/REFERENCE.md`](../ds-test-component/REFERENCE.md); add PO
+locators only as a test needs them.
+
+**Touch seams** (from the plan's `## Touch`) are ordinary cycles: tag the test `@touch`
+(`test('opens on tap', { tag: '@touch' }, …)`), drive it with `tap()` from the Page Object —
+it then runs only in the `⚙️ Component / 👆 Touch` project (Pixel 5, `hasTouch`). Emulation
+only; say so in the report. A change to tap, hover or gesture behavior
+always gets a touch seam.
 
 - Make the smallest sufficient change.
 - Reuse the patterns the component already uses — match its style even where you'd differ.
@@ -69,7 +83,7 @@ breaking change needs an approved plan (`ds-plan-component`) and a deprecation p
   nothing, and report it as a blocking handoff.
 - Preserve backward compatibility; deprecate before removing
   (`docs/ARCHITECTURE.md#deprecation-policy`).
-- The Phase 1 reproduction test is the regression coverage — don't add a second one.
+- The Phase 1 reproduction test is a bug fix's regression coverage — don't add a second one.
 - No unrelated refactoring. Remove only the imports and variables _your_ change orphaned.
 
 ## Phase 4: Validate
@@ -86,6 +100,11 @@ Report:
 - Implementation changes
 - Compatibility impact — explicitly state whether anything is breaking
 - Validation results, with evidence
+- **Per seam: test name, red output line, green output line**
 - Remaining risks
 
 Write no changeset here — the workflow's changeset step writes it (patch for a fix, minor for an addition).
+
+**Started from a Figma-plan findings file** (`docs/plans/components/<name>-findings.md`)? Tick
+each finding there and update the rows your fix changed in the plan it names — see
+`ds-repair-component` → Findings from a Figma plan. `/figma` resumes without a re-plan.

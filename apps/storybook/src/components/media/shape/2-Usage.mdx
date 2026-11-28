@@ -19,20 +19,110 @@ import { SHAPE_DOC_CONFIG, getShapeTabs } from './shape.doc-config'
 
 ## When to Use
 
-- Add decorative visual accents to layouts
-- Create abstract geometric designs
-- Add subtle background shapes to sections
-- Enhance visual hierarchy without content
-- Provide design system branded shapes
-- Create visual separation between sections
+- Add a branded, decorative accent to a teaser, hero or section
+- Give a page visual rhythm without adding content
 
 ## When NOT to Use
 
-- For meaningful content — use actual content elements
-- For interactive elements — shapes are purely decorative
-- For SEO-critical content — shapes don't contribute to page meaning
-- For functional icons — use the icon component
-- For complex illustrations — use custom SVG or images
-- For accessible diagrams — shapes may not convey meaning to screen readers
+- The graphic carries meaning (status, step, category) — use `ds-badge`, `ds-tag` or `ds-steps`
+- You need a functional or pictographic symbol — use `ds-icon` or `ds-brand-icon`
+- You need a photo or illustration — use `ds-picture`
+- You need the company mark — use `ds-logo`
+
+## Do's and Don'ts
+
+### Decoration only
+
+The shape is hidden from assistive tech and has no slot. Never let it carry information the content does not also state.
+
+<UsageExamples
+  items={[
+    {
+      type: 'correct',
+      title: 'Correct: Status stated in text',
+      content: (
+        <div className="ds-stack as-row has-space-xs">
+          <ds-text>Payment</ds-text>
+          <ds-badge color="danger">Failed</ds-badge>
+        </div>
+      ),
+      description: 'Everyone gets the status, including screen-reader users',
+    },
+    {
+      type: 'incorrect',
+      title: 'Incorrect: A red shape as a status signal',
+      content: (
+        <div className="ds-stack as-row has-space-xs">
+          <ds-text>Payment</ds-text>
+          <ds-shape color="red"></ds-shape>
+        </div>
+      ),
+      description: 'The shape is aria-hidden, so the status is lost; sighted users must guess what red means',
+    },
+  ]}
+/>
+
+### Color
+
+Use one color family per composition: the base color with its `-light` partner. Mixed families look like a legend nobody explains.
+
+<UsageExamples
+  items={[
+    {
+      type: 'correct',
+      title: 'Correct: One color family',
+      content: (
+        <div className="ds-stack as-row has-space-xs">
+          <ds-shape color="purple" variation="1"></ds-shape>
+          <ds-shape color="purple-light" variation="2" rotation="90"></ds-shape>
+        </div>
+      ),
+      description: 'Variation and rotation add interest; color stays calm',
+    },
+    {
+      type: 'incorrect',
+      title: 'Incorrect: A different color per shape',
+      content: (
+        <div className="ds-stack as-row has-space-xs">
+          <ds-shape color="green"></ds-shape>
+          <ds-shape color="red"></ds-shape>
+          <ds-shape color="yellow"></ds-shape>
+        </div>
+      ),
+      description: 'Colors suggest categories or states that do not exist',
+    },
+  ]}
+/>
+
+### Placement
+
+Place shapes beside content, not behind it. Text over a filled shape loses contrast where the two overlap.
+
+<UsageExamples
+  items={[
+    {
+      type: 'correct',
+      title: 'Correct: Shape beside the heading',
+      content: (
+        <div className="ds-stack as-row has-space-xs">
+          <ds-shape color="yellow" variation="3"></ds-shape>
+          <ds-heading level="h3">Insure your home</ds-heading>
+        </div>
+      ),
+      description: 'The accent frames the content without touching it',
+    },
+    {
+      type: 'incorrect',
+      title: 'Incorrect: Text on top of the shape',
+      content: (
+        <div style={{ position: 'relative' }}>
+          <ds-shape color="purple" style={{ position: 'absolute', inset: '0 auto auto 0' }}></ds-shape>
+          <ds-heading level="h3" style={{ position: 'relative' }}>Insure your home</ds-heading>
+        </div>
+      ),
+      description: 'Dark text on the dark purple fill becomes hard to read',
+    },
+  ]}
+/>
 
 <Footer />

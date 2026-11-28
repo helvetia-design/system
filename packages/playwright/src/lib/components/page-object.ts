@@ -8,6 +8,11 @@ export abstract class PageObject {
     this.el = el
   }
 
+  /** Touch tap — needs a context with `hasTouch` (the `@touch` Playwright project). */
+  async tap() {
+    await this.el.tap()
+  }
+
   async assertToBeVisible() {
     await expect(this.el).toBeVisible()
   }

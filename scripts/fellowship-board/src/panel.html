@@ -1,0 +1,676 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        --ok: #22c55e;
+        --work: #8b5cf6;
+        --warn: #f59e0b;
+        --wait: #38bdf8;
+        --bad: var(--orca-destructive, #ef4444);
+        --fg: var(--orca-foreground);
+        --muted: var(--orca-muted-foreground);
+        --line: var(--orca-border);
+        --card: var(--orca-card);
+        --r: var(--orca-radius, 10px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 16px 14px 32px;
+        font: 13px/1.45 var(--orca-font-sans, system-ui, sans-serif);
+        color: var(--fg);
+        background: var(--orca-background);
+      }
+
+      /* ── Header ─────────────────────────────── */
+      .eyebrow {
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 8px 0 6px;
+      }
+      .letter {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 19px;
+        color: #fff;
+        background: linear-gradient(135deg, var(--work), #ec4899);
+        box-shadow: 0 4px 14px color-mix(in srgb, var(--work) 35%, transparent);
+      }
+      .letter {
+        position: relative;
+      }
+      .letter .badge {
+        position: absolute;
+        right: -5px;
+        bottom: -5px;
+        min-width: 15px;
+        height: 15px;
+        padding: 0 3px;
+        border-radius: 999px;
+        font: 700 9px/15px var(--orca-font-sans, system-ui, sans-serif);
+        text-align: center;
+        color: var(--fg);
+        background: var(--orca-background);
+        border: 1px solid var(--line);
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+      }
+      .component {
+        display: inline-block;
+        padding: 3px 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font: 12px var(--orca-font-mono, ui-monospace, monospace);
+        background: var(--card);
+      }
+      .progress {
+        margin: 16px 0 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--fg) 10%, transparent);
+        overflow: hidden;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--ok), #4ade80);
+        transition: width 0.5s ease;
+      }
+      .meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11.5px;
+        color: var(--muted);
+      }
+
+      /* ── Flow ───────────────────────────────── */
+      ol.flow {
+        list-style: none;
+        margin: 20px 0 0;
+        padding: 0;
+      }
+      .step {
+        display: grid;
+        grid-template-columns: 26px 1fr;
+        column-gap: 10px;
+      }
+      .rail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .node {
+        display: grid;
+        place-items: center;
+        flex: none;
+        width: 26px;
+        height: 26px;
+        margin-top: 10px;
+        border-radius: 50%;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        background: var(--orca-background);
+        border: 2px solid color-mix(in srgb, var(--fg) 18%, transparent);
+        position: relative;
+      }
+      .wire {
+        flex: 1;
+        width: 2px;
+        margin: 4px 0 -10px;
+        background: color-mix(in srgb, var(--fg) 12%, transparent);
+      }
+      .step:last-child .wire {
+        display: none;
+      }
+      .step[data-status='done'] .node {
+        color: #fff;
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .step[data-status='done'] .wire {
+        background: var(--ok);
+      }
+      .step[data-status='working'] .node {
+        color: var(--work);
+        border-color: var(--work);
+      }
+      .step[data-status='working'] .node::after {
+        content: '';
+        position: absolute;
+        inset: -5px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-top-color: var(--work);
+        animation: spin 1s linear infinite;
+      }
+      .step[data-status='human'] .node {
+        color: var(--warn);
+        border-color: var(--warn);
+        animation: ping 1.6s ease-out infinite;
+      }
+      .step[data-status='blocked'] .node {
+        color: #fff;
+        background: var(--bad);
+        border-color: var(--bad);
+      }
+      .items {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 6px 0 14px;
+        min-width: 0;
+      }
+      .items.parallel {
+        padding-left: 10px;
+        border-left: 2px dashed color-mix(in srgb, var(--fg) 15%, transparent);
+        margin-top: 4px;
+        margin-bottom: 10px;
+        padding-bottom: 4px;
+      }
+      .parallel-tag {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      /* ── Card ───────────────────────────────── */
+      .card {
+        --c: var(--muted);
+        display: grid;
+        grid-template-columns: 32px 1fr auto;
+        align-items: center;
+        gap: 2px 10px;
+        padding: 9px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: var(--card);
+        transition:
+          border-color 0.3s,
+          background 0.3s,
+          box-shadow 0.3s,
+          opacity 0.3s;
+      }
+      .avatar {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        font-size: 16px;
+        background: color-mix(in srgb, var(--c) 16%, transparent);
+        grid-row: span 2;
+      }
+      .action {
+        font-weight: 600;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .action::first-letter {
+        text-transform: uppercase;
+      }
+      .who {
+        font-size: 11.5px;
+        color: var(--muted);
+        grid-column: 2 / 4;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 10.5px;
+        font-weight: 600;
+        white-space: nowrap;
+        color: color-mix(in srgb, var(--c) 70%, var(--fg));
+        background: color-mix(in srgb, var(--c) 16%, transparent);
+      }
+      .chip::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--c);
+      }
+      .info {
+        grid-column: 1 / 4;
+        margin-top: 6px;
+        padding: 6px 8px;
+        border-radius: calc(var(--r) - 4px);
+        font-size: 11.5px;
+        color: var(--muted);
+        background: color-mix(in srgb, var(--fg) 5%, transparent);
+        overflow-wrap: anywhere;
+      }
+      .card[data-status='todo'] {
+        opacity: 0.55;
+      }
+      .card[data-status='skipped'] {
+        opacity: 0.4;
+        border-style: dashed;
+      }
+      .card[data-status='skipped'] .action {
+        text-decoration: line-through;
+      }
+      .card[data-status='done'] {
+        --c: var(--ok);
+        border-color: color-mix(in srgb, var(--ok) 45%, var(--line));
+        background: color-mix(in srgb, var(--ok) 7%, var(--card));
+      }
+      .card[data-status='working'] {
+        --c: var(--work);
+        border-color: var(--work);
+        background: color-mix(in srgb, var(--work) 9%, var(--card));
+        animation: glow 2.2s ease-in-out infinite;
+      }
+      .card[data-status='working'] .chip::before {
+        animation: blink 1s ease-in-out infinite;
+      }
+      .card[data-status='human'] {
+        --c: var(--warn);
+        border-color: var(--warn);
+        background: color-mix(in srgb, var(--warn) 9%, var(--card));
+      }
+      .card[data-status='waiting'] {
+        --c: var(--wait);
+        border-color: color-mix(in srgb, var(--wait) 50%, var(--line));
+      }
+      .card[data-status='blocked'] {
+        --c: var(--bad);
+        border-color: var(--bad);
+        background: color-mix(in srgb, var(--bad) 9%, var(--card));
+      }
+
+      /* ── Quest switcher (several sessions) ──── */
+      .quests {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 12px 0 18px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .quest {
+        --c: var(--muted);
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 7px 9px;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        font: inherit;
+        text-align: left;
+        color: var(--fg);
+        background: transparent;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+      .quest:hover {
+        background: var(--orca-accent);
+      }
+      .quest:focus-visible {
+        outline: 2px solid var(--orca-ring);
+        outline-offset: 2px;
+      }
+      .quest[aria-pressed='true'] {
+        border-color: var(--work);
+        background: color-mix(in srgb, var(--work) 10%, var(--card));
+      }
+      .quest[data-status='working'] {
+        --c: var(--work);
+      }
+      .quest[data-status='human'] {
+        --c: var(--warn);
+      }
+      .quest[data-status='blocked'] {
+        --c: var(--bad);
+      }
+      .quest[data-status='done'] {
+        --c: var(--ok);
+      }
+      .quest[data-status='waiting'] {
+        --c: var(--wait);
+      }
+      .quest[data-status='human'] .chip {
+        animation: ping 1.6s ease-out infinite;
+      }
+      .letter.small {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        font-size: 15px;
+        box-shadow: none;
+      }
+      .quest-text {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .quest-component {
+        font: 600 12px var(--orca-font-mono, ui-monospace, monospace);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .quest-name {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* ── Empty ──────────────────────────────── */
+      .empty {
+        margin-top: 24px;
+        padding: 22px 16px;
+        border: 1px dashed var(--line);
+        border-radius: var(--r);
+        text-align: center;
+        color: var(--muted);
+      }
+      .empty .big {
+        font-size: 30px;
+      }
+      .empty code {
+        display: block;
+        margin-top: 10px;
+        padding: 8px;
+        border-radius: 6px;
+        font: 11px var(--orca-font-mono, ui-monospace, monospace);
+        color: var(--fg);
+        background: var(--card);
+        overflow-wrap: anywhere;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes glow {
+        50% {
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--work) 22%, transparent);
+        }
+      }
+      @keyframes ping {
+        50% {
+          box-shadow: 0 0 0 5px color-mix(in srgb, var(--warn) 25%, transparent);
+        }
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0.25;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app" aria-live="polite"></main>
+    <script>
+      const AGENTS = {
+        'orchestrator': ['👑', 'Guild Master'],
+        'architect': ['⚔️', 'Sir Plans-a-Lot'],
+        'component-engineer': ['🧙', 'Brick Wizard'],
+        'test-engineer': ['🧪', 'Potion Taster'],
+        'a11y-expert': ['🛡️', 'Tab Knight'],
+        'token-engineer': ['🔮', 'Rune Master'],
+        'documentation-engineer': ['📜', 'Scroll Keeper'],
+        'ux-designer': ['🧚', 'Pixel Fairy'],
+        'issue-manager': ['🗺️', 'Quest Master'],
+        'magpie': ['🐦‍⬛', 'Loot Raven'],
+        'human': ['⛔', 'Human'],
+      }
+      const LABEL = {
+        todo: 'Up next',
+        working: 'Working',
+        waiting: 'Waiting',
+        human: 'Needs you',
+        done: 'Done',
+        blocked: 'Blocked',
+        skipped: 'Skipped',
+      }
+      // A step takes the most urgent status of its items.
+      const RANK = ['blocked', 'human', 'working', 'waiting', 'todo', 'done', 'skipped']
+
+      const app = document.getElementById('app')
+      let boards = []
+      let selected = null
+      let lastBoard = null
+      let lastDone = -1
+
+      function h(tag, attrs, ...children) {
+        const el = document.createElement(tag)
+        for (const [k, v] of Object.entries(attrs || {})) {
+          if (k === 'class') el.className = v
+          else if (k === 'style') el.style.cssText = v
+          else if (k.startsWith('on')) el.addEventListener(k.slice(2), v)
+          else el.setAttribute(k, v)
+        }
+        for (const c of children.flat()) if (c != null && c !== false) el.append(c)
+        return el
+      }
+
+      function stepStatus(items) {
+        const live = items.filter(i => i.status !== 'skipped')
+        if (live.every(i => i.status === 'done')) return 'done'
+        return RANK.find(s => live.some(i => i.status === s)) || 'todo'
+      }
+
+      function progress(board) {
+        const statuses = board.steps.map(s => stepStatus(s.items))
+        const done = statuses.filter(s => s === 'done').length
+        return { statuses, done, pct: Math.round((done / board.steps.length) * 100) }
+      }
+
+      function ago(at) {
+        if (!at) return ''
+        const s = Math.max(0, Math.round((Date.now() - at) / 1000))
+        if (s < 60) return 'just now'
+        if (s < 3600) return `${Math.floor(s / 60)}m ago`
+        return `${Math.floor(s / 3600)}h ago`
+      }
+
+      function card(item) {
+        const [emoji, name] = AGENTS[item.agent] || ['•', item.agent]
+        const when = item.status !== 'todo' ? ago(item.at) : ''
+        return h(
+          'div',
+          { 'class': 'card', 'data-status': item.status },
+          h('div', { 'class': 'avatar', 'aria-hidden': 'true' }, emoji),
+          h('div', { class: 'action' }, item.action),
+          h('span', { class: 'chip' }, LABEL[item.status] || item.status),
+          h('div', { class: 'who' }, name + (when ? ` · ${when}` : '')),
+          item.info && item.status !== 'todo' ? h('div', { class: 'info' }, item.info) : null,
+        )
+      }
+
+      /** The workflow's emoji with its letter as a corner badge; the letter alone on older boards. */
+      function tile(board, small) {
+        return h(
+          'span',
+          { class: 'letter' + (small ? ' small' : ''), title: `Workflow ${board.workflow}` },
+          board.icon || board.workflow,
+          board.icon ? h('span', { class: 'badge' }, board.workflow) : null,
+        )
+      }
+
+      /** One row per session when more than one runs; the most urgent status shows as its chip. */
+      function switcher() {
+        return h(
+          'div',
+          { 'class': 'quests', 'role': 'group', 'aria-label': `${boards.length} quests` },
+          boards.map(board => {
+            const { statuses, pct } = progress(board)
+            const status = stepStatus(statuses.map(status => ({ status })))
+            return h(
+              'button',
+              {
+                'class': 'quest',
+                'type': 'button',
+                'data-status': status,
+                'aria-pressed': String(board.id === selected),
+                'onclick': () => {
+                  selected = board.id
+                  render()
+                },
+              },
+              tile(board, true),
+              h(
+                'span',
+                { class: 'quest-text' },
+                h('span', { class: 'quest-component' }, board.component),
+                h('span', { class: 'quest-name' }, `${board.name} · ${pct}%`),
+              ),
+              h('span', { class: 'chip' }, status === 'todo' ? 'Idle' : LABEL[status]),
+            )
+          }),
+        )
+      }
+
+      function detail(board) {
+        const { statuses, done, pct } = progress(board)
+        const current = statuses.findIndex(s => s !== 'done')
+        return [
+          h('div', { class: 'title' }, tile(board, false), h('h1', {}, board.name)),
+          h('span', { class: 'component' }, board.component),
+          h(
+            'div',
+            {
+              'class': 'progress',
+              'role': 'progressbar',
+              'aria-valuenow': String(pct),
+              'aria-valuemin': '0',
+              'aria-valuemax': '100',
+              'aria-label': 'Workflow progress',
+            },
+            h('i', { style: `width:${pct}%` }),
+          ),
+          h(
+            'div',
+            { class: 'meta' },
+            h('span', {}, `${done} of ${board.steps.length} steps`),
+            h('span', {}, `${pct}%`),
+          ),
+          h(
+            'ol',
+            { class: 'flow' },
+            board.steps.map((step, n) => {
+              const parallel = step.items.length > 1
+              return h(
+                'li',
+                {
+                  'class': 'step',
+                  'data-status': statuses[n],
+                  ...(n === current ? { 'aria-current': 'step' } : {}),
+                },
+                h(
+                  'div',
+                  { 'class': 'rail', 'aria-hidden': 'true' },
+                  h('div', { class: 'node' }, statuses[n] === 'done' ? '✓' : String(n + 1)),
+                  h('div', { class: 'wire' }),
+                ),
+                h(
+                  'div',
+                  { class: 'items' + (parallel ? ' parallel' : '') },
+                  parallel ? h('div', { class: 'parallel-tag' }, `∥ ${step.items.length} in parallel`) : null,
+                  step.items.map(card),
+                ),
+              )
+            }),
+          ),
+        ]
+      }
+
+      function render() {
+        const eyebrow = h('div', { class: 'eyebrow' }, '🧱 Fellowship of the Brick')
+        if (boards.length === 0) {
+          app.replaceChildren(
+            eyebrow,
+            h(
+              'div',
+              { class: 'empty' },
+              h('div', { class: 'big' }, '🧱'),
+              h('div', {}, 'No quest in this workspace.'),
+              h('code', {}, 'node scripts/fellowship-board/board.mjs start <workflow> <component>'),
+            ),
+          )
+          return
+        }
+        // Keep the person's pick while its session lives; else the most recently active one.
+        if (!boards.some(b => b.id === selected)) selected = boards[0].id
+        const board = boards.find(b => b.id === selected)
+        // replaceChildren() stringifies null, so the switcher is spread in only when shown.
+        app.replaceChildren(eyebrow, ...(boards.length > 1 ? [switcher()] : []), ...detail(board))
+
+        // Follow the run as it advances; a first show or a switch starts at the top, so the
+        // switcher and header stay visible, and the person's own scroll is never fought.
+        const done = progress(board).done
+        if (board.id !== lastBoard) {
+          lastBoard = board.id
+          window.scrollTo({ top: 0 })
+        } else if (done !== lastDone) {
+          app.querySelector('[aria-current="step"]')?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        }
+        lastDone = done
+      }
+
+      function show(payload) {
+        boards = payload.boards
+        render()
+      }
+      orca.plugin.on('board.changed', show)
+      const fetchBoards = () =>
+        orca.plugin
+          .request('board.get')
+          .then(show)
+          .catch(error => {
+            app.textContent = `${error.code || 'error'}: ${error.message}`
+          })
+      fetchBoards()
+      // Orca reaps an idle worker and its file watcher with it; re-asking wakes it and re-arms
+      // the watcher. Also refreshes the "5m ago" labels.
+      setInterval(fetchBoards, 30000)
+    </script>
+  </body>
+</html>

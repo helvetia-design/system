@@ -12937,6 +12937,111 @@
         }
       }
     },
+    "Shape": {
+      "Color": {
+        "Purple": {
+          "$type": "color",
+          "$value": "{🔗 Alias.🎨 Surface.PurpleDark}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1000",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "PurpleLight": {
+          "$type": "color",
+          "$value": "{🔗 Alias.🎨 Surface.Purple}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1001",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "Green": {
+          "$type": "color",
+          "$value": "{🔗 Alias.🎨 Surface.GreenDark}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1002",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "GreenLight": {
+          "$type": "color",
+          "$value": "{🔗 Alias.🎨 Surface.Green}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1003",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "Red": {
+          "$type": "color",
+          "$value": "{🔗 Alias.🎨 Surface.RedDark}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1004",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "RedLight": {
+          "$type": "color",
+          "$value": "{🔗 Alias.🎨 Surface.Red}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1005",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "Yellow": {
+          "$type": "color",
+          "$value": "{🔗 Alias.🎨 Surface.YellowDark}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1006",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "YellowLight": {
+          "$type": "color",
+          "$value": "{🔗 Alias.🎨 Surface.Yellow}",
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1007",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "Size": {
+        "$type": "dimension",
+        "$value": "{🌐 Global.📏 Dimension.Size.66}",
+        "$description": "Width and height of the shape.",
+        "$extensions": {
+          "com.helvetia.responsive": {
+            "mobile": "{🌐 Global.📏 Dimension.Size.66}",
+            "tablet": "{🌐 Global.📏 Dimension.Size.120}",
+            "desktop": "{🌐 Global.📏 Dimension.Size.198}"
+          },
+          "com.figma.variableId": {
+            "mobile": "VariableID:410:996",
+            "tablet": "VariableID:410:997",
+            "desktop": "VariableID:410:998",
+            "device": "VariableID:410:999"
+          },
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
     "Form": {
       "Field": {
         "Gap": {
@@ -25251,7 +25356,8 @@
         "$extensions": {
           "com.figma.scopes": [
             "ALL_SCOPES"
-          ]
+          ],
+          "com.figma.variableId": "VariableID:410:1008"
         }
       },
       "Gutter": {
@@ -25261,7 +25367,8 @@
         "$extensions": {
           "com.figma.scopes": [
             "ALL_SCOPES"
-          ]
+          ],
+          "com.figma.variableId": "VariableID:410:1009"
         }
       }
     },
@@ -27790,6 +27897,19 @@
             ]
           }
         },
+        "66": {
+          "$type": "dimension",
+          "$value": {
+            "value": 66,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1010",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
         "72": {
           "$type": "dimension",
           "$value": {
@@ -27842,6 +27962,19 @@
             ]
           }
         },
+        "120": {
+          "$type": "dimension",
+          "$value": {
+            "value": 120,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1011",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
         "176": {
           "$type": "dimension",
           "$value": {
@@ -27850,6 +27983,19 @@
           },
           "$extensions": {
             "com.figma.variableId": "VariableID:13:3538",
+            "com.figma.scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        },
+        "198": {
+          "$type": "dimension",
+          "$value": {
+            "value": 198,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.variableId": "VariableID:410:1012",
             "com.figma.scopes": [
               "ALL_SCOPES"
             ]

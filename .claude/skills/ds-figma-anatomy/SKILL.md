@@ -50,8 +50,9 @@ see. State which variant you chose and why.
 One entry per part: the number, the `part` name exactly as it appears in the tag, and one line
 saying what it is and whether it is always present or conditional.
 
-Write these descriptions to be reused verbatim: the same text feeds Storybook's `ComponentParts`
-block via `ds-design-guidelines`. Write it once, here, for both surfaces.
+Copy each description verbatim from the `@part` JSDoc — Storybook's `ComponentParts` reads only
+that, so both surfaces say the same thing. Do not reword it here; a description that needs
+changing is a code finding for the component-engineer.
 
 ## Phase 4: Confirm
 

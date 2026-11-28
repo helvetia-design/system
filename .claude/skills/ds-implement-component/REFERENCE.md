@@ -24,8 +24,8 @@ packages/core/src/components/actions/button/
 ├── button.host.scss        # Shadow DOM styles with tokens
 └── test/
     ├── button.visual.html  # YOURS — the reviewable fixture, one section per variant
-    ├── button.spec.ts            # test-engineer (ds-test-component)
-    ├── button.component.play.ts  # test-engineer
+    ├── button.spec.ts            # you — test-first (TDD)
+    ├── button.component.play.ts  # you — test-first (TDD)
     ├── button.visual.play.ts     # test-engineer — reads your fixture's data-testid values
     └── button.a11y.play.ts       # a11y-expert (ds-a11y-test)
 ```

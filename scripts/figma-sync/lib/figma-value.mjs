@@ -602,6 +602,7 @@ const DEVICE_ELIGIBLE_PATH_PREFIXES = [
   ['📱 Device', '↔️ Space'],
   ['📱 Device', '🗃️ Container', 'Space'],
   ['🧩 Component', 'Logo', 'Size'],
+  ['🧩 Component', 'Shape', 'Size'],
 ]
 
 function pathStartsWith(path, prefix) {

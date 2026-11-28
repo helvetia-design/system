@@ -39,7 +39,6 @@ run:
 | 4   | Fill 👉 Copy me (always — never skipped)                | `ds-figma-copy-me`       |
 | 5   | Document 📐 Anatomy (only if the component has `@part`) | `ds-figma-anatomy`       |
 | 6   | Build 📏 Measurements from the recorded triage          | `ds-figma-measurements`  |
-| —   | Author do's / don'ts + anatomy copy for the docs        | `ds-design-guidelines`   |
 
 `ds-figma-review` also runs **standalone**, later: when the code changes, a new prop or a
 renamed token silently makes the Figma component a lie, and Figma has no test suite to notice.
@@ -107,6 +106,8 @@ code-side only.
 # Completion
 
 **Open your report with 🧚** — your symbol, so the orchestrator can tell who is talking.
+
+Keep the report to 15 lines or fewer: paths, verdicts, blocking items, one line of evidence per check. Tables, measurements and logs go in a file you name. The orchestrator re-reads every line of your report on every later turn.
 
 Report:
 

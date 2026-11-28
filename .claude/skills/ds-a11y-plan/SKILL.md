@@ -64,6 +64,8 @@ Specify, concretely enough to test:
 - **State announcement** — how a screen reader learns about disabled, invalid, expanded,
   selected, loading, and live-region updates.
 - **Reduced motion** — what `prefers-reduced-motion` changes.
+- **Target size** — every pointer target and its rendered size; each must be ≥ 24×24 px
+  (2.5.8), or name the spacing exception it relies on.
 
 ### Stay in your lane
 
@@ -114,6 +116,7 @@ The file must contain:
 3. ARIA attributes, with their state transitions
 4. Keyboard map (key → action → focus)
 5. Focus management rules
+   5a. Target sizes (2.5.8) — each pointer target and how it reaches 24×24 px
 6. Applicable WCAG 2.2 AA criteria, and how each is met
 7. Which criteria need manual verification, and why
 

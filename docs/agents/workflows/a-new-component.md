@@ -8,9 +8,9 @@ deprecation first (Workflow E).
 ```text
 0 grill the human           →  docs/plans/components/<name>-brief.md
 1 plan ∥ a11y-plan          →  ⛔ GATE: plan approved by a human
-2 implement                 →  3 tokens  (only if step 2 reported gaps)
+2 implement (tdd)           →  3 tokens  (only if step 2 reported gaps)
                                ⛔ GATE: human opens test/<name>.visual.html
-4 test ∥ a11y-test ∥ docs      (parallel, disjoint files)
+4 coverage-review + visual ∥ a11y-test ∥ docs   (parallel, disjoint files)
 5 token-audit ∥ a11y-audit ∥ code-review  →  6 repair, routed by owner
 7 a11y-verify ∥ validate    →  8 changeset (minor)  →  9 🗺️ pr-body ∥ reply → ⛔ GATE → post  →  human reviews and commits
 
@@ -93,10 +93,14 @@ At the gate the orchestrator, from the planners' summaries only:
 Every agent from step 2 on reads **brief → plan → a11y plan**, in that order, and the brief wins
 where they differ. The orchestrator's dispatch names that order; it does not restate decisions.
 
-**2 · Implement** — `ds-implement-component`. Writes component source, the `index.ts`
-export, and `test/<name>.visual.html` (plus `.style.html` for a CSS-only/hybrid component).
+**2 · Implement** — `ds-implement-component`, test-first: setup (empty component + PO
+skeleton), then one red → green `tdd` cycle per seam in the plan's `## Test seams`, starting
+with "renders with defaults". Writes component source, `.spec.ts`, `.component.play.ts`, the
+Page Object, the `index.ts` export, and `test/<name>.visual.html` (plus `.style.html` for a
+CSS-only/hybrid component). Reports red and green output per seam; no refactoring inside the
+loop — that is step 5 → 6.
 Then `ds-framework-wrappers` for the React lists and, for a form component, the Angular
-wrapper. Creates an _empty_ Storybook folder and generates no tests. It **reads tokens and
+wrapper. Creates an _empty_ Storybook folder. It **reads tokens and
 never creates them**: a missing token is referenced by the name it should have, with no
 fallback and nothing hardcoded, and reported as a blocking handoff.
 
@@ -113,11 +117,11 @@ the engineer's SCSS reference can follow.
 **4 · Build out — three in parallel.** The three file sets are disjoint, so one dispatch each,
 no second round:
 
-| Agent                  | Skill                   | Writes                                                                                      |
-| ---------------------- | ----------------------- | ------------------------------------------------------------------------------------------- |
-| test-engineer          | `ds-test-component`     | unit, interaction, visual, SSR, PO; Angular + React integration tests for a form component³ |
-| documentation-engineer | `ds-document-component` | `apps/storybook/src/**`                                                                     |
-| a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` — axe + keyboard/focus/ARIA state                                           |
+| Agent                  | Skill                   | Writes                                                                                                                            |
+| ---------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| test-engineer          | `ds-test-component`     | coverage review of step 2's tests (findings only); visual, SSR, variants; Angular + React integration tests for a form component³ |
+| documentation-engineer | `ds-document-component` | `apps/storybook/src/**`                                                                                                           |
+| a11y-expert            | `ds-a11y-test`          | `.a11y.play.ts` — axe + keyboard/focus/ARIA state                                                                                 |
 
 The a11y-expert may start before the Page Object exists: it uses local locators and reports
 the PO gap rather than waiting or editing `.po.ts`.
@@ -139,15 +143,20 @@ added to one and not the other produces a missing-baseline failure rather than a
 renders as plain classed HTML with no shadow root to hydrate, so there is nothing for an SSR
 test to assert (`form`, `link`, `table`, `grid`, `picture`, `time-input` have none).
 
-It writes neither the fixture nor `.a11y.play.ts`, and it errors out if the fixture is missing,
-which keeps the gate above from being skipped.
+It writes neither the fixture, the behavior tests, the PO nor `.a11y.play.ts`, and it errors
+out if the fixture is missing, which keeps the gate above from being skipped.
+
+**Coverage review** — before generating, the test-engineer reviews the engineer's `.spec.ts`,
+`.component.play.ts` and PO read-only: every plan seam tested, every reachable state and enum
+variant covered, no `tdd` anti-pattern, mounted through the PO. No numeric threshold. Gaps are
+findings, routed to step 6 with the audits — the engineer fixes its own tests.
 
 **5 · Review — parallel, read-only.** `ds-audit-tokens` ∥ `ds-a11y-audit` ∥ the `code-review`
 skill (mattpocock-skills), run by the orchestrator on the diff: Standards against
 `docs/STYLE_GUIDE.md` and `docs/ARCHITECTURE.md`, Spec against the brief and plan (or spec #N).
 The audits produce findings files; `code-review` reports inline. All converge on one repair round.
 
-**6 · Repair** — route findings by owner: source → component-engineer (`ds-repair-component`),
+**6 · Repair** — route findings by owner: source and behavior-test gaps → component-engineer (`ds-repair-component`),
 tokens → token-engineer (`ds-manage-tokens`). Both verify each finding before acting; an
 invalid finding is reported as `INVALID` with its reason, not silently applied.
 
