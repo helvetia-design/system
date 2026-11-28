@@ -497,6 +497,36 @@ test.describe('component', () => {
     await page.evaluate(() => (document.querySelector('ds-modal') as any).dismiss())
     await expect(page.locator('ds-modal')).toHaveCount(0)
   })
+
+  test('should not show the close tooltip on initial focus, but on keyboard focus', async ({ page }) => {
+    await page.mount(
+      `<button id="opener">Open</button><ds-modal label="Dialog"><ds-modal-header>Title</ds-modal-header><ds-modal-body>Body</ds-modal-body></ds-modal>`,
+    )
+    const ds = new DsModal(page.locator('ds-modal'))
+    const tooltip = page.locator('ds-modal ds-close ds-tooltip')
+
+    await page.locator('#opener').click()
+    await page.evaluate(() => (document.querySelector('ds-modal') as any).present())
+    await ds.assertToBeOpen()
+    await page.waitForChanges()
+    await expect(tooltip).toHaveAttribute('aria-hidden', 'true')
+
+    // Programmatic refocus (what showModal() does on open) must not present the tooltip either.
+    await page.evaluate(() => {
+      const button = document
+        .querySelector('ds-modal')!
+        .shadowRoot!.querySelector('ds-close')!
+        .shadowRoot!.querySelector('button')!
+      button.blur()
+      button.focus()
+    })
+    await page.waitForChanges()
+    await expect(tooltip).toHaveAttribute('aria-hidden', 'true')
+
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Shift+Tab')
+    await expect(tooltip).toHaveAttribute('aria-hidden', 'false')
+  })
 })
 
 test.describe('moved in the DOM', () => {

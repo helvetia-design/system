@@ -21,7 +21,7 @@ const meta: Meta<Args> = {
   <ds-modal-body>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
   </ds-modal-body>
-  <ds-button color="text" slot="actions" onclick="document.getElementById('modal-basic').dismiss()">Cancel</ds-button>
+  <ds-button color="secondary" slot="actions" onclick="document.getElementById('modal-basic').dismiss()">Cancel</ds-button>
   <ds-button color="primary" slot="actions" onclick="document.getElementById('modal-basic').dismiss()">Confirm</ds-button>
 </ds-modal>
 `,
@@ -65,7 +65,7 @@ export const Narrow = Story({
   <ds-modal-body>
     <p>Modal with <code>modal-width="400"</code>.</p>
   </ds-modal-body>
-  <ds-button color="text" slot="actions" onclick="document.getElementById('modal-narrow').dismiss()">Cancel</ds-button>
+  <ds-button color="secondary" slot="actions" onclick="document.getElementById('modal-narrow').dismiss()">Cancel</ds-button>
   <ds-button color="primary" slot="actions" onclick="document.getElementById('modal-narrow').dismiss()">Confirm</ds-button>
 </ds-modal>
 `,
@@ -82,7 +82,7 @@ export const Wide = Story({
   <ds-modal-body>
     <p>Modal with <code>modal-width="900"</code>.</p>
   </ds-modal-body>
-  <ds-button color="text" slot="actions" onclick="document.getElementById('modal-wide').dismiss()">Cancel</ds-button>
+  <ds-button color="secondary" slot="actions" onclick="document.getElementById('modal-wide').dismiss()">Cancel</ds-button>
   <ds-button color="primary" slot="actions" onclick="document.getElementById('modal-wide').dismiss()">Confirm</ds-button>
 </ds-modal>
 `,
@@ -146,7 +146,7 @@ export const Scrollable = Story({
     <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</p>
     <p>Ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem.</p>
   </ds-modal-body>
-  <ds-button color="text" slot="actions" onclick="document.getElementById('modal-scrollable').dismiss()">Cancel</ds-button>
+  <ds-button color="secondary" slot="actions" onclick="document.getElementById('modal-scrollable').dismiss()">Cancel</ds-button>
   <ds-button color="primary" slot="actions" onclick="document.getElementById('modal-scrollable').dismiss()">Confirm</ds-button>
 </ds-modal>
 `,
@@ -164,7 +164,7 @@ export const Fullscreen = Story({
     <p>This modal covers the entire viewport. Useful for complex flows or immersive content.</p>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
   </ds-modal-body>
-  <ds-button color="text" slot="actions" onclick="document.getElementById('modal-fullscreen').dismiss()">Cancel</ds-button>
+  <ds-button color="secondary" slot="actions" onclick="document.getElementById('modal-fullscreen').dismiss()">Cancel</ds-button>
   <ds-button color="primary" slot="actions" onclick="document.getElementById('modal-fullscreen').dismiss()">Confirm</ds-button>
 </ds-modal>
 `,

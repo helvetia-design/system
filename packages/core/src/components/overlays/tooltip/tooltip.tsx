@@ -37,6 +37,10 @@ export class Tooltip implements DsComponentInterface {
   private trigger: HTMLElement | undefined
   private dismissTimer: ReturnType<typeof setTimeout> | undefined
   private handlePresent = () => this.present()
+  // Pointer-initiated or programmatic focus (e.g. a dialog's initial focus) must not pop the tooltip; keyboard focus does.
+  private handleFocus = () => {
+    if (this.trigger?.matches(':focus-visible')) this.present()
+  }
   private handleDismiss = () => this.dismiss()
   private handleDelayedDismiss = () => this.scheduleDismiss()
   private handleContainerMouseEnter = () => this.clearDismissTimer()
@@ -144,7 +148,7 @@ export class Tooltip implements DsComponentInterface {
     if (this.trigger) {
       this.removeDescribedBy(this.trigger)
       this.trigger.removeEventListener('mouseenter', this.handlePresent)
-      this.trigger.removeEventListener('focus', this.handlePresent)
+      this.trigger.removeEventListener('focus', this.handleFocus)
       this.trigger.removeEventListener('mouseleave', this.handleDelayedDismiss)
       this.trigger.removeEventListener('blur', this.handleDismiss)
       this.trigger = undefined
@@ -278,7 +282,7 @@ export class Tooltip implements DsComponentInterface {
     this.addDescribedBy(trigger)
 
     trigger.addEventListener('mouseenter', this.handlePresent)
-    trigger.addEventListener('focus', this.handlePresent)
+    trigger.addEventListener('focus', this.handleFocus)
     trigger.addEventListener('mouseleave', this.handleDelayedDismiss)
     trigger.addEventListener('blur', this.handleDismiss)
 

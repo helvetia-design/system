@@ -52,10 +52,10 @@ and every agent return, gate and status board is a turn. Keep that context _shor
   re-pays that history every turn, so it is one fresh dispatch per stretch between checkpoints
   (Workflow D → Dispatch). A small follow-up (flip a checkpoint, fix one value) may still resume it.
 - **Don't message a running agent with a hint it probably covers.** A `SendMessage` that lands
-  after the agent's last step resumes it for a whole second run (~40k for 🔮). Read its report
+  after the agent's last step resumes it for a whole second run (~40k for 🧝). Read its report
   first; send the hint only if the report shows it was missed.
 - **Small jobs ride along.** The changeset goes in the last 🧙 dispatch's prompt, or a
-  SendMessage to it, never a dispatch of its own. The token audit rides with 🔮's tokens step
+  SendMessage to it, never a dispatch of its own. The token audit rides with 🧝's tokens step
   when there is one. Checkpoint flips in `<name>.figma.md` ("anatomy: approved") ride with the
   next 🧚 dispatch; resume a large agent for one only when no later dispatch is coming.
 - **Batch findings, then fan out once.** When a run collects code findings (a planner's
@@ -65,7 +65,7 @@ and every agent return, gate and status board is a turn. Keep that context _shor
   pays for the same MDX or test file again every time a later finding changes the behavior.
 - **Skip what can't apply, by rule.** Layout-only CSS (no color, no interaction, no
   semantics) skips 🛡️ a11y-test and a11y-audit. No `<name>.figma.md` skips the drift check.
-  No new or changed token skips 🔮's tokens step. Name the skip and the reason on the board.
+  No new or changed token skips 🧝's tokens step. Name the skip and the reason on the board.
 - **A known-broken environment is a documented fact, not a discovery.** Before an agent
   investigates a failing suite, check `packages/playwright/CONTEXT.md` (SSR hydration failure,
   missing visual baselines for a new component) and `packages/core/CONTEXT.md` "Testing
@@ -80,7 +80,7 @@ and every agent return, gate and status board is a turn. Keep that context _shor
 | 🧙 `component-engineer`     | sonnet | `packages/core/src/components/**`, `test/*.visual.html`, `test/*.style.html`, `.spec.ts`, `.component.play.ts`, `*.po.ts` (test-first), framework wrappers², ADRs, package `CONTEXT.md` files |           |
 | 🧪 `test-engineer`          | sonnet | `.visual.play.ts`, `.ssr.play.ts`, `.variants.ts`, framework integration tests³; coverage review of 🧙's tests (findings only)                                                                |           |
 | 🛡️ `a11y-expert`            | opus   | `.a11y.play.ts` (axe + keyboard/focus/ARIA state), a11y reports                                                                                                                               |           |
-| 🔮 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                                                                                                                           |           |
+| 🧝 `token-engineer`         | opus   | `packages/tokens/tokens/*.json`, token refs in SCSS                                                                                                                                           |           |
 | 📜 `documentation-engineer` | sonnet | `apps/storybook/src/**`                                                                                                                                                                       |           |
 | 🧚 `ux-designer`            | opus   | the Figma file, `<name>.figma.md`, `<name>.figma-validation.md`                                                                                                                               |           |
 | 🗺️ `issue-manager`          | sonnet | `docs/plans/github/**` drafts; GitHub issues, comments, labels and PR bodies — after a gate                                                                                                   |           |
@@ -95,7 +95,7 @@ contract). Planning, Figma builds and audits keep opus.
 
 **Display names — The Fellowship of the Brick 🧱** (every component is a building block) (labels in the banner, board and reports; dispatch still uses the agent's `name`):
 👑 Guild Master · ⚔️ Sir Plans-a-Lot · 🧙 Brick Wizard · 🧪 Potion Taster · 🛡️ Tab Knight ·
-🔮 Rune Master · 📜 Scroll Keeper · 🧚 Pixel Fairy · 🗺️ Quest Master · 🐦‍⬛ Loot Raven
+🧝 J.R.R. Token · 📜 Scroll Keeper · 🧚 Pixel Fairy · 🗺️ Quest Master · 🐦‍⬛ Loot Raven
 
 ² **Framework wrappers and the other cross-package files** are the component-engineer's, because
 they change in lockstep with the component's public API:
@@ -182,7 +182,7 @@ Columns: status emoji · agent emoji + bold display name (never the raw `name`) 
 |     | Agent                  | Info                                                   |
 | :-: | ---------------------- | ------------------------------------------------------ |
 | ✅  | ⚔️ **Sir Plans-a-Lot** | plan → docs/plans/components/ds-country-select-plan.md |
-| ✅  | 🔮 **Rune Master**     | 3 Component tokens added                               |
+| ✅  | 🧝 **J.R.R. Token**    | 3 Component tokens added                               |
 | 🔄  | 🧙 **Brick Wizard**    | implementing ds-country-select.tsx                     |
 | ⏳  | 🧪 **Potion Taster**   | waits on 🧙                                            |
 | ⏳  | 🛡️ **Tab Knight**      | waits on 🧙                                            |
@@ -190,7 +190,7 @@ Columns: status emoji · agent emoji + bold display name (never the raw `name`) 
 | 🙋  | **Human**              | gate: approve the plan                                 |
 ```
 
-Display names: ⚔️ Sir Plans-a-Lot, 🔮 Rune Master, 🧙 Brick Wizard, 🧪 Potion Taster,
+Display names: ⚔️ Sir Plans-a-Lot, 🧝 J.R.R. Token, 🧙 Brick Wizard, 🧪 Potion Taster,
 🛡️ Tab Knight, 📜 Scroll Keeper, 🧚 Pixel Fairy, 🗺️ Quest Master, 🐦‍⬛ Loot Raven, 👑 Guild Master.
 A human gate is a `Human` row: ⛔ for a stop point, 🙋 when the board needs an answer.
 
@@ -329,7 +329,7 @@ A behavior-only fix — events, keyboard, logic, a11y attributes — skips it.
 **Dispatch:** one fresh 🧚 ux-designer · `ds-figma-review`, pointed at `<name>.figma.md` and
 the changed files. It repairs Figma and updates `<name>.figma.md`; a code-side defect it finds
 is a finding for the owner, not a Figma workaround. A new token with no Figma variable goes
-first to 🔮 token-engineer · `ds-sync-figma-tokens`, as in Workflow D step 2.
+first to 🧝 token-engineer · `ds-sync-figma-tokens`, as in Workflow D step 2.
 
 **Figma MCP not authorized** → do not skip silently. The final report names the drift as open
 ("`ds-<name>`: Figma out of date — `<what changed>`") so the human can run it later.

@@ -102,20 +102,37 @@ Post these as a PR comment to trigger automation:
 
 Type these in a Claude Code session in this repo (defined in `.claude/commands/`):
 
-| Command             | Effect                                                                  |
-| ------------------- | ----------------------------------------------------------------------- |
-| `/dev`              | Starts the core components dev server (`pnpm start`) in the background. |
-| `/docs`             | Starts Storybook (`pnpm docs`) in the background.                       |
-| `/stop`             | Stops the background servers Claude started.                            |
-| `/check`            | Runs lint, format check and spell check; reports failures only.         |
-| `/test <filter>`    | Runs a single Vitest file in core.                                      |
-| `/play <test name>` | Runs a single Playwright test in core (opens the Playwright UI).        |
-| `/tokens`           | Rebuilds tokens and styles.                                             |
-| `/new <name>`       | Starts the DS team workflow for a new component (Workflow A).           |
-| `/fix <issue>`      | Starts the DS team workflow for a bug fix (Workflow B).                 |
-| `/figma <name>`     | Starts the DS team workflow for mirroring a component into Figma (D).   |
+| Command             | Effect                                                                                                      |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `/dev`              | Starts the core components dev server (`pnpm start`) in the background.                                     |
+| `/docs`             | Starts Storybook (`pnpm docs`) in the background.                                                           |
+| `/stop`             | Stops the background servers Claude started.                                                                |
+| `/check`            | Runs lint, format check and spell check; reports failures only.                                             |
+| `/test <filter>`    | Runs a single Vitest file in core.                                                                          |
+| `/play <test name>` | Runs a single Playwright test in core (opens the Playwright UI).                                            |
+| `/tokens`           | Rebuilds tokens and styles.                                                                                 |
+| `/new <name>`       | Starts the DS team workflow for a new component (Workflow A).                                               |
+| `/fix <issue>`      | Starts the DS team workflow for a bug fix (Workflow B).                                                     |
+| `/figma <name>`     | Starts the DS team workflow for mirroring a component into Figma (D).                                       |
+| `/ci-report`        | Downloads the Playwright report of the PR's latest failing CI run and opens it in Orca.                     |
+| `/visual-review`    | Walks the CI visual-test failures one component at a time: approve the new screenshot or fix the component. |
 
 The workflow commands hand the work to the DS agent team — see [docs/agents/ds-team.md](docs/agents/ds-team.md).
+
+`/ci-report` and `/visual-review` need the [GitHub CLI](https://cli.github.com) (`gh auth login`) and Orca — the report opens in Orca's browser.
+
+### Orca Plugin: Fellowship Board
+
+The DS agent team shows its progress live in the 🧱 Fellowship panel in Orca's right sidebar, with one card per workflow step. To install it, run this from the repo root:
+
+```bash
+orca plugin install ./scripts/fellowship-board
+# exits with approval_required and prints a fingerprint, then:
+orca plugin install ./scripts/fellowship-board --approve <fingerprint>
+orca plugin open fellowship-board
+```
+
+When the plugin changes, run the install again; a new version needs a new fingerprint. For local plugin work, use `orca plugin dev load` (see [scripts/fellowship-board/README.md](scripts/fellowship-board/README.md)).
 
 ## Reporting Issues
 

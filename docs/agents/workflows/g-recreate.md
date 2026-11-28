@@ -22,7 +22,7 @@ The answers are appended as `## Gate decisions`.
 
 **NO-TOKEN at the gate, not mid-build.** Every NO-TOKEN row the recipe needs, and every value a
 component can't size or style yet (e.g. a 48px `img` in an icon slot), is decided at the gate:
-🔮 token gap, a rung-2 delta, or accepted as a workaround on purpose. Finding it later costs a
+🧝 token gap, a rung-2 delta, or accepted as a workaround on purpose. Finding it later costs a
 blocked agent run.
 
 ## Route by rung
@@ -42,7 +42,7 @@ recipe can only use the variant once it exists.
 recipe page go to the same documentation-engineer run, or a SendMessage to it. Two dispatches
 read the same sources twice.
 
-**NO-TOKEN rows go to 🔮 token-engineer inside the routed workflow**, at its tokens step. The
+**NO-TOKEN rows go to 🧝 token-engineer inside the routed workflow**, at its tokens step. The
 brief lists them; magpie never proposes a hardcoded value.
 
 **Brand-color axis.** When the brief says one Brand* surface was detected, the gate decides
