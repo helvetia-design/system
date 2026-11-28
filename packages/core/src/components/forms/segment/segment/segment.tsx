@@ -396,6 +396,11 @@ export class Segment implements DsComponentInterface, Omit<FieldInterface, 'colo
       return
     }
 
+    // No layout (SSR renderer: offsets are undefined; hidden: 0) — keep the label drawing the selection.
+    if (!selectedLabel.offsetWidth) return
+
+    // From here the pill draws the selection instead of the label.
+    group.classList.add('has-pill')
     pill.style.display = 'block'
     pill.style.left = `${selectedLabel.offsetLeft}px`
     pill.style.top = `${selectedLabel.offsetTop}px`

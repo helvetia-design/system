@@ -30,8 +30,8 @@ export default defineConfig({
      */
     timeout: 5000,
     toHaveScreenshot: {
-      maxDiffPixelRatio: 0.1,
-      threshold: 0.2,
+      maxDiffPixelRatio: 0.05,
+      threshold: 0.1,
     },
   },
   forbidOnly: !!process.env.CI,
@@ -83,14 +83,6 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
       // Resolves visualBaseline() names to the desktop baselines of the visual tests.
       snapshotPathTemplate: '{testDir}/{testFileDir}/{arg}-🖼️-Visual-💻-Desktop-Chrome{-snapshotSuffix}{ext}',
-      // Replaces the top-level `expect` block as a whole, so it repeats the timeout.
-      expect: {
-        timeout: 5000,
-        toHaveScreenshot: {
-          maxDiffPixelRatio: 0.02,
-          threshold: 0.2,
-        },
-      },
     },
     {
       name: '🖼️ Visual / 💻 Desktop Chrome',

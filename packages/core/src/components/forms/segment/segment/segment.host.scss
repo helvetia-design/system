@@ -108,6 +108,11 @@
     clip-path 80ms ease;
 }
 
+// SSR / pre-hydration: no layout to measure, so the selected label paints the pill itself.
+#group:not(.has-pill) label.is-selected {
+  background-color: var(--_segment-item-selected-background);
+}
+
 // Press effect on the JS pill — only fire when the already-selected label is pressed.
 #group:has(label:has(input:checked):active) #pill {
   clip-path: inset(2px round var(--_segment-radius));

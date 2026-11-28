@@ -158,3 +158,9 @@ docs/superpowers
 
 # DS-team status board (scripts/fellowship-board)
 .ds-team
+
+# Downloaded CI Playwright reports (ds-ci-report skill)
+.ci-reports
+
+# Local clone, not part of the repo
+icon-agent

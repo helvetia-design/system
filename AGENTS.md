@@ -47,7 +47,7 @@ tool group. The banner never ends the turn: keep going in the same turn, first c
 workflow's step line and render it as a numbered list: one item per `→` step; `∥` (parallel)
 steps stay together on one item. Each step is `<emoji> **<Display name>** / <action>` — the emoji and display name map
 to the agent (👑 Guild Master = orchestrator, ⚔️ Sir Plans-a-Lot = architect, 🧙 Brick Wizard = component-engineer,
-🧪 Potion Taster = test-engineer, 🛡️ Tab Knight = a11y-expert, 🔮 Rune Master = token-engineer,
+🧪 Potion Taster = test-engineer, 🛡️ Tab Knight = a11y-expert, 🧝 J.R.R. Token = token-engineer,
 📜 Scroll Keeper = documentation-engineer, 🧚 Pixel Fairy = ux-designer, 🗺️ Quest Master = issue-manager,
 🐦‍⬛ Loot Raven = magpie, ⛔ human). Display names are labels only; dispatch by the agent's `name`. Consecutive steps by the
 same agent merge into one item `<emoji> **<Display name>**` with a nested numbered list of its actions.
@@ -65,19 +65,19 @@ same agent merge into one item `<emoji> **<Display name>**` with a nested number
 4. …
 ```
 
-- **A — New component:** `👑 grill → ⚔️ plan ∥ 🛡️ a11y-plan → ⛔ gate → 🧙 implement (tdd) → 🔮 tokens → ⛔ visual gate → 🧪 coverage-review + visual ∥ 🛡️ a11y-test ∥ 📜 docs → 🔮 audit ∥ 🛡️ audit ∥ 👑 code-review → 🧙 repair → 🧙 validate → 🧙 changeset → 🗺️ pr-body ∥ reply`
+- **A — New component:** `👑 grill → ⚔️ plan ∥ 🛡️ a11y-plan → ⛔ gate → 🧙 implement (tdd) → 🧝 tokens → ⛔ visual gate → 🧪 coverage-review + visual ∥ 🛡️ a11y-test ∥ 📜 docs → 🧝 audit ∥ 🛡️ audit ∥ 👑 code-review → 🧙 repair → 🧙 validate → 🧙 changeset → 🗺️ pr-body ∥ reply`
 - **B — Bug fix:** `🧙 reproduce (red) → 🧙 fix (green) → 🧙 validate → 🧙 changeset (patch) → 🧚 drift check → 🗺️ pr-body ∥ reply`
-- **C — Feature:** `👑 grill → ⚔️ plan → ⛔ gate → 🧙 modify (tdd) → 🔮 tokens → 🧪 coverage-review + visual ∥ 🛡️ a11y-test ∥ 📜 docs → 🔮 audit ∥ 🛡️ audit ∥ 👑 code-review → 🧙 changeset (minor) → 🧚 drift check → 🗺️ pr-body ∥ reply`
-- **D — Component into Figma:** `⚔️ plan → 🔮 tokens → ⛔ gate → 🧚 map + default → ⛔ default gate → 🧚 fan-out + review + copy me + anatomy + measurements ∥ 📜 guidelines + stories → ⛔ approve Figma`
-- **E — Deprecation:** `👑 grill → ⚔️ plan → ⛔ gate → 🧙 deprecate (tdd) → 🔮 tokens → 🧪 coverage-review + visual ∥ 📜 docs → 🧙 validate ∥ 👑 code-review → 🧙 changeset (minor) → 🧚 drift check → 🗺️ pr-body ∥ reply`
-- **E′ — Removal** (later major): `⛔ gate → 🧙 remove → 🔮 tokens → 🧪 test ∥ 📜 docs → 🧙 validate → 🧙 changeset (major) → 🧚 drift check → 🗺️ pr-body ∥ reply`
+- **C — Feature:** `👑 grill → ⚔️ plan → ⛔ gate → 🧙 modify (tdd) → 🧝 tokens → 🧪 coverage-review + visual ∥ 🛡️ a11y-test ∥ 📜 docs → 🧝 audit ∥ 🛡️ audit ∥ 👑 code-review → 🧙 changeset (minor) → 🧚 drift check → 🗺️ pr-body ∥ reply`
+- **D — Component into Figma:** `⚔️ plan → 🧝 tokens → ⛔ gate → 🧚 map + default → ⛔ default gate → 🧚 fan-out + review + copy me + anatomy + measurements ∥ 📜 guidelines + stories → ⛔ approve Figma`
+- **E — Deprecation:** `👑 grill → ⚔️ plan → ⛔ gate → 🧙 deprecate (tdd) → 🧝 tokens → 🧪 coverage-review + visual ∥ 📜 docs → 🧙 validate ∥ 👑 code-review → 🧙 changeset (minor) → 🧚 drift check → 🗺️ pr-body ∥ reply`
+- **E′ — Removal** (later major): `⛔ gate → 🧙 remove → 🧝 tokens → 🧪 test ∥ 📜 docs → 🧙 validate → 🧙 changeset (major) → 🧚 drift check → 🗺️ pr-body ∥ reply`
 
 - **F — Triage** (standalone): `🗺️ triage → ⛔ gate → 🗺️ post`
 - **G — Recreate from a site:** `🐦‍⬛ scout → ⛔ gate (name, rung) → route` — rung 1 `📜 recipe → 📜 validate`; rung 2/3 → C from `⚔️ plan`; rung 4 → A from `⚔️ plan ∥ 🛡️ a11y-plan`
-- **H — PR review** (read-only): `👑 classify → 🧙 validate ∥ 🛡️ a11y-audit ∥ 🔮 token-audit ∥ 📜 docs-validate → 👑 code-review → 🗺️ review draft → ⛔ gate → 🗺️ post`
+- **H — PR review** (read-only): `👑 classify → 🧙 validate ∥ 🛡️ a11y-audit ∥ 🧝 token-audit ∥ 📜 docs-validate → 👑 code-review → 🗺️ review draft → ⛔ gate → 🗺️ post`
 - **I — PR rescue:** `🧙 merge + resolve → 🧙 validate → ⛔ human commits`
 - **J — CI triage:** `🧙 classify → ⛔ gate → 🧙 fix ∥ 🧪 test-fix → 🧙 validate → ⛔ screenshots`
-- **K — Audit sweep:** `👑 scope → 🛡️ a11y-audit ∥ 🔮 token-audit ∥ 🧙 lint ∥ 📜 docs-validate → 👑 merge → ⛔ gate → 🗺️ issues → ⛔ gate → 🗺️ post`
+- **K — Audit sweep:** `👑 scope → 🛡️ a11y-audit ∥ 🧝 token-audit ∥ 🧙 lint ∥ 📜 docs-validate → 👑 merge → ⛔ gate → 🗺️ issues → ⛔ gate → 🗺️ post`
 - **L — Spec only:** `👑 grill → ⚔️ plan ∥ 🛡️ a11y-plan → ⛔ gate → ⛔ human /to-spec`
 
 `🗺️ pr-body ∥ reply` and Triage: see `ds-team.md` → GitHub.

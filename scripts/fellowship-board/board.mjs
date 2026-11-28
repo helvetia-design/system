@@ -21,7 +21,7 @@ const EMOJI = {
   '🧙': 'component-engineer',
   '🧪': 'test-engineer',
   '🛡': 'a11y-expert',
-  '🔮': 'token-engineer',
+  '🧝': 'token-engineer',
   '📜': 'documentation-engineer',
   '🧚': 'ux-designer',
   '🗺': 'issue-manager',
