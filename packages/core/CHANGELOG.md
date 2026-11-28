@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 > 👋 **Welcome to the Helvetia Design System!** Coming from the Baloise Design System? Have a look at our
 > [migration guide](https://helvetia-design.vercel.app/?path=/docs/development-migrations-from-baloise--from-baloise) to get started.
 
+## 0.2.1
+
+### 🩹 Fixes
+
+- **progress-bar**: Fixes the bar showing empty on first paint and server-side render, animating from 0 on first update, and vanishing in Windows High Contrast mode ( [`30d51b7`](https://github.com/helvetia-design/system/commit/30d51b73e98a407a84ea403fea5f3aa0a7df8896))
+
+### ❤️ Thank You
+
+- [@hirsch88](https://github.com/hirsch88)
+
 ## 0.2.0
 
 ### ✨ Features
